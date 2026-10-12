@@ -17,8 +17,8 @@
     <span class="brand-en">Packet Conquest</span>
   </div>
   <div class="status">
-    <span class="chip" id="roomChip" hidden>部屋 <b id="roomCode"></b></span>
-    <span class="timer" id="timer" hidden>4:00</span>
+    <span class="chip" id="areaChip">東京</span>
+    <span class="chip" id="onlineChip" hidden>オンライン <b id="onlineCount">0</b></span>
     <span class="conn" id="conn" data-state="off">未接続</span>
   </div>
 </header>
@@ -27,23 +27,36 @@
   <section class="board" aria-label="ネットワーク地図">
     <div class="map-scroll" id="mapScroll"><canvas id="map"></canvas></div>
     <ul class="legend">
-      <li><i class="lg dc"></i>DC 1点</li>
-      <li><i class="lg gw"></i>GW 2点</li>
-      <li><i class="lg ix"></i>IX 3点</li>
-      <li><i class="lg cable"></i>海底ケーブル</li>
+      <li><i class="lg ix"></i>相互接続点 5点</li>
+      <li><i class="lg gov"></i>官公庁・ランドマーク</li>
+      <li><i class="lg dc"></i>駅・DC</li>
+      <li><i class="lg gw"></i>玄関口</li>
+      <li><i class="lg home"></i>プレイヤーの拠点</li>
+      <li><i class="lg shield"></i>保護中</li>
     </ul>
   </section>
 
   <aside class="side">
-    <section class="panel" aria-labelledby="scoreTitle">
-      <h2 id="scoreTitle" class="label">順位</h2>
-      <ol class="scores" id="scores"></ol>
+    <section class="panel me" id="mePanel" hidden aria-labelledby="meTitle">
+      <h2 id="meTitle" class="label">あなた</h2>
+      <div class="me-row">
+        <span class="swatch" id="meSwatch"></span>
+        <span class="pname" id="meName"></span>
+        <span class="pscore" id="meScore"></span>
+      </div>
+      <p class="hint me-stats"><span id="meNodes"></span> ・ 累計 <span id="mePoints"></span>点</p>
+      <div class="code-row">
+        <span class="hint">復帰コード</span>
+        <code class="code" id="meCode"></code>
+        <button type="button" class="btn small" id="copyCodeBtn">コピー</button>
+      </div>
+      <p class="hint">別の端末やブラウザで続けるときに入力します。他の人には教えないでください。</p>
     </section>
 
     <section class="panel qpanel" id="qpanel" aria-live="polite">
       <div id="qIdle" class="idle">
         <p class="label">あなたの番</p>
-        <p>黄色く光る拠点をタップすると<strong>攻撃</strong>。自分の拠点をタップすると<strong>防御を強化</strong>。正解すると効果が出ます。</p>
+        <p>黄色く光る拠点をタップすると<strong>攻撃</strong>。自分の拠点をタップすると<strong>防御を強化</strong>。正解すると効果が出ます。制限時間はありません。</p>
       </div>
       <div id="qBox" hidden>
         <div class="qhead">
@@ -61,6 +74,11 @@
       <div class="cool" id="cool" hidden><div class="cool-bar" id="coolBar"></div></div>
     </section>
 
+    <section class="panel" aria-labelledby="scoreTitle">
+      <h2 id="scoreTitle" class="label">順位(現在の点数)</h2>
+      <ol class="scores" id="scores"></ol>
+    </section>
+
     <section class="panel" aria-labelledby="logTitle">
       <h2 id="logTitle" class="label">通信ログ</h2>
       <ul class="log" id="log"></ul>
@@ -72,37 +90,16 @@
   <div class="sheet">
     <h2 class="sheet-title">パケット陣取り</h2>
     <p class="sheet-en">Packet Conquest</p>
-    <p class="lead">サブネット計算に正解して、自分のネットワークを隣の拠点へ広げる陣取りゲームです。4分間で一番多くの点を取った人の勝ち。</p>
+    <p class="lead">ネットワークの問題に正解して、自分のネットワークを隣の拠点へ広げていく陣取りゲームです。世界は1つ、制限時間はありません。まずは東京から。</p>
 
     <form id="joinForm" class="join" autocomplete="off">
       <label for="nameInput">名前</label>
       <input id="nameInput" maxlength="12" placeholder="例: たろう" required>
-      <label for="roomInput">部屋コード</label>
-      <input id="roomInput" maxlength="6" pattern="[A-Za-z0-9]{4,6}" required>
-      <button type="submit" class="btn primary">部屋に入る</button>
-      <p class="hint">同じ部屋コードを入れた人と対戦できます。</p>
+      <label for="codeInput">復帰コード(前に遊んだことがある場合)</label>
+      <input id="codeInput" class="mono" maxlength="24" placeholder="空欄なら新しく始めます">
+      <button type="submit" class="btn primary">東京に参加する</button>
+      <p class="hint">参加すると東京駅の近くにあなたの拠点が生まれます。拠点は生まれてから24時間、攻撃されません。</p>
     </form>
-
-    <div id="waiting" hidden>
-      <p class="label">参加者</p>
-      <ul class="roster" id="roster"></ul>
-      <div class="actions">
-        <button type="button" class="btn primary" id="startBtn">ゲーム開始</button>
-        <button type="button" class="btn" id="botBtn">ボットを追加</button>
-        <button type="button" class="btn" id="copyBtn">招待リンクをコピー</button>
-      </div>
-      <p class="hint" id="waitHint"></p>
-      <p class="invite mono" id="inviteUrl"></p>
-    </div>
-
-    <div id="results" hidden>
-      <p class="label">結果</p>
-      <ol class="final" id="final"></ol>
-      <div class="actions">
-        <button type="button" class="btn primary" id="againBtn">もう一度遊ぶ</button>
-      </div>
-      <p class="hint" id="againHint"></p>
-    </div>
     <p class="error" id="lobbyError" role="alert"></p>
   </div>
 </div>

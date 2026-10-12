@@ -4,30 +4,24 @@
   const canvas = $('map');
   const ctx = canvas.getContext('2d');
 
+  // 描画用の仮想的な地図の大きさ。緯度・経度からこの範囲に投影する(サーバーは座標を送らない)
+  const MAP_W = 1000, MAP_H = 680, MAP_MARGIN = 70;
+
   const S = {
-    ws: null, me: null, room: null, map: null, state: null,
+    ws: null, me: null, token: null, state: null,
     question: null, result: null, chosen: null, cooldownUntil: 0,
-    offset: 0, joined: false, retry: 0, hover: null,
+    offset: 0, joined: false, wantJoin: false, retry: 0,
+    pos: {}, posKey: '',
   };
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch { return null; } },
     set(k, v) { try { localStorage.setItem(k, v); } catch { /* 保存できなくても遊べる */ } },
   };
-  // 再接続用の合言葉はタブごとに持つ(同じブラウザの別タブは別プレイヤーになる)
-  const tabStore = {
-    get(k) { try { return sessionStorage.getItem(k); } catch { return null; } },
-    set(k, v) { try { sessionStorage.setItem(k, v); } catch { /* 保存できなくても遊べる */ } },
-  };
   const now = () => Date.now() + S.offset;
 
   // ---------- 初期表示 ----------
-  const params = new URLSearchParams(location.search);
-  $('roomInput').value = (params.get('room') || randomCode()).toUpperCase().slice(0, 6);
-  $('nameInput').value = store.get('pj-name') || '';
-  function randomCode() {
-    const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    return Array.from({ length: 4 }, () => c[Math.floor(Math.random() * c.length)]).join('');
-  }
+  $('nameInput').value = store.get('pc-name') || '';
+  $('codeInput').value = store.get('pc-token') || '';
 
   // ---------- 通信 ----------
   function connect() {
@@ -37,7 +31,7 @@
     ws.onopen = () => {
       setConn(true);
       S.retry = 0;
-      if (S.room) sendJoin();
+      if (S.wantJoin) sendJoin();
     };
     ws.onmessage = (e) => {
       let m; try { m = JSON.parse(e.data); } catch { return; }
@@ -45,12 +39,12 @@
     };
     ws.onclose = () => {
       setConn(false);
-      if (S.room) setTimeout(connect, Math.min(8000, 1000 * 2 ** S.retry++));
+      if (S.wantJoin) setTimeout(connect, Math.min(8000, 1000 * 2 ** S.retry++));
     };
   }
   function send(msg) { if (S.ws && S.ws.readyState === 1) S.ws.send(JSON.stringify(msg)); }
   function sendJoin() {
-    send({ t: 'join', room: S.room, name: $('nameInput').value, token: tabStore.get(`pj-token-${S.room}`) });
+    send({ t: 'join', name: $('nameInput').value.trim(), token: S.token || undefined });
   }
   function setConn(on) {
     $('conn').dataset.state = on ? 'on' : 'off';
@@ -60,24 +54,21 @@
   function onMessage(m) {
     switch (m.t) {
       case 'welcome':
-        S.me = m.id; S.map = m.map; S.joined = true;
-        tabStore.set(`pj-token-${m.room}`, m.token);
-        history.replaceState(null, '', `?room=${m.room}`);
-        $('roomChip').hidden = false; $('roomCode').textContent = m.room;
+        S.me = m.id; S.token = m.token; S.joined = true;
+        store.set('pc-token', m.token); store.set('pc-name', m.name);
+        $('codeInput').value = m.token;
+        $('lobby').hidden = true; $('mePanel').hidden = false; $('onlineChip').hidden = false;
         $('lobbyError').textContent = '';
+        $('meCode').textContent = m.token;
         resize();
+        setTimeout(scrollToMine, 80);
         break;
-      case 'state': {
-        const prevPhase = S.state && S.state.phase;
+      case 'state':
         S.offset = m.now - Date.now();
         S.state = m;
-        if (m.phase === 'playing' && prevPhase !== 'playing') {
-          S.question = null; S.result = null; S.cooldownUntil = 0; renderQuestion();
-          setTimeout(scrollToMine, 50);
-        }
+        layout();
         renderState();
         break;
-      }
       case 'question':
         S.question = m; S.result = null; S.chosen = null; renderQuestion();
         break;
@@ -85,71 +76,75 @@
         S.result = m; S.cooldownUntil = m.cooldownUntil; renderQuestion();
         break;
       case 'error':
-        if (!S.joined) $('lobbyError').textContent = m.message; else toast(m.message);
+        if (!S.joined) { $('lobbyError').textContent = m.message; S.wantJoin = false; } else toast(m.message);
         break;
     }
   }
 
-  // ---------- ロビー ----------
+  // ---------- 参加 ----------
   $('joinForm').addEventListener('submit', (e) => {
     e.preventDefault();
-    const code = $('roomInput').value.trim().toUpperCase();
-    if (!/^[A-Z0-9]{4,6}$/.test(code)) { $('lobbyError').textContent = '部屋コードは英数字4〜6文字です'; return; }
-    store.set('pj-name', $('nameInput').value.trim());
-    S.room = code;
+    const name = $('nameInput').value.trim();
+    if (!name) { $('lobbyError').textContent = '名前を入れてください'; return; }
+    store.set('pc-name', name);
+    S.token = $('codeInput').value.trim() || null;
+    S.wantJoin = true;
     if (S.ws && S.ws.readyState === 1) sendJoin(); else connect();
   });
-  $('startBtn').onclick = () => send({ t: 'start' });
-  $('againBtn').onclick = () => send({ t: 'start' });
-  $('botBtn').onclick = () => send({ t: 'addBot' });
-  $('copyBtn').onclick = () => {
-    const url = inviteUrl();
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(url).then(() => toast('招待リンクをコピーしました'), () => toast('下のリンクを選択してコピーしてください'));
-    } else toast('下のリンクを選択してコピーしてください');
+  $('copyCodeBtn').onclick = () => {
+    const code = S.token || '';
+    if (navigator.clipboard && code) {
+      navigator.clipboard.writeText(code).then(() => toast('復帰コードをコピーしました'), () => toast('コードを選択してコピーしてください'));
+    } else toast('コードを選択してコピーしてください');
   };
-  const inviteUrl = () => `${location.origin}${location.pathname}?room=${S.room}`;
+
+  // ---------- 投影: 緯度・経度 → 仮想座標(拠点が増えて範囲が広がっても作り直さない) ----------
+  function layout() {
+    const nodes = S.state.nodes;
+    const key = nodes.map((n) => n.id).join(',');
+    if (key === S.posKey) return;
+    S.posKey = key;
+    const lats = nodes.map((n) => n.lat), lons = nodes.map((n) => n.lon);
+    const minLat = Math.min(...lats), maxLat = Math.max(...lats);
+    const minLon = Math.min(...lons), maxLon = Math.max(...lons);
+    const kx = Math.cos(((minLat + maxLat) / 2) * Math.PI / 180);
+    const spanX = (maxLon - minLon) * kx || 1e-9, spanY = (maxLat - minLat) || 1e-9;
+    const sc = Math.min((MAP_W - 2 * MAP_MARGIN) / spanX, (MAP_H - 2 * MAP_MARGIN) / spanY);
+    const ox = (MAP_W - spanX * sc) / 2, oy = (MAP_H - spanY * sc) / 2;
+    S.pos = {};
+    for (const n of nodes) S.pos[n.id] = { x: ox + (n.lon - minLon) * kx * sc, y: oy + (maxLat - n.lat) * sc };
+  }
 
   // ---------- 描画: パネル ----------
+  const nodeById = (id) => S.state && S.state.nodes.find((n) => n.id === id);
+  const playerById = (id) => S.state && S.state.players.find((p) => p.id === id);
+  const ownerOf = (id) => { const n = nodeById(id); return n ? n.owner : null; };
+  const colorOf = (pid) => { const p = playerById(pid); return p ? p.color : null; };
+
   function renderState() {
     const st = S.state; if (!st) return;
-    const isHost = st.hostId === S.me;
-    const players = [...st.players].sort((a, b) => b.score - a.score);
+    const players = [...st.players].sort((a, b) => b.score - a.score || b.points - a.points);
+    $('onlineCount').textContent = st.players.filter((p) => p.online).length;
 
-    $('lobby').hidden = st.phase === 'playing';
-    $('joinForm').hidden = true;
-    $('waiting').hidden = st.phase !== 'lobby';
-    $('results').hidden = st.phase !== 'ended';
-    $('timer').hidden = st.phase !== 'playing';
+    const me = playerById(S.me);
+    if (me) {
+      $('meSwatch').style.background = me.color;
+      $('meName').textContent = me.name;
+      $('meScore').textContent = `${me.score}点`;
+      $('meNodes').textContent = `${me.nodes}拠点`;
+      $('mePoints').textContent = me.points;
+    }
 
-    $('roster').replaceChildren(...st.players.map((p) => playerRow(p)));
-    $('startBtn').hidden = !isHost; $('botBtn').hidden = !isHost;
-    $('botBtn').disabled = st.players.length >= 6;
-    $('waitHint').textContent = isHost
-      ? '1人でもボットを追加すれば遊べます。友達には招待リンクを送ってください。'
-      : 'ホストがゲームを開始するのを待っています。';
-    $('inviteUrl').textContent = inviteUrl();
-
-    $('final').replaceChildren(...players.map((p, i) => {
-      const li = document.createElement('li');
-      const r = document.createElement('span'); r.className = 'rank'; r.textContent = `${i + 1}`;
-      const sw = document.createElement('span'); sw.className = 'swatch'; sw.style.background = p.color;
-      const n = document.createElement('span'); n.textContent = p.name + (p.id === S.me ? '(あなた)' : '');
-      const pts = document.createElement('span'); pts.className = 'pts'; pts.textContent = `${p.score}点`;
-      li.append(r, sw, n, pts); return li;
-    }));
-    $('againBtn').hidden = !isHost;
-    $('againHint').textContent = isHost ? '' : 'ホストが次のゲームを始めるのを待っています。';
-
-    $('scores').replaceChildren(...players.map((p) => {
+    $('scores').replaceChildren(...players.slice(0, 15).map((p, i) => {
       const li = document.createElement('li');
       if (!p.online) li.className = 'offline';
+      const rank = document.createElement('span'); rank.className = 'rank'; rank.textContent = i + 1;
       const sw = document.createElement('span'); sw.className = 'swatch'; sw.style.background = p.color;
       const n = document.createElement('span'); n.className = 'pname'; n.textContent = p.name;
       const sm = document.createElement('small'); sm.textContent = p.id === S.me ? 'あなた' : `${p.nodes}拠点`;
       n.append(sm);
       const sc = document.createElement('span'); sc.className = 'pscore'; sc.textContent = `${p.score}点`;
-      li.append(sw, n, sc); return li;
+      li.append(rank, sw, n, sc); return li;
     }));
 
     $('log').replaceChildren(...st.log.map((l) => {
@@ -158,25 +153,17 @@
     $('log').scrollTop = $('log').scrollHeight;
   }
 
-  function playerRow(p) {
-    const li = document.createElement('li');
-    const sw = document.createElement('span'); sw.className = 'swatch'; sw.style.background = p.color;
-    const n = document.createElement('span');
-    n.textContent = p.name + (p.id === S.me ? '(あなた)' : '') + (p.id === S.state.hostId ? ' ・ホスト' : '');
-    li.append(sw, n); return li;
-  }
-
   // ---------- 描画: 問題 ----------
   function renderQuestion() {
     const q = S.question;
     $('qIdle').hidden = !!q; $('qBox').hidden = !q;
     if (!q) return;
-    const node = S.map.nodes.find((n) => n.id === q.nodeId);
+    const node = nodeById(q.nodeId);
     const tag = document.createElement('span');
     tag.className = q.mode === 'attack' ? 'tag' : 'tag def';
     tag.textContent = q.mode === 'attack' ? '攻撃' : '防御強化';
     $('qMode').replaceChildren(tag, document.createTextNode(node ? node.name : ''));
-    $('qDiff').textContent = `難易度 ${'●'.repeat(q.difficulty)}${'○'.repeat(3 - q.difficulty)}`;
+    $('qDiff').textContent = `Lv${q.level} ${'●'.repeat(q.level)}${'○'.repeat(Math.max(0, 4 - q.level))}`;
     $('qText').replaceChildren(...highlightIps(q.text));
 
     const r = S.result && S.result.qid === q.qid ? S.result : null;
@@ -222,128 +209,132 @@
   });
 
   // ---------- 地図 ----------
-  const R = { DC: 13, GW: 14, IX: 19 };
+  const R = { IX: 17, GOV: 13, GW: 13, LM: 12, HUB: 12, DC: 12, HOME: 8 };
   let scale = 1;
   let grow = 1; // 小さい画面では拠点と文字を大きくする
 
   function resize() {
-    if (!S.map) return;
     const w = Math.max($('mapScroll').clientWidth, 680);
-    const h = (w * S.map.height) / S.map.width;
+    const h = (w * MAP_H) / MAP_W;
     const dpr = window.devicePixelRatio || 1;
     canvas.style.width = `${w}px`; canvas.style.height = `${h}px`;
     canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
-    scale = w / S.map.width;
+    scale = w / MAP_W;
     grow = Math.min(1.4, Math.max(1, 0.85 / scale));
     ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
   }
   window.addEventListener('resize', resize);
-  // 狭い画面では、自分の開始拠点が見える位置まで地図をスクロールする
+  // 狭い画面では、自分の拠点が見える位置まで地図をスクロールする
   function scrollToMine() {
     const box = $('mapScroll');
-    if (!S.map || !S.state || box.scrollWidth <= box.clientWidth) return;
-    const mine = S.state.nodes.find((n) => n.owner === S.me);
-    const node = mine && S.map.nodes.find((n) => n.id === mine.id);
-    if (node) box.scrollLeft = Math.max(0, node.x * scale - box.clientWidth / 2);
+    if (!S.state || box.scrollWidth <= box.clientWidth) return;
+    const mine = S.state.nodes.find((n) => n.owner === S.me && n.isPlayerNode) || S.state.nodes.find((n) => n.owner === S.me);
+    const p = mine && S.pos[mine.id];
+    if (p) box.scrollLeft = Math.max(0, p.x * scale - box.clientWidth / 2);
   }
 
-  const nodeState = (id) => S.state && S.state.nodes.find((n) => n.id === id);
-  const ownerOf = (id) => { const n = nodeState(id); return n && n.owner; };
-  const colorOf = (pid) => { const p = S.state && S.state.players.find((x) => x.id === pid); return p ? p.color : null; };
   function adjacent(id) {
-    return S.map.edges.filter((e) => e.a === id || e.b === id).map((e) => (e.a === id ? e.b : e.a));
+    return S.state.edges.filter((e) => e.a === id || e.b === id).map((e) => (e.a === id ? e.b : e.a));
   }
+  // サーバーの canAttack と同じ条件(表示用。判定はサーバーが行う)
   function canAttack(id) {
-    if (!S.state || S.state.phase !== 'playing') return false;
-    if (ownerOf(id) === S.me) return false;
-    const mine = S.state.nodes.filter((n) => n.owner === S.me).length;
-    if (mine === 0) return true;
+    const n = nodeById(id);
+    if (!n || !S.me || n.owner === S.me) return false;
+    if (n.protectedUntil > now()) return false;
+    if (n.owner) { const o = playerById(n.owner); if (o && o.nodes <= 3) return false; }
     return adjacent(id).some((a) => ownerOf(a) === S.me);
   }
 
   function draw(t) {
     requestAnimationFrame(draw);
     tickUi();
-    if (!S.map) return;
+    if (!S.state) return;
     const css = getComputedStyle(document.documentElement);
     const tok = (n) => css.getPropertyValue(n).trim();
     const C = { surface: tok('--surface'), ink: tok('--ink'), muted: tok('--muted'), line: tok('--line'), strong: tok('--line-strong'), accent: tok('--accent') };
-    ctx.clearRect(0, 0, S.map.width, S.map.height);
-    const byId = Object.fromEntries(S.map.nodes.map((n) => [n.id, n]));
+    ctx.clearRect(0, 0, MAP_W, MAP_H);
+    const P = S.pos;
 
     // 線路(リンク)
     ctx.lineCap = 'round';
-    for (const e of S.map.edges) {
-      const a = byId[e.a], b = byId[e.b];
+    for (const e of S.state.edges) {
+      const a = P[e.a], b = P[e.b];
+      if (!a || !b) continue;
       const oa = ownerOf(e.a), ob = ownerOf(e.b);
       const own = oa && oa === ob ? colorOf(oa) : null;
-      ctx.setLineDash(e.cable ? [10, 9] : []);
+      const na = nodeById(e.a), nb = nodeById(e.b);
+      const thin = (na && na.isPlayerNode) || (nb && nb.isPlayerNode);
       ctx.strokeStyle = own || C.line;
-      ctx.lineWidth = own ? 8 : 5;
+      ctx.lineWidth = own ? (thin ? 5 : 7) : (thin ? 2.5 : 4);
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
     }
-    ctx.setLineDash([]);
 
     // 拠点(駅)
     const pulse = 0.5 + 0.5 * Math.sin(t / 260);
-    for (const n of S.map.nodes) {
-      const st = nodeState(n.id) || { owner: null, level: 0 };
-      const r = R[n.kind] * grow;
-      const owner = st.owner ? colorOf(st.owner) : null;
+    const sorted = [...S.state.nodes].sort((a, b) => (a.isPlayerNode ? 0 : 1) - (b.isPlayerNode ? 0 : 1));
+    for (const n of sorted) {
+      const p = P[n.id]; if (!p) continue;
+      const r = (R[n.kind] || 12) * grow;
+      const owner = n.owner ? colorOf(n.owner) : null;
 
       if (canAttack(n.id)) {
         ctx.strokeStyle = C.accent; ctx.globalAlpha = 0.45 + 0.55 * pulse; ctx.lineWidth = 5;
-        shape(n, r + 8); ctx.stroke(); ctx.globalAlpha = 1;
+        shape(n, p, r + 7); ctx.stroke(); ctx.globalAlpha = 1;
       }
       if (S.question && S.question.nodeId === n.id && !(S.result && S.result.qid === S.question.qid)) {
         ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.setLineDash([4, 4]);
-        shape(n, r + 13); ctx.stroke(); ctx.setLineDash([]);
+        shape(n, p, r + 12); ctx.stroke(); ctx.setLineDash([]);
+      }
+      if (n.protectedUntil > now()) {
+        ctx.strokeStyle = C.muted; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+        shape(n, p, r + 5); ctx.stroke(); ctx.setLineDash([]);
       }
       ctx.fillStyle = C.surface;
       ctx.strokeStyle = owner || C.strong;
-      ctx.lineWidth = owner ? 7 : 4;
-      shape(n, r); ctx.fill(); ctx.stroke();
-      if (n.kind === 'IX') { ctx.fillStyle = owner || C.strong; shape(n, 6); ctx.fill(); }
-      if (owner && st.owner === S.me && n.kind !== 'IX') { ctx.fillStyle = owner; shape(n, 4); ctx.fill(); }
+      ctx.lineWidth = owner ? (n.isPlayerNode ? 5 : 7) : (n.isPlayerNode ? 3 : 4);
+      shape(n, p, r); ctx.fill(); ctx.stroke();
+      if (n.kind === 'IX') { ctx.fillStyle = owner || C.strong; shape(n, p, 6); ctx.fill(); }
+      if (owner && n.owner === S.me && n.kind !== 'IX') { ctx.fillStyle = owner; shape(n, p, n.isPlayerNode ? 3 : 4); ctx.fill(); }
 
       // 防御レベル
-      for (let i = 0; i < st.level; i++) {
+      for (let i = 0; i < n.defense; i++) {
         ctx.fillStyle = C.ink;
-        ctx.fillRect(n.x - (st.level * 9 - 3) / 2 + i * 9, n.y - r - 12, 6, 6);
+        ctx.fillRect(p.x - (n.defense * 8 - 3) / 2 + i * 8, p.y - r - 11, 5, 5);
       }
-      // 駅名
+      // 名称
       ctx.textAlign = 'center';
-      ctx.fillStyle = C.ink;
-      ctx.font = `700 ${(n.kind === 'IX' ? 15 : 13) * grow}px "BIZ UDPGothic", sans-serif`;
-      ctx.fillText(n.name, n.x, n.y + r + 18 * grow);
-      ctx.fillStyle = C.muted;
-      ctx.font = `500 ${10.5 * grow}px "IBM Plex Mono", monospace`;
-      ctx.fillText(n.subnet, n.x, n.y + r + 31 * grow);
+      ctx.fillStyle = n.isPlayerNode ? C.muted : C.ink;
+      const fs = n.kind === 'IX' ? 14 : n.isPlayerNode ? 9.5 : 11.5;
+      ctx.font = `${n.isPlayerNode ? 500 : 700} ${fs * grow}px "BIZ UDPGothic", sans-serif`;
+      ctx.fillText(n.name, p.x, p.y + r + 13 * grow);
     }
   }
-  function shape(n, r) {
+  function shape(n, p, r) {
     ctx.beginPath();
     if (n.kind === 'GW') {
       const s = r * 0.92;
-      if (ctx.roundRect) ctx.roundRect(n.x - s, n.y - s, s * 2, s * 2, 4);
-      else ctx.rect(n.x - s, n.y - s, s * 2, s * 2);
-    } else ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+      if (ctx.roundRect) ctx.roundRect(p.x - s, p.y - s, s * 2, s * 2, 4);
+      else ctx.rect(p.x - s, p.y - s, s * 2, s * 2);
+    } else if (n.kind === 'GOV') {
+      ctx.moveTo(p.x, p.y - r); ctx.lineTo(p.x + r, p.y); ctx.lineTo(p.x, p.y + r); ctx.lineTo(p.x - r, p.y); ctx.closePath();
+    } else ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
   }
 
   function nodeAt(ev) {
-    if (!S.map) return null;
+    if (!S.state) return null;
     const rect = canvas.getBoundingClientRect();
     const x = (ev.clientX - rect.left) / scale, y = (ev.clientY - rect.top) / scale;
     let best = null, bd = Infinity;
-    for (const n of S.map.nodes) {
-      const d = Math.hypot(n.x - x, n.y - y);
-      if (d < R[n.kind] * grow + 16 && d < bd) { best = n; bd = d; }
+    for (const n of S.state.nodes) {
+      const p = S.pos[n.id]; if (!p) continue;
+      const d = Math.hypot(p.x - x, p.y - y);
+      if (d < (R[n.kind] || 12) * grow + 10 && d < bd) { best = n; bd = d; }
     }
     return best;
   }
   canvas.addEventListener('click', (ev) => {
     const n = nodeAt(ev);
-    if (!n || !S.state || S.state.phase !== 'playing') return;
+    if (!n || !S.joined) return;
     if (now() < S.cooldownUntil) { toast('不正解のため通信が止まっています'); return; }
     send({ t: 'ask', nodeId: n.id });
   });
@@ -352,15 +343,8 @@
     canvas.style.cursor = n && (canAttack(n.id) || ownerOf(n.id) === S.me) ? 'pointer' : 'default';
   });
 
-  // ---------- タイマー・待ち時間 ----------
+  // ---------- 待ち時間 ----------
   function tickUi() {
-    const st = S.state;
-    if (st && st.phase === 'playing') {
-      const left = Math.max(0, st.endsAt - now());
-      const m = Math.floor(left / 60000), s = Math.floor((left % 60000) / 1000);
-      $('timer').textContent = `${m}:${String(s).padStart(2, '0')}`;
-      $('timer').classList.toggle('low', left < 30000);
-    }
     const cd = S.cooldownUntil - now();
     $('cool').hidden = cd <= 0;
     if (cd > 0) $('coolBar').style.transform = `scaleX(${cd / 4000})`;
@@ -372,5 +356,6 @@
     clearTimeout(toastTimer); toastTimer = setTimeout(() => { $('toast').hidden = true; }, 2600);
   }
 
+  resize();
   requestAnimationFrame(draw);
 })();

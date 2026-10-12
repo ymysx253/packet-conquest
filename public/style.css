@@ -86,7 +86,9 @@ body {
 .lg.dc { width: 12px; height: 12px; }
 .lg.gw { width: 13px; height: 13px; border-radius: 3px; }
 .lg.ix { width: 16px; height: 16px; border-width: 4px; }
-.lg.cable { width: 22px; height: 0; border-width: 0; border-top: 3px dashed var(--line-strong); border-radius: 0; background: none; }
+.lg.gov { width: 12px; height: 12px; border-radius: 2px; transform: rotate(45deg); }
+.lg.home { width: 9px; height: 9px; border-width: 2px; }
+.lg.shield { width: 14px; height: 14px; border: 1.5px dashed var(--muted); }
 
 .side { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 .panel { background: var(--surface); border-radius: 12px; padding: 14px 16px; }
@@ -162,7 +164,6 @@ body {
   font: 16px var(--font-body); padding: 10px 12px; border-radius: 8px;
   border: 2px solid var(--line); background: var(--bg); color: var(--ink); margin-bottom: 8px;
 }
-#roomInput { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; }
 .btn {
   font: 700 15px var(--font-body); padding: 10px 16px; border-radius: 8px; cursor: pointer;
   border: 2px solid var(--ink); background: var(--surface); color: var(--ink);
@@ -187,3 +188,15 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* あなた(自分の情報と復帰コード) */
+.me-row { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; align-items: center; gap: 10px; }
+.me-stats { margin: 4px 0 10px; }
+.code-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.code {
+  font: 600 13px var(--font-mono); letter-spacing: 0.04em; user-select: all;
+  background: var(--bg); padding: 4px 8px; border-radius: 6px; overflow-wrap: anywhere;
+}
+.btn.small { font-size: 12px; padding: 4px 10px; }
+.scores li { grid-template-columns: 1.4em 14px minmax(0, 1fr) auto; }
+.scores .rank { font: 600 12px var(--font-mono); color: var(--muted); }
