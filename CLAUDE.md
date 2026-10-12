@@ -24,7 +24,8 @@ npm.cmd run test:e2e   # サーバー起動中に実行。2人で1試合を通�
 ## 構成
 
 - `server/index.js`: HTTP 配信 + WebSocket(`/ws`)。`PORT` 環境変数を使う(Azure App Service 用)
-- `server/room.js`: 進行(フェーズ1で永続ワールド `world.js` に作り替える) / `server/map/japan.js`: 地図 / `server/questions/subnet.js`: 問題の自動生成
+- `server/room.js`: 進行(フェーズ1で永続ワールド `world.js` に作り替える) / `server/questions/subnet.js`: 問題の自動生成
+- `server/map/tokyo.js`: 東京周辺の拠点マスター(緯度・経度・Lv・点数) / `server/map/geo.js`: 緯度経度→描画座標、距離によるリンク自動生成 / `server/map/japan.js`: 旧地図(手順2で削除)
 - `server/map/`、`server/questions/` は地域・問題の種類ごとにファイルを増やす。保存処理は `server/store.js`、SQLite ファイルは `data/`(Git 管理外)
 - `public/`: 画面(ビルド不要の HTML / CSS / JS)
 

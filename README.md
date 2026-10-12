@@ -20,10 +20,13 @@
 ```
 server/index.js            HTTP で画面を配信し、WebSocket(/ws)で対戦を中継する
 server/room.js             部屋・得点・ボットなどのゲーム進行
-server/map/japan.js        地図(拠点とつながり)
+server/map/tokyo.js        東京周辺の拠点マスター(緯度・経度・Lv・点数)
+server/map/geo.js          緯度経度から描画座標とリンクを計算
+server/map/japan.js        旧地図(永続ワールド化で削除予定)
 server/questions/subnet.js 問題の自動生成(サブネット計算)
 public/            ブラウザの画面(index.html, style.css, app.js)
 test/check.js      問題生成の検証(3万問を計算し直して答えを確認)
+test/map.js        拠点マスターの検証(重複・座標・Lv・リンクの連結)
 test/e2e.js        2人で接続して1試合を通す動作確認
 ```
 
