@@ -1,0 +1,21 @@
+{
+  "name": "packet-conquest",
+  "version": "0.1.0",
+  "description": "サブネット計算で陣地を広げるオンライン対戦学習ゲーム",
+  "main": "server.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/check.js",
+    "test:e2e": "node test/e2e.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  }
+}

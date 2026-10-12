@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>パケット陣取り | Packet Conquest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Dela+Gothic+One&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <h1>パケット陣取り</h1>
+    <span class="brand-en">Packet Conquest</span>
+  </div>
+  <div class="status">
+    <span class="chip" id="roomChip" hidden>部屋 <b id="roomCode"></b></span>
+    <span class="timer" id="timer" hidden>4:00</span>
+    <span class="conn" id="conn" data-state="off">未接続</span>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="board" aria-label="ネットワーク地図">
+    <div class="map-scroll" id="mapScroll"><canvas id="map"></canvas></div>
+    <ul class="legend">
+      <li><i class="lg dc"></i>DC 1点</li>
+      <li><i class="lg gw"></i>GW 2点</li>
+      <li><i class="lg ix"></i>IX 3点</li>
+      <li><i class="lg cable"></i>海底ケーブル</li>
+    </ul>
+  </section>
+
+  <aside class="side">
+    <section class="panel" aria-labelledby="scoreTitle">
+      <h2 id="scoreTitle" class="label">順位</h2>
+      <ol class="scores" id="scores"></ol>
+    </section>
+
+    <section class="panel qpanel" id="qpanel" aria-live="polite">
+      <div id="qIdle" class="idle">
+        <p class="label">あなたの番</p>
+        <p>黄色く光る拠点をタップすると<strong>攻撃</strong>。自分の拠点をタップすると<strong>防御を強化</strong>。正解すると効果が出ます。</p>
+      </div>
+      <div id="qBox" hidden>
+        <div class="qhead">
+          <span class="mode" id="qMode"></span>
+          <span class="diff" id="qDiff"></span>
+        </div>
+        <p class="qtext" id="qText"></p>
+        <div class="options" id="qOptions"></div>
+        <div class="result" id="qResult" hidden>
+          <p class="verdict" id="qVerdict"></p>
+          <p class="explain" id="qExplain"></p>
+          <p class="outcome" id="qOutcome"></p>
+        </div>
+      </div>
+      <div class="cool" id="cool" hidden><div class="cool-bar" id="coolBar"></div></div>
+    </section>
+
+    <section class="panel" aria-labelledby="logTitle">
+      <h2 id="logTitle" class="label">通信ログ</h2>
+      <ul class="log" id="log"></ul>
+    </section>
+  </aside>
+</main>
+
+<div class="overlay" id="lobby">
+  <div class="sheet">
+    <h2 class="sheet-title">パケット陣取り</h2>
+    <p class="sheet-en">Packet Conquest</p>
+    <p class="lead">サブネット計算に正解して、自分のネットワークを隣の拠点へ広げる陣取りゲームです。4分間で一番多くの点を取った人の勝ち。</p>
+
+    <form id="joinForm" class="join" autocomplete="off">
+      <label for="nameInput">名前</label>
+      <input id="nameInput" maxlength="12" placeholder="例: たろう" required>
+      <label for="roomInput">部屋コード</label>
+      <input id="roomInput" maxlength="6" pattern="[A-Za-z0-9]{4,6}" required>
+      <button type="submit" class="btn primary">部屋に入る</button>
+      <p class="hint">同じ部屋コードを入れた人と対戦できます。</p>
+    </form>
+
+    <div id="waiting" hidden>
+      <p class="label">参加者</p>
+      <ul class="roster" id="roster"></ul>
+      <div class="actions">
+        <button type="button" class="btn primary" id="startBtn">ゲーム開始</button>
+        <button type="button" class="btn" id="botBtn">ボットを追加</button>
+        <button type="button" class="btn" id="copyBtn">招待リンクをコピー</button>
+      </div>
+      <p class="hint" id="waitHint"></p>
+      <p class="invite mono" id="inviteUrl"></p>
+    </div>
+
+    <div id="results" hidden>
+      <p class="label">結果</p>
+      <ol class="final" id="final"></ol>
+      <div class="actions">
+        <button type="button" class="btn primary" id="againBtn">もう一度遊ぶ</button>
+      </div>
+      <p class="hint" id="againHint"></p>
+    </div>
+    <p class="error" id="lobbyError" role="alert"></p>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>
