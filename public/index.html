@@ -25,7 +25,15 @@
 
 <main class="layout">
   <section class="board" aria-label="ネットワーク地図">
-    <div class="map-scroll" id="mapScroll"><canvas id="map"></canvas></div>
+    <div class="map-wrap" id="mapWrap">
+      <canvas id="map"></canvas>
+      <div class="zoom" aria-label="地図の拡大縮小">
+        <button type="button" class="zbtn" id="zoomIn" aria-label="拡大" title="拡大">+</button>
+        <button type="button" class="zbtn" id="zoomOut" aria-label="縮小" title="縮小">−</button>
+        <button type="button" class="zbtn" id="zoomHome" aria-label="自分の拠点へ" title="自分の拠点へ">⌂</button>
+      </div>
+      <p class="map-hint">ホイールやピンチで拡大縮小、ドラッグで移動</p>
+    </div>
     <ul class="legend">
       <li><i class="lg ix"></i>相互接続点 5点</li>
       <li><i class="lg gov"></i>官公庁・ランドマーク</li>

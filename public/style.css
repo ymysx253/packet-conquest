@@ -75,8 +75,15 @@ body {
   background: var(--surface); border-radius: 12px; padding: 12px;
   min-width: 0; position: relative;
 }
-.map-scroll { overflow-x: auto; overscroll-behavior-x: contain; }
-#map { display: block; width: 100%; height: auto; touch-action: manipulation; cursor: default; }
+.map-wrap { position: relative; overflow: hidden; border-radius: 8px; background: color-mix(in srgb, var(--bg) 40%, var(--surface)); }
+#map { display: block; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
+.zoom { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; }
+.zbtn {
+  width: 36px; height: 36px; border-radius: 8px; border: 2px solid var(--ink);
+  background: var(--surface); color: var(--ink); font: 700 18px/1 var(--font-mono); cursor: pointer;
+}
+.zbtn:hover { background: var(--bg); }
+.map-hint { position: absolute; left: 10px; bottom: 6px; margin: 0; font-size: 11px; color: var(--muted); pointer-events: none; }
 .legend {
   list-style: none; margin: 8px 0 0; padding: 0;
   display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--muted);
