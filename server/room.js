@@ -1,7 +1,7 @@
 'use strict';
 const crypto = require('crypto');
-const { NODES, ADJ, byId, SPAWNS } = require('./map');
-const { makeQuestion } = require('./questions');
+const { NODES, ADJ, byId, SPAWNS } = require('./map/japan');
+const { makeQuestion } = require('./questions/subnet');
 
 const GAME_MS = 4 * 60 * 1000;
 const COOLDOWN_MS = 4000;

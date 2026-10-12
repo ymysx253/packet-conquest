@@ -1,7 +1,7 @@
 'use strict';
 const assert = require('assert');
-const { makeQuestion, toIp, maskOf, netOf, bcastOf } = require('../game/questions');
-const { NODES } = require('../game/map');
+const { makeQuestion, toIp, maskOf, netOf, bcastOf } = require('../server/questions/subnet');
+const { NODES } = require('../server/map/japan');
 const parseIp = (s) => s.split('.').reduce((a, o) => a * 256 + Number(o), 0);
 let n = 0;
 for (let i = 0; i < 30000; i++) {

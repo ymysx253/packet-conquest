@@ -6,11 +6,11 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { WebSocketServer } = require('ws');
-const { Room } = require('./game/room');
-const { NODES, EDGES, WIDTH, HEIGHT } = require('./game/map');
+const { Room } = require('./room');
+const { NODES, EDGES, WIDTH, HEIGHT } = require('./map/japan');
 
 const PORT = process.env.PORT || 3000;
-const PUBLIC = path.join(__dirname, 'public');
+const PUBLIC = path.join(__dirname, '..', 'public');
 const MAX_ROOMS = 300;
 const TYPES = {
   '.html': 'text/html; charset=utf-8',

@@ -18,10 +18,10 @@
 ## ファイル構成
 
 ```
-server.js          HTTP で画面を配信し、WebSocket(/ws)で対戦を中継する
-game/map.js        地図(拠点とつながり)
-game/questions.js  問題の自動生成
-game/room.js       部屋・得点・ボットなどのゲーム進行
+server/index.js            HTTP で画面を配信し、WebSocket(/ws)で対戦を中継する
+server/room.js             部屋・得点・ボットなどのゲーム進行
+server/map/japan.js        地図(拠点とつながり)
+server/questions/subnet.js 問題の自動生成(サブネット計算)
 public/            ブラウザの画面(index.html, style.css, app.js)
 test/check.js      問題生成の検証(3万問を計算し直して答えを確認)
 test/e2e.js        2人で接続して1試合を通す動作確認
@@ -57,7 +57,7 @@ npm run test:e2e    # サーバー起動中に別のターミナルで実行。2
 
 ```bash
 az login
-cd packet-jintori
+cd packet-conquest
 az webapp up \
   --name <世界で一意なアプリ名> \
   --resource-group packet-jintori-rg \

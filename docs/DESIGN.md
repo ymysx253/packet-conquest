@@ -49,10 +49,10 @@
 ### ファイル構成
 
 ```
-server.js          HTTP 配信 + WebSocket 中継、定期処理(1秒ごとの tick、25秒ごとの ping)
-game/map.js        地図データ(拠点・リンク・隣接表・開始地点)
-game/questions.js  問題の自動生成
-game/room.js       部屋・得点・攻撃/防御・ボット
+server/index.js            HTTP 配信 + WebSocket 中継、定期処理(1秒ごとの tick、25秒ごとの ping)
+server/room.js             部屋・得点・攻撃/防御・ボット(フェーズ1で world.js に作り替える)
+server/map/japan.js        地図データ(拠点・リンク・隣接表・開始地点)
+server/questions/subnet.js 問題の自動生成(サブネット計算)
 public/            画面(index.html, style.css, app.js)
 test/check.js      問題3万問を計算し直して答えを検証
 test/e2e.js        実サーバーに2人で接続し1試合を通す
@@ -170,7 +170,7 @@ test/e2e.js        実サーバーに2人で接続し1試合を通す
 ## 7. ユーザー環境メモ
 
 - Windows + PowerShell。実行ポリシーで `npm` が止まるため、`npm.cmd install` / `npm.cmd start` を使う(またはコマンドプロンプトを使う)
-- プロジェクトの場所: `C:\Users\0502\source\repos\packet-conquest\packet-conquest`
+- プロジェクトの場所: `C:\Users\0502\source\repos\packet-conquest`(2026-10-12 に二重フォルダを解消し、Git 管理を開始)
 - デプロイ先は Azure App Service
 
 ---
