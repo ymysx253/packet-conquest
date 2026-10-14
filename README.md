@@ -28,7 +28,7 @@ server/map/load.js         拠点マスターの読み込みと検証
 server/map/geo.js          距離の計算、投影、リンクの自動生成
 server/questions/index.js  問題の取得口(Lv1〜4 は生成、Lv5 以上は DB)
 server/questions/subnet.js サブネット問題の自動生成
-public/                    ブラウザの画面(index.html, style.css, app.js)
+public/                    ブラウザの画面(index.html, style.css, app.js, shapes.js)。shapes.html は拠点の形の一覧(Lv1〜99)
 test/check.js              問題生成の検証(3万問を計算し直して答えを確認)
 test/map.js                拠点マスターの検証(重複・座標・Lv・リンクの連結)
 test/world.js              永続ワールドの検証(参加・攻撃・保護・復帰・再起動)
