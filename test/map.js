@@ -15,8 +15,8 @@ assert.strictEqual(new Set(NODES.map((n) => n.subnet)).size, NODES.length, 'サ�
 for (const n of NODES) {
   assert.ok(KINDS[n.kind], `${n.name}: kind が不正 ${n.kind}`);
   assert.ok(n.lat > 35.4 && n.lat < 35.9 && n.lon > 139.2 && n.lon < 140.0, `${n.name}: 東京の範囲外`);
-  assert.ok([1, 2, 3].includes(n.level), `${n.name}: Lv は 1〜3`);
-  assert.ok(Number.isInteger(n.value) && n.value >= 1 && n.value <= 5, `${n.name}: 点数は 1〜5`);
+  assert.ok(Number.isInteger(n.level) && n.level >= 1 && n.level <= 5, `${n.name}: 東京の拠点は Lv1〜5`);
+  assert.ok(Number.isInteger(n.value) && n.value >= 1 && n.value <= 99, `${n.name}: 点数は 1〜99`);
   assert.ok(n.value >= n.level - 1, `${n.name}: Lv に対して点数が低すぎる`);
   assert.ok(ADJ[n.id].length >= 2, `${n.name}: リンクが2本未満`);
   assert.ok(typeof n.area === 'string' && n.area, `${n.name}: area がない`);
@@ -40,7 +40,8 @@ assert.ok(AREAS.length >= 20, '区・市が少なすぎます');
 const raw = JSON.parse(fs.readFileSync(path.join(__dirname, '../server/map/data/tokyo.json'), 'utf8'));
 const broken = (mut) => { const d = JSON.parse(JSON.stringify(raw)); mut(d); return () => validate('t', d); };
 assert.throws(broken((d) => { d.nodes[1].id = d.nodes[0].id; }), /id が重複/);
-assert.throws(broken((d) => { d.nodes[0].level = 4; }), /level は/);
+assert.throws(broken((d) => { d.nodes[0].level = 100; }), /level は/);
+assert.throws(broken((d) => { d.nodes[0].level = 0; }), /level は/);
 assert.throws(broken((d) => { d.nodes[0].kind = 'XX'; }), /kind が不正/);
 assert.throws(broken((d) => { d.nodes[0].lat = 'a'; }), /緯度・経度/);
 assert.throws(broken((d) => { delete d.nodes[0].area; }), /area が必要/);
@@ -54,5 +55,5 @@ assert.ok(p[0].y > p[1].y && p[0].x < p[1].x, '北が上、東が右');
 const two = buildLinks([{ id: 'a', lat: 35, lon: 139 }, { id: 'b', lat: 36, lon: 140 }, { id: 'c', lat: 0, lon: 0 }], 1);
 assert.ok(two.some((e) => e.a === 'c' || e.b === 'c'), '離れた拠点も橋でつながる');
 
-const byLevel = [1, 2, 3].map((l) => `Lv${l}:${NODES.filter((n) => n.level === l).length}`).join(' ');
+const byLevel = [1, 2, 3, 4, 5].map((l) => `Lv${l}:${NODES.filter((n) => n.level === l).length}`).join(' ');
 console.log(`map ok: ${NODES.length} nodes, ${EDGES.length} links, ${AREAS.length} areas (${byLevel})`);

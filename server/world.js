@@ -29,7 +29,7 @@ function masterToNode(m) {
     lat: m.lat, lon: m.lon, level: m.level, value: m.value,
     subnet: m.subnet, base: m.base,
     status: 'public', isPlayerNode: false, registeredBy: null,
-    owner: null, defense: Math.max(0, m.level - 1), protectedUntil: 0,
+    owner: null, defense: Math.min(MAX_DEFENSE, Math.max(0, m.level - 1)), protectedUntil: 0,
     createdAt: now(),
   };
 }
@@ -166,11 +166,11 @@ class World {
     return (this.adj[nodeId] || []).some((id) => this.nodes.get(id).owner === pid);
   }
 
-  // 攻撃や強化のときの難易度。中立は拠点マスターの Lv、他人の陣地は Lv4(設計書 3.3)
+  // 攻撃や強化のときの難易度。中立は拠点のレベル、他人の陣地はレベルと 4 の大きい方(設計書 3.3, 8.8)
   levelFor(n, mode) {
-    const base = Math.max(1, Math.min(3, n.level));
+    const base = Math.max(1, n.level);
     if (mode === 'fortify') return base;
-    return n.owner ? 4 : base;
+    return n.owner ? Math.max(4, base) : base;
   }
 
   // ---------- 問題 ----------
@@ -194,7 +194,7 @@ class World {
     const level = this.levelFor(n, mode);
     const q = getQuestion({ level, node: n });
     p.pending = { qid: newId(), nodeId, mode, level, answerIndex: q.answerIndex, explanation: q.explanation };
-    return { t: 'question', qid: p.pending.qid, nodeId, mode, level, text: q.text, options: q.options };
+    return { t: 'question', qid: p.pending.qid, nodeId, mode, level, provisional: !!q.provisional, text: q.text, options: q.options };
   }
 
   answer(p, qid, choice) {

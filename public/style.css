@@ -88,12 +88,9 @@ body {
   list-style: none; margin: 8px 0 0; padding: 0;
   display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--muted);
 }
-.legend li { display: inline-flex; align-items: center; gap: 6px; }
+.legend li { display: inline-flex; align-items: center; gap: 4px; }
+.legend canvas { display: block; }
 .lg { display: inline-block; border: 3px solid var(--line-strong); background: var(--surface); border-radius: 50%; }
-.lg.l1 { width: 12px; height: 12px; }
-.lg.l2 { width: 12px; height: 12px; border-radius: 3px; }
-.lg.l3 { width: 15px; height: 15px; border: 0; background: var(--line-strong); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); border-radius: 0; }
-.lg.star { width: 16px; height: 16px; border: 0; background: var(--line-strong); clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); border-radius: 0; }
 .lg.home { width: 9px; height: 9px; border-width: 2px; }
 .lg.shield { width: 14px; height: 14px; border: 1.5px dashed var(--muted); }
 
