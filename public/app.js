@@ -228,7 +228,7 @@
   });
 
   // ---------- 地図: 拡大縮小と移動 ----------
-  const R = { IX: 17, GOV: 13, GW: 13, LM: 12, HUB: 12, DC: 12, HOME: 8 };
+  const R = { IX: 17, GOV: 13, GW: 13, LM: 12, HUB: 12, DC: 12, EDU: 12, HOME: 8 };
   // k: 仮想座標 → 画面ピクセルの倍率。tx, ty: 画面の左上にある仮想座標。fit: 全体が収まる倍率
   const V = { k: 1, tx: 0, ty: 0, fit: 1, w: 0, h: 0 };
   const ZOOM_MIN = 0.7, ZOOM_MAX = 8; // fit に対する比
@@ -434,15 +434,36 @@
       }
     }
   }
+  // 拠点の形は難易度で変える: Lv1 円 / Lv2 角丸四角 / Lv3 六角形 / 5点の拠点は星 / プレイヤーの拠点は小さい円
   function shape(n, p, r) {
     ctx.beginPath();
-    if (n.kind === 'GW') {
-      const s = r * 0.92;
-      if (ctx.roundRect) ctx.roundRect(p.x - s, p.y - s, s * 2, s * 2, 4);
+    if (n.isPlayerNode) { ctx.arc(p.x, p.y, r, 0, Math.PI * 2); return; }
+    if (n.value >= 5) { star(p, r * 1.3, r * 0.62); return; }
+    if (n.level >= 3) { polygon(p, r * 1.1, 6); return; }
+    if (n.level === 2) {
+      const s = r * 0.9;
+      if (ctx.roundRect) ctx.roundRect(p.x - s, p.y - s, s * 2, s * 2, 5);
       else ctx.rect(p.x - s, p.y - s, s * 2, s * 2);
-    } else if (n.kind === 'GOV') {
-      ctx.moveTo(p.x, p.y - r); ctx.lineTo(p.x + r, p.y); ctx.lineTo(p.x, p.y + r); ctx.lineTo(p.x - r, p.y); ctx.closePath();
-    } else ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      return;
+    }
+    ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+  }
+  function polygon(p, r, k) {
+    for (let i = 0; i < k; i++) {
+      const a = -Math.PI / 2 + (i * 2 * Math.PI) / k;
+      const x = p.x + r * Math.cos(a), y = p.y + r * Math.sin(a);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+  }
+  function star(p, outer, inner) {
+    for (let i = 0; i < 10; i++) {
+      const rr = i % 2 === 0 ? outer : inner;
+      const a = -Math.PI / 2 + (i * Math.PI) / 5;
+      const x = p.x + rr * Math.cos(a), y = p.y + rr * Math.sin(a);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
   }
 
   // 画面上の点に近い拠点

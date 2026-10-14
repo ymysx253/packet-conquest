@@ -23,7 +23,8 @@
 server/index.js            HTTP で画面を配信し、WebSocket(/ws)で世界の状態を中継する
 server/world.js            永続ワールド(参加・拠点の生成・攻撃/防御・初心者保護・配信)
 server/store.js            保存口(いまはメモリ版。Cosmos DB 版を追加予定)
-server/map/tokyo.js        東京周辺の拠点マスター(緯度・経度・Lv・点数)。初回起動時のシード
+server/map/data/tokyo.json 東京の拠点マスター(区・緯度・経度・Lv・点数)。初回起動時のシード
+server/map/load.js         拠点マスターの読み込みと検証
 server/map/geo.js          距離の計算、投影、リンクの自動生成
 server/questions/index.js  問題の取得口(Lv1〜4 は生成、Lv5 以上は DB)
 server/questions/subnet.js サブネット問題の自動生成

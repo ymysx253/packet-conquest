@@ -27,7 +27,7 @@ npm.cmd run test:e2e   # サーバー起動中に実行。2人で1試合を通�
 - `server/world.js`: 永続ワールド(参加・自分の拠点の生成・攻撃/防御・初心者保護・再生成・配信)
 - `server/store.js`: 保存口。いまはメモリ版。手順5で Cosmos DB 版を追加し環境変数で切り替える
 - `server/questions/index.js`: 問題の取得口(Lv1〜4 は生成、Lv5 以上は DB の固定問題) / `server/questions/subnet.js`: サブネット問題の生成
-- `server/map/tokyo.js`: 東京周辺の拠点マスター(初回起動時のシード) / `server/map/geo.js`: 距離・投影・リンク自動生成
+- `server/map/data/tokyo.json`: 東京の拠点マスター(DB の nodes と同じ項目。初回起動時のシード)。拠点を足すときはこのファイルに1行追加し `npm.cmd test` で検証 / `server/map/load.js`: 読み込みと検証 / `server/map/geo.js`: 距離・リンク自動生成
 - 画面は緯度・経度を受け取って自分で投影する(サーバーは描画座標を送らない)
 - `public/`: 画面(ビルド不要の HTML / CSS / JS)
 

@@ -17,8 +17,8 @@ function solve(world, p, nodeId) {
 (async () => {
   const store = new MemoryStore();
   const w = await new World({ store }).init();
-  assert.strictEqual(w.nodes.size, 29, 'シードで29拠点');
-  assert.strictEqual(store.nodes.size, 29, 'シードは保存される');
+  assert.strictEqual(w.nodes.size, require('../server/map/tokyo').NODES.length, 'シードで全拠点');
+  assert.strictEqual(store.nodes.size, w.nodes.size, 'シードは保存される');
 
   // 参加: 自分の拠点が東京駅の近くに生まれ、近い2拠点とつながる
   const a = w.join(fakeWs(), 'あき', null);
