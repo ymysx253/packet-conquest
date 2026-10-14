@@ -37,7 +37,13 @@ test/e2e.js                2人で接続して参加から奪取・復帰まで�
 
 ## 手元で動かす
 
-Node.js 20 以上が必要です(https://nodejs.org の LTS 版)。Windows の PowerShell では `npm` の代わりに `npm.cmd` を使います。
+Node.js 20 以上が必要です(https://nodejs.org の LTS 版)。
+
+**いちばん簡単な方法(Windows)**: `start-game.cmd` をダブルクリックします。サーバーの窓が開き、ブラウザで http://localhost:3000 が開きます。初回は必要なパッケージを自動で入れます。止めるときはサーバーの窓を閉じます。
+
+`public/index.html` をファイルとして直接開いても遊べません。必ずサーバーを起動して http://localhost:3000 を開いてください。
+
+**ターミナルから起動する場合**(Windows の PowerShell では `npm` の代わりに `npm.cmd` を使います):
 
 ```bash
 npm install

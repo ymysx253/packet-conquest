@@ -16,7 +16,7 @@
 
 ```
 npm.cmd install
-npm.cmd start          # http://localhost:3000
+npm.cmd start          # http://localhost:3000(Windows は start-game.cmd をダブルクリックでも可)
 npm.cmd test           # 問題生成の検証(3万問)
 npm.cmd run test:e2e   # サーバー起動中に実行。2人で1試合を通す
 ```
