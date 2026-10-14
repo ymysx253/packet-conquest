@@ -24,7 +24,14 @@
   $('codeInput').value = store.get('pc-token') || '';
 
   // ---------- 通信 ----------
+  const SERVER_HINT = 'サーバーに接続できません。ターミナルで npm.cmd start を実行し、ブラウザで http://localhost:3000 を開いてください。';
   function connect() {
+    if (location.protocol === 'file:' || !location.host) {
+      // index.html を直接開いた場合。サーバーを通さないと遊べない
+      $('lobbyError').textContent = 'このファイルを直接開いても遊べません。' + SERVER_HINT;
+      S.wantJoin = false; setJoining(false);
+      return;
+    }
     const proto = location.protocol === 'https:' ? 'wss' : 'ws';
     const ws = new WebSocket(`${proto}://${location.host}/ws`);
     S.ws = ws;
@@ -39,8 +46,14 @@
     };
     ws.onclose = () => {
       setConn(false);
+      if (!S.joined) { $('lobbyError').textContent = SERVER_HINT; setJoining(false); }
       if (S.wantJoin) setTimeout(connect, Math.min(8000, 1000 * 2 ** S.retry++));
     };
+  }
+  function setJoining(on) {
+    const btn = $('joinForm').querySelector('button[type="submit"]');
+    btn.disabled = on;
+    btn.textContent = on ? '接続中…' : '東京に参加する';
   }
   function send(msg) { if (S.ws && S.ws.readyState === 1) S.ws.send(JSON.stringify(msg)); }
   function sendJoin() {
@@ -79,7 +92,7 @@
         S.result = m; S.cooldownUntil = m.cooldownUntil; renderQuestion();
         break;
       case 'error':
-        if (!S.joined) { $('lobbyError').textContent = m.message; S.wantJoin = false; } else toast(m.message);
+        if (!S.joined) { $('lobbyError').textContent = m.message; S.wantJoin = false; setJoining(false); } else toast(m.message);
         break;
     }
   }
@@ -92,7 +105,10 @@
     store.set('pc-name', name);
     S.token = $('codeInput').value.trim() || null;
     S.wantJoin = true;
-    if (S.ws && S.ws.readyState === 1) sendJoin(); else connect();
+    $('lobbyError').textContent = '';
+    setJoining(true);
+    if (S.ws && S.ws.readyState === 1) sendJoin();
+    else if (!S.ws || S.ws.readyState !== 0) connect();
   });
   $('copyCodeBtn').onclick = () => {
     const code = S.token || '';
