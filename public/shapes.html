@@ -41,9 +41,14 @@
   <p class="desc">拠点の難易度(レベル)ごとに形が決まっています。レベル 10 は国です。東京の拠点はレベル 1〜5 です。</p>
   <div class="basic" id="basic"></div>
 
-  <h2>拡張用の形(レベル 11〜99)</h2>
-  <p class="desc">1 の位の形に、10 の位の数だけ外輪(最大 3 本)とレベル番号を足して表します。都道府県・地方・世界など、将来の拡張で使います。</p>
+  <h2>レベル 11〜100</h2>
+  <p class="desc">1 の位が本体の形。10 の位は 0〜4 が白抜きで外輪 0〜4 本、5〜9 が黒塗りで外輪 0〜4 本。黒塗りは実際には所有者の色で塗られます。模様はレベルごとにすべて異なります。</p>
   <div class="ext" id="ext"></div>
+
+  <h2>レベル 101〜999</h2>
+  <p class="desc">100 の位は外枠の種類: 1 ギザギザ、2 波線、3 点線、4 二重線、5 太線、6 ギザギザ + 二重線、7 波線 + 二重線、8 点線 + 二重線、9 ギザギザの太線。下は百の位ごとの見本です。</p>
+  <div class="actions"><button type="button" class="btn" id="showAll">101〜999 をすべて表示(899 個)</button></div>
+  <div class="ext" id="ext2" style="margin-top: 12px"></div>
 </main>
 
 <script src="shapes.js"></script>
@@ -62,6 +67,14 @@
     S.draw(c, level, { x: size / 2, y: size / 2 + (level > 10 ? 6 : 0) }, r, { fill, stroke, lineWidth: 3 });
     return cv;
   }
+  function cellFor(lv, size, r) {
+    const d = S.describe(lv);
+    const cell = document.createElement('div'); cell.className = 'cell' + (d.shape === 10 && d.frame === 0 && d.rings === 0 && !d.filled ? ' country' : '');
+    const lab = document.createElement('div'); lab.className = 'lv'; lab.textContent = `Lv${lv}`;
+    cell.title = `${S.SHAPE_NAMES[d.shape]} / ${d.filled ? '黒塗り' : '白抜き'} / 外輪 ${d.rings} 本 / 外枠: ${S.FRAME_NAMES[d.frame]}`;
+    cell.append(canvasFor(lv, size, r), lab);
+    return cell;
+  }
 
   const basic = document.getElementById('basic');
   for (let lv = 1; lv <= 10; lv++) {
@@ -76,12 +89,20 @@
   }
 
   const ext = document.getElementById('ext');
-  for (let lv = 11; lv <= 99; lv++) {
-    const cell = document.createElement('div'); cell.className = 'cell';
-    const lab = document.createElement('div'); lab.className = 'lv'; lab.textContent = `Lv${lv}`;
-    cell.append(canvasFor(lv, 84, 13), lab);
-    ext.append(cell);
+  for (let lv = 11; lv <= 100; lv++) ext.append(cellFor(lv, 96, 12));
+
+  // 101〜999 は百の位ごとに見本(各 10 個)。ボタンで全部出す
+  const ext2 = document.getElementById('ext2');
+  const SAMPLE = [1, 12, 23, 34, 45, 56, 67, 78, 89, 100];
+  function renderExt2(all) {
+    ext2.replaceChildren();
+    for (let h = 1; h <= 9; h++) {
+      const levels = all ? Array.from({ length: 100 }, (_, i) => h * 100 + i + 1).filter((l) => l <= S.MAX_LEVEL) : SAMPLE.map((o) => h * 100 + o).filter((l) => l <= S.MAX_LEVEL);
+      for (const lv of levels) ext2.append(cellFor(lv, 108, 12));
+    }
   }
+  renderExt2(false);
+  document.getElementById('showAll').onclick = (e) => { renderExt2(true); e.target.disabled = true; e.target.textContent = '101〜999 をすべて表示中'; };
 })();
 </script>
 </body>

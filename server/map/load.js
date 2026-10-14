@@ -7,8 +7,8 @@ const path = require('path');
 const { buildLinks, nearest } = require('./geo');
 
 const DATA_DIR = path.join(__dirname, 'data');
-const LEVEL_MIN = 1, LEVEL_MAX = 99; // 1〜10 が基本。11 以上は拡張用(国は 10)
-const VALUE_MIN = 1, VALUE_MAX = 99;
+const LEVEL_MIN = 1, LEVEL_MAX = 999; // 1〜10 が基本(国は 10)。11〜999 は拡張用。形は public/shapes.js
+const VALUE_MIN = 1, VALUE_MAX = 999;
 
 function fail(region, msg) { throw new Error(`拠点マスター ${region}: ${msg}`); }
 

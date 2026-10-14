@@ -16,7 +16,7 @@ for (const n of NODES) {
   assert.ok(KINDS[n.kind], `${n.name}: kind が不正 ${n.kind}`);
   assert.ok(n.lat > 35.4 && n.lat < 35.9 && n.lon > 139.2 && n.lon < 140.0, `${n.name}: 東京の範囲外`);
   assert.ok(Number.isInteger(n.level) && n.level >= 1 && n.level <= 5, `${n.name}: 東京の拠点は Lv1〜5`);
-  assert.ok(Number.isInteger(n.value) && n.value >= 1 && n.value <= 99, `${n.name}: 点数は 1〜99`);
+  assert.ok(Number.isInteger(n.value) && n.value >= 1 && n.value <= 999, `${n.name}: 点数は 1〜999`);
   assert.ok(n.value >= n.level - 1, `${n.name}: Lv に対して点数が低すぎる`);
   assert.ok(ADJ[n.id].length >= 2, `${n.name}: リンクが2本未満`);
   assert.ok(typeof n.area === 'string' && n.area, `${n.name}: area がない`);
@@ -40,7 +40,7 @@ assert.ok(AREAS.length >= 20, '区・市が少なすぎます');
 const raw = JSON.parse(fs.readFileSync(path.join(__dirname, '../server/map/data/tokyo.json'), 'utf8'));
 const broken = (mut) => { const d = JSON.parse(JSON.stringify(raw)); mut(d); return () => validate('t', d); };
 assert.throws(broken((d) => { d.nodes[1].id = d.nodes[0].id; }), /id が重複/);
-assert.throws(broken((d) => { d.nodes[0].level = 100; }), /level は/);
+assert.throws(broken((d) => { d.nodes[0].level = 1000; }), /level は/);
 assert.throws(broken((d) => { d.nodes[0].level = 0; }), /level は/);
 assert.throws(broken((d) => { d.nodes[0].kind = 'XX'; }), /kind が不正/);
 assert.throws(broken((d) => { d.nodes[0].lat = 'a'; }), /緯度・経度/);

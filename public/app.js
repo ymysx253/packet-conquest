@@ -228,8 +228,9 @@
   });
 
   // ---------- 地図: 拡大縮小と移動 ----------
-  // 拠点の半径(画面ピクセル)。レベルが高いほど少し大きい
-  const radiusOf = (n) => (n.isPlayerNode ? 8 : 11 + Math.min(10, n.level) * 0.6);
+  // 拠点の半径(画面ピクセル)。レベルが高いほど大きい(巨大組織・重要拠点)
+  const radiusOf = (n) => (n.isPlayerNode ? 8
+    : 11 + Math.min(10, n.level) * 0.6 + Math.min(9, Math.floor((n.level - 1) / 10)) * 0.4 + Math.min(9, Math.floor((n.level - 1) / 100)) * 0.8);
   // k: 仮想座標 → 画面ピクセルの倍率。tx, ty: 画面の左上にある仮想座標。fit: 全体が収まる倍率
   const V = { k: 1, tx: 0, ty: 0, fit: 1, w: 0, h: 0 };
   const ZOOM_MIN = 0.7, ZOOM_MAX = 8; // fit に対する比
@@ -398,29 +399,38 @@
       if (p.x < -40 || p.y < -40 || p.x > V.w + 40 || p.y > V.h + 40) continue;
       const owner = n.owner ? colorOf(n.owner) : null;
 
+      // 攻撃可能・出題中・保護中のしるしは、外輪や外枠の外側に円で描く
+      const ring = (n.isPlayerNode ? r : SH.outerRadius(n.level, r));
       if (canAttack(n.id)) {
         ctx.strokeStyle = C.accent; ctx.globalAlpha = 0.45 + 0.55 * pulse; ctx.lineWidth = 5;
-        shape(n, p, r + 7); ctx.stroke(); ctx.globalAlpha = 1;
+        ctx.beginPath(); ctx.arc(p.x, p.y, ring + 6, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1;
       }
       if (S.question && S.question.nodeId === n.id && !(S.result && S.result.qid === S.question.qid)) {
         ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.setLineDash([4, 4]);
-        shape(n, p, r + 12); ctx.stroke(); ctx.setLineDash([]);
+        ctx.beginPath(); ctx.arc(p.x, p.y, ring + 11, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
       }
       if (n.protectedUntil > now()) {
         ctx.strokeStyle = C.muted; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
-        shape(n, p, r + 5); ctx.stroke(); ctx.setLineDash([]);
+        ctx.beginPath(); ctx.arc(p.x, p.y, ring + 4, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
       }
-      ctx.fillStyle = C.surface;
-      ctx.strokeStyle = owner || C.strong;
+      // 黒塗りのレベルは所有者の色(中立なら文字色)で塗る
+      const filled = !n.isPlayerNode && SH.isFilled(n.level);
+      const col = owner || (filled ? C.ink : C.strong);
+      ctx.fillStyle = filled ? col : C.surface;
+      ctx.strokeStyle = col;
       ctx.lineWidth = owner ? (n.isPlayerNode ? 5 : 7) : (n.isPlayerNode ? 3 : 4);
       shape(n, p, r); ctx.fill(); ctx.stroke();
-      drawLevelExtras(ctx, n.level, p, r, owner || C.strong, C.surface, n.isPlayerNode);
-      if (owner && n.owner === S.me) { ctx.fillStyle = owner; ctx.beginPath(); ctx.arc(p.x, p.y, n.isPlayerNode ? 3 : 4, 0, Math.PI * 2); ctx.fill(); }
+      drawLevelExtras(ctx, n.level, p, r, col, C.surface, n.isPlayerNode);
+      if (owner && n.owner === S.me) {
+        ctx.fillStyle = filled ? C.surface : owner;
+        ctx.beginPath(); ctx.arc(p.x, p.y, n.isPlayerNode ? 3 : 4, 0, Math.PI * 2); ctx.fill();
+      }
+      const top = n.isPlayerNode ? r : SH.outerRadius(n.level, r);
 
       // 防御レベル
       for (let i = 0; i < n.defense; i++) {
         ctx.fillStyle = C.ink;
-        ctx.fillRect(p.x - (n.defense * 8 - 3) / 2 + i * 8, p.y - r - 11, 5, 5);
+        ctx.fillRect(p.x - (n.defense * 8 - 3) / 2 + i * 8, p.y - top - 9, 5, 5);
       }
       // 名称。縮小時は重要な拠点と自分の拠点だけ
       const showLabel = n.isPlayerNode
@@ -431,7 +441,7 @@
         ctx.fillStyle = n.isPlayerNode ? C.muted : C.ink;
         const fs = n.kind === 'IX' ? 14 : n.isPlayerNode ? 10 : 11.5;
         ctx.font = `${n.isPlayerNode ? 500 : 700} ${fs * grow}px "BIZ UDPGothic", sans-serif`;
-        ctx.fillText(n.name, p.x, p.y + r + 13 * grow);
+        ctx.fillText(n.name, p.x, p.y + top + 12 * grow);
       }
     }
   }
