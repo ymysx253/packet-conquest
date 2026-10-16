@@ -352,3 +352,7 @@ Cosmos DB 格納用の地域マスターを `server/map/data/regions.json` に�
 - 読み込み(`server/map/load.js`)で階層を検証し(親の存在、親が浅い段であること、世界が 1 つ、重複)、`regionDocs(nodes)` が保存用の形を作る。派生値として tier、country(属する国)、path(宇宙からの経路)、depth、center、bbox、nodeCount、levels(レベル分布)を各階層に集計して付ける
 - `level`(地域そのものを拠点として出すときのレベル)は未決(LEVELS.md #1)のため null
 - Cosmos DB のコンテナー案: `regions`(パーティションキー `/parent`)、`nodes`(`/region`)、`players`(`/id`)、`questions`(`/nodeId`)。地域を足すときは regions.json に 1 行追加し、拠点ファイルを `nodeFile` で結ぶ
+
+### 8.15 拠点の名前は名所に限る(2026-10-17 ユーザー方針)
+
+拠点の名前は地名ではなく**正しい名所の名前**(駅、公園、塔、寺社、競技場 など)を使う。使ってよいジャンル・避けるジャンル・書き方は **`docs/PLACES.md`**。世界共通の基準で、拠点マスターに `genre` を必須にする。東京マスターの地名・架空名の拠点(約 40 件)は名所の名前に置き換える(PLACES.md 第5章)。
