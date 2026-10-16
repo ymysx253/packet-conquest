@@ -193,9 +193,14 @@ class World {
       throw new Error('自分の拠点とつながっている拠点だけ攻撃できます');
     }
     const level = this.levelFor(n, mode);
+    // 同じ拠点を続けて選んだら、作り直さずに出題中の問題を返す(クリックで問題を引き直せない)。
+    // 生成問題は別の拠点を選ぶと破棄される。Lv5 以上の固定問題は拠点に紐づき、誰かがクリアするまで同じ問題が残る(設計書 8.6, 8.13)
+    if (p.pending && p.pending.nodeId === nodeId && p.pending.mode === mode && p.pending.level === level) return p.pending.payload;
     const q = getQuestion({ level, node: n });
-    p.pending = { qid: newId(), nodeId, mode, level, answerIndex: q.answerIndex, explanation: q.explanation };
-    return { t: 'question', qid: p.pending.qid, nodeId, mode, level, provisional: !!q.provisional, text: q.text, options: q.options };
+    const qid = newId();
+    const payload = { t: 'question', qid, nodeId, mode, level, provisional: !!q.provisional, text: q.text, options: q.options };
+    p.pending = { qid, nodeId, mode, level, answerIndex: q.answerIndex, explanation: q.explanation, payload };
+    return payload;
   }
 
   answer(p, qid, choice) {

@@ -37,6 +37,13 @@ function solve(world, p, nodeId) {
 
   // 問題: 中立は拠点の Lv、答えはクライアントに送らない
   const q = w.ask(a, nb);
+  assert.strictEqual(w.ask(a, nb).qid, q.qid, '同じ拠点を続けて選んでも問題は引き直せない');
+  const other = w.adj[home.id][1];
+  assert.notStrictEqual(w.ask(a, other).qid, q.qid, '別の拠点を選ぶと新しい問題');
+  assert.strictEqual(w.ask(a, nb).qid !== q.qid, true, '戻ると生成問題は作り直される(Lv1〜4 のみ許す)');
+  a.pending = null;
+  const q2 = w.ask(a, nb);
+  Object.assign(q, q2);
   assert.strictEqual(q.level, w.nodes.get(nb).level);
   assert.ok(!('answerIndex' in q) && q.options.length === 4);
   const wrong = w.answer(a, q.qid, (a.pending.answerIndex + 1) % 4);
