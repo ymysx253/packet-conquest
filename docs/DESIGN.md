@@ -342,12 +342,13 @@ test/e2e.js        実サーバーに2人で接続し1試合を通す
 - 生成問題でも、同じ拠点を続けて選んだ場合は出題中の問題をそのまま返す(クリックで引き直せない)。別の拠点を選ぶと破棄される
 - 実装: `world.ask` は出題中の問題を `pending.payload` に持ち、同じ拠点・同じモード・同じレベルなら再送する(2026-10-17)。固定問題の保持はフェーズ2(LEVELS.md 第4章 #11・#19)
 
-### 8.14 地域マスター(2026-10-17)
+### 8.14 地域マスター(2026-10-17。同日、宇宙まで含む世界共通の階層に変更)
 
-Cosmos DB 格納用の地域マスターを `server/map/data/regions.json` に作った(まず東京)。
+Cosmos DB 格納用の地域マスターを `server/map/data/regions.json` に作った(まず東京)。**世界でも同じ基準で使う**ため、日本固有の種類ではなく段(tier)で表す。将来のために最上位は**宇宙**とし、地球以外の天体(月・火星・軌道上の施設)も同じ階層に置けるようにした(いまは実装しない)。
 
-- 階層: **国(japan)→ 地方(kanto)→ 都道府県(tokyo)→ 区・市(tokyo-chiyoda など 31 件)**。1 行 = Cosmos DB の `regions` コンテナーの 1 ドキュメント。項目は id、name、nameEn、kind(country / region / prefecture / ward / city)、parent、status、nodeFile(都道府県が持つ拠点ファイル名)
-- 拠点(`tokyo.json`)は `region` で区・市の id を指す。`area` は表示用の名前で、`region` の名前と一致することを検証する
-- 読み込み(`server/map/load.js`)で階層を検証し(親の存在、親の種類、重複)、`regionDocs(nodes)` が保存用の形を作る。派生値として path(国からの経路)、depth、center、bbox、nodeCount、levels(レベル分布)を各階層に集計して付ける
+- 階層: **宇宙(tier 0)→ 天体(1。地球・月・火星・軌道上の施設)→ 大陸・広域(2)→ 国(3)→ 地方(4。無い国は省略可)→ 都道府県・州・省(5)→ 市・区・郡(6。拠点が属する最下層)→ 地区(7。必要な都市だけ)**。親は必ず自分より浅い段ならよく、段を飛ばせる(例: シンガポールは 国 → 市)
+- いまの中身: universe → earth → asia → japan(JP)→ kanto → tokyo(JP-13)→ 23 区 + 8 市(kind は city、localKind に「区」「市」)。1 行 = Cosmos DB の `regions` コンテナーの 1 ドキュメント。項目は id、name、nameEn、kind、parent、code(ISO 3166 の国コード・地域コード)、status、nodeFile(拠点ファイルを持つ地域)、localKind(その国での呼び名)
+- 拠点(`tokyo.json`)は `region` で最下層(leafKinds: city / district)の id を指す。`area` は表示用の名前で、`region` の名前と一致することを検証する
+- 読み込み(`server/map/load.js`)で階層を検証し(親の存在、親が浅い段であること、世界が 1 つ、重複)、`regionDocs(nodes)` が保存用の形を作る。派生値として tier、country(属する国)、path(宇宙からの経路)、depth、center、bbox、nodeCount、levels(レベル分布)を各階層に集計して付ける
 - `level`(地域そのものを拠点として出すときのレベル)は未決(LEVELS.md #1)のため null
 - Cosmos DB のコンテナー案: `regions`(パーティションキー `/parent`)、`nodes`(`/region`)、`players`(`/id`)、`questions`(`/nodeId`)。地域を足すときは regions.json に 1 行追加し、拠点ファイルを `nodeFile` で結ぶ

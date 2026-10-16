@@ -13,27 +13,37 @@ const VALUE_MIN = 1, VALUE_MAX = 999;
 function fail(region, msg) { throw new Error(`拠点マスター ${region}: ${msg}`); }
 
 // ---------- 地域マスター(server/map/data/regions.json。Cosmos DB の regions コンテナーと同じ項目) ----------
-const REGION_KINDS = ['country', 'region', 'prefecture', 'ward', 'city'];
-const LEAF_KINDS = ['ward', 'city']; // 拠点が属せる地域の種類
+// 世界共通の階層。kind ごとに tier(段)を持ち、親は必ず自分より浅い段。国ごとに段数が違うので、
+// 「地方」のない国は国 → 州 のように段を飛ばしてよい。拠点は leafKinds(市・区、地区)にだけ属せる。
 
 function validateRegions(data) {
   if (!data || !Array.isArray(data.regions)) throw new Error('地域マスター: regions がありません');
+  if (!data.kinds || typeof data.kinds !== 'object') throw new Error('地域マスター: kinds がありません');
+  const tierOf = (kind) => (data.kinds[kind] && Number.isInteger(data.kinds[kind].tier) ? data.kinds[kind].tier : null);
+  const leaf = Array.isArray(data.leafKinds) ? data.leafKinds : [];
+  for (const k of leaf) if (tierOf(k) === null) throw new Error(`地域マスター: leafKinds の ${k} が kinds にありません`);
   const byId = new Map();
   for (const r of data.regions) {
     const where = r && r.id ? r.id : JSON.stringify(r);
     for (const k of ['id', 'name', 'kind']) if (typeof r[k] !== 'string' || !r[k]) throw new Error(`地域マスター ${where}: ${k} が必要です`);
     if (!/^[a-z0-9-]+$/.test(r.id)) throw new Error(`地域マスター ${r.id}: id は英小文字・数字・ハイフンだけ`);
     if (byId.has(r.id)) throw new Error(`地域マスター ${r.id}: id が重複`);
-    if (!REGION_KINDS.includes(r.kind)) throw new Error(`地域マスター ${r.id}: kind が不正 ${r.kind}`);
+    if (tierOf(r.kind) === null) throw new Error(`地域マスター ${r.id}: kind が不正 ${r.kind}`);
     if (!(r.parent === null || typeof r.parent === 'string')) throw new Error(`地域マスター ${r.id}: parent は id か null`);
+    if (r.code != null && typeof r.code !== 'string') throw new Error(`地域マスター ${r.id}: code は文字列か null`);
     byId.set(r.id, r);
   }
+  let roots = 0;
   for (const r of data.regions) {
-    if (r.kind === 'country') { if (r.parent !== null) throw new Error(`地域マスター ${r.id}: 国に parent はありません`); continue; }
-    if (!r.parent || !byId.has(r.parent)) throw new Error(`地域マスター ${r.id}: parent ${r.parent} がありません`);
-    const expect = { region: 'country', prefecture: 'region', ward: 'prefecture', city: 'prefecture' }[r.kind];
-    if (byId.get(r.parent).kind !== expect) throw new Error(`地域マスター ${r.id}: ${r.kind} の parent は ${expect} であるべき`);
+    if (r.parent === null) {
+      if (tierOf(r.kind) !== 0) throw new Error(`地域マスター ${r.id}: parent が無いのは最上位(tier 0)だけ`);
+      roots++; continue;
+    }
+    if (!byId.has(r.parent)) throw new Error(`地域マスター ${r.id}: parent ${r.parent} がありません`);
+    const pt = tierOf(byId.get(r.parent).kind), t = tierOf(r.kind);
+    if (!(pt < t)) throw new Error(`地域マスター ${r.id}: parent ${r.parent}(tier ${pt})は自分(tier ${t})より浅い段であるべき`);
   }
+  if (roots !== 1) throw new Error(`地域マスター: 最上位(tier 0)はちょうど 1 つ(いま ${roots})`);
   return byId;
 }
 
@@ -46,9 +56,13 @@ function loadRegions() {
   const byId = validateRegions(data);
   const children = {};
   for (const r of data.regions) if (r.parent) (children[r.parent] ||= []).push(r.id);
-  // 先祖をたどる(国まで)
+  // 先祖をたどる(世界まで)
   const ancestors = (id) => { const out = []; let cur = byId.get(id); while (cur && cur.parent) { out.push(cur.parent); cur = byId.get(cur.parent); } return out; };
-  regionsCache = { REGIONS: data.regions, KINDS: data.kinds, byId, children, ancestors, VERSION: data.version };
+  const tierOf = (id) => { const r = byId.get(id); return r ? data.kinds[r.kind].tier : null; };
+  const isLeaf = (id) => { const r = byId.get(id); return !!r && data.leafKinds.includes(r.kind); };
+  // 国(tier 2)を返す。拠点がどの国に属するかに使う
+  const countryOf = (id) => [id, ...ancestors(id)].find((x) => byId.get(x).kind === 'country') || null;
+  regionsCache = { REGIONS: data.regions, KINDS: data.kinds, LEAF_KINDS: data.leafKinds, byId, children, ancestors, tierOf, isLeaf, countryOf, VERSION: data.version };
   return regionsCache;
 }
 
@@ -66,11 +80,13 @@ function regionDocs(nodes = []) {
       s.levels[n.level] = (s.levels[n.level] || 0) + 1;
     }
   }
+  const { KINDS, countryOf } = loadRegions();
   return REGIONS.map((r) => {
     const s = stats[r.id];
     const path = [...ancestors(r.id)].reverse().concat(r.id);
     return {
-      id: r.id, type: 'region', name: r.name, nameEn: r.nameEn || null, kind: r.kind, kindLabel: loadRegions().KINDS[r.kind],
+      id: r.id, type: 'region', name: r.name, nameEn: r.nameEn || null, kind: r.kind, tier: KINDS[r.kind].tier,
+      kindLabel: KINDS[r.kind].label, localKind: r.localKind || null, code: r.code || null, country: countryOf(r.id),
       parent: r.parent, path, depth: path.length - 1, status: r.status || 'public', nodeFile: r.nodeFile || null,
       center: s ? { lat: Number((s.lat / s.count).toFixed(5)), lon: Number((s.lon / s.count).toFixed(5)) } : null,
       bbox: s ? { minLat: s.minLat, maxLat: s.maxLat, minLon: s.minLon, maxLon: s.maxLon } : null,
@@ -93,7 +109,7 @@ function validate(region, data) {
     for (const k of ['id', 'name', 'kind', 'area', 'region']) if (typeof n[k] !== 'string' || !n[k]) fail(region, `${where}: ${k} が必要です`);
     const reg = regions.byId.get(n.region);
     if (!reg) fail(region, `${n.id}: region ${n.region} が地域マスターにありません`);
-    if (!LEAF_KINDS.includes(reg.kind)) fail(region, `${n.id}: region は区・市を指すこと(${reg.kind})`);
+    if (!regions.isLeaf(n.region)) fail(region, `${n.id}: region は最下層(${regions.LEAF_KINDS.join('/')})を指すこと(${reg.kind})`);
     if (reg.name !== n.area) fail(region, `${n.id}: area「${n.area}」と region「${reg.name}」が食い違います`);
     if (!/^[a-z0-9-]+$/.test(n.id)) fail(region, `${n.id}: id は英小文字・数字・ハイフンだけ`);
     if (ids.has(n.id)) fail(region, `${n.id}: id が重複`);
