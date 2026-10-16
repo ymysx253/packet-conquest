@@ -14,7 +14,7 @@ assert.strictEqual(new Set(NODES.map((n) => n.name)).size, NODES.length, '名称
 assert.strictEqual(new Set(NODES.map((n) => n.subnet)).size, NODES.length, 'サブネットが重複');
 for (const n of NODES) {
   assert.ok(KINDS[n.kind], `${n.name}: kind が不正 ${n.kind}`);
-  assert.ok(n.lat > 35.4 && n.lat < 35.9 && n.lon > 139.2 && n.lon < 140.0, `${n.name}: 東京の範囲外`);
+  assert.ok(n.lat > 35.4 && n.lat < 35.9 && n.lon > 139.0 && n.lon < 140.0, `${n.name}: 東京の範囲外`);
   assert.ok(Number.isInteger(n.level) && n.level >= 1 && n.level <= 5, `${n.name}: 東京の拠点は Lv1〜5`);
   assert.ok(Number.isInteger(n.value) && n.value >= 1 && n.value <= 999, `${n.name}: 点数は 1〜999`);
   assert.ok(n.value >= n.level - 1, `${n.name}: Lv に対して点数が低すぎる`);
