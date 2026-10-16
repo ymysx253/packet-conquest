@@ -25,7 +25,7 @@ const now = () => Date.now();
 // 拠点マスター(tokyo.js)を DB の拠点ドキュメントの形にする。初回起動時のシードに使う
 function masterToNode(m) {
   return {
-    id: m.id, name: m.name, kind: m.kind, kindLabel: m.kindLabel, area: m.area, region: m.region, tags: m.tags || [],
+    id: m.id, name: m.name, genre: m.genre || null, kind: m.kind, kindLabel: m.kindLabel, area: m.area, region: m.region, tags: m.tags || [],
     hackable: m.hackable !== false,
     lat: m.lat, lon: m.lon, level: m.level, value: m.value,
     subnet: m.subnet, base: m.base,

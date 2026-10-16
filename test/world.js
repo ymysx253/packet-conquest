@@ -76,7 +76,7 @@ function solve(world, p, nodeId) {
   bHome.protectedUntil = 0;
   assert.ok(!w.canAttack(a.id, bHome.id), '拠点3つ以下の人は攻撃できない');
   // b が4拠点持てば攻撃できる
-  for (const id of ['tokyo-dome', 'ueno', 'asakusa']) w.nodes.get(id).owner = b.id;
+  for (const id of ['tokyo-dome', 'ueno', 'ameyoko']) w.nodes.get(id).owner = b.id;
   assert.ok(w.canAttack(a.id, bHome.id), '拠点が4つ以上なら攻撃できる');
 
   // 4拠点以上なら奪える。奪われて3拠点以下になると再び守られる
@@ -88,7 +88,7 @@ function solve(world, p, nodeId) {
 
   // 全滅時の再生成(暫定): 拠点をすべて失った人は東京に新しい拠点をもらい、累計点などの記録は残る
   // ※ いまの初心者保護(3拠点以下は攻撃不可)では攻撃で全滅することはないが、仕組みは用意しておく
-  for (const id of ['tokyo-dome', 'ueno', 'asakusa']) w.nodes.get(id).owner = null;
+  for (const id of ['tokyo-dome', 'ueno', 'ameyoko']) w.nodes.get(id).owner = null;
   b.points = 7;
   const before = w.nodes.size;
   w.respawn(b);

@@ -8,6 +8,8 @@ const { buildLinks, nearest } = require('./geo');
 
 const DATA_DIR = path.join(__dirname, 'data');
 const LEVEL_MIN = 1, LEVEL_MAX = 999; // 1〜10 が基本(国は 10)。11〜999 は拡張用。形は public/shapes.js
+// 拠点に使ってよい名所のジャンル(docs/PLACES.md 第2章と同じ)
+const GENRES = new Set(['station', 'bus_terminal', 'airport', 'port', 'bridge', 'tower', 'park', 'nature', 'zoo_aquarium', 'museum', 'library', 'theater', 'stadium', 'heritage', 'monument', 'shrine_temple', 'government', 'university', 'market', 'convention', 'complex', 'observatory', 'ix']);
 const VALUE_MIN = 1, VALUE_MAX = 999;
 
 function fail(region, msg) { throw new Error(`拠点マスター ${region}: ${msg}`); }
@@ -120,6 +122,9 @@ function validate(region, data) {
     if (!Number.isInteger(n.level) || n.level < LEVEL_MIN || n.level > LEVEL_MAX) fail(region, `${n.id}: level は ${LEVEL_MIN}〜${LEVEL_MAX}`);
     if (!Number.isInteger(n.value) || n.value < VALUE_MIN || n.value > VALUE_MAX) fail(region, `${n.id}: value は ${VALUE_MIN}〜${VALUE_MAX}`);
     if (n.hackable !== undefined && typeof n.hackable !== 'boolean') fail(region, `${n.id}: hackable は true/false`);
+    // 名所のジャンル(docs/PLACES.md 第2章)。地名ではなく名所であることの担保
+    if (typeof n.genre !== 'string' || !GENRES.has(n.genre)) fail(region, `${n.id}: genre が不正 ${n.genre}(PLACES.md のジャンルから選ぶ)`);
+    if (/[0-9０-９一二三四五六七八九十]+丁目/.test(n.name)) fail(region, `${n.id}: 丁目を含む名前は使わない(名所の名前にする)`);
   }
 }
 
@@ -131,7 +136,7 @@ function loadRegion(region) {
 
   const KINDS = data.kinds;
   const NODES = data.nodes.map((n, i) => ({
-    id: n.id, name: n.name, kind: n.kind, kindLabel: KINDS[n.kind], area: n.area, region: n.region,
+    id: n.id, name: n.name, genre: n.genre, alias: n.alias || null, kind: n.kind, kindLabel: KINDS[n.kind], area: n.area, region: n.region,
     lat: n.lat, lon: n.lon, level: n.level, value: n.value,
     // 存在するがハック不可(寺社、重要インフラ。設計書 8.16 / PLACES.md)。線をつながず攻撃できない
     hackable: n.hackable !== false,
@@ -156,4 +161,4 @@ function loadRegion(region) {
   };
 }
 
-module.exports = { loadRegion, validate, loadRegions, validateRegions, regionDocs };
+module.exports = { loadRegion, validate, loadRegions, validateRegions, regionDocs, GENRES };

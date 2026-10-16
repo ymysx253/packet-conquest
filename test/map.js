@@ -77,6 +77,17 @@ assert.throws(broken((d) => { d.nodes[0].kind = 'XX'; }), /kind が不正/);
 assert.throws(broken((d) => { d.nodes[0].lat = 'a'; }), /緯度・経度/);
 assert.throws(broken((d) => { delete d.nodes[0].area; }), /area が必要/);
 assert.throws(broken((d) => { d.nodes[0].region = 'tokyo'; }), /最下層/);
+assert.throws(broken((d) => { delete d.nodes[0].genre; }), /genre が不正/);
+assert.throws(broken((d) => { d.nodes[0].genre = 'shop'; }), /genre が不正/);
+assert.throws(broken((d) => { d.nodes[0].name = '銀座四丁目'; }), /丁目/);
+// 名前は名所: 全拠点に genre があり、寺社はハック不可
+const { GENRES } = require('../server/map/load');
+for (const n of NODES) {
+  assert.ok(GENRES.has(n.genre), `${n.name}: genre`);
+  if (n.genre === 'shrine_temple') assert.strictEqual(n.hackable, false, `${n.name}: 寺社はハック不可`);
+}
+assert.ok(NODES.filter((n) => n.genre === 'station').length >= 50, '駅が主な拠点');
+assert.ok(!NODES.some((n) => /DC$|IX$/.test(n.name)), '架空名の DC / IX は使わない');
 assert.throws(broken((d) => { d.nodes[0].region = 'tokyo-chuo'; }), /食い違います/);
 assert.throws(broken((d) => { d.nodes[0].id = 'Bad_ID'; }), /英小文字/);
 assert.doesNotThrow(broken(() => {}));
