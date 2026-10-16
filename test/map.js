@@ -36,6 +36,26 @@ for (const e of EDGES) assert.ok(ADJ[e.a] && ADJ[e.b] && e.a !== e.b, 'リンク
 assert.ok(NODES.some((n) => distanceKm(n, SPAWN_CENTER) < SPAWN_CENTER.radiusKm), '開始地点の近くに拠点がない');
 assert.ok(AREAS.length >= 20, '区・市が少なすぎます');
 
+// 地域マスター: 階層が正しく、拠点の region がすべて区・市を指し、派生値(中心・拠点数)が付く
+const { loadRegions, validateRegions, regionDocs } = require('../server/map/load');
+const R = loadRegions();
+assert.ok(R.byId.get('japan').kind === 'country' && R.byId.get('tokyo').parent === 'kanto', '日本 > 関東 > 東京都');
+for (const n of NODES) assert.ok(['ward', 'city'].includes(R.byId.get(n.region).kind), `${n.name}: region が区・市でない`);
+assert.deepStrictEqual(R.ancestors('tokyo-chiyoda'), ['tokyo', 'kanto', 'japan']);
+const docs = regionDocs(NODES);
+const tokyoDoc = docs.find((d) => d.id === 'tokyo');
+assert.strictEqual(tokyoDoc.nodeCount, NODES.length, '東京都の拠点数 = 全拠点');
+assert.deepStrictEqual(tokyoDoc.path, ['japan', 'kanto', 'tokyo']);
+assert.ok(tokyoDoc.center && Math.abs(tokyoDoc.center.lat - 35.68) < 0.1, '中心は都内');
+assert.strictEqual(docs.find((d) => d.id === 'japan').nodeCount, NODES.length, '国にも集計が伝わる');
+assert.ok(docs.filter((d) => d.kind === 'ward').length === 23, '23 区');
+const rawR = JSON.parse(fs.readFileSync(path.join(__dirname, '../server/map/data/regions.json'), 'utf8'));
+const brokenR = (mut) => { const d = JSON.parse(JSON.stringify(rawR)); mut(d); return () => validateRegions(d); };
+assert.throws(brokenR((d) => { d.regions[3].parent = 'nowhere'; }), /がありません/);
+assert.throws(brokenR((d) => { d.regions[3].parent = 'japan'; }), /であるべき/);
+assert.throws(brokenR((d) => { d.regions[4].id = d.regions[3].id; }), /重複/);
+assert.doesNotThrow(brokenR(() => {}));
+
 // 検証器: 壊れたデータを拒む
 const raw = JSON.parse(fs.readFileSync(path.join(__dirname, '../server/map/data/tokyo.json'), 'utf8'));
 const broken = (mut) => { const d = JSON.parse(JSON.stringify(raw)); mut(d); return () => validate('t', d); };
@@ -45,6 +65,8 @@ assert.throws(broken((d) => { d.nodes[0].level = 0; }), /level は/);
 assert.throws(broken((d) => { d.nodes[0].kind = 'XX'; }), /kind が不正/);
 assert.throws(broken((d) => { d.nodes[0].lat = 'a'; }), /緯度・経度/);
 assert.throws(broken((d) => { delete d.nodes[0].area; }), /area が必要/);
+assert.throws(broken((d) => { d.nodes[0].region = 'tokyo'; }), /区・市を指す/);
+assert.throws(broken((d) => { d.nodes[0].region = 'tokyo-chuo'; }), /食い違います/);
 assert.throws(broken((d) => { d.nodes[0].id = 'Bad_ID'; }), /英小文字/);
 assert.doesNotThrow(broken(() => {}));
 

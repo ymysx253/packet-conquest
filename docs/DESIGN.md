@@ -341,3 +341,13 @@ test/e2e.js        実サーバーに2人で接続し1試合を通す
 - Lv5 以上の固定問題は **拠点(×レベル)に紐づき、誰かがクリアするか定期更新されるまで同じ問題が残る**(8.6)。プレイヤーごとの途中経過(多段シナリオの進み具合)は保存し、離れて戻っても続きから
 - 生成問題でも、同じ拠点を続けて選んだ場合は出題中の問題をそのまま返す(クリックで引き直せない)。別の拠点を選ぶと破棄される
 - 実装: `world.ask` は出題中の問題を `pending.payload` に持ち、同じ拠点・同じモード・同じレベルなら再送する(2026-10-17)。固定問題の保持はフェーズ2(LEVELS.md 第4章 #11・#19)
+
+### 8.14 地域マスター(2026-10-17)
+
+Cosmos DB 格納用の地域マスターを `server/map/data/regions.json` に作った(まず東京)。
+
+- 階層: **国(japan)→ 地方(kanto)→ 都道府県(tokyo)→ 区・市(tokyo-chiyoda など 31 件)**。1 行 = Cosmos DB の `regions` コンテナーの 1 ドキュメント。項目は id、name、nameEn、kind(country / region / prefecture / ward / city)、parent、status、nodeFile(都道府県が持つ拠点ファイル名)
+- 拠点(`tokyo.json`)は `region` で区・市の id を指す。`area` は表示用の名前で、`region` の名前と一致することを検証する
+- 読み込み(`server/map/load.js`)で階層を検証し(親の存在、親の種類、重複)、`regionDocs(nodes)` が保存用の形を作る。派生値として path(国からの経路)、depth、center、bbox、nodeCount、levels(レベル分布)を各階層に集計して付ける
+- `level`(地域そのものを拠点として出すときのレベル)は未決(LEVELS.md #1)のため null
+- Cosmos DB のコンテナー案: `regions`(パーティションキー `/parent`)、`nodes`(`/region`)、`players`(`/id`)、`questions`(`/nodeId`)。地域を足すときは regions.json に 1 行追加し、拠点ファイルを `nodeFile` で結ぶ

@@ -12,6 +12,74 @@ const VALUE_MIN = 1, VALUE_MAX = 999;
 
 function fail(region, msg) { throw new Error(`拠点マスター ${region}: ${msg}`); }
 
+// ---------- 地域マスター(server/map/data/regions.json。Cosmos DB の regions コンテナーと同じ項目) ----------
+const REGION_KINDS = ['country', 'region', 'prefecture', 'ward', 'city'];
+const LEAF_KINDS = ['ward', 'city']; // 拠点が属せる地域の種類
+
+function validateRegions(data) {
+  if (!data || !Array.isArray(data.regions)) throw new Error('地域マスター: regions がありません');
+  const byId = new Map();
+  for (const r of data.regions) {
+    const where = r && r.id ? r.id : JSON.stringify(r);
+    for (const k of ['id', 'name', 'kind']) if (typeof r[k] !== 'string' || !r[k]) throw new Error(`地域マスター ${where}: ${k} が必要です`);
+    if (!/^[a-z0-9-]+$/.test(r.id)) throw new Error(`地域マスター ${r.id}: id は英小文字・数字・ハイフンだけ`);
+    if (byId.has(r.id)) throw new Error(`地域マスター ${r.id}: id が重複`);
+    if (!REGION_KINDS.includes(r.kind)) throw new Error(`地域マスター ${r.id}: kind が不正 ${r.kind}`);
+    if (!(r.parent === null || typeof r.parent === 'string')) throw new Error(`地域マスター ${r.id}: parent は id か null`);
+    byId.set(r.id, r);
+  }
+  for (const r of data.regions) {
+    if (r.kind === 'country') { if (r.parent !== null) throw new Error(`地域マスター ${r.id}: 国に parent はありません`); continue; }
+    if (!r.parent || !byId.has(r.parent)) throw new Error(`地域マスター ${r.id}: parent ${r.parent} がありません`);
+    const expect = { region: 'country', prefecture: 'region', ward: 'prefecture', city: 'prefecture' }[r.kind];
+    if (byId.get(r.parent).kind !== expect) throw new Error(`地域マスター ${r.id}: ${r.kind} の parent は ${expect} であるべき`);
+  }
+  return byId;
+}
+
+let regionsCache = null;
+function loadRegions() {
+  if (regionsCache) return regionsCache;
+  const file = path.join(DATA_DIR, 'regions.json');
+  let data;
+  try { data = JSON.parse(fs.readFileSync(file, 'utf8')); } catch (e) { throw new Error(`地域マスター: 読み込めません (${e.message})`); }
+  const byId = validateRegions(data);
+  const children = {};
+  for (const r of data.regions) if (r.parent) (children[r.parent] ||= []).push(r.id);
+  // 先祖をたどる(国まで)
+  const ancestors = (id) => { const out = []; let cur = byId.get(id); while (cur && cur.parent) { out.push(cur.parent); cur = byId.get(cur.parent); } return out; };
+  regionsCache = { REGIONS: data.regions, KINDS: data.kinds, byId, children, ancestors, VERSION: data.version };
+  return regionsCache;
+}
+
+// Cosmos DB に入れる形(派生値つき)。nodes を渡すと中心・範囲・拠点数・レベル分布を付ける
+function regionDocs(nodes = []) {
+  const { REGIONS, byId, ancestors } = loadRegions();
+  const stats = {};
+  for (const n of nodes) {
+    if (!n.region) continue;
+    for (const rid of [n.region, ...ancestors(n.region)]) {
+      const s = (stats[rid] ||= { count: 0, lat: 0, lon: 0, minLat: 90, maxLat: -90, minLon: 180, maxLon: -180, levels: {} });
+      s.count++; s.lat += n.lat; s.lon += n.lon;
+      s.minLat = Math.min(s.minLat, n.lat); s.maxLat = Math.max(s.maxLat, n.lat);
+      s.minLon = Math.min(s.minLon, n.lon); s.maxLon = Math.max(s.maxLon, n.lon);
+      s.levels[n.level] = (s.levels[n.level] || 0) + 1;
+    }
+  }
+  return REGIONS.map((r) => {
+    const s = stats[r.id];
+    const path = [...ancestors(r.id)].reverse().concat(r.id);
+    return {
+      id: r.id, type: 'region', name: r.name, nameEn: r.nameEn || null, kind: r.kind, kindLabel: loadRegions().KINDS[r.kind],
+      parent: r.parent, path, depth: path.length - 1, status: r.status || 'public', nodeFile: r.nodeFile || null,
+      center: s ? { lat: Number((s.lat / s.count).toFixed(5)), lon: Number((s.lon / s.count).toFixed(5)) } : null,
+      bbox: s ? { minLat: s.minLat, maxLat: s.maxLat, minLon: s.minLon, maxLon: s.maxLon } : null,
+      nodeCount: s ? s.count : 0, levels: s ? s.levels : {},
+      level: null, // 地域そのものを拠点として出すときのレベル(未決: DESIGN.md / LEVELS.md #1)
+    };
+  });
+}
+
 // 読み込んだデータの形を確かめる。おかしければ起動時に止める
 function validate(region, data) {
   if (!data || !Array.isArray(data.nodes)) fail(region, 'nodes がありません');
@@ -19,9 +87,14 @@ function validate(region, data) {
   const sp = data.spawn;
   if (!sp || typeof sp.lat !== 'number' || typeof sp.lon !== 'number' || !(sp.radiusKm > 0)) fail(region, 'spawn が不正です');
   const ids = new Set(), names = new Set();
+  const regions = loadRegions();
   for (const n of data.nodes) {
     const where = n && n.id ? n.id : JSON.stringify(n);
-    for (const k of ['id', 'name', 'kind', 'area']) if (typeof n[k] !== 'string' || !n[k]) fail(region, `${where}: ${k} が必要です`);
+    for (const k of ['id', 'name', 'kind', 'area', 'region']) if (typeof n[k] !== 'string' || !n[k]) fail(region, `${where}: ${k} が必要です`);
+    const reg = regions.byId.get(n.region);
+    if (!reg) fail(region, `${n.id}: region ${n.region} が地域マスターにありません`);
+    if (!LEAF_KINDS.includes(reg.kind)) fail(region, `${n.id}: region は区・市を指すこと(${reg.kind})`);
+    if (reg.name !== n.area) fail(region, `${n.id}: area「${n.area}」と region「${reg.name}」が食い違います`);
     if (!/^[a-z0-9-]+$/.test(n.id)) fail(region, `${n.id}: id は英小文字・数字・ハイフンだけ`);
     if (ids.has(n.id)) fail(region, `${n.id}: id が重複`);
     if (names.has(n.name)) fail(region, `${n.name}: 名称が重複`);
@@ -41,7 +114,7 @@ function loadRegion(region) {
 
   const KINDS = data.kinds;
   const NODES = data.nodes.map((n, i) => ({
-    id: n.id, name: n.name, kind: n.kind, kindLabel: KINDS[n.kind], area: n.area,
+    id: n.id, name: n.name, kind: n.kind, kindLabel: KINDS[n.kind], area: n.area, region: n.region,
     lat: n.lat, lon: n.lon, level: n.level, value: n.value,
     tags: Array.isArray(n.tags) ? n.tags : [],
     // 問題生成に使う架空のネットワーク 10.(i+1).0.0/16(順番で決まる。DB 化したら項目として持つ)
@@ -64,4 +137,4 @@ function loadRegion(region) {
   };
 }
 
-module.exports = { loadRegion, validate };
+module.exports = { loadRegion, validate, loadRegions, validateRegions, regionDocs };
