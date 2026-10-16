@@ -25,7 +25,8 @@ const now = () => Date.now();
 // 拠点マスター(tokyo.js)を DB の拠点ドキュメントの形にする。初回起動時のシードに使う
 function masterToNode(m) {
   return {
-    id: m.id, name: m.name, kind: m.kind, kindLabel: m.kindLabel, area: m.area, tags: m.tags || [],
+    id: m.id, name: m.name, kind: m.kind, kindLabel: m.kindLabel, area: m.area, region: m.region, tags: m.tags || [],
+    hackable: m.hackable !== false,
     lat: m.lat, lon: m.lon, level: m.level, value: m.value,
     subnet: m.subnet, base: m.base,
     status: 'public', isPlayerNode: false, registeredBy: null,
@@ -68,7 +69,8 @@ class World {
   // 公開中の拠点どうしを距離で結び、プレイヤーの拠点は近い拠点につなぐ(拠点が増えても地図が壊れない)
   rebuildLinks() {
     const all = [...this.nodes.values()].filter((n) => n.status === 'public');
-    const masters = all.filter((n) => !n.isPlayerNode);
+    // ハック不可の拠点(寺社・重要インフラ)は表示だけで、線をつながない
+    const masters = all.filter((n) => !n.isPlayerNode && n.hackable !== false);
     const edges = buildLinks(masters, 3);
     for (const h of all.filter((n) => n.isPlayerNode)) {
       for (const m of nearest(masters, h.lat, h.lon, HOME_LINKS)) edges.push({ a: h.id, b: m.id });
@@ -161,6 +163,7 @@ class World {
   canAttack(pid, nodeId) {
     const n = this.nodes.get(nodeId);
     if (!n || n.status !== 'public' || n.owner === pid) return false;
+    if (n.hackable === false) return false;
     if (n.protectedUntil > now()) return false;
     if (n.owner && this.ownedCount(n.owner) <= PROTECT_MAX_NODES) return false;
     return (this.adj[nodeId] || []).some((id) => this.nodes.get(id).owner === pid);
@@ -178,6 +181,7 @@ class World {
   ask(p, nodeId) {
     const n = this.nodes.get(nodeId);
     if (!n || n.status !== 'public') throw new Error('その拠点はありません');
+    if (n.hackable === false) throw new Error('この場所はネットワークにつながっていません(ハックできません)');
     if (now() < p.cooldownUntil) throw new Error('通信が回復するまで少し待ってください');
     let mode;
     if (n.owner === p.id) {
@@ -265,7 +269,7 @@ class World {
       nodes: [...this.nodes.values()].filter((n) => n.status === 'public').map((n) => ({
         id: n.id, name: n.name, kind: n.kind, lat: n.lat, lon: n.lon, level: n.level, value: n.value,
         subnet: n.subnet, owner: n.owner, defense: n.defense, isPlayerNode: n.isPlayerNode,
-        protectedUntil: n.protectedUntil,
+        protectedUntil: n.protectedUntil, hackable: n.hackable !== false,
       })),
       edges: this.edges,
       players: [...this.players.values()].map((p) => ({

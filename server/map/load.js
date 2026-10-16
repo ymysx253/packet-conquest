@@ -119,6 +119,7 @@ function validate(region, data) {
     if (typeof n.lat !== 'number' || typeof n.lon !== 'number' || n.lat < -90 || n.lat > 90 || n.lon < -180 || n.lon > 180) fail(region, `${n.id}: 緯度・経度が不正`);
     if (!Number.isInteger(n.level) || n.level < LEVEL_MIN || n.level > LEVEL_MAX) fail(region, `${n.id}: level は ${LEVEL_MIN}〜${LEVEL_MAX}`);
     if (!Number.isInteger(n.value) || n.value < VALUE_MIN || n.value > VALUE_MAX) fail(region, `${n.id}: value は ${VALUE_MIN}〜${VALUE_MAX}`);
+    if (n.hackable !== undefined && typeof n.hackable !== 'boolean') fail(region, `${n.id}: hackable は true/false`);
   }
 }
 
@@ -132,6 +133,8 @@ function loadRegion(region) {
   const NODES = data.nodes.map((n, i) => ({
     id: n.id, name: n.name, kind: n.kind, kindLabel: KINDS[n.kind], area: n.area, region: n.region,
     lat: n.lat, lon: n.lon, level: n.level, value: n.value,
+    // 存在するがハック不可(寺社、重要インフラ。設計書 8.16 / PLACES.md)。線をつながず攻撃できない
+    hackable: n.hackable !== false,
     tags: Array.isArray(n.tags) ? n.tags : [],
     // 問題生成に使う架空のネットワーク 10.(i+1).0.0/16(順番で決まる。DB 化したら項目として持つ)
     base: ((10 << 24) >>> 0) + (i + 1) * 65536,
@@ -139,7 +142,7 @@ function loadRegion(region) {
   }));
   if (NODES.length > 250) fail(region, '拠点が多すぎます(10.x.0.0/16 は 250 まで)');
 
-  const EDGES = buildLinks(NODES, 3);
+  const EDGES = buildLinks(NODES.filter((n) => n.hackable), 3);
   const byId = Object.fromEntries(NODES.map((n) => [n.id, n]));
   const ADJ = Object.fromEntries(NODES.map((n) => [n.id, []]));
   for (const { a, b } of EDGES) { ADJ[a].push(b); ADJ[b].push(a); }

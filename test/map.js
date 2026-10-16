@@ -18,7 +18,8 @@ for (const n of NODES) {
   assert.ok(Number.isInteger(n.level) && n.level >= 1 && n.level <= 5, `${n.name}: 東京の拠点は Lv1〜5`);
   assert.ok(Number.isInteger(n.value) && n.value >= 1 && n.value <= 999, `${n.name}: 点数は 1〜999`);
   assert.ok(n.value >= n.level - 1, `${n.name}: Lv に対して点数が低すぎる`);
-  assert.ok(ADJ[n.id].length >= 2, `${n.name}: リンクが2本未満`);
+  if (n.hackable) assert.ok(ADJ[n.id].length >= 2, `${n.name}: リンクが2本未満`);
+  else assert.strictEqual(ADJ[n.id].length, 0, `${n.name}: ハック不可の拠点に線がある`);
   assert.ok(typeof n.area === 'string' && n.area, `${n.name}: area がない`);
   assert.match(n.subnet, /^10\.\d+\.0\.0\/16$/);
 }
@@ -27,10 +28,12 @@ for (let i = 0; i < NODES.length; i++) for (let j = i + 1; j < NODES.length; j++
   const d = distanceKm(NODES[i], NODES[j]);
   assert.ok(d >= 0.15, `${NODES[i].name} と ${NODES[j].name} が近すぎます (${d.toFixed(2)} km)`);
 }
-// 連結: どの拠点からも全拠点へ到達できる
-const seen = new Set([NODES[0].id]); const stack = [NODES[0].id];
+// 連結: ハック可能な拠点どうしは、どこからでも全部へ到達できる
+const HACKABLE = NODES.filter((n) => n.hackable);
+assert.ok(HACKABLE.length >= 100 && HACKABLE.length < NODES.length, 'ハック不可の拠点(寺社)がいくつかある');
+const seen = new Set([HACKABLE[0].id]); const stack = [HACKABLE[0].id];
 while (stack.length) for (const m of ADJ[stack.pop()]) if (!seen.has(m)) { seen.add(m); stack.push(m); }
-assert.strictEqual(seen.size, NODES.length, '地図が分断されています');
+assert.strictEqual(seen.size, HACKABLE.length, '地図が分断されています');
 for (const e of EDGES) assert.ok(ADJ[e.a] && ADJ[e.b] && e.a !== e.b, 'リンクの端点が不正');
 // 開始地点の近くに拠点がある
 assert.ok(NODES.some((n) => distanceKm(n, SPAWN_CENTER) < SPAWN_CENTER.radiusKm), '開始地点の近くに拠点がない');

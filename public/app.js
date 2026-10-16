@@ -358,6 +358,7 @@
   function canAttack(id) {
     const n = nodeById(id);
     if (!n || !S.me || n.owner === S.me) return false;
+    if (n.hackable === false) return false;
     if (n.protectedUntil > now()) return false;
     if (n.owner) { const o = playerById(n.owner); if (o && o.nodes <= 3) return false; }
     return adjacent(id).some((a) => ownerOf(a) === S.me);
@@ -413,9 +414,10 @@
         ctx.strokeStyle = C.muted; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
         ctx.beginPath(); ctx.arc(p.x, p.y, ring + 4, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
       }
-      // 黒塗りのレベルは所有者の色(中立なら文字色)で塗る
+      // 黒塗りのレベルは所有者の色(中立なら文字色)で塗る。ハック不可の場所は薄く描く
       const filled = !n.isPlayerNode && SH.isFilled(n.level);
       const col = owner || (filled ? C.ink : C.strong);
+      if (n.hackable === false) ctx.globalAlpha = 0.45;
       ctx.fillStyle = filled ? col : C.surface;
       ctx.strokeStyle = col;
       ctx.lineWidth = owner ? (n.isPlayerNode ? 5 : 7) : (n.isPlayerNode ? 3 : 4);
@@ -443,6 +445,7 @@
         ctx.font = `${n.isPlayerNode ? 500 : 700} ${fs * grow}px "BIZ UDPGothic", sans-serif`;
         ctx.fillText(n.name, p.x, p.y + top + 12 * grow);
       }
+      ctx.globalAlpha = 1;
     }
   }
   // ---------- 拠点の形(設計書 8.8)。描画の本体は shapes.js(形の一覧ページと共有) ----------

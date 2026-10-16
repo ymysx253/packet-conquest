@@ -33,6 +33,14 @@ function solve(world, p, nodeId) {
   const [nb] = w.adj[home.id];
   assert.ok(w.canAttack(a.id, nb), '隣の拠点は攻撃できる');
   assert.ok(!w.canAttack(a.id, 'haneda'), '離れた拠点は攻撃できない');
+  // ハック不可の場所(寺社)は線がなく、隣に置いても攻撃できない
+  const temple = w.nodes.get('meiji-jingu');
+  assert.strictEqual(temple.hackable, false);
+  assert.strictEqual((w.adj['meiji-jingu'] || []).length, 0, 'ハック不可の拠点に線はない');
+  w.adj[home.id].push('meiji-jingu'); w.adj['meiji-jingu'] = [home.id];
+  assert.ok(!w.canAttack(a.id, 'meiji-jingu'));
+  assert.throws(() => w.ask(a, 'meiji-jingu'), /ハックできません/);
+  w.adj[home.id].pop(); w.adj['meiji-jingu'] = [];
   assert.throws(() => w.ask(a, 'haneda'), /つながっている拠点だけ/);
 
   // 問題: 中立は拠点の Lv、答えはクライアントに送らない
