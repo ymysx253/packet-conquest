@@ -180,7 +180,7 @@
     const node = nodeById(q.nodeId);
     const tag = document.createElement('span');
     tag.className = q.mode === 'attack' ? 'tag' : 'tag def';
-    tag.textContent = q.mode === 'attack' ? '攻撃' : '防御強化';
+    tag.textContent = q.mode === 'attack' ? '攻撃' : '強化';
     $('qMode').replaceChildren(tag, document.createTextNode(node ? node.name : ''));
     $('qDiff').textContent = `難易度 Lv${q.level}` + (q.provisional ? '(暫定: この難易度の問題は準備中。いまは Lv3 相当)' : '');
     $('qText').replaceChildren(...highlightIps(q.text));
@@ -427,7 +427,7 @@
       }
       const top = n.isPlayerNode ? r : SH.outerRadius(n.level, r);
 
-      // 防御レベル
+      // 強化の段数
       for (let i = 0; i < n.defense; i++) {
         ctx.fillStyle = C.ink;
         ctx.fillRect(p.x - (n.defense * 8 - 3) / 2 + i * 8, p.y - top - 9, 5, 5);

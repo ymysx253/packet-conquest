@@ -29,7 +29,7 @@ function masterToNode(m) {
     lat: m.lat, lon: m.lon, level: m.level, value: m.value,
     subnet: m.subnet, base: m.base,
     status: 'public', isPlayerNode: false, registeredBy: null,
-    owner: null, defense: Math.min(MAX_DEFENSE, Math.max(0, m.level - 1)), protectedUntil: 0,
+    owner: null, defense: 0, protectedUntil: 0, // 突破は常に正解 1 回。難しさは level(+強化)で決める
     createdAt: now(),
   };
 }
@@ -144,7 +144,7 @@ class World {
       lat: Number(lat.toFixed(5)), lon: Number(lon.toFixed(5)), level: 1, value: 1,
       subnet: `172.${a}.${b}.0/24`, base: ((172 << 24) >>> 0) + (a << 16) + (b << 8),
       status: 'public', isPlayerNode: true, registeredBy: p.id,
-      owner: p.id, defense: 1, protectedUntil: now() + PROTECT_MS, createdAt: now(),
+      owner: p.id, defense: 0, protectedUntil: now() + PROTECT_MS, createdAt: now(),
     };
     this.nodes.set(node.id, node);
     p.homeNodeId = node.id;
@@ -166,9 +166,10 @@ class World {
     return (this.adj[nodeId] || []).some((id) => this.nodes.get(id).owner === pid);
   }
 
-  // 攻撃や強化のときの難易度。中立は拠点のレベル、他人の陣地はレベルと 4 の大きい方(設計書 3.3, 8.8)
+  // 出題レベル。突破は常に正解 1 回で、難しさはレベルだけで決める(設計書 8.8)。
+  // 拠点のレベル + 防御強化の段数。他人の陣地はさらに 4 以上(設計書 3.3)。上限 999
   levelFor(n, mode) {
-    const base = Math.max(1, n.level);
+    const base = Math.min(999, Math.max(1, n.level) + (n.defense || 0));
     if (mode === 'fortify') return base;
     return n.owner ? Math.max(4, base) : base;
   }
@@ -222,17 +223,12 @@ class World {
     if (mode === 'fortify') {
       if (n.owner !== p.id) return `${n.name} はもう自分の拠点ではありません`;
       n.defense = Math.min(MAX_DEFENSE, n.defense + 1);
-      this.addLog(`${p.name} が ${n.name} の防御を Lv${n.defense} に強化`);
+      this.addLog(`${p.name} が ${n.name} を強化(出題 Lv${this.levelFor(n, 'attack')})`);
       this.persistNode(n);
-      return `${n.name} の防御が Lv${n.defense} になりました`;
+      return `${n.name} を強化しました。攻める側の出題は Lv${this.levelFor(n, 'attack')} になります`;
     }
     if (!this.canAttack(p.id, nodeId)) return '状況が変わったため反映されませんでした';
-    if (n.defense > 0) {
-      n.defense -= 1;
-      this.addLog(`${p.name} が ${n.name} の防御を突破中(残り Lv${n.defense})`);
-      this.persistNode(n);
-      return `${n.name} の防御を下げました(残り Lv${n.defense})`;
-    }
+    // 正解 1 回で奪取(強化は回数ではなく出題レベルに効く)
     const prev = n.owner ? this.players.get(n.owner) : null;
     n.owner = p.id;
     n.defense = 0;

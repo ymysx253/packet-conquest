@@ -43,11 +43,11 @@ function solve(world, p, nodeId) {
   assert.ok(!wrong.correct && a.cooldownUntil > Date.now(), '不正解で待ち時間');
   a.cooldownUntil = 0;
 
-  // 防御を削ってから奪取。点数が入る
+  // 突破は正解 1 回。点数が入る
   const target = w.nodes.get(nb);
-  const need = target.defense + 1;
-  for (let i = 0; i < need; i++) solve(w, a, nb);
-  assert.strictEqual(target.owner, a.id, '奪取');
+  assert.strictEqual(target.defense, 0, '中立拠点の強化は 0 から');
+  solve(w, a, nb);
+  assert.strictEqual(target.owner, a.id, '正解 1 回で奪取');
   assert.strictEqual(a.points, target.value, '累計点が増える');
   assert.strictEqual(w.score(a.id), home.value + target.value);
 
@@ -82,11 +82,23 @@ function solve(world, p, nodeId) {
   assert.strictEqual(w.ownedCount(b.id), 1);
   assert.strictEqual(b.points, 7, '記録は残る');
 
-  // 強化: 自分の拠点の防御を上げる。上限3
-  home.defense = 2;
+  // 強化: 回数ではなく出題レベルを上げる。上限3段
+  home.defense = 0;
+  const before1 = w.levelFor(home, 'fortify');
   solve(w, a, home.id);
-  assert.strictEqual(home.defense, 3);
+  assert.strictEqual(home.defense, 1);
+  assert.strictEqual(w.levelFor(home, 'fortify'), before1 + 1, '強化で出題レベルが 1 上がる');
+  assert.strictEqual(w.levelFor(home, 'attack'), Math.max(4, before1 + 1), '他人の陣地は 4 以上');
+  home.defense = 3;
   assert.throws(() => w.ask(a, home.id), /最大/);
+  // 強化した拠点も正解 1 回で落ちる(難しさはレベルだけ)
+  const fortified = w.nodes.get('tokyo-dome'); fortified.owner = null; fortified.defense = 2;
+  w.edges.push({ a: home.id, b: 'tokyo-dome' }); w.adj[home.id].push('tokyo-dome'); w.adj['tokyo-dome'].push(home.id);
+  assert.strictEqual(w.ask(a, 'tokyo-dome').level, fortified.level + 2);
+  a.pending = null;
+  solve(w, a, 'tokyo-dome');
+  assert.strictEqual(fortified.owner, a.id, '強化済みでも正解 1 回で奪取');
+  assert.strictEqual(fortified.defense, 0, '奪取で強化はリセット');
 
   // 復帰コード: 同じトークンで同じプレイヤーに戻る。切断中も拠点は残る
   w.disconnect(a);
