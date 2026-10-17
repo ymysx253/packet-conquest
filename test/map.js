@@ -11,7 +11,8 @@ assert.strictEqual(REGION, 'tokyo');
 assert.ok(NODES.length >= 60, '都内の拠点が少なすぎます');
 assert.strictEqual(new Set(NODES.map((n) => n.id)).size, NODES.length, 'id が重複');
 assert.strictEqual(new Set(NODES.map((n) => n.name)).size, NODES.length, '名称が重複');
-assert.strictEqual(new Set(NODES.map((n) => n.subnet)).size, NODES.length, 'サブネットが重複');
+// 架空ネットワークは id から決定的に作るので重複してよい(DESIGN.md 第 13 章)。代わりにタイルと国を確認
+for (const n of NODES) { assert.strictEqual(n.country, 'japan'); for (let z = 0; z <= 4; z++) assert.match(n['t' + z], new RegExp('^t' + z + ':-?\\d+:-?\\d+$')); assert.match(n.subnet, /^10\.\d+\.\d+\.0\/20$/); assert.strictEqual(n.span, 4094); }
 for (const n of NODES) {
   assert.ok(KINDS[n.kind], `${n.name}: kind が不正 ${n.kind}`);
   assert.ok(n.lat > 35.4 && n.lat < 35.9 && n.lon > 139.0 && n.lon < 140.0, `${n.name}: 東京の範囲外`);

@@ -4,7 +4,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { buildLinks, nearest } = require('./geo');
+const { buildLinks, nearest, tileFields, addrOf } = require('./geo');
 
 const DATA_DIR = path.join(__dirname, 'data');
 const LEVEL_MIN = 1, LEVEL_MAX = 999; // 1〜10 が基本(国は 10)。11〜999 は拡張用。形は public/shapes.js
@@ -137,18 +137,17 @@ function loadRegion(region) {
   const KINDS = data.kinds;
   const NODES = data.nodes.map((n, i) => ({
     id: n.id, name: n.name, genre: n.genre, alias: n.alias || null, kind: n.kind, kindLabel: KINDS[n.kind], area: n.area, region: n.region,
+    country: loadRegions().countryOf(n.region),
+    ...tileFields(n.lat, n.lon),
     lat: n.lat, lon: n.lon, level: n.level, value: n.value,
     // 存在するがハック不可(寺社、重要インフラ。設計書 8.16 / PLACES.md)。線をつながず攻撃できない
     hackable: n.hackable !== false,
     lines: Array.isArray(n.lines) ? n.lines : [], // 駅の路線(事業者 路線名)。取り込み元: 国土数値情報
     tags: Array.isArray(n.tags) ? n.tags : [],
     // 問題生成に使う架空のネットワーク 10.(i+1).0.0/16(順番で決まる。DB 化したら項目として持つ)
-    // 問題生成に使う架空のネットワーク。10.0.0.0/8 を /20 ずつ割り当てる(4096 拠点まで。順番で決まる。DB 化したら項目として持つ)
-    base: ((10 << 24) >>> 0) + (i + 1) * 4096,
-    span: 4094,
-    subnet: `10.${((i + 1) >> 4) & 255}.${((i + 1) & 15) << 4}.0/20`,
+    // 問題生成に使う架空のネットワーク。拠点 id から決定的に決める(上限なし。DESIGN.md 第 13 章)
+    ...addrOf(n.id),
   }));
-  if (NODES.length > 4000) fail(region, '拠点が多すぎます(10.0.0.0/8 を /20 で割ると 4000 まで)');
 
   const EDGES = buildLinks(NODES.filter((n) => n.hackable), 3);
   const byId = Object.fromEntries(NODES.map((n) => [n.id, n]));
@@ -164,4 +163,18 @@ function loadRegion(region) {
   };
 }
 
-module.exports = { loadRegion, validate, loadRegions, validateRegions, regionDocs, GENRES };
+// Cosmos DB の nodes に入れる形(docs/DB.md 3.2)。ゲーム状態の初期値つき
+function nodeDocs(nodes, now = Date.now()) {
+  return nodes.map((m) => ({
+    id: m.id, type: 'node', name: m.name, genre: m.genre, alias: m.alias || null, kind: m.kind, kindLabel: m.kindLabel,
+    area: m.area, country: m.country, region: m.region, lat: m.lat, lon: m.lon,
+    location: { type: 'Point', coordinates: [m.lon, m.lat] },
+    t0: m.t0, t1: m.t1, t2: m.t2, t3: m.t3, t4: m.t4,
+    level: m.level, value: m.value, hackable: m.hackable !== false, lines: m.lines || [], tags: m.tags || [],
+    subnet: m.subnet, base: m.base, span: m.span,
+    status: 'public', isPlayerNode: false, registeredBy: null, sponsorId: null,
+    owner: null, defense: 0, protectedUntil: 0, createdAt: now, updatedAt: now,
+  }));
+}
+
+module.exports = { loadRegion, validate, loadRegions, validateRegions, regionDocs, nodeDocs, GENRES };

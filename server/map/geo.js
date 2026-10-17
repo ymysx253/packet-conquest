@@ -1,6 +1,5 @@
 'use strict';
-// 緯度・経度を扱う共通処理。描画座標への変換と、距離にもとづくリンクの自動生成。
-// 拠点マスターは緯度・経度だけを持ち、画面上の位置はここで計算する。
+// 緯度・経度を扱う共通処理。距離、投影、リンクの自動生成、タイル(画面の範囲だけ読み込む単位)、架空ネットワークの割り当て。
 
 const EARTH_KM = 6371;
 const toRad = (deg) => (deg * Math.PI) / 180;
@@ -14,8 +13,7 @@ function distanceKm(a, b) {
   return 2 * EARTH_KM * Math.asin(Math.sqrt(h));
 }
 
-// 正距円筒図法。中心の緯度で横方向を補正し、余白を残して width x height に収める。
-// 戻り値は x, y を足した新しい配列(元の配列は変えない)
+// 正距円筒図法。中心の緯度で横方向を補正し、余白を残して width x height に収める(テストと一覧用)
 function project(nodes, { width, height, margin = 60 }) {
   if (!nodes.length) return [];
   const lats = nodes.map((n) => n.lat);
@@ -35,7 +33,7 @@ function project(nodes, { width, height, margin = 60 }) {
   }));
 }
 
-// 各拠点を近い順に k 個とつなぐ。全体が1つにつながっていなければ、最短の橋を足す
+// 全拠点を対象に、各拠点を近い順に k 個とつなぎ、分断があれば最短の橋を足す(小さな地図・検証用。件数の 2 乗)
 function buildLinks(nodes, k = 3) {
   const key = (a, b) => (a < b ? `${a}|${b}` : `${b}|${a}`);
   const edges = new Set();
@@ -46,7 +44,6 @@ function buildLinks(nodes, k = 3) {
       .slice(0, k)
       .forEach((m) => edges.add(key(n.id, m.id)));
   }
-  // 連結判定(Union-Find)
   const parent = Object.fromEntries(nodes.map((n) => [n.id, n.id]));
   const find = (x) => (parent[x] === x ? x : (parent[x] = find(parent[x])));
   const union = (a, b) => { parent[find(a)] = find(b); };
@@ -66,36 +63,42 @@ function buildLinks(nodes, k = 3) {
   return [...edges].map((s) => { const [a, b] = s.split('|'); return { a, b }; });
 }
 
-// 指定した地点に近い拠点を k 個返す(プレイヤー専用ノードの接続先を決めるときに使う)
+// 指定した地点に近い拠点を k 個返す
 function nearest(nodes, lat, lon, k = 2) {
   return nodes.map((n) => ({ node: n, d: distanceKm({ lat, lon }, n) }))
     .sort((a, b) => a.d - b.d).slice(0, k).map((x) => x.node);
 }
 
-module.exports = { distanceKm, project, buildLinks, nearest };
-
-// ---------- タイル(設計書 第 13 章): 緯度 0.025° × 経度 0.03° の格子。画面の範囲だけ読み込む単位 ----------
+// ---------- タイル(設計書 第 13 章): 画面の範囲だけ読み込む単位。拡大率に応じて 5 段の粗さ ----------
+// z0 = 緯度 0.025° × 経度 0.03°(約 2.8 km)。z が 1 上がるごとに 4 倍(z4 は 6.4° × 7.68°)
 const TILE_LAT = 0.025;
 const TILE_LON = 0.03;
-const tileOf = (lat, lon) => `t:${Math.floor(lat / TILE_LAT)}:${Math.floor(lon / TILE_LON)}`;
-const parseTile = (t) => { const [, y, x] = t.split(':'); return { y: Number(y), x: Number(x) }; };
-const tileKey = (y, x) => `t:${y}:${x}`;
+const ZOOMS = [0, 1, 2, 3, 4];
+// 段ごとに表示・読み込みする最小レベル(DESIGN.md 第 13 章の表)
+const MIN_LEVEL_BY_Z = { 0: 1, 1: 2, 2: 4, 3: 50, 4: 400 };
+const tileSize = (z) => ({ lat: TILE_LAT * 4 ** z, lon: TILE_LON * 4 ** z });
+const tileKey = (z, y, x) => `t${z}:${y}:${x}`;
+const tileOf = (lat, lon, z = 0) => { const s = tileSize(z); return tileKey(z, Math.floor(lat / s.lat), Math.floor(lon / s.lon)); };
+const parseTile = (t) => { const m = /^t(\d):(-?\d+):(-?\d+)$/.exec(String(t)); return m ? { z: Number(m[1]), y: Number(m[2]), x: Number(m[3]) } : null; };
 // 周囲 r 周ぶんのタイル(自分を含む)
 function tilesAround(t, r = 1) {
-  const { y, x } = parseTile(t);
+  const p = parseTile(t); if (!p) return [];
   const out = [];
-  for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) out.push(tileKey(y + dy, x + dx));
+  for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) out.push(tileKey(p.z, p.y + dy, p.x + dx));
   return out;
 }
-// 範囲に含まれるタイル。多すぎる(縮小しすぎ)ときは null
-function tilesInBbox({ minLat, maxLat, minLon, maxLon }, max = 80) {
-  const y0 = Math.floor(minLat / TILE_LAT), y1 = Math.floor(maxLat / TILE_LAT);
-  const x0 = Math.floor(minLon / TILE_LON), x1 = Math.floor(maxLon / TILE_LON);
+// 範囲に含まれるタイル(段 z)。多すぎるときは null
+function tilesInBbox({ minLat, maxLat, minLon, maxLon }, z = 0, max = 80) {
+  const s = tileSize(z);
+  const y0 = Math.floor(minLat / s.lat), y1 = Math.floor(maxLat / s.lat);
+  const x0 = Math.floor(minLon / s.lon), x1 = Math.floor(maxLon / s.lon);
   if ((y1 - y0 + 1) * (x1 - x0 + 1) > max) return null;
   const out = [];
-  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) out.push(tileKey(y, x));
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) out.push(tileKey(z, y, x));
   return out;
 }
+// 全段のタイル id(拠点ドキュメントの t0〜t4)
+function tileFields(lat, lon) { const o = {}; for (const z of ZOOMS) o[`t${z}`] = tileOf(lat, lon, z); return o; }
 // タイル内の各拠点を、候補(そのタイル + 周囲)の中で近い k 個とつなぐ。総当たりをしない
 function linksForTile(tileNodes, candidates, k = 3) {
   const key = (a, b) => (a < b ? `${a}|${b}` : `${b}|${a}`);
@@ -114,17 +117,13 @@ function linksForTile(tileNodes, candidates, k = 3) {
 function hash32(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 // 10.0.0.0/8 の中の /20(4096 通り)
 function addrOf(id) {
-  const n = hash32(id) % 4096;
+  const n = hash32(String(id)) % 4096;
   const base = ((10 << 24) >>> 0) + n * 4096;
   return { base, span: 4094, subnet: `10.${(n >> 4) & 255}.${(n & 15) << 4}.0/20` };
 }
 
-module.exports.TILE_LAT = TILE_LAT;
-module.exports.TILE_LON = TILE_LON;
-module.exports.tileOf = tileOf;
-module.exports.parseTile = parseTile;
-module.exports.tilesAround = tilesAround;
-module.exports.tilesInBbox = tilesInBbox;
-module.exports.linksForTile = linksForTile;
-module.exports.hash32 = hash32;
-module.exports.addrOf = addrOf;
+module.exports = {
+  distanceKm, project, buildLinks, nearest,
+  TILE_LAT, TILE_LON, ZOOMS, MIN_LEVEL_BY_Z, tileSize, tileKey, tileOf, parseTile, tilesAround, tilesInBbox, tileFields, linksForTile,
+  hash32, addrOf,
+};
