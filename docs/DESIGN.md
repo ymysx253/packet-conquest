@@ -2,7 +2,7 @@
 
 最終更新: 2026-10-17(全面整理。追記で古くなった記述を現状に合わせて書き直した。決定の経緯は第 9 章)
 
-関連文書: レベル定義 1〜999 は `docs/LEVELS.md`、名所のジャンルは `docs/PLACES.md`、不正耐性は `docs/SECURITY.md`。
+関連文書: レベル定義 1〜999 は `docs/LEVELS.md`、名所のジャンルは `docs/PLACES.md`、不正耐性は `docs/SECURITY.md`、データベース構成は `docs/DB.md`。
 
 ---
 
@@ -167,7 +167,7 @@ test/                       check(3 万問) basics(2 万問) map shapes world e2
 
 | 課題 | 方針 |
 |---|---|
-| 保存 | Azure Cosmos DB(NoSQL API)。人気が出るまで無料枠。コンテナー: `regions`(`/parent`)、`nodes`(`/region`)、`players`(`/id`)、`questions`(`/nodeId`)、`sponsors`。状態はサーバーのメモリに持ち、変更時に書き込む。手元は Cosmos DB エミュレーター |
+| 保存 | Azure Cosmos DB(NoSQL API)。アカウント `packet-conquest` を作成済み(2026-10-17)。コンテナーとドキュメントの形は `docs/DB.md`。状態はサーバーのメモリに持ち、変更時に書き込む。手元はエミュレーターか別データベース `pc-dev` |
 | 配信 | 接続時に全体、以後は差分(手順 6)。トラップ導入後はプレイヤー別の配信(他人の設置物を送らない) |
 | 複数台 | フェーズ 4 で Azure Web PubSub または Azure Cache for Redis で共有 |
 | 言語 | JavaScript。TypeScript への移行はフェーズ 4 で検討 |
