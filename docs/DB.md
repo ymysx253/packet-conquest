@@ -75,7 +75,7 @@
 ```
 
 - `kind` と `tier`: universe 0 / body 1 / continent 2 / country 3 / region 4 / state 5 / city 6 / district 7。親は自分より浅い段
-- `level`: 地域そのものを拠点として出すときの基礎レベル。国は 777(決定)。他は未決のため null
+- `level`: 使わない(2026-10-18: 地域は拠点ではなく配下の拠点の集まりになった。DESIGN.md 第 14 章)。null のまま残し、将来の用途がなければ削る
 - 派生値(center、bbox、nodeCount、levels)は保存時に計算して入れる。拠点が増えたら再計算
 
 ### 3.2 `nodes`(拠点マスター + ゲーム状態。`load.js` の NODES と `world.js` の `masterToNode` / `spawnHome`)
