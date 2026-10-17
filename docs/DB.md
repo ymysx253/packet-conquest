@@ -246,3 +246,10 @@
 
 ポータルのデータ エクスプローラーでは共有スループットのデータベースが作れないことがある。その場合は `infra/cosmos-database.json`(ARM テンプレート)を「カスタム テンプレートのデプロイ」に貼り付ける。データベース(共有 1000 RU/s)と 4 つのコンテナー(nodes は階層キー `/country`,`/region`)が一度にできる。既に同名のデータベースが共有スループットなしで存在するときは、先に削除する。
 データの投入は、データ エクスプローラーの各コンテナーの Items → Upload Item で `data/export/regions.json`、`nodes-01.json`〜`nodes-04.json` を選ぶ(ファイルは `tools/db-setup.js` と同じ内容を JSON にしたもの。`data/` は Git 管理外)。
+
+## 10. 作成の記録(2026-10-17)
+
+- アカウント `packet-conquest`(Japan East、プロビジョニング済み、Free レベル、合計上限 1000 RU/s、ネットワークはすべて許可、連続バックアップ 7 日)
+- データベース `packet-conquest` は **カスタム テンプレートのデプロイ**(`infra/cosmos-database.json`)で作成(共有 1000 RU/s)。データ エクスプローラーの New Container / New Database には共有スループットの選択肢が出なかったため(Free や上限が原因ではなく、ポータルの画面の仕様)
+- コンテナー: `nodes`(階層 /country, /region)、`regions`(/parent)、`players`(/id)、`questions`(/nodeId)はテンプレートで、`sessions`(/playerId)、`events`(/day)、`sponsors`(/id)はデータ エクスプローラーから「専用スループットをプロビジョニングする」のチェックを外して追加。合計 7 つ、スループットは共有 1000 のまま
+- データ投入は Upload Item(`data/export/regions.json` 56 件、`nodes-01〜04.json` 715 件)。重複時は「already exists」で弾かれるだけで害はない
