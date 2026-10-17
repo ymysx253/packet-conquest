@@ -58,6 +58,8 @@ server/store.js             保存口(メモリ版。Cosmos DB 版を追加予�
 server/questions/index.js   レベル → 生成器の対応(1 か所)
 server/questions/subnet.js  Lv1〜3 サブネット計算
 server/questions/basics.js  Lv4〜10 の知識
+server/questions/data/terms.json   技術用語マスター(標準名とベンダー固有名の対応。解説の併記に使う)
+server/questions/data/devices.json 機器種別マスター(架空メーカー PC ネットワークス。名前の付け方・コマンド・設定の範囲)
 server/map/data/regions.json 地域マスター(宇宙 → 天体 → 大陸 → 国 → 地方 → 州 → 市区)
 server/map/data/tokyo.json  東京の拠点マスター(DB の nodes と同じ項目)
 server/map/load.js          読み込み・検証・保存用の形(regionDocs)
@@ -137,7 +139,7 @@ test/                       check(3 万問) basics(2 万問) map shapes world e2
 - ターミナルはゲーム内の架空ネットワークだけで動く模擬環境。実在のシステムには一切つながらない
 - 実在の場所の名前は名所として使うが、ネットワークと機器はすべて架空。実在企業は無断で出さない(スポンサー拠点は本人の同意と審査を経た例外)。実在サーバーのアドレスは載せない(文書用・プライベート範囲のみ)
 - 本物のシステムに使える攻撃手順、攻撃ツールの用法、検知回避は、問題・解説・設計書のどこにも書かない。高レベル帯は守る側の解析と、架空の構成を読み解くパズルに限る
-- ベンダー固有のプロトコル名(HSRP、EIGRP など)や製品由来の用語は技術用語として使ってよい。ロゴは使わず、クレジットに商標の帰属を記し、解説で標準名を併記する
+- ベンダー固有のプロトコル名(HSRP、EIGRP など)や製品由来の用語は技術用語として使ってよい。ロゴは使わず、クレジットに商標の帰属を記し、解説で標準名を併記する。対応表は `server/questions/data/terms.json`(標準名・独自名・併記の注記)、ゲーム内の機器は `devices.json`(架空メーカー「PC ネットワークス」、名前の付け方、使えるコマンド)
 
 ### 3.8 収益モデル: スポンサー拠点
 

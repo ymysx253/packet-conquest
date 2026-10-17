@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-17",
+  "note": "機器種別マスター。ゲーム内の架空ネットワーク(拠点の中身)に登場する機器の種類と、問題・ターミナル・設定で使う名前の付け方。実在メーカーの製品名は使わない。メーカーは架空の「PC ネットワークス」1 社に統一し、設定の文法は実務でよく使われる構文に似せたゲーム専用の簡略文法(DESIGN.md 3.7)。Cosmos DB の devices コンテナーと同じ項目(1 行 = 1 ドキュメント)。",
+  "vendor": { "id": "pcn", "name": "PC ネットワークス", "note": "架空メーカー。すべての機器はこの社の架空モデル名を持つ" },
+  "naming": {
+    "hostname": "<種別の略号><番号>(例: R1、SW2、FW1)。拠点をまたぐときは <拠点略号>-<略号><番号>(例: HQ-R1、BR2-SW1)",
+    "interface": "ルータ: Gi0/0, Gi0/1 … / スイッチ: Gi1/0/1 … / 無線 AP: Wlan0 / 仮想: Eth0",
+    "management": "管理アドレスは拠点の架空ネットワークの .254 側、ホストは .1 から"
+  },
+  "devices": [
+    { "id": "router", "abbr": "R", "name": "ルータ", "nameEn": "Router", "layer": 3, "roles": ["経路制御", "NAT", "ACL", "DHCP リレー", "トンネル"], "commands": ["show ip route", "show ip interface brief", "show access-lists", "show ip nat translations", "ping", "traceroute"], "configScope": ["interface", "ip route", "router ospf", "router bgp", "access-list", "ip nat"], "levelHint": "7〜10、120〜129、400〜499", "model": "PCN-R100 / R200 / R400" },
+    { "id": "l2switch", "abbr": "SW", "name": "L2 スイッチ", "nameEn": "Layer 2 switch", "layer": 2, "roles": ["MAC 学習", "VLAN", "トランク", "STP", "リンク集約", "802.1X"], "commands": ["show mac address-table", "show vlan", "show interfaces trunk", "show spanning-tree", "show etherchannel summary"], "configScope": ["vlan", "interface", "switchport", "spanning-tree", "channel-group"], "levelHint": "100〜109、130〜139、150〜159、400〜409", "model": "PCN-S24 / S48" },
+    { "id": "l3switch", "abbr": "L3SW", "name": "L3 スイッチ", "nameEn": "Layer 3 switch", "layer": 3, "roles": ["VLAN 間ルーティング(SVI)", "経路制御", "ACL"], "commands": ["show ip route", "show vlan", "show interface vlan"], "configScope": ["interface vlan", "ip routing", "router ospf"], "levelHint": "130〜139、400〜409", "model": "PCN-L3-48" },
+    { "id": "firewall", "abbr": "FW", "name": "ファイアウォール", "nameEn": "Firewall", "layer": 4, "roles": ["ゾーン", "ステートフル検査", "NAT", "VPN 終端", "ログ"], "commands": ["show zone", "show policy", "show session", "show log"], "configScope": ["zone", "policy", "nat", "vpn"], "levelHint": "360〜369、560〜569", "model": "PCN-FW300 / FW600" },
+    { "id": "ap", "abbr": "AP", "name": "無線アクセスポイント", "nameEn": "Wireless access point", "layer": 2, "roles": ["SSID", "WPA2/WPA3", "VLAN 割り当て"], "commands": ["show wlan", "show clients"], "configScope": ["wlan", "security"], "levelHint": "130〜139、240〜249(設定)", "model": "PCN-AP6" },
+    { "id": "wlc", "abbr": "WLC", "name": "無線コントローラ", "nameEn": "Wireless LAN controller", "layer": 2, "roles": ["AP の集中管理", "認証方式", "VLAN 割り当て"], "commands": ["show ap summary", "show wlan summary"], "configScope": ["wlan", "radius"], "levelHint": "400〜499", "model": "PCN-WLC" },
+    { "id": "lb", "abbr": "LB", "name": "ロードバランサ", "nameEn": "Load balancer", "layer": 7, "roles": ["L4/L7 振り分け", "ヘルスチェック", "TLS 終端"], "commands": ["show vserver", "show pool"], "configScope": ["vserver", "pool", "health"], "levelHint": "640〜649", "model": "PCN-LB" },
+    { "id": "proxy", "abbr": "PX", "name": "プロキシ", "nameEn": "Proxy", "layer": 7, "roles": ["HTTP 中継", "ログ", "URL フィルタ"], "commands": ["show proxy log"], "configScope": ["proxy"], "levelHint": "250〜259、750〜759", "model": "PCN-PX" },
+    { "id": "ids", "abbr": "IDS", "name": "侵入検知装置", "nameEn": "Intrusion detection system", "layer": 7, "roles": ["ゲーム内の検知ルール", "通知"], "commands": ["show rules", "show alerts"], "configScope": ["rule"], "levelHint": "780〜789、800〜899", "model": "PCN-IDS", "note": "ルール言語は実機に変換できない簡略文法(LEVELS.md 第 5 章 RuleEngine)" },
+    { "id": "dns", "abbr": "DNS", "name": "DNS サーバー", "nameEn": "DNS server", "layer": 7, "roles": ["権威", "再帰(キャッシュ)"], "commands": ["dig", "nslookup"], "configScope": ["zone"], "levelHint": "220〜239、410〜419", "model": "PCN-DNS" },
+    { "id": "dhcp", "abbr": "DHCP", "name": "DHCP サーバー", "nameEn": "DHCP server", "layer": 7, "roles": ["プール", "予約", "リレー先"], "commands": ["show ip dhcp binding"], "configScope": ["ip dhcp pool"], "levelHint": "210〜219、400〜409", "model": "PCN-DHCP" },
+    { "id": "host", "abbr": "PC", "name": "ホスト(端末)", "nameEn": "Host", "layer": 7, "roles": ["ping", "traceroute", "arp", "nslookup", "ipconfig / ip addr", "route add"], "commands": ["ping", "tracert", "traceroute", "ipconfig", "ip addr", "ip route", "route add", "arp -a", "ip neigh", "nslookup", "dig", "netstat", "ss", "curl"], "configScope": [], "levelHint": "100〜199", "model": null },
+    { "id": "server", "abbr": "SRV", "name": "サーバー", "nameEn": "Server", "layer": 7, "roles": ["Web", "メール", "NTP", "syslog 受信"], "commands": ["curl", "show log"], "configScope": [], "levelHint": "250〜299", "model": null },
+    { "id": "honeypot", "abbr": "HP", "name": "ハニーポット(おとり)", "nameEn": "Honeypot", "layer": 7, "roles": ["本物に見せかけた応答", "攻めた側の拠点を失わせる罠"], "commands": [], "configScope": [], "levelHint": "760〜769、830〜839", "model": "PCN-HP", "note": "ゲーム内のトラップ。見分け方は設定の不自然さ・応答の癖(LEVELS.md 700 台)" },
+    { "id": "cloud-vnet", "abbr": "VNET", "name": "PC クラウド 仮想ネットワーク", "nameEn": "PC Cloud virtual network", "layer": 3, "roles": ["サブネット", "ルートテーブル", "セキュリティグループ", "ゲートウェイ"], "commands": ["pccloud show vnet", "pccloud show route-table", "pccloud show flow-log"], "configScope": ["vnet", "subnet", "sg", "route-table"], "levelHint": "600〜699", "model": null, "note": "架空のクラウド。実在サービス名は出さない" }
+  ]
+}
