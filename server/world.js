@@ -71,7 +71,10 @@ class World {
     const all = [...this.nodes.values()].filter((n) => n.status === 'public');
     // ハック不可の拠点(寺社・重要インフラ)は表示だけで、線をつながない
     const masters = all.filter((n) => !n.isPlayerNode && n.hackable !== false);
-    const edges = buildLinks(masters, 3);
+    // 固定の拠点どうしのリンクは重い(拠点数の 2 乗)ので、拠点の顔ぶれが変わらない限り使い回す
+    const key = masters.map((n) => n.id).join(',');
+    if (this.masterLinkKey !== key) { this.masterEdges = buildLinks(masters, 3); this.masterLinkKey = key; }
+    const edges = this.masterEdges.slice();
     for (const h of all.filter((n) => n.isPlayerNode)) {
       for (const m of nearest(masters, h.lat, h.lon, HOME_LINKS)) edges.push({ a: h.id, b: m.id });
     }

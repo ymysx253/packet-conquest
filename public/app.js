@@ -233,7 +233,7 @@
     : 11 + Math.min(10, n.level) * 0.6 + Math.min(9, Math.floor((n.level - 1) / 10)) * 0.4 + Math.min(9, Math.floor((n.level - 1) / 100)) * 0.8);
   // k: 仮想座標 → 画面ピクセルの倍率。tx, ty: 画面の左上にある仮想座標。fit: 全体が収まる倍率
   const V = { k: 1, tx: 0, ty: 0, fit: 1, w: 0, h: 0 };
-  const ZOOM_MIN = 0.7, ZOOM_MAX = 8; // fit に対する比
+  const ZOOM_MIN = 0.7, ZOOM_MAX = 16; // fit に対する比(拠点が密なので大きく寄れるようにする)
   const toScreen = (p) => ({ x: (p.x - V.tx) * V.k, y: (p.y - V.ty) * V.k });
   const toWorld = (sx, sy) => ({ x: sx / V.k + V.tx, y: sy / V.k + V.ty });
   const zoomRatio = () => V.k / V.fit;
@@ -285,7 +285,7 @@
     if (!S.state) return;
     const mine = S.state.nodes.find((n) => n.owner === S.me && n.isPlayerNode) || S.state.nodes.find((n) => n.owner === S.me);
     const p = mine && S.pos[mine.id];
-    if (p) centerOn(p, Math.max(2.6, zoomRatio()));
+    if (p) centerOn(p, Math.max(5, zoomRatio()));
   }
   $('zoomIn').onclick = () => zoomAt(1.4, V.w / 2, V.h / 2);
   $('zoomOut').onclick = () => zoomAt(1 / 1.4, V.w / 2, V.h / 2);
@@ -436,8 +436,8 @@
       }
       // 名称。縮小時は重要な拠点と自分の拠点だけ
       const showLabel = n.isPlayerNode
-        ? (ratio >= 1.8 || n.owner === S.me)
-        : (ratio >= 1.25 || n.level >= 3 || n.kind === 'IX' || n.kind === 'GW' || n.owner === S.me);
+        ? (ratio >= 4 || n.owner === S.me)
+        : (ratio >= 4 || (ratio >= 2 && n.level >= 2) || n.level >= 4 || n.kind === 'IX' || n.kind === 'GW' || n.owner === S.me);
       if (showLabel) {
         ctx.textAlign = 'center';
         ctx.fillStyle = n.isPlayerNode ? C.muted : C.ink;
