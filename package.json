@@ -8,10 +8,12 @@
   },
   "scripts": {
     "start": "node server/index.js",
-    "test": "node test/check.js && node test/basics.js && node test/map.js && node test/shapes.js && node test/terms.js && node test/world.js",
+    "test": "node test/check.js && node test/basics.js && node test/map.js && node test/shapes.js && node test/terms.js && node test/world.js && node test/cosmos.js",
+    "db:setup": "node tools/db-setup.js",
     "test:e2e": "node test/e2e.js"
   },
   "dependencies": {
+    "@azure/cosmos": "^4.10.1",
     "ws": "^8.18.0"
   },
   "private": true,

@@ -234,3 +234,10 @@
 **パーティションキーについて(2026-10-17 補足)**: `/region` は区・市ごとに分かれる(東京だけで 50 の値)ので 1 つの箱にはならない。ただしパーティションキーはコンテナー作成後に変えられないため、`nodes` は最初から階層パーティションキー `[/country, /region]` で作る。拠点ドキュメントには `country` を持たせる(地域マスターの `country` を保存時に写す)。`regions` は `/parent` のままでよい(件数が少ない)。
 
 **2026-10-17 追記(DESIGN.md 第 13 章)**: 全件を起動時に読まない。拠点に `tile`(緯度 0.025° × 経度 0.03° の格子の id、例 `t:1427:4659`)を持たせ、`country` + `tile IN (...)` で画面に見えている範囲だけ読む。`tile` にはインデックスを残す。プレイヤー ドキュメントに `score` と `nodesOwned` の集計値を持ち、ランキングは `players` を `score` の降順で読む(`score` の範囲インデックス)。架空ネットワーク(`subnet` / `base`)は拠点 id から決定的に作るので保存しなくてよい(表示用に `subnet` だけ残す)。
+
+## 8. 実装(2026-10-17)
+
+- `server/store-cosmos.js`: 保存口の Cosmos 版。`ensure()` がデータベース(共有 1000 RU/s)とコンテナーを「あれば使う、なければ作る」。`loadTiles` は `country`(階層キーの 1 段目)で絞って `t<z> IN (...)` と `level >= 最小`
+- `tools/db-setup.js`(`npm.cmd run db:setup -- --db pc-dev`): regions を上書き、nodes は空なら全部、`--force` でマスター項目だけ更新(owner / defense などのゲーム状態は保つ)
+- `server/env.js`: `.env` を読む(Git 管理外)。`.env.example` が雛形
+- `test/cosmos.js`: 接続文字列があるときだけ、一時データベース `pc-test` で読み書きと復元を検証して削除する

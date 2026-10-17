@@ -6,6 +6,8 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { WebSocketServer } = require('ws');
+const { loadEnv } = require('./env');
+loadEnv();
 const { World } = require('./world');
 const { createStore } = require('./store');
 
