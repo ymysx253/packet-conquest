@@ -365,7 +365,8 @@
   // 拠点を選ぶ: どの拠点でも情報パネルに出す。攻撃・強化できる拠点なら出題も求める
   function tapAt(pt) {
     const n = nodeAt(pt);
-    if (!n || !S.joined) return;
+    if (!S.joined) return;
+    if (!n) { S.selected = null; renderSelected(); return; } // 何もない場所: 選択を外す
     S.selected = n.id;
     renderSelected();
     const actionable = canAttack(n.id) || (n.owner === S.me && n.defense < 3);
@@ -446,7 +447,9 @@
 
     // 拠点(駅)。縮小時は名前を減らして見やすくする
     const pulse = 0.5 + 0.5 * Math.sin(t / 260);
-    const sorted = [...S.state.nodes].sort((a, b) => (a.isPlayerNode ? 0 : 1) - (b.isPlayerNode ? 0 : 1));
+    // 描く順: プレイヤーの拠点 → 固定拠点 → 選択中の拠点(最前面)
+    const rank = (n) => (n.id === S.selected ? 2 : n.isPlayerNode ? 0 : 1);
+    const sorted = [...S.state.nodes].sort((a, b) => rank(a) - rank(b));
     for (const n of sorted) {
       const p = P[n.id] && toScreen(P[n.id]); if (!p) continue;
       const r = radiusOf(n) * grow;
@@ -495,11 +498,23 @@
         ? (ratio >= 7 || n.owner === S.me)
         : (ratio >= 7 || (ratio >= 3.5 && n.level >= 2) || (ratio >= 1.5 && n.level >= 3) || n.level >= 4 || n.kind === 'IX' || n.kind === 'GW' || n.owner === S.me);
       if (showLabel) {
+        // 選択中は他の文字を薄くし、選んだ拠点の名前は背景つきで最前面に出す。何も選んでいなければ全部通常の色
+        const isSel = S.selected === n.id;
+        const dim = S.selected && !isSel;
         ctx.textAlign = 'center';
-        ctx.fillStyle = n.isPlayerNode ? C.muted : C.ink;
         const fs = n.kind === 'IX' ? 14 : n.isPlayerNode ? 10 : 11.5;
         ctx.font = `${n.isPlayerNode ? 500 : 700} ${fs * grow}px "BIZ UDPGothic", sans-serif`;
-        ctx.fillText(n.name, p.x, p.y + top + 12 * grow);
+        const ty = p.y + top + 12 * grow;
+        if (isSel) {
+          const w = ctx.measureText(n.name).width + 10, h = fs * grow + 6;
+          ctx.fillStyle = C.surface; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          if (ctx.roundRect) ctx.roundRect(p.x - w / 2, ty - h + 4, w, h, 4); else ctx.rect(p.x - w / 2, ty - h + 4, w, h);
+          ctx.fill(); ctx.stroke();
+        }
+        ctx.globalAlpha = dim ? 0.3 : 1;
+        ctx.fillStyle = n.isPlayerNode && !isSel ? C.muted : C.ink;
+        ctx.fillText(n.name, p.x, ty);
       }
       ctx.globalAlpha = 1;
     }
