@@ -241,3 +241,8 @@
 - `tools/db-setup.js`(`npm.cmd run db:setup -- --db pc-dev`): regions を上書き、nodes は空なら全部、`--force` でマスター項目だけ更新(owner / defense などのゲーム状態は保つ)
 - `server/env.js`: `.env` を読む(Git 管理外)。`.env.example` が雛形
 - `test/cosmos.js`: 接続文字列があるときだけ、一時データベース `pc-test` で読み書きと復元を検証して削除する
+
+## 9. ポータルだけで作る(カスタム テンプレートのデプロイ)
+
+ポータルのデータ エクスプローラーでは共有スループットのデータベースが作れないことがある。その場合は `infra/cosmos-database.json`(ARM テンプレート)を「カスタム テンプレートのデプロイ」に貼り付ける。データベース(共有 1000 RU/s)と 4 つのコンテナー(nodes は階層キー `/country`,`/region`)が一度にできる。既に同名のデータベースが共有スループットなしで存在するときは、先に削除する。
+データの投入は、データ エクスプローラーの各コンテナーの Items → Upload Item で `data/export/regions.json`、`nodes-01.json`〜`nodes-04.json` を選ぶ(ファイルは `tools/db-setup.js` と同じ内容を JSON にしたもの。`data/` は Git 管理外)。

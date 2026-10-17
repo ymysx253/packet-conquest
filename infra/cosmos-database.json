@@ -1,0 +1,74 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "accountName": {
+      "type": "string",
+      "defaultValue": "packet-conquest",
+      "metadata": { "description": "既存の Cosmos DB アカウント名" }
+    },
+    "databaseName": {
+      "type": "string",
+      "defaultValue": "packet-conquest",
+      "metadata": { "description": "作るデータベース名(本番 packet-conquest / 手元 pc-dev)" }
+    },
+    "sharedThroughput": {
+      "type": "int",
+      "defaultValue": 1000,
+      "metadata": { "description": "データベース全体で共有するスループット(RU/s)。無料枠は 1000" }
+    }
+  },
+  "variables": {
+    "db": "[format('{0}/{1}', parameters('accountName'), parameters('databaseName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+      "apiVersion": "2024-05-15",
+      "name": "[variables('db')]",
+      "properties": {
+        "resource": { "id": "[parameters('databaseName')]" },
+        "options": { "throughput": "[parameters('sharedThroughput')]" }
+      }
+    },
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+      "apiVersion": "2024-05-15",
+      "name": "[format('{0}/nodes', variables('db'))]",
+      "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('accountName'), parameters('databaseName'))]" ],
+      "properties": {
+        "resource": {
+          "id": "nodes",
+          "partitionKey": { "paths": [ "/country", "/region" ], "kind": "MultiHash", "version": 2 }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+      "apiVersion": "2024-05-15",
+      "name": "[format('{0}/regions', variables('db'))]",
+      "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('accountName'), parameters('databaseName'))]" ],
+      "properties": {
+        "resource": { "id": "regions", "partitionKey": { "paths": [ "/parent" ], "kind": "Hash" } }
+      }
+    },
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+      "apiVersion": "2024-05-15",
+      "name": "[format('{0}/players', variables('db'))]",
+      "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('accountName'), parameters('databaseName'))]" ],
+      "properties": {
+        "resource": { "id": "players", "partitionKey": { "paths": [ "/id" ], "kind": "Hash" } }
+      }
+    },
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+      "apiVersion": "2024-05-15",
+      "name": "[format('{0}/questions', variables('db'))]",
+      "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('accountName'), parameters('databaseName'))]" ],
+      "properties": {
+        "resource": { "id": "questions", "partitionKey": { "paths": [ "/nodeId" ], "kind": "Hash" } }
+      }
+    }
+  ]
+}
