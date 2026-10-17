@@ -207,7 +207,7 @@ body {
 .scores .rank { font: 600 12px var(--font-mono); color: var(--muted); }
 
 /* 拠点の情報 */
-.np-name { font: 18px/1.3 var(--font-display); margin: 0 0 2px; }
+.np-name { font: 700 17px/1.4 var(--font-body); margin: 0 0 2px; }
 .np-meta { margin: 0 0 8px; }
 .np-grid { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 0 0 8px; font-size: 14px; }
 .np-grid dt { color: var(--muted); }
