@@ -115,19 +115,27 @@ async function solve(world, p, nodeId) {
   assert.strictEqual(w.pub(home).defense, 0);
   home.defense = 1; home.fortifiedAt = Date.now();
 
-  // 初心者保護: 保護中・3 拠点以下の相手は攻撃できない。4 拠点以上なら奪える
+  // プレイヤー自身の拠点は占領禁止(保護が切れていても、相手が何拠点持っていても)
   const wsB = fakeWs();
   const b = await w.join(wsB, 'ベン', null);
   const bHome = w.nodes.get(b.homeNodeId);
   w.addEdge(home.id, bHome.id, home.t0);
-  assert.ok(!(await w.canAttack(a.id, bHome.id)), '保護中は攻撃できない');
-  await assert.rejects(() => w.ask(a, bHome.id), /守られています/);
-  bHome.protectedUntil = 0;
-  assert.ok(!(await w.canAttack(a.id, bHome.id)), '拠点 3 つ以下の人は攻撃できない');
+  bHome.protectedUntil = 0; b.nodesOwned = 10;
+  assert.ok(!(await w.canAttack(a.id, bHome.id)), '自分の拠点は占領できない');
+  await assert.rejects(() => w.ask(a, bHome.id), /占領できません/);
+  b.nodesOwned = 1;
+  // 初心者保護: 相手が持つ固定拠点は、保護中・3 拠点以下なら攻撃できない。4 拠点以上なら奪える
+  const bNode = [...w.adj.get(nb)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false);
+  assert.ok(bNode, '隣に中立の固定拠点がある');
+  bNode.owner = b.id; bNode.protectedUntil = Date.now() + 3600000; b.nodesOwned = 2;
+  assert.ok(!(await w.canAttack(a.id, bNode.id)), '保護中は攻撃できない');
+  await assert.rejects(() => w.ask(a, bNode.id), /守られています/);
+  bNode.protectedUntil = 0;
+  assert.ok(!(await w.canAttack(a.id, bNode.id)), '拠点 3 つ以下の人は攻撃できない');
   b.nodesOwned = 4;
-  assert.ok(await w.canAttack(a.id, bHome.id), '拠点が 4 つ以上なら攻撃できる');
-  await solve(w, a, bHome.id);
-  assert.strictEqual(bHome.owner, a.id); assert.strictEqual(b.nodesOwned, 3);
+  assert.ok(await w.canAttack(a.id, bNode.id), '拠点が 4 つ以上なら攻撃できる');
+  for (let i = 0; i < bNode.hits; i++) await solve(w, a, bNode.id);
+  assert.strictEqual(bNode.owner, a.id); assert.strictEqual(b.nodesOwned, 3);
 
   // 地域の支配: 配下(ハック可の固定拠点)の 3/4 以上で支配。上の段(東京都)は配下の区・市の 3/4 が要る
   const regionId = target.region;

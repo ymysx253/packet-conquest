@@ -306,6 +306,7 @@ class World {
     const n = this.nodes.get(nodeId);
     if (!n || n.status !== 'public' || n.owner === pid) return false;
     if (n.hackable === false) return false;
+    if (n.isPlayerNode) return false; // プレイヤー自身の拠点は占領禁止(2026-10-18 決定)
     if (n.protectedUntil > now()) return false;
     if (n.owner) { const o = await this.getPlayer(n.owner); if (o && (o.nodesOwned || 0) <= PROTECT_MAX_NODES) return false; }
     const nb = this.adj.get(nodeId) || new Set();
@@ -332,6 +333,8 @@ class World {
       mode = 'fortify';
     } else if (await this.canAttack(p.id, nodeId)) {
       mode = 'attack';
+    } else if (n.isPlayerNode) {
+      throw new Error('プレイヤー自身の拠点は占領できません');
     } else if (n.protectedUntil > now()) {
       throw new Error('この拠点は生まれたばかりで守られています');
     } else if (n.owner && (await this.getPlayer(n.owner) || {}).nodesOwned <= PROTECT_MAX_NODES) {
@@ -465,7 +468,7 @@ class World {
     return out;
   }
 
-  // 拠点をすべて失った人は東京に再生成する(暫定。記録は残る)
+  // 拠点をすべて失った人は東京に再生成する(自分の拠点は占領されないので通常は起きない。保険として残す)
   async respawn(p) {
     await this.spawnHome(p);
     this.addLog(`${p.name} の拠点がすべて失われたため、東京に新しい拠点が生まれました`);

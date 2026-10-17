@@ -287,6 +287,7 @@
     const n = nodeById(id);
     if (!n || !S.me || n.owner === S.me) return false;
     if (n.hackable === false) return false;
+    if (n.isPlayerNode) return false; // プレイヤー自身の拠点は占領禁止
     if (n.protectedUntil > now()) return false;
     if (n.owner) { const o = playerById(n.owner); if (o && o.nodes <= 3) return false; }
     return adjacent(id).some((a) => ownerOf(a) === S.me);
@@ -347,6 +348,7 @@
     if (S.overview) status = '拡大すると攻撃や強化ができます';
     else if (n.hackable === false) status = 'ネットワークにつながっていない場所です(ハック不可)';
     else if (n.owner === S.me) status = 'タップすると強化の問題が出ます';
+    else if (n.isPlayerNode) status = 'プレイヤー自身の拠点は占領できません';
     else if (n.protectedUntil > now()) status = `生まれたばかりで守られています(あと ${Math.ceil((n.protectedUntil - now()) / 3600000)} 時間)`;
     else if (n.owner && (playerById(n.owner) || {}).nodes <= 3) status = '拠点が少ないプレイヤーは守られています';
     else if (canAttack(n.id)) status = `タップすると攻撃の問題が出ます(突破まで あと ${Math.max(1, hits - mine)} 回)`;
