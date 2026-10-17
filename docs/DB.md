@@ -31,7 +31,7 @@
 | コンテナー | パーティションキー | 中身 | 作る時期 | 想定サイズ |
 |---|---|---|---|---|
 | `regions` | `/parent` | 地域マスター(宇宙 → 天体 → 大陸 → 国 → 地方 → 州 → 市区)。派生値つき | 手順 5 | 数百〜数千件 |
-| `nodes` | `/region` | 拠点(マスター + ゲーム状態を一体で)。プレイヤーの拠点も同じコンテナー | 手順 5 | 東京 715 + プレイヤー数。日本全体で数万件 |
+| `nodes` | 階層キー `[/country, /region]` | 拠点(マスター + ゲーム状態を一体で)。プレイヤーの拠点も同じコンテナー。世界に広げたときに国 → 地域の 2 段で分かれる | 手順 5 | 東京 715 + プレイヤー数。日本全体で数万件 |
 | `players` | `/id` | プレイヤー(復帰コード、累計点、所属) | 手順 5 | プレイヤー数 |
 | `questions` | `/nodeId` | 固定問題(Lv11 以上の一部)。拠点 × レベルで active を 1 つ | フェーズ 2 | 拠点数 × 数件 |
 | `sessions` | `/playerId` | 長丁場シナリオの途中経過(再開用)。TTL あり | フェーズ 2〜3 | 同時プレイ数 |
@@ -90,6 +90,7 @@
   "kind": "HUB",
   "kindLabel": "駅・交通",
   "area": "千代田区",
+  "country": "japan",
   "region": "tokyo-chiyoda",
   "lat": 35.68123,
   "lon": 139.76712,
@@ -114,7 +115,7 @@
 }
 ```
 
-- **マスターの項目**(登録・審査で決まる): name、genre、kind、area、region、lat、lon、level、value、hackable、lines、alias、status、registeredBy、sponsorId
+- **マスターの項目**(登録・審査で決まる): name、genre、kind、area、country(地域マスターから引く。パーティションキーの 1 段目)、region、lat、lon、level、value、hackable、lines、alias、status、registeredBy、sponsorId
 - **ゲーム状態の項目**(遊びで変わる): owner、defense、protectedUntil、updatedAt。`value` は基礎点で、画面に出す点数は `value + defense`
 - `location` は Cosmos DB の地理空間クエリ用(GeoJSON Point は経度・緯度の順)。lat / lon と二重に持つ
 - プレイヤーの拠点は `id` が `home-` で始まり、`isPlayerNode: true`、`kind: "HOME"`、`region` は開始地点の区(いまは `area` に「東京駅周辺」。region は `tokyo-chiyoda` にする)、`subnet` は 172.16.0.0/12 の /24、`span: 254`
@@ -225,7 +226,9 @@
 
 ## 7. 未決
 
-1. 日本全体・海外に広げたときの `nodes` のパーティションキー(`/region` のままでよいか、国ごとにコンテナーを分けるか)
+1. (決定 2026-10-17)`nodes` は階層パーティションキー `[/country, /region]`。国ごとにコンテナーは分けない
 2. `questions` の有効期限の長さ、拠点 × レベルの本数(`DESIGN.md` 3.5)
 3. 学習記録(`players.stats`)の粒度と保存の頻度
 4. Managed Identity への切り替え時期
+
+**パーティションキーについて(2026-10-17 補足)**: `/region` は区・市ごとに分かれる(東京だけで 50 の値)ので 1 つの箱にはならない。ただしパーティションキーはコンテナー作成後に変えられないため、`nodes` は最初から階層パーティションキー `[/country, /region]` で作る。拠点ドキュメントには `country` を持たせる(地域マスターの `country` を保存時に写す)。`regions` は `/parent` のままでよい(件数が少ない)。
