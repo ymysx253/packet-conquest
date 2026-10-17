@@ -19,8 +19,10 @@ for (const n of NODES) {
   assert.ok(Number.isInteger(n.level) && n.level >= 1 && n.level <= 5, `${n.name}: 東京の拠点は Lv1〜5`);
   assert.ok(Number.isInteger(n.value) && n.value >= 1 && n.value <= 999, `${n.name}: 点数は 1〜999`);
   assert.ok(n.value >= n.level - 1, `${n.name}: Lv に対して点数が低すぎる`);
-  if (n.hackable) assert.ok(ADJ[n.id].length >= 2, `${n.name}: リンクが2本未満`);
+  if (n.hackable) assert.ok(ADJ[n.id].length >= 1, `${n.name}: つながりがない`);
   else assert.strictEqual(ADJ[n.id].length, 0, `${n.name}: ハック不可の拠点に線がある`);
+  assert.strictEqual(n.hits, Math.max(1, n.adj.length), `${n.name}: 突破回数 = つながりの本数`);
+  for (const m of n.adj) assert.ok(ADJ[m].includes(n.id), `${n.name}: つながりが片向き`);
   assert.ok(typeof n.area === 'string' && n.area, `${n.name}: area がない`);
   assert.match(n.subnet, /^10\.\d+\.\d+\.0\/20$/);
 }
@@ -36,6 +38,13 @@ const seen = new Set([HACKABLE[0].id]); const stack = [HACKABLE[0].id];
 while (stack.length) for (const m of ADJ[stack.pop()]) if (!seen.has(m)) { seen.add(m); stack.push(m); }
 assert.strictEqual(seen.size, HACKABLE.length, '地図が分断されています');
 for (const e of EDGES) assert.ok(ADJ[e.a] && ADJ[e.b] && e.a !== e.b, 'リンクの端点が不正');
+// つながりは路線に沿う(第 14 章): 新宿駅がいちばん多く、末端の駅は 1 本。名所は近い駅をレベルと同じ数だけ
+const byName = Object.fromEntries(NODES.map((n) => [n.name, n]));
+assert.ok(byName['新宿駅'].hits >= 10 && byName['新宿駅'].hits === Math.max(...NODES.map((n) => n.hits)), '新宿駅のつながりが最多');
+assert.ok(byName['東京駅'].adj.includes(byName['神田駅'].id) && byName['東京駅'].adj.includes(byName['有楽町駅'].id), '東京駅は山手線の前後とつながる');
+assert.strictEqual(byName['奥多摩駅'].hits, 1, '終点は 1 本');
+assert.strictEqual(byName['東京タワー'].adj.length, 5, '名所は近い駅をレベル(5)の数だけ');
+assert.ok(byName['東京タワー'].adj.every((id) => NODES.find((n) => n.id === id).genre === 'station'), '名所は駅とだけつながる');
 // 開始地点の近くに拠点がある
 assert.ok(NODES.some((n) => distanceKm(n, SPAWN_CENTER) < SPAWN_CENTER.radiusKm), '開始地点の近くに拠点がない');
 assert.ok(AREAS.length >= 20, '区・市が少なすぎます');
@@ -91,6 +100,8 @@ assert.ok(NODES.filter((n) => n.genre === 'station').length >= 50, '駅が主な
 assert.ok(!NODES.some((n) => /DC$|IX$/.test(n.name)), '架空名の DC / IX は使わない');
 assert.throws(broken((d) => { d.nodes[0].region = 'tokyo-chuo'; }), /食い違います/);
 assert.throws(broken((d) => { d.nodes[0].id = 'Bad_ID'; }), /英小文字/);
+assert.throws(broken((d) => { d.nodes.find((n) => n.adj && n.adj.length).adj.push('st-nope'); }), /存在しない/);
+assert.throws(broken((d) => { const n = d.nodes.find((x) => x.hackable === false); n.adj = ['st-003766']; }), /ハック不可の拠点に adj/);
 assert.doesNotThrow(broken(() => {}));
 
 // geo.js 単体: 距離と投影の基本性質

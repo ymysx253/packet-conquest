@@ -7,6 +7,8 @@
 //   countNodes() / seedNodes(docs)        初回のシード
 //   loadPlayer(id) / findPlayerByToken(token) / savePlayer(doc) / topPlayers(n)
 //   loadQuestion(nodeId, level)           固定問題(フェーズ 2)
+//   countRegions() / seedRegions(docs) / loadRegions() / loadRegion(id) / saveRegion(doc) / loadRegionChildren(parent)
+//   countOwners(country, region)          区・市の中のハック可の固定拠点を所有者ごとに数える(地域の支配。第 14 章)
 
 const { parseTile, distanceKm, tilesAround, tileOf } = require('./map/geo');
 
@@ -16,6 +18,7 @@ class MemoryStore {
     this.byTile = new Map(); // タイル id → Set<nodeId>(全段)
     this.players = new Map();
     this.questions = new Map();
+    this.regions = new Map();
   }
   _index(n) {
     for (let z = 0; z <= 4; z++) {
@@ -52,6 +55,21 @@ class MemoryStore {
   async savePlayer(doc) { this.players.set(doc.id, { ...doc }); }
   async topPlayers(n = 15) { return [...this.players.values()].sort((a, b) => (b.score || 0) - (a.score || 0) || (b.points || 0) - (a.points || 0)).slice(0, n).map((p) => ({ ...p })); }
   async loadQuestion(nodeId, level) { return this.questions.get(`${nodeId}:${level}`) || null; }
+  // ---------- 地域 ----------
+  async countRegions() { return this.regions.size; }
+  async seedRegions(docs) { for (const d of docs) this.regions.set(d.id, { ...d }); }
+  async loadRegions() { return [...this.regions.values()].map((r) => ({ ...r })); }
+  async loadRegion(id) { const r = this.regions.get(id); return r ? { ...r } : null; }
+  async saveRegion(doc) { this.regions.set(doc.id, { ...doc }); }
+  async loadRegionChildren(parent) { return [...this.regions.values()].filter((r) => r.parent === parent).map((r) => ({ ...r })); }
+  async countOwners(country, region) {
+    let total = 0; const byOwner = {};
+    for (const n of this.nodes.values()) {
+      if (n.country !== country || n.region !== region || n.isPlayerNode || n.hackable === false || n.status !== 'public') continue;
+      total++; if (n.owner) byOwner[n.owner] = (byOwner[n.owner] || 0) + 1;
+    }
+    return { total, byOwner };
+  }
 }
 
 function createStore() {

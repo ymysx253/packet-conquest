@@ -75,7 +75,7 @@
 ```
 
 - `kind` と `tier`: universe 0 / body 1 / continent 2 / country 3 / region 4 / state 5 / city 6 / district 7。親は自分より浅い段
-- `level`: 使わない(2026-10-18: 地域は拠点ではなく配下の拠点の集まりになった。DESIGN.md 第 14 章)。null のまま残し、将来の用途がなければ削る
+- `control`: 地域の支配の集計(2026-10-18、DESIGN.md 第 14.2 節)。`{ total, counts, controller, updatedAt }`。区・市は配下のハック可の固定拠点を所有者(チーム)ごとに数え、3/4 以上なら controller。上の段は配下の地域の controller を数える。所有が変わるたびに World が更新する。`level` は廃止(地域は拠点ではない)
 - 派生値(center、bbox、nodeCount、levels)は保存時に計算して入れる。拠点が増えたら再計算
 
 ### 3.2 `nodes`(拠点マスター + ゲーム状態。`load.js` の NODES と `world.js` の `masterToNode` / `spawnHome`)
@@ -100,6 +100,8 @@
   "hackable": true,
   "lines": ["東日本旅客鉄道 東海道線", "東京地下鉄 3号線丸ノ内線"],
   "tags": [],
+  "adj": ["st-003767", "st-003799"],
+  "hits": 9,
   "subnet": "10.0.16.0/20",
   "base": 167776256,
   "span": 4094,
@@ -108,6 +110,8 @@
   "registeredBy": null,
   "owner": null,
   "defense": 0,
+  "fortifiedAt": null,
+  "progress": {},
   "protectedUntil": 0,
   "sponsorId": null,
   "createdAt": 1760670000000,
@@ -116,7 +120,8 @@
 ```
 
 - **マスターの項目**(登録・審査で決まる): name、genre、kind、area、country(地域マスターから引く。パーティションキーの 1 段目)、region、lat、lon、level、value、hackable、lines、alias、status、registeredBy、sponsorId
-- **ゲーム状態の項目**(遊びで変わる): owner、defense、protectedUntil、updatedAt。`value` は基礎点で、画面に出す点数は `value + defense`
+- **つながり(2026-10-18、DESIGN.md 第 14 章)**: `adj` はつながっている拠点 id(駅は同じ路線の前後の駅、名所は近い駅をレベルと同じ数。`tools/import-links.js` が国土数値情報 N02 から作る)。`hits` は突破に必要な正解の回数 = `adj` の本数(1 以上)。どちらもマスターの項目
+- **ゲーム状態の項目**(遊びで変わる): owner、defense、fortifiedAt(最後に強化・奪取した時刻。強化は 24 時間ごとに 1 下がる)、progress(攻め手 → 正解回数。キーはプレイヤー id かチーム id。占領で空に戻る)、protectedUntil、updatedAt。`value` は基礎点で、画面に出す点数は `value + 減衰後の defense`
 - `location` は Cosmos DB の地理空間クエリ用(GeoJSON Point は経度・緯度の順)。lat / lon と二重に持つ
 - プレイヤーの拠点は `id` が `home-` で始まり、`isPlayerNode: true`、`kind: "HOME"`、`region` は開始地点の区(いまは `area` に「東京駅周辺」。region は `tokyo-chiyoda` にする)、`subnet` は 172.16.0.0/12 の /24、`span: 254`
 - `status`: public(地図に出る)/ pending(審査中)/ hidden(非公開)。public 以外は配信しない

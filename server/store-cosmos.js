@@ -92,6 +92,26 @@ class CosmosStore {
     for (let i = 0; i < docs.length; i += 10) await Promise.all(docs.slice(i, i + 10).map((d) => this.c.regions.items.upsert(d)));
   }
   async loadRegions() { return (await this.query('regions', { query: 'SELECT * FROM c' })).map((r) => this.strip(r)); }
+  async countRegions() { const [n] = await this.query('regions', { query: 'SELECT VALUE COUNT(1) FROM c' }); return n || 0; }
+  async loadRegion(id) {
+    const rows = await this.query('regions', { query: 'SELECT * FROM c WHERE c.id = @id', parameters: [{ name: '@id', value: id }] });
+    return rows.length ? this.strip(rows[0]) : null;
+  }
+  async saveRegion(doc) { await this.ensure(); await this.c.regions.items.upsert(doc); }
+  async loadRegionChildren(parent) {
+    const rows = await this.query('regions', { query: 'SELECT * FROM c WHERE c.parent = @p', parameters: [{ name: '@p', value: parent }] }, { partitionKey: parent });
+    return rows.map((r) => this.strip(r));
+  }
+  // 区・市の中のハック可の固定拠点を所有者ごとに数える(地域の支配。第 14 章)
+  async countOwners(country, region) {
+    const rows = await this.query('nodes', {
+      query: 'SELECT c.owner, COUNT(1) AS n FROM c WHERE c.country = @c AND c.region = @r AND c.isPlayerNode = false AND c.hackable = true AND c.status = "public" GROUP BY c.owner',
+      parameters: [{ name: '@c', value: country }, { name: '@r', value: region }],
+    });
+    let total = 0; const byOwner = {};
+    for (const row of rows) { total += row.n; if (row.owner) byOwner[row.owner] = (byOwner[row.owner] || 0) + row.n; }
+    return { total, byOwner };
+  }
 
   // ---------- プレイヤー ----------
   async loadPlayer(id) {

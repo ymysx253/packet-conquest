@@ -6,6 +6,12 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["server/index.js"],
       "port": 3000
+    },
+    {
+      "name": "packet-conquest-3001",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "set PORT=3001&& node server/index.js"],
+      "port": 3001
     }
   ]
 }

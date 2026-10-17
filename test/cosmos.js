@@ -44,10 +44,13 @@ const dbName = process.env.COSMOS_TEST_DATABASE || 'pc-test';
     assert.ok(a.homeNodeId && (await store.loadNode(a.homeNodeId)), 'プレイヤーの拠点が保存される');
     assert.ok((await store.findPlayerByToken(a.token)).id === a.id, '復帰コードで引ける');
     const [nb] = [...w.adj.get(a.homeNodeId)];
-    const q = await w.ask(a, nb);
-    await w.answer(a, q.qid, a.pending.answerIndex);
+    const hits = w.nodes.get(nb).hits;
+    for (let i = 0; i < hits; i++) { const q = await w.ask(a, nb); await w.answer(a, q.qid, a.pending.answerIndex); }
     const saved = await store.loadNode(nb);
-    assert.strictEqual(saved.owner, a.id, '奪取が保存される');
+    assert.strictEqual(saved.owner, a.id, `奪取が保存される(${hits} 回)`);
+    const reg = await store.loadRegion(saved.region);
+    assert.ok(reg && reg.control && reg.control.total > 0, '地域の支配の集計が保存される');
+    assert.ok((await store.countOwners('japan', saved.region)).byOwner[a.id] >= 1, '所有者の集計(GROUP BY)が動く');
     const top = await store.topPlayers(3);
     assert.ok(top.some((p) => p.id === a.id), 'ランキングに出る');
     // 別のワールド(再起動相当)で復元

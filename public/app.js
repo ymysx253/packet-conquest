@@ -11,6 +11,7 @@
     nodes: new Map(),   // id → 拠点(サーバーから受け取った範囲だけ)
     edges: new Map(),   // key → {a, b}
     tiles: new Set(),   // 受け取っているタイル(z0)
+    regions: [],        // 縮小時の地域の支配(区・市 / 都道府県 / 国)
     viewZ: 0, overview: false,
     players: [], log: [], offset: 0,
     question: null, result: null, chosen: null, cooldownUntil: 0,
@@ -80,7 +81,7 @@
         renderPlayers(); renderSelected();
         break;
       case 'question': S.question = m; S.result = null; S.chosen = null; renderQuestion(); break;
-      case 'result': S.result = m; S.cooldownUntil = m.cooldownUntil; renderQuestion(); break;
+      case 'result': S.result = m; S.cooldownUntil = m.cooldownUntil; renderQuestion(); renderSelected(); break;
       case 'error':
         if (!S.joined) { $('lobbyError').textContent = m.message; S.wantJoin = false; setJoining(false); } else toast(m.message);
         break;
@@ -93,9 +94,10 @@
       // 縮小表示: 送られてきた高レベルの拠点だけに入れ替える
       S.nodes.clear(); S.edges.clear(); S.tiles.clear(); S.overview = true; S.viewZ = m.z;
       for (const n of m.nodes) S.nodes.set(n.id, n);
+      S.regions = Array.isArray(m.regions) ? m.regions : [];
       return;
     }
-    if (S.overview) { S.nodes.clear(); S.edges.clear(); S.tiles.clear(); S.overview = false; }
+    if (S.overview) { S.nodes.clear(); S.edges.clear(); S.tiles.clear(); S.overview = false; S.regions = []; }
     S.viewZ = 0;
     for (const t of m.dropped) {
       S.tiles.delete(t);
@@ -329,6 +331,15 @@
     $('npLevel').textContent = `Lv${n.level}${n.defense ? `(+${n.defense} 強化 → 出題 Lv${n.level + n.defense})` : ''}`;
     $('npValue').textContent = `${n.value}点`;
     $('npOwner').textContent = owner ? `${owner.name}${owner.id === S.me ? '(あなた)' : ''}` : (n.owner ? '他のプレイヤー' : '中立');
+    // 突破に必要な回数 = つながりの本数。自分(チーム)の進捗と、他の攻め手の最大進捗
+    const hits = n.hits || 1, prog = n.progress || {};
+    const mine = prog[S.me] || 0;
+    const others = Object.entries(prog).filter(([k]) => k !== S.me).map(([, v]) => v);
+    const parts = [`正解 ${hits} 回(つながり ${hits} 本)`];
+    if (n.hackable === false) parts.length = 0, parts.push('ハック不可');
+    else if (n.owner === S.me) { if (others.length) parts.push(`侵入されています: 最大 ${Math.max(...others)}/${hits}`); }
+    else { if (mine) parts.push(`あなた ${mine}/${hits}`); if (others.length) parts.push(`他の攻め手 最大 ${Math.max(...others)}/${hits}`); }
+    $('npHits').textContent = parts.join(' ・ ');
     const lines = Array.isArray(n.lines) ? n.lines : [];
     $('npLines').hidden = !lines.length;
     $('npLinesList').replaceChildren(...lines.map((l) => { const li = document.createElement('li'); li.textContent = l; return li; }));
@@ -338,7 +349,7 @@
     else if (n.owner === S.me) status = 'タップすると強化の問題が出ます';
     else if (n.protectedUntil > now()) status = `生まれたばかりで守られています(あと ${Math.ceil((n.protectedUntil - now()) / 3600000)} 時間)`;
     else if (n.owner && (playerById(n.owner) || {}).nodes <= 3) status = '拠点が少ないプレイヤーは守られています';
-    else if (canAttack(n.id)) status = 'タップすると攻撃の問題が出ます';
+    else if (canAttack(n.id)) status = `タップすると攻撃の問題が出ます(突破まで あと ${Math.max(1, hits - mine)} 回)`;
     else status = '自分の拠点とつながっていないため、まだ攻撃できません';
     $('npStatus').textContent = status;
   }
@@ -484,6 +495,16 @@
       shape(n, p, r); ctx.fill(); ctx.stroke();
       if (!n.isPlayerNode) SH.extras(ctx, n.level, p, r, col, C.surface);
       if (owner && n.owner === S.me) { ctx.fillStyle = filled ? C.surface : owner; ctx.beginPath(); ctx.arc(p.x, p.y, n.isPlayerNode ? 3 : 4, 0, Math.PI * 2); ctx.fill(); }
+      // 侵入の進捗: 攻め手ごとの正解回数を弧で示す(自分は自分の色、ほかは灰色)
+      const hits = n.hits || 1, prog = n.progress || {};
+      const entries = Object.entries(prog).filter(([, v]) => v > 0);
+      if (entries.length && !S.overview) {
+        entries.sort((x, y) => (x[0] === S.me ? 1 : 0) - (y[0] === S.me ? 1 : 0));
+        for (const [k, v] of entries) {
+          ctx.strokeStyle = k === S.me ? (colorOf(S.me) || C.accent) : C.muted; ctx.lineWidth = 3.5;
+          ctx.beginPath(); ctx.arc(p.x, p.y, ring + 6, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, v / hits)); ctx.stroke();
+        }
+      }
       const top = ring;
       for (let i = 0; i < Math.min(n.defense, 12); i++) { ctx.fillStyle = C.ink; ctx.fillRect(p.x - (Math.min(n.defense, 12) * 8 - 3) / 2 + i * 8, p.y - top - 9, 5, 5); }
       // 名前: 寄ったときだけ全部。縮小時はレベルの高いものと自分の拠点
@@ -509,8 +530,25 @@
       ctx.globalAlpha = 1;
     }
     if (S.overview) {
+      // 地域の支配(第 14.2 節): 中心に地域名。支配者がいれば、その色の帯と名前
+      ctx.textAlign = 'center';
+      for (const g of S.regions) {
+        const q = toScreen(worldOf(g.lat, g.lon));
+        if (q.x < -80 || q.y < -40 || q.x > V.w + 80 || q.y > V.h + 40) continue;
+        const col = g.controller ? g.controller.color : null;
+        ctx.font = `700 ${g.tier <= 3 ? 16 : g.tier === 5 ? 14 : 12}px "BIZ UDPGothic", sans-serif`;
+        const label = g.name, sub = g.controller ? `${g.controller.name} が支配` : '';
+        const w = Math.max(ctx.measureText(label).width, sub ? ctx.measureText(sub).width * 0.85 : 0) + 14;
+        const h = sub ? 34 : 20;
+        ctx.fillStyle = col || C.surface; ctx.globalAlpha = col ? 0.85 : 0.75;
+        ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(q.x - w / 2, q.y - 10, w, h, 5); else ctx.rect(q.x - w / 2, q.y - 10, w, h); ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = col || C.line; ctx.lineWidth = 1.5; ctx.stroke();
+        ctx.fillStyle = col ? '#fff' : C.ink; ctx.fillText(label, q.x, q.y + 5);
+        if (sub) { ctx.font = '600 10.5px "BIZ UDPGothic", sans-serif'; ctx.fillText(sub, q.x, q.y + 19); }
+      }
       ctx.fillStyle = C.muted; ctx.font = '600 12px "BIZ UDPGothic", sans-serif'; ctx.textAlign = 'left';
-      ctx.fillText(`広域表示: Lv${{ 1: 2, 2: 4, 3: 50, 4: 400 }[S.viewZ] || ''} 以上の拠点だけ。拡大すると全部出ます`, 12, V.h - 10);
+      ctx.fillText(`広域表示: Lv${{ 1: 2, 2: 4, 3: 50, 4: 400 }[S.viewZ] || ''} 以上の拠点と、地域の支配。拡大すると全部出ます`, 12, 22);
     }
   }
   function nodeAt(pt) {

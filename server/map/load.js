@@ -93,7 +93,7 @@ function regionDocs(nodes = []) {
       center: s ? { lat: Number((s.lat / s.count).toFixed(5)), lon: Number((s.lon / s.count).toFixed(5)) } : null,
       bbox: s ? { minLat: s.minLat, maxLat: s.maxLat, minLon: s.minLon, maxLon: s.maxLon } : null,
       nodeCount: s ? s.count : 0, levels: s ? s.levels : {},
-      level: null, // 地域そのものを拠点として出すときのレベル(未決: DESIGN.md / LEVELS.md #1)
+      control: null, // 支配の集計(World が更新。{ total, counts, controller, updatedAt }。第 14 章)
     };
   });
 }
@@ -125,7 +125,14 @@ function validate(region, data) {
     // 名所のジャンル(docs/PLACES.md 第2章)。地名ではなく名所であることの担保
     if (typeof n.genre !== 'string' || !GENRES.has(n.genre)) fail(region, `${n.id}: genre が不正 ${n.genre}(PLACES.md のジャンルから選ぶ)`);
     if (n.genre !== 'station' && /[0-9０-９一二三四五六七八九十]+丁目/.test(n.name)) fail(region, `${n.id}: 丁目を含む名前は使わない(名所の名前にする。駅名は除く)`);
+    // つながり(設計書 第 14 章): 突破に必要な正解の回数 = つながりの本数。tools/import-links.js が書く
+    if (n.adj !== undefined) {
+      if (!Array.isArray(n.adj) || n.adj.some((x) => typeof x !== 'string')) fail(region, `${n.id}: adj は拠点 id の配列`);
+      if (n.hackable === false && n.adj.length) fail(region, `${n.id}: ハック不可の拠点に adj がある`);
+      if (n.adj.includes(n.id)) fail(region, `${n.id}: adj に自分がいる`);
+    }
   }
+  for (const n of data.nodes) for (const m of n.adj || []) if (!ids.has(m)) fail(region, `${n.id}: adj の ${m} が存在しない`);
 }
 
 function loadRegion(region) {
@@ -147,12 +154,21 @@ function loadRegion(region) {
     // 問題生成に使う架空のネットワーク 10.(i+1).0.0/16(順番で決まる。DB 化したら項目として持つ)
     // 問題生成に使う架空のネットワーク。拠点 id から決定的に決める(上限なし。DESIGN.md 第 13 章)
     ...addrOf(n.id),
+    adj: Array.isArray(n.adj) ? [...n.adj] : [],
   }));
 
-  const EDGES = buildLinks(NODES.filter((n) => n.hackable), 3);
+  // つながり(設計書 第 14 章): マスターの adj を両向きにそろえる。adj が無い地域(古いマスター)は近い 3 拠点で代用
   const byId = Object.fromEntries(NODES.map((n) => [n.id, n]));
-  const ADJ = Object.fromEntries(NODES.map((n) => [n.id, []]));
-  for (const { a, b } of EDGES) { ADJ[a].push(b); ADJ[b].push(a); }
+  const hasAdj = NODES.some((n) => n.adj.length);
+  const ADJ = Object.fromEntries(NODES.map((n) => [n.id, new Set()]));
+  if (hasAdj) {
+    for (const n of NODES) for (const m of n.adj) if (byId[m] && n.hackable && byId[m].hackable) { ADJ[n.id].add(m); ADJ[m].add(n.id); }
+  } else {
+    for (const { a, b } of buildLinks(NODES.filter((n) => n.hackable), 3)) { ADJ[a].add(b); ADJ[b].add(a); }
+  }
+  for (const n of NODES) { n.adj = [...ADJ[n.id]].sort(); ADJ[n.id] = n.adj; n.hits = Math.max(1, n.adj.length); }
+  const EDGES = [];
+  for (const n of NODES) for (const m of n.adj) if (n.id < m) EDGES.push({ a: n.id, b: m });
   const AREAS = [...new Set(NODES.map((n) => n.area))];
 
   return {
@@ -171,9 +187,10 @@ function nodeDocs(nodes, now = Date.now()) {
     location: { type: 'Point', coordinates: [m.lon, m.lat] },
     t0: m.t0, t1: m.t1, t2: m.t2, t3: m.t3, t4: m.t4,
     level: m.level, value: m.value, hackable: m.hackable !== false, lines: m.lines || [], tags: m.tags || [],
+    adj: m.adj || [], hits: m.hits || Math.max(1, (m.adj || []).length), // つながりと、突破に必要な正解の回数(第 14 章)
     subnet: m.subnet, base: m.base, span: m.span,
     status: 'public', isPlayerNode: false, registeredBy: null, sponsorId: null,
-    owner: null, defense: 0, protectedUntil: 0, createdAt: now, updatedAt: now,
+    owner: null, defense: 0, fortifiedAt: null, progress: {}, protectedUntil: 0, createdAt: now, updatedAt: now,
   }));
 }
 
