@@ -140,6 +140,7 @@ function loadRegion(region) {
     lat: n.lat, lon: n.lon, level: n.level, value: n.value,
     // 存在するがハック不可(寺社、重要インフラ。設計書 8.16 / PLACES.md)。線をつながず攻撃できない
     hackable: n.hackable !== false,
+    lines: Array.isArray(n.lines) ? n.lines : [], // 駅の路線(事業者 路線名)。取り込み元: 国土数値情報
     tags: Array.isArray(n.tags) ? n.tags : [],
     // 問題生成に使う架空のネットワーク 10.(i+1).0.0/16(順番で決まる。DB 化したら項目として持つ)
     // 問題生成に使う架空のネットワーク。10.0.0.0/8 を /20 ずつ割り当てる(4096 拠点まで。順番で決まる。DB 化したら項目として持つ)
