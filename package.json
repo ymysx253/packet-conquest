@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node server/index.js",
-    "test": "node test/check.js && node test/map.js && node test/shapes.js && node test/world.js",
+    "test": "node test/check.js && node test/basics.js && node test/map.js && node test/shapes.js && node test/world.js",
     "test:e2e": "node test/e2e.js"
   },
   "dependencies": {

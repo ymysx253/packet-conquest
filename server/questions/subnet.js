@@ -117,4 +117,4 @@ function makeQuestion(difficulty, base, span = 65534) {
   return q;
 }
 
-module.exports = { makeQuestion, toIp, maskOf, netOf, bcastOf };
+module.exports = { makeQuestion, toIp, maskOf, netOf, bcastOf, buildOptions, rand, pick, shuffle, PREFIXES };

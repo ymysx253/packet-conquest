@@ -104,8 +104,9 @@ function solve(world, p, nodeId) {
   assert.strictEqual(home.defense, 1);
   assert.strictEqual(w.levelFor(home, 'fortify'), before1 + 1, '強化で出題レベルが 1 上がる');
   assert.strictEqual(w.levelFor(home, 'attack'), Math.max(4, before1 + 1), '他人の陣地は 4 以上');
-  home.defense = 3;
+  home.defense = 998; // 出題レベル 999 で上限
   assert.throws(() => w.ask(a, home.id), /最大/);
+  home.defense = 0;
   // 強化した拠点も正解 1 回で落ちる(難しさはレベルだけ)
   const fortified = w.nodes.get('tokyo-dome'); fortified.owner = null; fortified.defense = 2;
   w.edges.push({ a: home.id, b: 'tokyo-dome' }); w.adj[home.id].push('tokyo-dome'); w.adj['tokyo-dome'].push(home.id);

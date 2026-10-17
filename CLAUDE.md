@@ -17,7 +17,7 @@
 ```
 npm.cmd install
 npm.cmd start          # http://localhost:3000(Windows は start-game.cmd をダブルクリックでも可)
-npm.cmd test           # 問題生成の検証(3万問)
+npm.cmd test           # 問題生成(5万問)・拠点マスター・形・ワールドの検証
 npm.cmd run test:e2e   # サーバー起動中に実行。2人で1試合を通す
 ```
 
@@ -26,7 +26,7 @@ npm.cmd run test:e2e   # サーバー起動中に実行。2人で1試合を通�
 - `server/index.js`: HTTP 配信 + WebSocket(`/ws`)。`PORT` 環境変数を使う(Azure App Service 用)
 - `server/world.js`: 永続ワールド(参加・自分の拠点の生成・攻撃/防御・初心者保護・再生成・配信)
 - `server/store.js`: 保存口。いまはメモリ版。手順5で Cosmos DB 版を追加し環境変数で切り替える
-- `server/questions/index.js`: 問題の取得口(Lv1〜4 は生成、Lv5 以上は DB の固定問題) / `server/questions/subnet.js`: サブネット問題の生成
+- `server/questions/index.js`: 問題の取得口(レベル → 生成器の対応はここ 1 か所) / `server/questions/subnet.js`: Lv1〜3 サブネット計算 / `server/questions/basics.js`: Lv4〜10(VLSM、集約、IPv6、経路表、ARP/MAC 表、ACL、NAT 表)。Lv11 以上は LEVELS.md の階段に沿って追加する。固定問題は DB(Cosmos DB の questions)に テンプレート id・seed・版 で保存する前提
 - `server/map/data/regions.json`: 地域マスター(宇宙→天体→大陸→国→地方→州→市・区。段(tier)で表す共通の階層。DB の regions と同じ項目) / `server/map/data/tokyo.json`: 東京の拠点マスター(DB の nodes と同じ項目。`region` で区・市を指す)。拠点や地域を足すときはこれらに1行追加し `npm.cmd test` で検証 / `server/map/load.js`: 読み込み・検証・保存用の形(`regionDocs`) / `server/map/geo.js`: 距離・リンク自動生成
 - 画面は緯度・経度を受け取って自分で投影する(サーバーは描画座標を送らない)
 - `public/`: 画面(ビルド不要の HTML / CSS / JS)

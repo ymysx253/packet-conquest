@@ -184,8 +184,22 @@
     tag.className = q.mode === 'attack' ? 'tag' : 'tag def';
     tag.textContent = q.mode === 'attack' ? '攻撃' : '強化';
     $('qMode').replaceChildren(tag, document.createTextNode(node ? node.name : ''));
-    $('qDiff').textContent = `難易度 Lv${q.level}` + (q.provisional ? '(暫定: この難易度の問題は準備中。いまは Lv3 相当)' : '');
-    $('qText').replaceChildren(...highlightIps(q.text));
+    $('qDiff').textContent = `難易度 Lv${q.level}` + (q.provisional ? '(暫定: この難易度の問題は準備中。いまは Lv10 相当)' : '');
+    // 本文は改行ごとに行にし、表があれば表として描く
+    const textNodes = [];
+    q.text.split('\n').forEach((line, i) => { if (i) textNodes.push(document.createElement('br')); textNodes.push(...highlightIps(line)); });
+    $('qText').replaceChildren(...textNodes);
+    const tbl = $('qTable');
+    tbl.replaceChildren();
+    tbl.hidden = !q.table;
+    if (q.table) {
+      const thead = document.createElement('thead'); const hr = document.createElement('tr');
+      q.table.headers.forEach((h) => { const th = document.createElement('th'); th.textContent = h; hr.append(th); });
+      thead.append(hr);
+      const tbody = document.createElement('tbody');
+      q.table.rows.forEach((row) => { const tr = document.createElement('tr'); row.forEach((c) => { const td = document.createElement('td'); td.textContent = c; tr.append(td); }); tbody.append(tr); });
+      tbl.append(thead, tbody);
+    }
 
     const r = S.result && S.result.qid === q.qid ? S.result : null;
     $('qOptions').replaceChildren(...q.options.map((o, i) => {

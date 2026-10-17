@@ -1,21 +1,19 @@
 'use strict';
-// 問題の取得口。レベルで2系統に分ける(設計書 8.6)。
-//   Lv1〜4: その場で自動生成(計算で答えが決まるので常に正確)
-//   Lv5〜10: DB に保存した固定問題(フェーズ2で実装。クリアまたは定期更新で差し替える)
-// 答えはサーバーだけが持ち、クライアントには送らない。
-//
-// 暫定(設計書 8.8): Lv4 以上の問題はまだ無い。実装されるまでは Lv3 相当の生成問題を出し、provisional を付ける。
-//   Lv4 = 2問連続(手順4) / Lv5 = 経路表(フェーズ2) / Lv6 以降 = トラップ・コマンド(フェーズ2〜3)
+// 問題の取得口。レベル → 生成器の対応はここ 1 か所(設計書 8.18 訂正版、LEVELS.md 第 1〜4 章)。
+//   Lv1〜3  サブネット計算(subnet.js の難易度 1〜3)
+//   Lv4〜10 アドレッシングの基礎知識(basics.js: VLSM、集約、IPv6、経路表、ARP/MAC 表、ACL、NAT 表)
+//   Lv11〜  未実装。実装されるまでは Lv10 までの中で最も近いものを出し、provisional を付ける
+// 答えはサーバーだけが持ち、クライアントには送らない(q.meta も送らない)。
 
 const { makeQuestion } = require('./subnet');
+const { makeBasics } = require('./basics');
 
-// レベル → 生成器の難易度(1〜3)
-const GEN_DIFFICULTY = { 1: 1, 2: 2, 3: 3 };
+const MAX_IMPLEMENTED = 10;
 
 function getQuestion({ level, node }) {
-  const difficulty = GEN_DIFFICULTY[level] || 3;
-  const q = makeQuestion(difficulty, node.base, node.span || 65534);
-  return { ...q, level, source: 'generated', provisional: level >= 4 };
+  const lv = Math.max(1, Math.min(MAX_IMPLEMENTED, level));
+  const q = lv <= 3 ? makeQuestion(lv, node.base, node.span || 65534) : makeBasics(lv, node.base);
+  return { ...q, level, source: 'generated', provisional: level > MAX_IMPLEMENTED };
 }
 
-module.exports = { getQuestion };
+module.exports = { getQuestion, MAX_IMPLEMENTED };

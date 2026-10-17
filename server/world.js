@@ -8,7 +8,7 @@ const { distanceKm, buildLinks, nearest } = require('./map/geo');
 const { getQuestion } = require('./questions');
 
 const COOLDOWN_MS = 4000;               // 不正解のあと操作できない時間
-const MAX_DEFENSE = 3;                  // 防御 Lv の上限
+const MAX_DEFENSE = 999;                // 強化の上限(事実上なし。出題レベルの上限 999 まで。LEVELS.md 第 3 章)
 const PROTECT_MS = 24 * 60 * 60 * 1000; // 初心者保護: 生まれた拠点は24時間攻撃されない
 const PROTECT_MAX_NODES = 3;            // 初心者保護: 所持拠点がこの数以下の人は攻撃されない
 const HOME_LINKS = 2;                   // プレイヤーの拠点がつながる近隣拠点の数
@@ -162,7 +162,9 @@ class World {
   // ---------- 集計 ----------
   owned(pid) { return [...this.nodes.values()].filter((n) => n.owner === pid); }
   ownedCount(pid) { return this.owned(pid).length; }
-  score(pid) { return this.owned(pid).reduce((s, n) => s + n.value, 0); }
+  // 点数は強化後のレベルに連動する(基礎の点数 + 強化段数。設計書 8.19 の決定)
+  valueOf(n) { return (n.value || 0) + (n.defense || 0); }
+  score(pid) { return this.owned(pid).reduce((s, n) => s + this.valueOf(n), 0); }
 
   canAttack(pid, nodeId) {
     const n = this.nodes.get(nodeId);
@@ -189,7 +191,7 @@ class World {
     if (now() < p.cooldownUntil) throw new Error('通信が回復するまで少し待ってください');
     let mode;
     if (n.owner === p.id) {
-      if (n.defense >= MAX_DEFENSE) throw new Error('この拠点の防御はすでに最大です');
+      if (this.levelFor(n, 'fortify') >= 999) throw new Error('この拠点の強化はすでに最大です');
       mode = 'fortify';
     } else if (this.canAttack(p.id, nodeId)) {
       mode = 'attack';
@@ -206,7 +208,8 @@ class World {
     if (p.pending && p.pending.nodeId === nodeId && p.pending.mode === mode && p.pending.level === level) return p.pending.payload;
     const q = getQuestion({ level, node: n });
     const qid = newId();
-    const payload = { t: 'question', qid, nodeId, mode, level, provisional: !!q.provisional, text: q.text, options: q.options };
+    // 画面へは本文・表・選択肢だけ(答え・解説・meta は送らない)
+    const payload = { t: 'question', qid, nodeId, mode, level, provisional: !!q.provisional, text: q.text, options: q.options, table: q.table || null };
     p.pending = { qid, nodeId, mode, level, answerIndex: q.answerIndex, explanation: q.explanation, payload };
     return payload;
   }
@@ -245,12 +248,14 @@ class World {
     const prev = n.owner ? this.players.get(n.owner) : null;
     n.owner = p.id;
     n.defense = 0;
-    p.points += n.value;
+    const gained = this.valueOf(n); // 奪取時点(強化込み)の点数が累計に入る
+    p.points += gained;
+    n.defense = 0;
     this.addLog(prev ? `${p.name} が ${prev.name} から ${n.name} を奪取` : `${p.name} が ${n.name} に到達`);
     this.persistNode(n);
     this.persistPlayer(p);
     if (prev && this.ownedCount(prev.id) === 0) this.respawn(prev);
-    return `${n.name} を獲得しました(+${n.value}点)`;
+    return `${n.name} を獲得しました(+${gained}点)`;
   }
 
   // 拠点をすべて失った人は東京駅周辺に再生成する(設計書 8.2 #7 の暫定。累計点などの記録はすべて残る)
@@ -271,7 +276,7 @@ class World {
       t: 'state',
       now: now(),
       nodes: [...this.nodes.values()].filter((n) => n.status === 'public').map((n) => ({
-        id: n.id, name: n.name, kind: n.kind, lat: n.lat, lon: n.lon, level: n.level, value: n.value,
+        id: n.id, name: n.name, kind: n.kind, lat: n.lat, lon: n.lon, level: n.level, value: this.valueOf(n), baseValue: n.value,
         subnet: n.subnet, owner: n.owner, defense: n.defense, isPlayerNode: n.isPlayerNode,
         protectedUntil: n.protectedUntil, hackable: n.hackable !== false,
         genre: n.genre || null, area: n.area || null, lines: n.lines || [],
