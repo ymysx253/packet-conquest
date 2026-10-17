@@ -64,9 +64,10 @@ class CosmosStore {
     for (let i = 0; i < tiles.length; i += CHUNK) {
       const chunk = tiles.slice(i, i + CHUNK);
       const rows = await this.query('nodes', {
+        // 階層パーティションキーの前半(country)だけを options.partitionKey に渡すと 400 になるので、WHERE 句の c.country で絞る
         query: `SELECT * FROM c WHERE c.country = @country AND ARRAY_CONTAINS(@tiles, c.${field}) AND c.level >= @min`,
         parameters: [{ name: '@country', value: country }, { name: '@tiles', value: chunk }, { name: '@min', value: minLevel }],
-      }, { partitionKey: [country] });
+      });
       out.push(...rows.map((r) => this.strip(r)));
     }
     return out;
