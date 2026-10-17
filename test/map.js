@@ -21,12 +21,12 @@ for (const n of NODES) {
   if (n.hackable) assert.ok(ADJ[n.id].length >= 2, `${n.name}: リンクが2本未満`);
   else assert.strictEqual(ADJ[n.id].length, 0, `${n.name}: ハック不可の拠点に線がある`);
   assert.ok(typeof n.area === 'string' && n.area, `${n.name}: area がない`);
-  assert.match(n.subnet, /^10\.\d+\.0\.0\/16$/);
+  assert.match(n.subnet, /^10\.\d+\.\d+\.0\/20$/);
 }
-// 拠点どうしが近すぎない(画面で重なる・同じ場所を二重登録)
+// 同じ場所の二重登録がない(25 m 未満)。隣り合う別の駅や、駅と名所が 100 m ほど離れているのは正常
 for (let i = 0; i < NODES.length; i++) for (let j = i + 1; j < NODES.length; j++) {
   const d = distanceKm(NODES[i], NODES[j]);
-  assert.ok(d >= 0.15, `${NODES[i].name} と ${NODES[j].name} が近すぎます (${d.toFixed(2)} km)`);
+  assert.ok(d >= 0.025, `${NODES[i].name} と ${NODES[j].name} が同じ場所です (${(d * 1000).toFixed(0)} m)`);
 }
 // 連結: ハック可能な拠点どうしは、どこからでも全部へ到達できる
 const HACKABLE = NODES.filter((n) => n.hackable);

@@ -25,7 +25,7 @@ const now = () => Date.now();
 // 拠点マスター(tokyo.js)を DB の拠点ドキュメントの形にする。初回起動時のシードに使う
 function masterToNode(m) {
   return {
-    id: m.id, name: m.name, genre: m.genre || null, kind: m.kind, kindLabel: m.kindLabel, area: m.area, region: m.region, tags: m.tags || [],
+    id: m.id, name: m.name, genre: m.genre || null, span: m.span || 65534, kind: m.kind, kindLabel: m.kindLabel, area: m.area, region: m.region, tags: m.tags || [],
     hackable: m.hackable !== false,
     lat: m.lat, lon: m.lon, level: m.level, value: m.value,
     subnet: m.subnet, base: m.base,
@@ -144,7 +144,7 @@ class World {
     const node = {
       id: `home-${newId()}`, name: `${p.name}の拠点`, kind: 'HOME', kindLabel: 'プレイヤーの拠点', area: tokyo.SPAWN_CENTER.name, tags: [],
       lat: Number(lat.toFixed(5)), lon: Number(lon.toFixed(5)), level: 1, value: 1,
-      subnet: `172.${a}.${b}.0/24`, base: ((172 << 24) >>> 0) + (a << 16) + (b << 8),
+      subnet: `172.${a}.${b}.0/24`, base: ((172 << 24) >>> 0) + (a << 16) + (b << 8), span: 254,
       status: 'public', isPlayerNode: true, registeredBy: p.id,
       owner: p.id, defense: 0, protectedUntil: now() + PROTECT_MS, createdAt: now(),
     };

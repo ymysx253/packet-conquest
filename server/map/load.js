@@ -124,7 +124,7 @@ function validate(region, data) {
     if (n.hackable !== undefined && typeof n.hackable !== 'boolean') fail(region, `${n.id}: hackable は true/false`);
     // 名所のジャンル(docs/PLACES.md 第2章)。地名ではなく名所であることの担保
     if (typeof n.genre !== 'string' || !GENRES.has(n.genre)) fail(region, `${n.id}: genre が不正 ${n.genre}(PLACES.md のジャンルから選ぶ)`);
-    if (/[0-9０-９一二三四五六七八九十]+丁目/.test(n.name)) fail(region, `${n.id}: 丁目を含む名前は使わない(名所の名前にする)`);
+    if (n.genre !== 'station' && /[0-9０-９一二三四五六七八九十]+丁目/.test(n.name)) fail(region, `${n.id}: 丁目を含む名前は使わない(名所の名前にする。駅名は除く)`);
   }
 }
 
@@ -142,10 +142,12 @@ function loadRegion(region) {
     hackable: n.hackable !== false,
     tags: Array.isArray(n.tags) ? n.tags : [],
     // 問題生成に使う架空のネットワーク 10.(i+1).0.0/16(順番で決まる。DB 化したら項目として持つ)
-    base: ((10 << 24) >>> 0) + (i + 1) * 65536,
-    subnet: `10.${i + 1}.0.0/16`,
+    // 問題生成に使う架空のネットワーク。10.0.0.0/8 を /20 ずつ割り当てる(4096 拠点まで。順番で決まる。DB 化したら項目として持つ)
+    base: ((10 << 24) >>> 0) + (i + 1) * 4096,
+    span: 4094,
+    subnet: `10.${((i + 1) >> 4) & 255}.${((i + 1) & 15) << 4}.0/20`,
   }));
-  if (NODES.length > 250) fail(region, '拠点が多すぎます(10.x.0.0/16 は 250 まで)');
+  if (NODES.length > 4000) fail(region, '拠点が多すぎます(10.0.0.0/8 を /20 で割ると 4000 まで)');
 
   const EDGES = buildLinks(NODES.filter((n) => n.hackable), 3);
   const byId = Object.fromEntries(NODES.map((n) => [n.id, n]));

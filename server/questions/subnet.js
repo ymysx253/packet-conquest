@@ -53,11 +53,12 @@ function buildOptions(correct, candidates, filler) {
   return { options, answerIndex: options.indexOf(correct) };
 }
 
-function makeQuestion(difficulty, base) {
+// base: 架空ネットワークの先頭アドレス。span: その中で使うアドレス数(既定は /16 ぶん)
+function makeQuestion(difficulty, base, span = 65534) {
   const d = Math.max(1, Math.min(3, difficulty));
   const type = pick(TYPES[d]);
   const p = type === 'mask' && d === 1 ? pick([8, 16, 24]) : pick(PREFIXES[d]);
-  const ip = (base + rand(1, 65534)) >>> 0;
+  const ip = (base + rand(1, Math.max(2, span))) >>> 0;
   const size = 2 ** (32 - p);
   const net = netOf(ip, p);
   const bc = bcastOf(ip, p);
@@ -76,13 +77,13 @@ function makeQuestion(difficulty, base) {
   } else if (type === 'network') {
     const correct = toIp(net);
     const cands = [ipStr(net + size), ipStr(net - size), toIp(bc), ip !== net ? toIp(ip) : null, ipStr(net + 2 * size)];
-    q = buildOptions(correct, cands, () => toIp(netOf((base + rand(0, 65535)) >>> 0, p)));
+    q = buildOptions(correct, cands, () => toIp(netOf((base + rand(0, Math.max(3, span + 1))) >>> 0, p)));
     q.text = `${toIp(ip)}/${p} のネットワークアドレスは？`;
     q.explanation = explainNetwork(ip, p);
   } else if (type === 'broadcast') {
     const correct = toIp(bc);
     const cands = [ipStr(bc - size), ipStr(bc + size), toIp(net), ipStr(bc - 1)];
-    q = buildOptions(correct, cands, () => toIp(bcastOf((base + rand(0, 65535)) >>> 0, p)));
+    q = buildOptions(correct, cands, () => toIp(bcastOf((base + rand(0, Math.max(3, span + 1))) >>> 0, p)));
     q.text = `${toIp(ip)}/${p} のブロードキャストアドレスは？`;
     q.explanation = `${explainNetwork(ip, p)} ブロック幅 ${size.toLocaleString('ja-JP')} 個分の範囲は ${toIp(net)}〜${toIp(bc)}。最後のアドレスがブロードキャスト。`;
   } else if (type === 'hosts') {

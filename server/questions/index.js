@@ -14,7 +14,7 @@ const GEN_DIFFICULTY = { 1: 1, 2: 2, 3: 3 };
 
 function getQuestion({ level, node }) {
   const difficulty = GEN_DIFFICULTY[level] || 3;
-  const q = makeQuestion(difficulty, node.base);
+  const q = makeQuestion(difficulty, node.base, node.span || 65534);
   return { ...q, level, source: 'generated', provisional: level >= 4 };
 }
 

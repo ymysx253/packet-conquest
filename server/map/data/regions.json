@@ -1,0 +1,106 @@
+{
+  "version": 3,
+  "updatedAt": "2026-10-17",
+  "note": "地域マスター(宇宙まで含む世界共通の階層)。宇宙 → 天体(地球・月・火星・軌道上の施設) → 大陸 → 国 → 国内の段(国ごとに段数が違うので tier で表す)。Cosmos DB の regions コンテナーと同じ項目(1 行 = 1 ドキュメント)。派生値(中心・範囲・拠点数)は保存時に計算して付ける。拠点(nodes)は region で最下層の地域を指す。地球以外の天体は将来用(いまは実装しない)。",
+  "kinds": {
+    "universe": {
+      "tier": 0,
+      "label": "宇宙"
+    },
+    "body": {
+      "tier": 1,
+      "label": "天体(地球・月・火星・軌道上の施設など)"
+    },
+    "continent": {
+      "tier": 2,
+      "label": "大陸・広域"
+    },
+    "country": {
+      "tier": 3,
+      "label": "国"
+    },
+    "region": {
+      "tier": 4,
+      "label": "地方(国内の広域。無い国は省略可)"
+    },
+    "state": {
+      "tier": 5,
+      "label": "都道府県・州・省"
+    },
+    "city": {
+      "tier": 6,
+      "label": "市・区・郡(拠点が属する最下層)"
+    },
+    "district": {
+      "tier": 7,
+      "label": "地区(必要な都市だけ。拠点が属してもよい)"
+    }
+  },
+  "leafKinds": [
+    "city",
+    "district"
+  ],
+  "regions": [
+    { "id": "universe", "name": "宇宙", "nameEn": "Universe", "kind": "universe", "parent": null, "code": null, "status": "public" },
+    { "id": "earth", "name": "地球", "nameEn": "Earth", "kind": "body", "parent": "universe", "code": null, "status": "public" },
+
+    { "id": "asia", "name": "アジア", "nameEn": "Asia", "kind": "continent", "parent": "earth", "code": "AS", "status": "public" },
+
+    { "id": "japan", "name": "日本", "nameEn": "Japan", "kind": "country", "parent": "asia", "code": "JP", "status": "public" },
+
+    { "id": "kanto", "name": "関東", "nameEn": "Kanto", "kind": "region", "parent": "japan", "code": null, "status": "public" },
+
+    { "id": "tokyo", "name": "東京都", "nameEn": "Tokyo", "kind": "state", "parent": "kanto", "code": "JP-13", "status": "public", "nodeFile": "tokyo" },
+
+    { "id": "tokyo-chiyoda", "name": "千代田区", "nameEn": "Chiyoda", "kind": "city", "parent": "tokyo", "code": "JP-13-13101", "status": "public", "localKind": "区" },
+    { "id": "tokyo-chuo", "name": "中央区", "nameEn": "Chuo", "kind": "city", "parent": "tokyo", "code": "JP-13-13102", "status": "public", "localKind": "区" },
+    { "id": "tokyo-minato", "name": "港区", "nameEn": "Minato", "kind": "city", "parent": "tokyo", "code": "JP-13-13103", "status": "public", "localKind": "区" },
+    { "id": "tokyo-shinjuku", "name": "新宿区", "nameEn": "Shinjuku", "kind": "city", "parent": "tokyo", "code": "JP-13-13104", "status": "public", "localKind": "区" },
+    { "id": "tokyo-bunkyo", "name": "文京区", "nameEn": "Bunkyo", "kind": "city", "parent": "tokyo", "code": "JP-13-13105", "status": "public", "localKind": "区" },
+    { "id": "tokyo-taito", "name": "台東区", "nameEn": "Taito", "kind": "city", "parent": "tokyo", "code": "JP-13-13106", "status": "public", "localKind": "区" },
+    { "id": "tokyo-sumida", "name": "墨田区", "nameEn": "Sumida", "kind": "city", "parent": "tokyo", "code": "JP-13-13107", "status": "public", "localKind": "区" },
+    { "id": "tokyo-koto", "name": "江東区", "nameEn": "Koto", "kind": "city", "parent": "tokyo", "code": "JP-13-13108", "status": "public", "localKind": "区" },
+    { "id": "tokyo-shinagawa", "name": "品川区", "nameEn": "Shinagawa", "kind": "city", "parent": "tokyo", "code": "JP-13-13109", "status": "public", "localKind": "区" },
+    { "id": "tokyo-meguro", "name": "目黒区", "nameEn": "Meguro", "kind": "city", "parent": "tokyo", "code": "JP-13-13110", "status": "public", "localKind": "区" },
+    { "id": "tokyo-ota", "name": "大田区", "nameEn": "Ota", "kind": "city", "parent": "tokyo", "code": "JP-13-13111", "status": "public", "localKind": "区" },
+    { "id": "tokyo-setagaya", "name": "世田谷区", "nameEn": "Setagaya", "kind": "city", "parent": "tokyo", "code": "JP-13-13112", "status": "public", "localKind": "区" },
+    { "id": "tokyo-shibuya", "name": "渋谷区", "nameEn": "Shibuya", "kind": "city", "parent": "tokyo", "code": "JP-13-13113", "status": "public", "localKind": "区" },
+    { "id": "tokyo-nakano", "name": "中野区", "nameEn": "Nakano", "kind": "city", "parent": "tokyo", "code": "JP-13-13114", "status": "public", "localKind": "区" },
+    { "id": "tokyo-suginami", "name": "杉並区", "nameEn": "Suginami", "kind": "city", "parent": "tokyo", "code": "JP-13-13115", "status": "public", "localKind": "区" },
+    { "id": "tokyo-toshima", "name": "豊島区", "nameEn": "Toshima", "kind": "city", "parent": "tokyo", "code": "JP-13-13116", "status": "public", "localKind": "区" },
+    { "id": "tokyo-kita", "name": "北区", "nameEn": "Kita", "kind": "city", "parent": "tokyo", "code": "JP-13-13117", "status": "public", "localKind": "区" },
+    { "id": "tokyo-arakawa", "name": "荒川区", "nameEn": "Arakawa", "kind": "city", "parent": "tokyo", "code": "JP-13-13118", "status": "public", "localKind": "区" },
+    { "id": "tokyo-itabashi", "name": "板橋区", "nameEn": "Itabashi", "kind": "city", "parent": "tokyo", "code": "JP-13-13119", "status": "public", "localKind": "区" },
+    { "id": "tokyo-nerima", "name": "練馬区", "nameEn": "Nerima", "kind": "city", "parent": "tokyo", "code": "JP-13-13120", "status": "public", "localKind": "区" },
+    { "id": "tokyo-adachi", "name": "足立区", "nameEn": "Adachi", "kind": "city", "parent": "tokyo", "code": "JP-13-13121", "status": "public", "localKind": "区" },
+    { "id": "tokyo-katsushika", "name": "葛飾区", "nameEn": "Katsushika", "kind": "city", "parent": "tokyo", "code": "JP-13-13122", "status": "public", "localKind": "区" },
+    { "id": "tokyo-edogawa", "name": "江戸川区", "nameEn": "Edogawa", "kind": "city", "parent": "tokyo", "code": "JP-13-13123", "status": "public", "localKind": "区" },
+    { "id": "tokyo-musashino", "name": "武蔵野市", "nameEn": "Musashino", "kind": "city", "parent": "tokyo", "code": "JP-13-13203", "status": "public", "localKind": "市" },
+    { "id": "tokyo-koganei", "name": "小金井市", "nameEn": "Koganei", "kind": "city", "parent": "tokyo", "code": "JP-13-13210", "status": "public", "localKind": "市" },
+    { "id": "tokyo-chofu", "name": "調布市", "nameEn": "Chofu", "kind": "city", "parent": "tokyo", "code": "JP-13-13208", "status": "public", "localKind": "市" },
+    { "id": "tokyo-fuchu", "name": "府中市", "nameEn": "Fuchu", "kind": "city", "parent": "tokyo", "code": "JP-13-13206", "status": "public", "localKind": "市" },
+    { "id": "tokyo-tachikawa", "name": "立川市", "nameEn": "Tachikawa", "kind": "city", "parent": "tokyo", "code": "JP-13-13202", "status": "public", "localKind": "市" },
+    { "id": "tokyo-tama", "name": "多摩市", "nameEn": "Tama", "kind": "city", "parent": "tokyo", "code": "JP-13-13224", "status": "public", "localKind": "市" },
+    { "id": "tokyo-machida", "name": "町田市", "nameEn": "Machida", "kind": "city", "parent": "tokyo", "code": "JP-13-13209", "status": "public", "localKind": "市" },
+    { "id": "tokyo-hachioji", "name": "八王子市", "nameEn": "Hachioji", "kind": "city", "parent": "tokyo", "code": "JP-13-13201", "status": "public", "localKind": "市" },
+    { "id": "tokyo-mitaka", "name": "三鷹市", "nameEn": "Mitaka", "kind": "city", "parent": "tokyo", "code": "JP-13-13204", "status": "public", "localKind": "市" },
+    { "id": "tokyo-hino", "name": "日野市", "nameEn": "Hino", "kind": "city", "parent": "tokyo", "code": "JP-13-13212", "status": "public", "localKind": "市" },
+    { "id": "tokyo-kunitachi", "name": "国立市", "nameEn": "Kunitachi", "kind": "city", "parent": "tokyo", "code": "JP-13-13215", "status": "public", "localKind": "市" },
+    { "id": "tokyo-ome", "name": "青梅市", "nameEn": "Ome", "kind": "city", "parent": "tokyo", "code": "JP-13-13205", "status": "public", "localKind": "市" },
+    { "id": "tokyo-okutama", "name": "奥多摩町", "nameEn": "Okutama", "kind": "city", "parent": "tokyo", "code": "JP-13-13308", "status": "public", "localKind": "町" },
+    { "id": "tokyo-13207", "name": "昭島市", "nameEn": null, "kind": "city", "parent": "tokyo", "code": "JP-13-13207", "status": "public", "localKind": "市" },
+    { "id": "tokyo-13211", "name": "小平市", "nameEn": null, "kind": "city", "parent": "tokyo", "code": "JP-13-13211", "status": "public", "localKind": "市" },
+    { "id": "tokyo-13213", "name": "東村山市", "nameEn": null, "kind": "city", "parent": "tokyo", "code": "JP-13-13213", "status": "public", "localKind": "市" },
+    { "id": "tokyo-13214", "name": "国分寺市", "nameEn": null, "kind": "city", "parent": "tokyo", "code": "JP-13-13214", "status": "public", "localKind": "市" },
+    { "id": "tokyo-13218", "name": "福生市", "nameEn": null, "kind": "city", "parent": "tokyo", "code": "JP-13-13218", "status": "public", "localKind": "市" },
+    { "id": "tokyo-13219", "name": "狛江市", "nameEn": null, "kind": "city", "parent": "tokyo", "code": "JP-13-13219", "status": "public", "localKind": "市" },
+    { "id": "tokyo-13220", "name": "東大和市", "nameEn": null, "kind": "city", "parent": "tokyo", "code": "JP-13-13220", "status": "public", "localKind": "市" },
+    { "id": "tokyo-13221", "name": "清瀬市", "nameEn": null, "kind": "city", "parent": "tokyo", "code": "JP-13-13221", "status": "public", "localKind": "市" },
+    { "id": "tokyo-13222", "name": "東久留米市", "nameEn": null, "kind": "city", "parent": "tokyo", "code": "JP-13-13222", "status": "public", "localKind": "市" },
+    { "id": "tokyo-13225", "name": "稲城市", "nameEn": null, "kind": "city", "parent": "tokyo", "code": "JP-13-13225", "status": "public", "localKind": "市" },
+    { "id": "tokyo-13227", "name": "羽村市", "nameEn": null, "kind": "city", "parent": "tokyo", "code": "JP-13-13227", "status": "public", "localKind": "市" },
+    { "id": "tokyo-13228", "name": "あきる野市", "nameEn": null, "kind": "city", "parent": "tokyo", "code": "JP-13-13228", "status": "public", "localKind": "市" },
+    { "id": "tokyo-13229", "name": "西東京市", "nameEn": null, "kind": "city", "parent": "tokyo", "code": "JP-13-13229", "status": "public", "localKind": "市" },
+    { "id": "tokyo-13303", "name": "瑞穂町", "nameEn": null, "kind": "city", "parent": "tokyo", "code": "JP-13-13303", "status": "public", "localKind": "町" }
+  ]
+}

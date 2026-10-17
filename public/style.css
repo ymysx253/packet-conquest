@@ -84,6 +84,7 @@ body {
 }
 .zbtn:hover { background: var(--bg); }
 .map-hint { position: absolute; left: 10px; bottom: 6px; margin: 0; font-size: 11px; color: var(--muted); pointer-events: none; }
+.credit { margin: 6px 0 0; font-size: 11px; color: var(--muted); }
 .legend {
   list-style: none; margin: 8px 0 0; padding: 0;
   display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--muted);

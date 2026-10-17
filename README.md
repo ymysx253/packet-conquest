@@ -122,3 +122,9 @@ az webapp config set -g packet-jintori-rg -n <アプリ名> --startup-file "npm 
 ## 次に作るもの
 
 `docs/DESIGN.md` の第8章(フェーズ計画)を参照。
+
+## 出典
+
+- 駅の位置と路線: 「国土数値情報(鉄道データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N02-2025.html)を加工して作成
+- 区・市・町・村の境界: 「国土数値情報(行政区域データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-2026.html)を加工して作成
+- 取り込みは `tools/import-stations.js` で行う(元データは Git に含めない)
