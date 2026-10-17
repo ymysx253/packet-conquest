@@ -26,6 +26,7 @@ const now = () => Date.now();
 function masterToNode(m) {
   return {
     id: m.id, name: m.name, genre: m.genre || null, span: m.span || 65534, kind: m.kind, kindLabel: m.kindLabel, area: m.area, region: m.region, tags: m.tags || [],
+    lines: m.lines || [],
     hackable: m.hackable !== false,
     lat: m.lat, lon: m.lon, level: m.level, value: m.value,
     subnet: m.subnet, base: m.base,
@@ -273,6 +274,7 @@ class World {
         id: n.id, name: n.name, kind: n.kind, lat: n.lat, lon: n.lon, level: n.level, value: n.value,
         subnet: n.subnet, owner: n.owner, defense: n.defense, isPlayerNode: n.isPlayerNode,
         protectedUntil: n.protectedUntil, hackable: n.hackable !== false,
+        genre: n.genre || null, area: n.area || null, lines: n.lines || [],
       })),
       edges: this.edges,
       players: [...this.players.values()].map((p) => ({

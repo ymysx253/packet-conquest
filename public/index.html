@@ -59,6 +59,22 @@
       <p class="hint">別の端末やブラウザで続けるときに入力します。他の人には教えないでください。</p>
     </section>
 
+    <section class="panel" id="nodePanel" hidden aria-labelledby="npTitle">
+      <h2 id="npTitle" class="label">拠点の情報</h2>
+      <p class="np-name" id="npName"></p>
+      <p class="hint np-meta" id="npMeta"></p>
+      <dl class="np-grid">
+        <dt>難易度</dt><dd id="npLevel"></dd>
+        <dt>点数</dt><dd id="npValue"></dd>
+        <dt>所有者</dt><dd id="npOwner"></dd>
+      </dl>
+      <div id="npLines" hidden>
+        <p class="label">路線</p>
+        <ul class="np-lines" id="npLinesList"></ul>
+      </div>
+      <p class="hint" id="npStatus"></p>
+    </section>
+
     <section class="panel qpanel" id="qpanel" aria-live="polite">
       <div id="qIdle" class="idle">
         <p class="label">あなたの番</p>

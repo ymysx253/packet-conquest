@@ -12,6 +12,7 @@
     question: null, result: null, chosen: null, cooldownUntil: 0,
     offset: 0, joined: false, wantJoin: false, retry: 0,
     pos: {}, posKey: '',
+    selected: null,
   };
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch { return null; } },
@@ -84,6 +85,7 @@
           S.centerPending = false; centerOnMine();
         }
         renderState();
+        renderSelected();
         break;
       case 'question':
         S.question = m; S.result = null; S.chosen = null; renderQuestion();
@@ -235,7 +237,7 @@
     : 11 + Math.min(10, n.level) * 0.6 + Math.min(9, Math.floor((n.level - 1) / 10)) * 0.4 + Math.min(9, Math.floor((n.level - 1) / 100)) * 0.8);
   // k: 仮想座標 → 画面ピクセルの倍率。tx, ty: 画面の左上にある仮想座標。fit: 全体が収まる倍率
   const V = { k: 1, tx: 0, ty: 0, fit: 1, w: 0, h: 0 };
-  const ZOOM_MIN = 0.7, ZOOM_MAX = 28; // fit に対する比(駅が密なので大きく寄れるようにする)
+  const ZOOM_MIN = 0.7, ZOOM_MAX = 50; // fit に対する比(駅が密なので大きく寄れるようにする)
   const toScreen = (p) => ({ x: (p.x - V.tx) * V.k, y: (p.y - V.ty) * V.k });
   const toWorld = (sx, sy) => ({ x: sx / V.k + V.tx, y: sy / V.k + V.ty });
   const zoomRatio = () => V.k / V.fit;
@@ -346,11 +348,46 @@
   canvas.addEventListener('pointerup', endPointer);
   canvas.addEventListener('pointercancel', endPointer);
 
+  // 拠点を選ぶ: どの拠点でも情報パネルに出す。攻撃・強化できる拠点なら出題も求める
   function tapAt(pt) {
     const n = nodeAt(pt);
     if (!n || !S.joined) return;
+    S.selected = n.id;
+    renderSelected();
+    const actionable = canAttack(n.id) || (n.owner === S.me && n.defense < 3);
+    if (!actionable) return;
     if (now() < S.cooldownUntil) { toast('不正解のため通信が止まっています'); return; }
     send({ t: 'ask', nodeId: n.id });
+  }
+
+  const GENRE_LABELS = {
+    station: '駅', bus_terminal: 'バスターミナル', airport: '空港', port: '港', bridge: '橋', tower: '塔・展望施設',
+    park: '公園・庭園', nature: '自然の名所', zoo_aquarium: '動物園・水族館・植物園', museum: '博物館・美術館', library: '図書館',
+    theater: '劇場・ホール', stadium: 'スタジアム・競技場', heritage: '歴史的建造物', monument: '記念碑・広場', shrine_temple: '寺社',
+    government: '官公庁', university: '大学・研究', market: '市場・商店街', convention: '展示場・会議場', complex: '複合施設',
+    observatory: '天文台', ix: '相互接続点',
+  };
+  function renderSelected() {
+    const n = S.selected && nodeById(S.selected);
+    $('nodePanel').hidden = !n;
+    if (!n) return;
+    const owner = n.owner ? playerById(n.owner) : null;
+    $('npName').textContent = n.name;
+    $('npMeta').textContent = [n.isPlayerNode ? 'プレイヤーの拠点' : GENRE_LABELS[n.genre] || '', n.area || ''].filter(Boolean).join(' ・ ');
+    $('npLevel').textContent = `Lv${n.level}${n.defense ? `(+${n.defense} 強化)` : ''}`;
+    $('npValue').textContent = `${n.value}点`;
+    $('npOwner').textContent = owner ? `${owner.name}${owner.id === S.me ? '(あなた)' : ''}` : '中立';
+    const lines = Array.isArray(n.lines) ? n.lines : [];
+    $('npLines').hidden = !lines.length;
+    $('npLinesList').replaceChildren(...lines.map((l) => { const li = document.createElement('li'); li.textContent = l; return li; }));
+    let status;
+    if (n.hackable === false) status = 'ネットワークにつながっていない場所です(ハック不可)';
+    else if (n.owner === S.me) status = n.defense >= 3 ? '強化は最大です' : 'タップすると強化の問題が出ます';
+    else if (n.protectedUntil > now()) status = `生まれたばかりで守られています(あと ${Math.ceil((n.protectedUntil - now()) / 3600000)} 時間)`;
+    else if (n.owner && (playerById(n.owner) || {}).nodes <= 3) status = '拠点が少ないプレイヤーは守られています';
+    else if (canAttack(n.id)) status = 'タップすると攻撃の問題が出ます';
+    else status = '自分の拠点とつながっていないため、まだ攻撃できません';
+    $('npStatus').textContent = status;
   }
 
   function adjacent(id) {
@@ -411,6 +448,9 @@
       if (S.question && S.question.nodeId === n.id && !(S.result && S.result.qid === S.question.qid)) {
         ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.setLineDash([4, 4]);
         ctx.beginPath(); ctx.arc(p.x, p.y, ring + 11, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+      } else if (S.selected === n.id) {
+        ctx.strokeStyle = C.ink; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(p.x, p.y, ring + 9, 0, Math.PI * 2); ctx.stroke();
       }
       if (n.protectedUntil > now()) {
         ctx.strokeStyle = C.muted; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
