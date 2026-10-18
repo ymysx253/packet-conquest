@@ -187,6 +187,10 @@ class CosmosStore {
     try { const { resource } = await this.c.teams.item(id, id).read(); return this.strip(resource) || null; } catch (e) { if (e.code === 404) return null; throw e; }
   }
   async saveTeam(doc) { await this.ensure(); await this.c.teams.items.upsert(doc); }
+  async teamMembers(teamId, n = 20) {
+    const rows = await this.query('players', { query: 'SELECT TOP @n * FROM c WHERE c.team = @t ORDER BY c.createdAt ASC', parameters: [{ name: '@n', value: n }, { name: '@t', value: teamId }] });
+    return rows.map((r) => this.strip(r));
+  }
   async deleteTeam(id) { await this.ensure(); try { await this.c.teams.item(id, id).delete(); } catch (e) { if (e.code !== 404) throw e; } }
 
   // ---------- 固定問題(フェーズ 2) ----------

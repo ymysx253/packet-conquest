@@ -70,6 +70,7 @@
         S.me = m.id; S.token = m.token; S.joined = true; S.home = m.home; S.spawn = m.spawn; S.movedAt = m.movedAt || null;
         S.team = m.team ? { id: m.team, name: m.teamName } : null; S.cooldownUntil = m.cooldownUntil || 0; S.cooldownMs = Math.max(4000, S.cooldownUntil - Date.now());
         $('teamPanel').hidden = false; renderTeam();
+        if (S.team) { S.infoOnly = true; send({ t: 'team', action: 'info' }); }
         store.set('pc-token', m.token); store.set('pc-name', m.name);
         $('codeInput').value = m.token;
         $('lobby').hidden = true; $('mePanel').hidden = false; $('onlineChip').hidden = false;
@@ -100,13 +101,18 @@
         break;
       case 'players':
         S.offset = m.now - Date.now(); S.players = m.players; S.log = m.log || S.log; S.rankings = m.rankings || S.rankings; S.me2 = m.me || S.me2;
-        if (S.me2 && S.me2.team !== (S.team && S.team.id)) { S.team = S.me2.team ? { id: S.me2.team, name: S.me2.teamName } : null; renderTeam(); }
+        if (S.me2 && S.me2.team !== (S.team && S.team.id)) { S.team = S.me2.team ? { id: S.me2.team, name: S.me2.teamName } : null; renderTeam(); if (S.team) { S.infoOnly = true; send({ t: 'team', action: 'info' }); } }
         renderPlayers(); renderSelected();
         break;
-      case 'team':
-        S.team = m.team ? { id: m.team.id, name: m.team.name, max: m.team.maxMembers, count: m.team.memberCount } : null;
-        renderTeam(); toast(S.team ? `チーム「${S.team.name}」に所属しました` : 'チームを脱退しました');
+      case 'team': {
+        const had = S.team && S.team.id;
+        S.team = m.team ? { id: m.team.id, name: m.team.name, max: m.team.maxMembers, count: m.team.memberCount, ownerId: m.team.ownerId, style: m.team.style, icon: m.team.icon } : null;
+        renderTeam();
+        if (S.styleSaving) { S.styleSaving = false; toast('チームの見た目を保存しました'); }
+        else if (S.infoOnly) { S.infoOnly = false; }
+        else toast(S.team ? `チーム「${S.team.name}」に所属しました` : 'チームを脱退しました');
         break;
+      }
       case 'question': S.question = m; S.result = null; S.chosen = null; renderQuestion(); break;
       case 'result': S.result = m; S.cooldownUntil = m.cooldownUntil; if (m.cooldownMs) S.cooldownMs = m.cooldownMs; renderQuestion(); renderSelected(); break;
       case 'error':
@@ -193,14 +199,21 @@
     S.wantJoin = true; $('lobbyError').textContent = ''; setJoining(true);
     if (S.ws && S.ws.readyState === 1) sendJoin(); else if (!S.ws || S.ws.readyState !== 0) connect();
   });
+  const TEAM_ICONS = ['★', '●', '■', '▲', '◆', '♠', '♣', '♥', '♦', '☀', '☾', '☁', '⚡', '❄', '✿', '⚑', '⚙', '☕', '♪', '✈', '⚓', '☯', '✦', '✪'];
+  $('teamIcon').replaceChildren(...TEAM_ICONS.map((ic) => { const o = document.createElement('option'); o.value = ic; o.textContent = ic; return o; }));
   function renderTeam() {
     $('teamNone').hidden = !!S.team; $('teamMine').hidden = !S.team;
     if (S.team) {
-      $('teamName').textContent = S.team.name || '(名前なし)'; $('teamCode').textContent = S.team.id;
+      $('teamName').textContent = `${S.team.icon || ''} ${S.team.name || '(名前なし)'}`.trim(); $('teamCode').textContent = S.team.id;
+      const isLeader = S.team.ownerId === S.me;
+      $('teamStyle').hidden = !isLeader;
+      if (isLeader && S.team.style) { $('teamFrame').value = S.team.style.frame; $('teamFill').value = S.team.style.fill; $('teamText').value = S.team.style.text; $('teamIcon').value = S.team.icon || TEAM_ICONS[0]; }
+      if (S.team.style) { $('teamName').style.color = S.team.style.text; $('teamName').style.background = S.team.style.fill; $('teamName').style.border = `2px solid ${S.team.style.frame}`; $('teamName').style.borderRadius = '6px'; $('teamName').style.padding = '2px 8px'; $('teamName').style.display = 'inline-block'; }
       const t = (S.rankings && (S.rankings.teams || []).find((x) => x.id === S.team.id)) || null;
       $('teamMeta').textContent = t ? `${t.members}人 ・ 合計 ${t.score}点 ・ ${t.nodes}拠点。同じ拠点への正解回数はチームで合算されます` : 'コードを仲間に伝えると参加できます';
     }
   }
+  $('teamStyleBtn').onclick = () => { S.styleSaving = true; send({ t: 'team', action: 'style', frame: $('teamFrame').value, fill: $('teamFill').value, text: $('teamText').value, icon: $('teamIcon').value }); };
   $('teamCreateBtn').onclick = () => { const name = $('teamNameInput').value.trim(); if (!name) { toast('チーム名を入れてください'); return; } send({ t: 'team', action: 'create', name, max: Number($('teamMaxInput').value) || 10 }); };
   $('teamJoinBtn').onclick = () => { const id = $('teamJoinInput').value.trim(); if (!id) { toast('チーム コードを入れてください'); return; } send({ t: 'team', action: 'join', teamId: id }); };
   $('teamLeaveBtn').onclick = () => { if (window.confirm('チームを脱退しますか?')) send({ t: 'team', action: 'leave' }); };
@@ -442,7 +455,7 @@
     };
     let items;
     if (kind === 'teams') {
-      items = (R.teams || []).map((t, i) => row(i, S.team && S.team.id === t.id ? (me && me.color) : null, t.name || t.id, `${t.members}人 ・ ${t.nodes}拠点`, `${t.score}点`, false));
+      items = (R.teams || []).map((t, i) => row(i, t.style ? t.style.fill : null, `${t.icon ? t.icon + ' ' : ''}${t.name || t.id}`, `${t.members}人 ・ ${t.nodes}拠点`, `${t.score}点`, false));
       if (!items.length) { const li = document.createElement('li'); li.className = 'offline'; li.textContent = 'まだチームがありません'; items = [li]; }
     } else {
       const list = kind === 'score' ? [...S.players].sort((a, b) => b.score - a.score || b.points - a.points) : kind === 'weekPoints' ? (R.weekPoints || []).filter((p) => (p.weekPoints || 0) > 0) : (R[kind] || []);
@@ -597,8 +610,9 @@
           for (let i = 0; i < ring.length; i++) { const q = toScreen(ring[i]); if (i) ctx.lineTo(q.x, q.y); else ctx.moveTo(q.x, q.y); }
           ctx.closePath();
         }
-        if (c && c.color) { ctx.fillStyle = c.color; ctx.globalAlpha = S.overview ? 0.28 : 0.1; ctx.fill(); ctx.globalAlpha = 1; }
-        ctx.strokeStyle = c && c.color ? c.color : C.line; ctx.lineWidth = S.overview ? 1.5 : 1; ctx.globalAlpha = S.overview ? 0.9 : 0.5; ctx.stroke(); ctx.globalAlpha = 1;
+        const fillCol = c ? (c.style ? c.style.fill : c.color) : null, frameCol = c ? (c.style ? c.style.frame : c.color) : null;
+        if (fillCol) { ctx.fillStyle = fillCol; ctx.globalAlpha = S.overview ? 0.32 : 0.12; ctx.fill(); ctx.globalAlpha = 1; }
+        ctx.strokeStyle = frameCol || C.line; ctx.lineWidth = S.overview ? (c ? 2 : 1.5) : 1; ctx.globalAlpha = S.overview ? 0.9 : 0.5; ctx.stroke(); ctx.globalAlpha = 1;
       }
     }
 
@@ -690,16 +704,17 @@
       for (const g of S.regions) {
         const q = toScreen(worldOf(g.lat, g.lon));
         if (q.x < -80 || q.y < -40 || q.x > V.w + 80 || q.y > V.h + 40) continue;
-        const col = g.controller ? g.controller.color : null;
+        const st = g.controller && g.controller.style ? g.controller.style : null;
+        const col = g.controller ? (st ? st.fill : g.controller.color) : null;
         ctx.font = `700 ${g.tier <= 3 ? 16 : g.tier === 5 ? 14 : 12}px "BIZ UDPGothic", sans-serif`;
-        const label = g.name, sub = g.controller ? `${g.controller.name} が支配` : '';
+        const label = (g.controller && g.controller.icon ? g.controller.icon + ' ' : '') + g.name, sub = g.controller ? `${g.controller.name} が支配` : '';
         const w = Math.max(ctx.measureText(label).width, sub ? ctx.measureText(sub).width * 0.85 : 0) + 14;
         const h = sub ? 34 : 20;
         ctx.fillStyle = col || C.surface; ctx.globalAlpha = col ? 0.85 : 0.75;
         ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(q.x - w / 2, q.y - 10, w, h, 5); else ctx.rect(q.x - w / 2, q.y - 10, w, h); ctx.fill();
         ctx.globalAlpha = 1;
-        ctx.strokeStyle = col || C.line; ctx.lineWidth = 1.5; ctx.stroke();
-        ctx.fillStyle = col ? '#fff' : C.ink; ctx.fillText(label, q.x, q.y + 5);
+        ctx.strokeStyle = st ? st.frame : (col || C.line); ctx.lineWidth = st ? 2 : 1.5; ctx.stroke();
+        ctx.fillStyle = st ? st.text : (col ? '#fff' : C.ink); ctx.fillText(label, q.x, q.y + 5);
         if (sub) { ctx.font = '600 10.5px "BIZ UDPGothic", sans-serif'; ctx.fillText(sub, q.x, q.y + 19); }
       }
       ctx.fillStyle = C.muted; ctx.font = '600 12px "BIZ UDPGothic", sans-serif'; ctx.textAlign = 'left';

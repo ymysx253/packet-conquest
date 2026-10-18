@@ -18,6 +18,10 @@ const COOLDOWN_MAX_MS = 60000;          // 待ち時間の上限
 const RANK_TTL_MS = 10 * 1000;          // ランキングの集計結果を持つ時間
 const RANK_N = 15;
 const TEAM_MAX_MEMBERS = 20;            // チームの人数上限の上限(作成時に 2〜20 で決める。第 3.11 節)
+// チームの見た目(2026-10-18 決定): リーダーが枠の色・背景色・文字の色とアイコンを変えられる。アイコンは用意した記号から選ぶ
+const TEAM_ICONS = ['★', '●', '■', '▲', '◆', '♠', '♣', '♥', '♦', '☀', '☾', '☁', '⚡', '❄', '✿', '⚑', '⚙', '☕', '♪', '✈', '⚓', '☯', '✦', '✪'];
+const DEFAULT_TEAM_STYLE = { frame: '#1F2937', fill: '#FDE68A', text: '#1F2937' };
+const isHex = (s) => typeof s === 'string' && /^#[0-9a-fA-F]{6}$/.test(s);
 const MAX_LEVEL = 999;                  // 出題レベルの上限(強化はここまで)
 const PROTECT_MS = 24 * 60 * 60 * 1000; // 初心者保護: 生まれた拠点は 24 時間攻撃されない
 const PROTECT_MAX_NODES = 3;            // 初心者保護: 所持拠点がこの数以下の人は攻撃されない(作成から NEWBIE_MS の間だけ)
@@ -82,7 +86,7 @@ class World {
     const nm = String(name || '').replace(/[\u0000-\u001f\u007f<>]/g, '').trim().slice(0, 16);
     if (!nm) throw new Error('チーム名を入れてください');
     const max = Math.max(2, Math.min(TEAM_MAX_MEMBERS, Number(maxMembers) || 10));
-    const team = { id: newId(), type: 'team', name: nm, ownerId: p.id, maxMembers: max, memberCount: 1, createdAt: now() };
+    const team = { id: newId(), type: 'team', name: nm, ownerId: p.id, maxMembers: max, memberCount: 1, createdAt: now(), style: { ...DEFAULT_TEAM_STYLE }, icon: TEAM_ICONS[0] };
     await this.store.saveTeam(team);
     this.teamNames.set(team.id, team.name);
     p.team = team.id; p.reach = null;
@@ -104,12 +108,40 @@ class World {
     await this.emitPlayers();
     return team;
   }
+  // 見た目の変更(リーダーだけ)
+  async styleTeam(p, { frame, fill, text, icon } = {}) {
+    if (!p.team) throw new Error('チームに所属していません');
+    const team = await this.teamInfo(p.team);
+    if (!team) throw new Error('そのチームは見つかりません');
+    if (team.ownerId !== p.id) throw new Error('見た目を変えられるのはチームのリーダーだけです');
+    const style = { ...DEFAULT_TEAM_STYLE, ...(team.style || {}) };
+    for (const [k, v] of Object.entries({ frame, fill, text })) {
+      if (v === undefined || v === null) continue;
+      if (!isHex(v)) throw new Error('色は #RRGGBB の形で指定してください');
+      style[k] = v.toUpperCase();
+    }
+    if (icon !== undefined && icon !== null) {
+      if (!TEAM_ICONS.includes(icon)) throw new Error('アイコンは用意された記号から選んでください');
+      team.icon = icon;
+    }
+    team.style = style;
+    await this.store.saveTeam(team);
+    this.teamCache = null;
+    await this.emitPlayers();
+    return team;
+  }
+  pubTeam(t) { return t ? { id: t.id, name: t.name, ownerId: t.ownerId, maxMembers: t.maxMembers, memberCount: t.memberCount, style: { ...DEFAULT_TEAM_STYLE, ...(t.style || {}) }, icon: t.icon || TEAM_ICONS[0] } : null; }
   async leaveTeam(p) {
     if (!p.team) throw new Error('チームに所属していません');
     const team = await this.teamInfo(p.team);
     if (team) {
       team.memberCount = Math.max(0, (team.memberCount || 1) - 1);
-      if (team.memberCount === 0) await this.store.deleteTeam(team.id); else await this.store.saveTeam(team);
+      if (team.memberCount === 0) await this.store.deleteTeam(team.id);
+      else {
+        // リーダーが抜けたら、いちばん古くからいる人にリーダーを渡す
+        if (team.ownerId === p.id) { const next = (await this.store.teamMembers(team.id, 2)).find((m) => m.id !== p.id); team.ownerId = next ? next.id : null; }
+        await this.store.saveTeam(team);
+      }
     }
     const name = team ? team.name : p.team;
     p.team = null;
@@ -248,12 +280,12 @@ class World {
       this.store.topPlayers(RANK_N, 'weekPoints', { weekKey: wk }), this.store.topTeams(RANK_N),
     ]);
     const pub = (list) => list.map((x) => this.pubPlayer(x));
-    const teamNames = new Map();
-    for (const t of teams) { const doc = await this.teamInfo(t.team); teamNames.set(t.team, doc ? doc.name : t.team); }
+    const teamDocs = new Map();
+    for (const t of teams) teamDocs.set(t.team, await this.teamInfo(t.team));
     const data = {
       week: wk,
       score: pub(score), points: pub(points), nodes: pub(nodes), weekPoints: pub(week).map((x, i) => ({ ...x, weekPoints: week[i].weekPoints || 0 })),
-      teams: teams.map((t) => ({ id: t.team, name: teamNames.get(t.team), score: t.score || 0, points: t.points || 0, nodes: t.nodes || 0, members: t.members || 0 })),
+      teams: teams.map((t) => { const d = this.pubTeam(teamDocs.get(t.team)); return { id: t.team, name: d ? d.name : t.team, icon: d ? d.icon : null, style: d ? d.style : null, score: t.score || 0, points: t.points || 0, nodes: t.nodes || 0, members: t.members || 0 }; }),
     };
     this.rankCache = { at: now(), data };
     return data;
@@ -708,9 +740,18 @@ class World {
     region.control = { total, counts, controller: controller || null, updatedAt: now() };
     try { await this.store.saveRegion(region); } catch (e) { console.error('地域の保存に失敗:', e.message); }
     if (before === (controller || null)) return false;
-    if (controller) { const who = await this.getPlayer(controller); this.addLog(`${who ? who.name : controller} が ${region.name} を支配しました`); }
-    else { const b = await this.getPlayer(before); this.addLog(`${b ? b.name : before} の ${region.name} の支配が崩れました`); }
+    if (controller) { const who = await this.controllerInfo(controller); this.addLog(`${who ? (who.kind === 'team' ? 'チーム「' + who.name + '」' : who.name) : controller} が ${region.name} を支配しました`); }
+    else { const b = await this.controllerInfo(before); this.addLog(`${b ? (b.kind === 'team' ? 'チーム「' + b.name + '」' : b.name) : before} の ${region.name} の支配が崩れました`); }
     return true;
+  }
+  // 支配者(プレイヤー id かチーム id)の表示用の情報。チームならリーダーが決めた見た目つき
+  async controllerInfo(key) {
+    if (!key) return null;
+    const p = await this.getPlayer(key);
+    if (p) return { id: p.id, kind: 'player', name: p.name, color: p.color };
+    const t = await this.teamInfo(key);
+    if (t) { const pt = this.pubTeam(t); return { id: t.id, kind: 'team', name: t.name, color: pt.style.fill, style: pt.style, icon: pt.icon }; }
+    return null;
   }
   // 縮小表示に添える地域の支配(見えている範囲に中心がある地域だけ)
   async regionsInView(tiles, z) {
@@ -728,9 +769,8 @@ class World {
     for (const r of all) {
       if (r.tier !== tier || !r.center) continue;
       if (r.center.lat < minLat || r.center.lat > maxLat || r.center.lon < minLon || r.center.lon > maxLon) continue;
-      const ctl = r.control && r.control.controller ? await this.getPlayer(r.control.controller) : null;
       out.push({ id: r.id, name: r.name, tier: r.tier, lat: r.center.lat, lon: r.center.lon, nodeCount: r.nodeCount || 0,
-        total: r.control ? r.control.total : 0, controller: ctl ? { id: ctl.id, name: ctl.name, color: ctl.color } : null });
+        total: r.control ? r.control.total : 0, controller: await this.controllerInfo(r.control && r.control.controller) });
     }
     return out;
   }
@@ -756,4 +796,4 @@ class World {
   }
 }
 
-module.exports = { World, PROTECT_MS, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, TEAM_MAX_MEMBERS, weekKeyOf };
+module.exports = { World, PROTECT_MS, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, TEAM_MAX_MEMBERS, TEAM_ICONS, weekKeyOf };

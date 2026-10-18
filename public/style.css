@@ -182,6 +182,10 @@ body {
 .team-row { display: flex; gap: 6px; align-items: center; margin-top: 8px; }
 .team-row input { flex: 1; min-width: 0; font: 14px var(--font-body); padding: 6px 10px; border-radius: 6px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); }
 .team-row input[type="number"] { flex: 0 0 64px; }
+.team-colors { flex-wrap: wrap; font-size: 12px; }
+.team-colors label { display: inline-flex; align-items: center; gap: 4px; }
+.team-colors input[type="color"] { flex: none; width: 34px; height: 26px; padding: 0; border: 2px solid var(--line); border-radius: 6px; background: var(--bg); }
+.team-colors select { font: 16px var(--font-body); padding: 2px 6px; border-radius: 6px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); }
 .pick-bar { position: absolute; top: 10px; left: 10px; right: 64px; z-index: 3; display: flex; gap: 10px; align-items: center; justify-content: space-between; background: var(--surface); border: 2px solid var(--ink); border-radius: 8px; padding: 8px 12px; font-size: 14px; font-weight: 700; }
 .btn {
   font: 700 15px var(--font-body); padding: 10px 16px; border-radius: 8px; cursor: pointer;

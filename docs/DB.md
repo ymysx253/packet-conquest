@@ -37,7 +37,7 @@
 | `sessions` | `/playerId` | 長丁場シナリオの途中経過(再開用)。TTL あり | フェーズ 2〜3 | 同時プレイ数 |
 | `events` | `/day` | 通知・逆探知・ログ・週間集計の元データ。TTL あり | フェーズ 2 | 多い(TTL で回収) |
 | `sponsors` | `/id` | スポンサー(店・施設)と掲載条件 | 段階 C | 少ない |
-| `teams` | `/id` | チーム(`{ id, type: "team", name, ownerId, maxMembers, memberCount, createdAt }`)。合計点は players を team で GROUP BY | 手順 8(2026-10-18) | 少ない |
+| `teams` | `/id` | チーム(`{ id, type: "team", name, ownerId, maxMembers, memberCount, createdAt, style: { frame, fill, text }, icon }`)。style は #RRGGBB、icon は用意した記号。リーダー(ownerId)だけ変更可。合計点は players を team で GROUP BY | 手順 8(2026-10-18) | 少ない |
 | `meta` | `/id` | 小さな設定・状態。いまは稼働時計 `clock`(`{ id: "clock", uptimeMs, savedAt }`)。無ければ起動時に SDK が作る(共有スループット) | 手順 5(2026-10-18) | 数件 |
 | `terms` / `devices` | `/category` / `/id` | 技術用語マスター・機器種別マスター(いまは JSON ファイル。問題生成を DB 駆動にするときに移す) | 必要になったら | 数十〜数百件 |
 

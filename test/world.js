@@ -233,8 +233,27 @@ async function solve(world, p, nodeId) {
     assert.strictEqual(shared.owner === cee.id ? 2 : shared.progress[team1.id], 2, '仲間の正解が合算される');
   }
   const rk2 = await w.rankings();
-  assert.ok(rk2.teams.some((t) => t.id === team1.id && t.name === 'あかチーム' && t.members === 3), 'チームランキング');
-  await w.leaveTeam(dee); await w.leaveTeam(cee);
+  assert.ok(rk2.teams.some((t) => t.id === team1.id && t.name === 'あかチーム' && t.members === 3 && t.icon === '★' && t.style.fill), 'チームランキング(見た目つき)');
+  // 見た目: リーダーだけ変えられる。色は #RRGGBB、アイコンは用意した記号
+  await assert.rejects(() => w.styleTeam(cee, { fill: '#FF0000' }), /リーダーだけ/);
+  await assert.rejects(() => w.styleTeam(a, { fill: 'red' }), /#RRGGBB/);
+  await assert.rejects(() => w.styleTeam(a, { icon: '🐱' }), /用意された記号/);
+  const styled = await w.styleTeam(a, { frame: '#112233', fill: '#ffcc00', text: '#000000', icon: '⚡' });
+  assert.ok(styled.style.fill === '#FFCC00' && styled.icon === '⚡');
+  // 地域をチームが支配したら、支配者の表示にチームの見た目が付く
+  const regionDoc = await store.loadRegion(regionId);
+  regionDoc.control = { total: 10, counts: { [team1.id]: 9 }, controller: team1.id, updatedAt: Date.now() }; await store.saveRegion(regionDoc);
+  await w.setView(a, [tileOf(home.lat, home.lon, 2)], 2);
+  const ov3 = last(a.ws, 'tiles');
+  const g3 = ov3.regions.find((g) => g.id === regionId);
+  assert.ok(g3 && g3.controller && g3.controller.kind === 'team' && g3.controller.style.fill === '#FFCC00' && g3.controller.icon === '⚡', '地域の支配者がチームなら見た目つき');
+  regionDoc.control = null; await store.saveRegion(regionDoc);
+  await w.setView(a, view, 0);
+  // リーダーが抜けたら、いちばん古い人にリーダーが移る
+  await w.leaveTeam(a);
+  const after = await store.loadTeam(team1.id);
+  assert.ok(after && after.ownerId === cee.id, 'リーダーの引き継ぎ');
+  await w.joinTeam(a, team1.id); await w.leaveTeam(cee); await w.leaveTeam(dee);
   assert.strictEqual((await store.loadTeam(team1.id)).memberCount, 1);
   await w.leaveTeam(a);
   assert.strictEqual(await store.loadTeam(team1.id), null, '最後の 1 人が抜けるとチームは消える');

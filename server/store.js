@@ -77,6 +77,7 @@ class MemoryStore {
     return [...agg.values()].sort((a, b) => b.score - a.score || b.points - a.points).slice(0, n);
   }
   async loadTeam(id) { const t = this.teams.get(id); return t ? { ...t } : null; }
+  async teamMembers(teamId, n = 20) { return [...this.players.values()].filter((p) => p.team === teamId).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0)).slice(0, n).map((p) => ({ ...p })); }
   async saveTeam(doc) { this.teams.set(doc.id, { ...doc }); }
   async deleteTeam(id) { this.teams.delete(id); }
   async loadQuestion(nodeId, level) { return this.questions.get(`${nodeId}:${level}`) || null; }

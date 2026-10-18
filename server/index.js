@@ -93,9 +93,11 @@ async function handle(ws, msg) {
   switch (msg.t) {
     case 'rekey': send(ws, { t: 'rekey', token: await world.rekey(player) }); break;
     case 'team': {
-      if (msg.action === 'create') { const t = await world.createTeam(player, msg.name, msg.max); send(ws, { t: 'team', team: { id: t.id, name: t.name, maxMembers: t.maxMembers, memberCount: t.memberCount } }); }
-      else if (msg.action === 'join') { const t = await world.joinTeam(player, msg.teamId); send(ws, { t: 'team', team: { id: t.id, name: t.name, maxMembers: t.maxMembers, memberCount: t.memberCount } }); }
+      if (msg.action === 'create') { const t = await world.createTeam(player, msg.name, msg.max); send(ws, { t: 'team', team: world.pubTeam(t) }); }
+      else if (msg.action === 'join') { const t = await world.joinTeam(player, msg.teamId); send(ws, { t: 'team', team: world.pubTeam(t) }); }
       else if (msg.action === 'leave') { await world.leaveTeam(player); send(ws, { t: 'team', team: null }); }
+      else if (msg.action === 'style') { const t = await world.styleTeam(player, { frame: msg.frame, fill: msg.fill, text: msg.text, icon: msg.icon }); send(ws, { t: 'team', team: world.pubTeam(t) }); }
+      else if (msg.action === 'info') { const t = player.team ? await world.teamInfo(player.team) : null; send(ws, { t: 'team', team: world.pubTeam(t) }); }
       break;
     }
     case 'move': {

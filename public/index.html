@@ -91,6 +91,17 @@
           <button type="button" class="btn small" id="teamLeaveBtn">脱退</button>
         </div>
         <p class="hint" id="teamMeta"></p>
+        <div id="teamStyle" hidden>
+          <p class="label">見た目(リーダーだけ変えられます)</p>
+          <div class="team-row team-colors">
+            <label>枠 <input type="color" id="teamFrame" value="#1F2937"></label>
+            <label>背景 <input type="color" id="teamFill" value="#FDE68A"></label>
+            <label>文字 <input type="color" id="teamText" value="#1F2937"></label>
+            <select id="teamIcon" aria-label="アイコン"></select>
+            <button type="button" class="btn small" id="teamStyleBtn">保存</button>
+          </div>
+          <p class="hint">地図で支配した区・市の塗りと名札、順位の表にこの色とアイコンが使われます。</p>
+        </div>
       </div>
     </section>
 
