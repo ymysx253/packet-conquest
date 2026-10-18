@@ -145,6 +145,8 @@
     }
     for (const t of m.added) S.tiles.add(t);
     for (const n of m.nodes) { S.nodes.set(n.id, n); rememberRoutes(n); }
+    // 拡大したままでも、見えている拠点の都道府県の境界を読む(縮小表示を経ないと読まれなかった。2026-10-19)
+    for (const pref of new Set(m.nodes.map((n) => (n.region || '').split('-')[0]).filter(Boolean))) loadBounds(pref);
     for (const e of m.edges) S.edges.set(e.a < e.b ? `${e.a}|${e.b}` : `${e.b}|${e.a}`, e);
     for (const [k, e] of S.edges) if (!S.nodes.has(e.a) && !S.nodes.has(e.b)) S.edges.delete(k);
     computeReach();
@@ -255,6 +257,12 @@
     }).catch(() => { /* 無くても遊べる */ });
   }
   loadBounds('tokyo'); // 開始地点の既定は東京
+  // 湖・湾の形(2026-10-19): 薄い水色で塗る。全国で 1 ファイル(tools/import-towns.js が書く)
+  S.water = [];
+  fetch('data/water.json').then((r) => (r.ok ? r.json() : null)).then((d) => {
+    if (!d || !Array.isArray(d.water)) return;
+    S.water = d.water.map((w) => ({ id: w.id, name: w.name, polys: projectPolys(w.polys) }));
+  }).catch(() => { /* 無くても遊べる */ });
 
   // ---------- 投影: 固定の縮尺(経度・緯度 → 平面座標。1 単位 = 0.001°) ----------
   const LAT0 = 35.68; // 横方向の補正の基準(東京)。地図が世界に広がったらメルカトルに変える
@@ -712,6 +720,22 @@
         const fillCol = c ? (c.style ? c.style.fill : c.color) : null, frameCol = c ? (c.style ? c.style.frame : c.color) : null;
         if (fillCol) { ctx.fillStyle = fillCol; ctx.globalAlpha = S.overview ? 0.32 : 0.12; ctx.fill(); ctx.globalAlpha = 1; }
         ctx.strokeStyle = frameCol || C.line; ctx.lineWidth = S.overview ? (c ? 2 : 1.5) : 1; ctx.globalAlpha = S.overview ? 0.9 : 0.5; ctx.stroke(); ctx.globalAlpha = 1;
+      }
+    }
+
+    // 湖・湾(2026-10-19): 薄い水色で塗る。島は穴として抜く(even-odd)。画面の外のものは描かない
+    if (S.water && S.water.length) {
+      const lo = toWorld(0, 0), hi = toWorld(V.w, V.h);
+      ctx.fillStyle = tok('--water') || '#D6ECFA';
+      for (const w of S.water) {
+        if (!w.bbox) { let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity; for (const ring of w.polys) for (const q of ring) { if (q.x < x0) x0 = q.x; if (q.x > x1) x1 = q.x; if (q.y < y0) y0 = q.y; if (q.y > y1) y1 = q.y; } w.bbox = [x0, y0, x1, y1]; }
+        if (w.bbox[2] < lo.x || w.bbox[0] > hi.x || w.bbox[3] < lo.y || w.bbox[1] > hi.y) continue;
+        ctx.beginPath();
+        for (const ring of w.polys) {
+          for (let i = 0; i < ring.length; i++) { const q = toScreen(ring[i]); if (i) ctx.lineTo(q.x, q.y); else ctx.moveTo(q.x, q.y); }
+          ctx.closePath();
+        }
+        ctx.fill('evenodd');
       }
     }
 

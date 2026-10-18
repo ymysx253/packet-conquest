@@ -10,6 +10,7 @@
   --accent-ink: #16202C;
   --good: #0E8A45;
   --bad: #CC3333;
+  --water: #D6ECFA;       /* 湖・湾(薄い水色) */
   --font-display: "Dela Gothic One", "Hiragino Sans", "Yu Gothic", sans-serif;
   --font-body: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
@@ -19,13 +20,13 @@
   :root:not([data-theme="light"]) {
     --bg: #0E141B; --surface: #17202A; --ink: #E7ECF1; --muted: #93A1B0;
     --line: #2B3846; --line-strong: #5B6C7E; --accent: #FFC20E; --accent-ink: #16202C;
-    --good: #3CC27A; --bad: #FF6B6B; color-scheme: dark;
+    --good: #3CC27A; --bad: #FF6B6B; --water: #17324A; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0E141B; --surface: #17202A; --ink: #E7ECF1; --muted: #93A1B0;
   --line: #2B3846; --line-strong: #5B6C7E; --accent: #FFC20E; --accent-ink: #16202C;
-  --good: #3CC27A; --bad: #FF6B6B; color-scheme: dark;
+  --good: #3CC27A; --bad: #FF6B6B; --water: #17324A; color-scheme: dark;
 }
 
 * { box-sizing: border-box; }

@@ -265,6 +265,44 @@ for (const n of others) {
   if (t) contains.get(t.id).push(n.id);
 }
 
+// ---------- 湖・湾の形(2026-10-19): 画面が薄い水色で塗る(public/data/water.json) ----------
+// 湖・湾の町・字(人口 0)の輪郭を、約 30 m の誤差で間引いて書き出す。島(輪の中の穴)も残す(画面は even-odd で塗る)
+const LAKE_RE = /(琵琶湖|霞ヶ浦|霞ケ浦|北浦|厚岸湾|厚岸湖|風蓮湖|中海|宍道湖|浜名湖|諏訪湖|猪苗代湖|十和田湖|田沢湖|八郎潟|サロマ湖|能取湖|涛沸湖|網走湖|洞爺湖|支笏湖|屈斜路湖|阿寒湖|小川原湖|河口湖|山中湖|芦ノ湖|中禅寺湖|印旛沼|手賀沼|牛久沼)$/;
+function simplify(pts, tol) { // Douglas-Peucker。pts は [経度, 緯度, …]。戻り値は [[経度, 緯度], …]
+  const n = pts.length / 2;
+  if (n <= 3) return Array.from({ length: n }, (_, i) => [pts[2 * i], pts[2 * i + 1]]);
+  const keepPt = new Uint8Array(n); keepPt[0] = 1; keepPt[n - 1] = 1;
+  const stack = [[0, n - 1]];
+  while (stack.length) {
+    const [a, b] = stack.pop();
+    const ax = pts[2 * a], ay = pts[2 * a + 1], bx = pts[2 * b], by = pts[2 * b + 1];
+    const dx = bx - ax, dy = by - ay, len = Math.hypot(dx, dy);
+    let far = -1, fd = 0;
+    // 閉じた輪(始点 = 終点)では線分の長さが 0 になるので、始点からの距離で見る
+    for (let i = a + 1; i < b; i++) { const px = pts[2 * i] - ax, py = pts[2 * i + 1] - ay; const d = len > 1e-12 ? Math.abs(dy * px - dx * py) / len : Math.hypot(px, py); if (d > fd) { fd = d; far = i; } }
+    if (far >= 0 && fd > tol) { keepPt[far] = 1; stack.push([a, far], [far, b]); }
+  }
+  const out = [];
+  for (let i = 0; i < n; i++) if (keepPt[i]) out.push([Number(pts[2 * i].toFixed(5)), Number(pts[2 * i + 1].toFixed(5))]);
+  return out;
+}
+const waterOut = [];
+for (const t of keep) {
+  if (t.hidden || t.jinko !== 0 || !LAKE_RE.test(t.name)) continue;
+  const rings = [];
+  for (const f of t.feats) for (const r of f.rings) { const s = simplify(r.pts, 0.0003); if (s.length >= 4) rings.push(s); }
+  if (rings.length) waterOut.push({ id: t.id, name: t.display, kind: 'lake', polys: rings });
+}
+if (waterOut.length) {
+  const WATER_FILE = path.join(ROOT, 'public', 'data', 'water.json');
+  const prev = fs.existsSync(WATER_FILE) ? JSON.parse(fs.readFileSync(WATER_FILE, 'utf8')) : { water: [] };
+  // 今回の都道府県の湖だけ入れ替える(ほかの都道府県の分は残す)
+  const kept = (prev.water || []).filter((w) => !prefsInData.has(w.id.slice(3, 5)));
+  const water = [...kept, ...waterOut].sort((a, b) => a.id.localeCompare(b.id));
+  fs.writeFileSync(WATER_FILE, JSON.stringify({ schema: 'pc.water/1', source: SOURCE, updatedAt: TODAY, note: '湖・湾の形(国勢調査 2020 年 小地域境界の湖・湾の区画を約 30 m で間引いたもの)。画面が薄い水色で塗る', water }));
+  console.log(`湖・湾の形: ${water.length} 件を public/data/water.json に書いた(${(fs.statSync(WATER_FILE).size / 1024).toFixed(0)} KB)`);
+}
+
 // ---------- 書き込む ----------
 let added = 0;
 for (const t of keep) {
