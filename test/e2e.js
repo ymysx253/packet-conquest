@@ -8,6 +8,7 @@ const client = (name) => new Promise((res) => {
   ws.on('open', () => res({ ws, inbox, send: (m) => ws.send(JSON.stringify(m)), name }));
 });
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const ANSWER_DELAY = 1100; // 最短解答時間(1 秒)を守る
 const last = (c, t) => [...c.inbox].reverse().find((m) => m.t === t);
 const TILE_LAT = 0.025, TILE_LON = 0.03;
 const tilesAround = (lat, lon) => { const y = Math.floor(lat / TILE_LAT), x = Math.floor(lon / TILE_LON); const out = []; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) out.push(`t0:${y + dy}:${x + dx}`); return out; };
@@ -33,14 +34,14 @@ const tilesAround = (lat, lon) => { const y = Math.floor(lat / TILE_LAT), x = Ma
   let captured = false;
   for (let tries = 0; tries < 16 && !captured; tries++) {
     a.inbox.length = 0;
-    a.send({ t: 'ask', nodeId: target }); await wait(120);
+    a.send({ t: 'ask', nodeId: target }); await wait(ANSWER_DELAY); // 最短解答時間(1 秒)を守る
     const q = last(a, 'question');
     if (!q) { await wait(4100); continue; }
     a.send({ t: 'answer', qid: q.qid, choice: tries % 4 }); await wait(200);
     const r = last(a, 'result'); console.log(`  Lv${q.level}`, q.text.split('\n')[0], '->', r.correct ? '正解' : '不正解', '|', r.outcome);
     const diff = last(a, 'nodes');
     captured = !!(diff && diff.nodes.some((n) => n.id === target && n.owner === wa.id));
-    if (!r.correct) await wait(4100);
+    if (!r.correct) await wait(Math.max(100, (r.cooldownUntil || 0) - Date.now() + 100)); // 連続不正解で待ち時間が延びる
   }
   const me = (last(a, 'players') || { players: [] }).players.find((p) => p.id === wa.id) || {};
   console.log('captured:', captured, '| score', me.score, '| points', me.points, '| nodes', me.nodes);

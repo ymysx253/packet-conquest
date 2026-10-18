@@ -38,7 +38,7 @@ const dbName = process.env.COSMOS_TEST_DATABASE || 'pc-test';
     assert.strictEqual((await store.loadTiles('nowhere', [home.t0], 1)).length, 0, '別の国では読めない');
 
     // ワールドを通した参加・奪取・復元
-    const w = await new World({ store }).init();
+    const w = await new World({ store, minAnswerMs: 0 }).init();
     const ws = fakeWs();
     const a = await w.join(ws, 'テスト', null);
     assert.ok(a.homeNodeId && (await store.loadNode(a.homeNodeId)), 'プレイヤーの拠点が保存される');
@@ -72,7 +72,7 @@ const dbName = process.env.COSMOS_TEST_DATABASE || 'pc-test';
     const top = await store.topPlayers(3);
     assert.ok(top.some((p) => p.id === a.id), 'ランキングに出る');
     // 別のワールド(再起動相当)で復元
-    const w2 = await new World({ store }).init();
+    const w2 = await new World({ store, minAnswerMs: 0 }).init();
     const b = await w2.join(fakeWs(), 'テスト', a.token);
     assert.strictEqual(b.id, a.id); assert.strictEqual(b.nodesOwned, 2);
     console.log(`cosmos ok: database ${dbName}, ${await store.countNodes()} nodes`);

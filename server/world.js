@@ -15,6 +15,7 @@ const { getQuestion } = require('./questions');
 
 const COOLDOWN_MS = 4000;               // 不正解のあと操作できない時間(連続不正解で倍増。SECURITY.md F4)
 const COOLDOWN_MAX_MS = 60000;          // 待ち時間の上限
+const MIN_ANSWER_MS = 1000;             // 最短解答時間(SECURITY.md F6): 出題から 1 秒未満の解答は受け付けない(問題は残す)
 const RANK_TTL_MS = 10 * 1000;          // ランキングの集計結果を持つ時間
 const RANK_N = 15;
 const TEAM_MAX_MEMBERS = 20;            // チームの人数上限の上限(作成時に 2〜20 で決める。第 3.11 節)
@@ -58,9 +59,10 @@ const now = () => Date.now();
 const edgeKey = (a, b) => (a < b ? `${a}|${b}` : `${b}|${a}`);
 
 class World {
-  constructor({ store, country = 'japan' }) {
+  constructor({ store, country = 'japan', minAnswerMs = MIN_ANSWER_MS }) {
     this.store = store;
     this.country = country;
+    this.minAnswerMs = minAnswerMs; // テストでは 0 にする
     this.tiles = new Map();   // tile id(z0) → { nodes: Map<id, node>, edges: Map<key, {a,b}>, linked: boolean, lastUsed }
     this.nodes = new Map();   // 読み込み済みの拠点 id → node(タイルのキャッシュと同じオブジェクト)
     this.adj = new Map();     // id → Set<id>(読み込み済みのリンクから)
@@ -637,13 +639,14 @@ class World {
     const q = getQuestion({ level, node: n });
     const qid = newId();
     const payload = { t: 'question', qid, nodeId, mode, level, provisional: !!q.provisional, text: q.text, options: q.options, table: q.table || null };
-    p.pending = { qid, nodeId, mode, level, answerIndex: q.answerIndex, explanation: q.explanation, payload };
+    p.pending = { qid, nodeId, mode, level, answerIndex: q.answerIndex, explanation: q.explanation, payload, askedAt: now() };
     return payload;
   }
 
   async answer(p, qid, choice) {
     const pend = p.pending;
     if (!pend || pend.qid !== qid) throw new Error('この問題はもう終わっています');
+    if (now() - (pend.askedAt || 0) < this.minAnswerMs) throw new Error('解答が速すぎます。問題を読んでからもう一度答えてください');
     p.pending = null; this.touch(p);
     const correct = choice === pend.answerIndex;
     let outcome, cooldownMs = 0;

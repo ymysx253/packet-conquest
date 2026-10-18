@@ -20,7 +20,7 @@ async function solve(world, p, nodeId) {
 
 (async () => {
   const store = new MemoryStore();
-  const w = await new World({ store }).init();
+  const w = await new World({ store, minAnswerMs: 0 }).init();
   assert.strictEqual(await store.countNodes(), NODES.length, 'シードで全拠点が保存される');
   assert.strictEqual(w.nodes.size, 0, '起動時にはまとめて読まない');
 
@@ -71,6 +71,11 @@ async function solve(world, p, nodeId) {
   assert.strictEqual(q.level, w.nodes.get(nb).level);
   assert.ok(!('answerIndex' in q) && q.options.length === 4);
   assert.strictEqual((await w.ask(a, nb)).qid, q.qid, '同じ拠点では問題が変わらない');
+  // F6 最短解答時間: 出題から 1 秒未満は拒み、問題は残る
+  w.minAnswerMs = 1000;
+  await assert.rejects(() => w.answer(a, q.qid, a.pending.answerIndex), /速すぎ/);
+  assert.ok(a.pending && a.pending.qid === q.qid, '拒んでも問題は残る');
+  w.minAnswerMs = 0;
   const wrong = await w.answer(a, q.qid, (a.pending.answerIndex + 1) % 4);
   assert.ok(!wrong.correct && a.cooldownUntil > Date.now() && wrong.cooldownMs === COOLDOWN_MS, '不正解で待ち時間 4 秒');
   assert.strictEqual((await store.loadPlayer(a.id)).cooldownUntil, a.cooldownUntil, '待ち時間は保存される(再接続で消せない)');
@@ -190,7 +195,7 @@ async function solve(world, p, nodeId) {
   assert.notStrictEqual((await w.join(fakeWs(), 'だれか', 'wrong-token')).id, a.id, '違うコードは新規');
 
   // 再起動: 保存した内容から復元できる(まとめて読まず、必要なタイルだけ)
-  const w2 = await new World({ store }).init();
+  const w2 = await new World({ store, minAnswerMs: 0 }).init();
   assert.strictEqual(w2.nodes.size, 0);
   await w2.ensureTiles([home.t0]);
   assert.strictEqual(w2.nodes.get(nb).owner, a.id, '所有者が復元される');
@@ -317,7 +322,7 @@ async function solve(world, p, nodeId) {
   assert.ok(await store.loadPlayer(a.id), '接続中の人は残る');
   assert.ok(w.log.some((l) => l.text.includes('きゅうみん') && l.text.includes('中立')));
   // 稼働時計は保存され、再起動後に続きから数える
-  const w3 = await new World({ store }).init();
+  const w3 = await new World({ store, minAnswerMs: 0 }).init();
   assert.ok(w3.uptime >= upBefore, '稼働時計が保存から復元される');
 
   // 引っ越し(1 日 1 回): 自分の拠点が新しい場所に移り、所有拠点は残るが線が切れた所有拠点からは広げられない
