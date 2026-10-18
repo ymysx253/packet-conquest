@@ -74,13 +74,14 @@ class World {
     this.uptime = 0;
     this.lastTick = now();
     this.teamNames = new Map(); // チーム id → 名前(表示用のキャッシュ)
+    this.teamLooks = new Map(); // チーム id → { style, icon }(拠点の色はチームの色に合わせる。2026-10-18 決定)
     this.rankCache = null;
   }
   // ---------- チーム(第 3.11 節、2026-10-18 決定) ----------
   // 作成と参加のどちらでもできる。所属中は作成できない。脱退は可能。人数の上限は作成時に 2〜TEAM_MAX_MEMBERS で決める
   async teamInfo(id) {
     const t = await this.store.loadTeam(id);
-    if (t) this.teamNames.set(t.id, t.name);
+    if (t) { this.teamNames.set(t.id, t.name); const pt = this.pubTeam(t); this.teamLooks.set(t.id, { style: pt.style, icon: pt.icon }); }
     return t;
   }
   async createTeam(p, name, maxMembers) {
@@ -90,7 +91,7 @@ class World {
     const max = Math.max(2, Math.min(TEAM_MAX_MEMBERS, Number(maxMembers) || 10));
     const team = { id: newId(), type: 'team', name: nm, ownerId: p.id, maxMembers: max, memberCount: 1, createdAt: now(), style: { ...DEFAULT_TEAM_STYLE }, icon: TEAM_ICONS[0] };
     await this.store.saveTeam(team);
-    this.teamNames.set(team.id, team.name);
+    this.teamNames.set(team.id, team.name); this.teamLooks.set(team.id, { style: { ...team.style }, icon: team.icon });
     p.team = team.id; p.reach = null;
     await this.persistPlayer(p);
     this.addLog(`${p.name} がチーム「${team.name}」を作りました`);
@@ -128,7 +129,8 @@ class World {
     }
     team.style = style;
     await this.store.saveTeam(team);
-    this.teamCache = null;
+    this.teamLooks.set(team.id, { style: { ...style }, icon: team.icon });
+    this.rankCache = null;
     await this.emitPlayers();
     return team;
   }
@@ -305,7 +307,8 @@ class World {
   pubPlayer(p) {
     const live = this.players.get(p.id);
     return { id: p.id, name: p.name, color: p.color, online: !!(live && live.online), score: p.score || 0, nodes: p.nodesOwned || 0, points: p.points || 0, newbie: this.isNewbie(p),
-      team: p.team || null, teamName: p.team ? (this.teamNames.get(p.team) || null) : null, weekPoints: p.weekKey === weekKeyOf(now()) ? (p.weekPoints || 0) : 0 };
+      team: p.team || null, teamName: p.team ? (this.teamNames.get(p.team) || null) : null, weekPoints: p.weekKey === weekKeyOf(now()) ? (p.weekPoints || 0) : 0,
+      teamStyle: p.team && this.teamLooks.get(p.team) ? this.teamLooks.get(p.team).style : null, teamIcon: p.team && this.teamLooks.get(p.team) ? this.teamLooks.get(p.team).icon : null };
   }
   // 初心者保護(3 拠点以下)の対象か: 作成から 7 日以内
   isNewbie(p) { return now() - (p.createdAt || 0) < NEWBIE_MS; }

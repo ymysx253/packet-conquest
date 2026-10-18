@@ -30,7 +30,8 @@
   const nodeById = (id) => S.nodes.get(id);
   const playerById = (id) => S.players.find((p) => p.id === id);
   const ownerOf = (id) => { const n = nodeById(id); return n ? n.owner : null; };
-  const colorOf = (pid) => { const p = playerById(pid); return p ? p.color : null; };
+  // 拠点の色: チームに所属していればチームの背景色、いなければプレイヤーの色(2026-10-18 決定)
+  const colorOf = (pid) => { const p = playerById(pid); return p ? (p.teamStyle && p.teamStyle.fill ? p.teamStyle.fill : p.color) : null; };
 
   // ---------- 初期表示 ----------
   $('nameInput').value = store.get('pc-name') || '';
@@ -438,7 +439,7 @@
     $('onlineCount').textContent = S.players.filter((p) => p.online).length;
     const me = S.me2 || playerById(S.me);
     if (me) {
-      $('meSwatch').style.background = me.color; $('meName').textContent = me.name + (me.teamName ? `(${me.teamName})` : '');
+      $('meSwatch').style.background = me.teamStyle && me.teamStyle.fill ? me.teamStyle.fill : me.color; $('meName').textContent = me.name + (me.teamName ? `(${me.teamIcon ? me.teamIcon + ' ' : ''}${me.teamName})` : '');
       $('meScore').textContent = `${me.score}点`; $('meNodes').textContent = `${me.nodes}拠点`; $('mePoints').textContent = me.points;
     }
     const kind = $('rankKind').value;

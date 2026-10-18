@@ -245,6 +245,8 @@ async function solve(world, p, nodeId) {
   await assert.rejects(() => w.styleTeam(a, { icon: '🐱' }), /用意された記号/);
   const styled = await w.styleTeam(a, { frame: '#112233', fill: '#ffcc00', text: '#000000', icon: '⚡' });
   assert.ok(styled.style.fill === '#FFCC00' && styled.icon === '⚡');
+  assert.strictEqual(w.pubPlayer(a).teamStyle.fill, '#FFCC00', '所属者の配信にチームの色が付く(拠点の色に使う)');
+  assert.strictEqual(w.pubPlayer(a).teamIcon, '⚡');
   // 地域をチームが支配したら、支配者の表示にチームの見た目が付く
   const regionDoc = await store.loadRegion(regionId);
   regionDoc.control = { total: 10, counts: { [team1.id]: 9 }, controller: team1.id, updatedAt: Date.now() }; await store.saveRegion(regionDoc);
