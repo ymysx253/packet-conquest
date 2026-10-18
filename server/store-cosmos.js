@@ -110,6 +110,24 @@ class CosmosStore {
     });
     return rows;
   }
+  // 休眠アカウントの回収
+  async findIdlePlayers(before) {
+    const rows = await this.query('players', { query: 'SELECT * FROM c WHERE c.lastSeen < @t AND (NOT IS_DEFINED(c.plan) OR IS_NULL(c.plan))', parameters: [{ name: '@t', value: before }] });
+    return rows.map((r) => this.strip(r));
+  }
+  async nodesOwnedBy(playerId) {
+    const rows = await this.query('nodes', { query: 'SELECT * FROM c WHERE c.owner = @id', parameters: [{ name: '@id', value: playerId }] });
+    return rows.map((r) => this.strip(r));
+  }
+  async deleteNode(id) {
+    const n = await this.loadNode(id);
+    if (!n) return;
+    try { await this.c.nodes.item(id, [n.country, n.region]).delete(); } catch (e) { if (e.code !== 404) throw e; }
+  }
+  async deletePlayer(id) {
+    await this.ensure();
+    try { await this.c.players.item(id, id).delete(); } catch (e) { if (e.code !== 404) throw e; }
+  }
   async countStarters(nodeIds) {
     if (!nodeIds.length) return {};
     const rows = await this.query('players', {

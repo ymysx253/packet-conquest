@@ -75,8 +75,15 @@
         break;
       case 'tiles': onTiles(m); break;
       case 'search': renderSearch(m); break;
+      case 'rekey':
+        S.token = m.token; store.set('pc-token', m.token); $('codeInput').value = m.token; $('meCode').textContent = m.token;
+        toast('復帰コードを新しくしました。控え直してください');
+        break;
       case 'nodes':
-        for (const n of m.nodes) if (S.nodes.has(n.id) || S.tiles.has(n.t0)) { S.nodes.set(n.id, n); }
+        for (const n of m.nodes) {
+          if (n.status === 'gone') { S.nodes.delete(n.id); if (S.selected === n.id) S.selected = null; continue; }
+          if (S.nodes.has(n.id) || S.tiles.has(n.t0)) S.nodes.set(n.id, n);
+        }
         renderSelected();
         break;
       case 'players':
@@ -162,6 +169,10 @@
     S.wantJoin = true; $('lobbyError').textContent = ''; setJoining(true);
     if (S.ws && S.ws.readyState === 1) sendJoin(); else if (!S.ws || S.ws.readyState !== 0) connect();
   });
+  $('rekeyBtn').onclick = () => {
+    if (!S.joined) return;
+    if (window.confirm('復帰コードを新しくします。いまのコードは使えなくなります。よろしいですか?')) send({ t: 'rekey' });
+  };
   $('copyCodeBtn').onclick = () => {
     const code = S.token || '';
     if (navigator.clipboard && code) navigator.clipboard.writeText(code).then(() => toast('復帰コードをコピーしました'), () => toast('コードを選択してコピーしてください'));
@@ -338,7 +349,7 @@
     if (n.hackable === false) return false;
     if (n.isPlayerNode) return false; // プレイヤー自身の拠点は占領禁止
     if (n.protectedUntil > now()) return false;
-    if (n.owner) { const o = playerById(n.owner); if (o && o.nodes <= 3) return false; }
+    if (n.owner) { const o = playerById(n.owner); if (o && o.nodes <= 3 && o.newbie) return false; }
     return adjacent(id).some((a) => ownerOf(a) === S.me);
   }
 
@@ -399,7 +410,7 @@
     else if (n.owner === S.me) status = 'タップすると強化の問題が出ます';
     else if (n.isPlayerNode) status = 'プレイヤー自身の拠点は占領できません';
     else if (n.protectedUntil > now()) status = `生まれたばかりで守られています(あと ${Math.ceil((n.protectedUntil - now()) / 3600000)} 時間)`;
-    else if (n.owner && (playerById(n.owner) || {}).nodes <= 3) status = '拠点が少ないプレイヤーは守られています';
+    else if (n.owner && (playerById(n.owner) || {}).nodes <= 3 && (playerById(n.owner) || {}).newbie) status = '始めたばかりで拠点が少ないプレイヤーは守られています';
     else if (canAttack(n.id)) status = `タップすると攻撃の問題が出ます(突破まで あと ${Math.max(1, hits - mine)} 回)`;
     else status = '自分の拠点とつながっていないため、まだ攻撃できません';
     $('npStatus').textContent = status;

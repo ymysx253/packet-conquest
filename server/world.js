@@ -16,7 +16,9 @@ const { getQuestion } = require('./questions');
 const COOLDOWN_MS = 4000;               // 不正解のあと操作できない時間
 const MAX_LEVEL = 999;                  // 出題レベルの上限(強化はここまで)
 const PROTECT_MS = 24 * 60 * 60 * 1000; // 初心者保護: 生まれた拠点は 24 時間攻撃されない
-const PROTECT_MAX_NODES = 3;            // 初心者保護: 所持拠点がこの数以下の人は攻撃されない
+const PROTECT_MAX_NODES = 3;            // 初心者保護: 所持拠点がこの数以下の人は攻撃されない(作成から NEWBIE_MS の間だけ)
+const NEWBIE_MS = 7 * 24 * 60 * 60 * 1000;  // 初心者保護の期限: 作成から 7 日(2026-10-18 決定。別アカウントで要衝を永久に守る穴をふさぐ)
+const IDLE_MS = 7 * 24 * 60 * 60 * 1000;    // 休眠: 7 日間接続が無い無料アカウントは、拠点をすべて中立に戻して削除(サブスク会員は除外)
 const HOME_LINKS = 2;                   // プレイヤーの拠点がつながる近隣拠点の数(開始地点 + 近い 1 つ)
 const SPAWN_RINGS_KM = [0.3, 0.6, 1.0];  // 開始地点のまわりに置く半径。空きがなければ広げ、1 km でも無ければ満員(第 3.1 節)
 const SPAWN_TRIES = 80;                 // 半径ごとの試行回数
@@ -162,8 +164,10 @@ class World {
   }
   pubPlayer(p) {
     const live = this.players.get(p.id);
-    return { id: p.id, name: p.name, color: p.color, online: !!(live && live.online), score: p.score || 0, nodes: p.nodesOwned || 0, points: p.points || 0 };
+    return { id: p.id, name: p.name, color: p.color, online: !!(live && live.online), score: p.score || 0, nodes: p.nodesOwned || 0, points: p.points || 0, newbie: this.isNewbie(p) };
   }
+  // 初心者保護(3 拠点以下)の対象か: 作成から 7 日以内
+  isNewbie(p) { return now() - (p.createdAt || 0) < NEWBIE_MS; }
 
   // プレイヤーの見ている範囲を更新し、新しく見えるタイルの拠点とリンクを送る
   async setView(p, tiles, z = 0) {
@@ -236,6 +240,7 @@ class World {
     const p = this.attach({
       id: newId(), token: newId(), name, color: await this.pickColor(),
       country: this.country, startNodeId: startNodeId || DEFAULT_START_ID, // 登録国と開始地点(第 3.1 節)
+      plan: null, // サブスク(予約)。入っていれば休眠でも消えない
       points: 0, score: 0, nodesOwned: 0, homeNodeId: null, team: null, sponsorId: null, createdAt: now(), lastSeen: now(),
     });
     p.ws = ws; p.online = true;
@@ -253,6 +258,53 @@ class World {
     if (this.players.has(id)) return this.players.get(id);
     const doc = await this.store.loadPlayer(id);
     return doc ? this.attach(doc) : null;
+  }
+  // 復帰コードの再発行: 古いコードは使えなくなる(SECURITY.md T7)
+  async rekey(p) {
+    p.token = newId();
+    await this.persistPlayer(p);
+    return p.token;
+  }
+  // 休眠アカウントの回収(2026-10-18 決定): 7 日間接続が無い無料アカウントは、奪った拠点も自分の拠点も含めて全部中立に戻し、アカウントを削除する。
+  // サブスク(plan あり)は対象外。いま接続中の人も対象外
+  async reclaimIdle() {
+    const docs = await this.store.findIdlePlayers(now() - IDLE_MS);
+    let count = 0;
+    const touched = new Map(); // region → その地域の拠点(支配の再集計用)
+    for (const doc of docs) {
+      const live = this.players.get(doc.id);
+      if ((live && live.online) || doc.plan) continue;
+      const owned = await this.store.nodesOwnedBy(doc.id);
+      for (const d of owned) {
+        const n = this.nodes.get(d.id) || d;
+        if (n.isPlayerNode) {
+          await this.store.deleteNode(n.id);
+          this.dropNode(n);
+          continue;
+        }
+        n.owner = null; n.defense = 0; n.fortifiedAt = null; n.progress = {}; n.protectedUntil = 0;
+        await this.persistNode(n);
+        if (this.nodes.has(n.id)) this.emitNode(n);
+        if (n.region) touched.set(n.region, n);
+      }
+      await this.store.deletePlayer(doc.id);
+      this.players.delete(doc.id);
+      this.addLog(`${doc.name} は 7 日間接続が無かったため、拠点が中立に戻りました`);
+      count++;
+    }
+    for (const n of touched.values()) await this.updateControl(n);
+    if (count) await this.emitPlayers();
+    return count;
+  }
+  // キャッシュから拠点を消す(プレイヤーの拠点の削除)
+  dropNode(n) {
+    const t = n.t0;
+    if (this.tiles.has(t)) { const c = this.tiles.get(t); c.nodes.delete(n.id); for (const k of [...c.edges.keys()]) if (k.split('|').includes(n.id)) c.edges.delete(k); }
+    for (const m of this.adj.get(n.id) || []) { const s = this.adj.get(m); if (s) s.delete(n.id); }
+    this.adj.delete(n.id);
+    this.nodes.delete(n.id);
+    const msg = { t: 'nodes', nodes: [{ ...this.pub(n), status: 'gone' }] };
+    for (const p of this.players.values()) if (p.online && p.view.has(t)) this.send(p, msg);
   }
   async disconnect(p) {
     p.online = false; p.ws = null; p.pending = null; p.lastSeen = now(); p.view = new Set();
@@ -346,7 +398,7 @@ class World {
     if (n.hackable === false) return false;
     if (n.isPlayerNode) return false; // プレイヤー自身の拠点は占領禁止(2026-10-18 決定)
     if (n.protectedUntil > now()) return false;
-    if (n.owner) { const o = await this.getPlayer(n.owner); if (o && (o.nodesOwned || 0) <= PROTECT_MAX_NODES) return false; }
+    if (n.owner) { const o = await this.getPlayer(n.owner); if (o && (o.nodesOwned || 0) <= PROTECT_MAX_NODES && this.isNewbie(o)) return false; }
     const nb = this.adj.get(nodeId) || new Set();
     for (const id of nb) { const m = this.nodes.get(id); if (m && m.owner === pid) return true; }
     return false;
@@ -375,8 +427,8 @@ class World {
       throw new Error('プレイヤー自身の拠点は占領できません');
     } else if (n.protectedUntil > now()) {
       throw new Error('この拠点は生まれたばかりで守られています');
-    } else if (n.owner && (await this.getPlayer(n.owner) || {}).nodesOwned <= PROTECT_MAX_NODES) {
-      throw new Error('拠点が少ないプレイヤーは守られています');
+    } else if (n.owner && await (async () => { const o = await this.getPlayer(n.owner); return o && o.nodesOwned <= PROTECT_MAX_NODES && this.isNewbie(o); })()) {
+      throw new Error('始めたばかりで拠点が少ないプレイヤーは守られています');
     } else {
       throw new Error('自分の拠点とつながっている拠点だけ攻撃できます');
     }
@@ -392,7 +444,7 @@ class World {
   async answer(p, qid, choice) {
     const pend = p.pending;
     if (!pend || pend.qid !== qid) throw new Error('この問題はもう終わっています');
-    p.pending = null;
+    p.pending = null; p.lastSeen = now();
     const correct = choice === pend.answerIndex;
     let outcome;
     if (correct) outcome = await this.apply(p, pend.nodeId, pend.mode);
@@ -525,4 +577,4 @@ class World {
   }
 }
 
-module.exports = { World, PROTECT_MS, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS };
+module.exports = { World, PROTECT_MS, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS };

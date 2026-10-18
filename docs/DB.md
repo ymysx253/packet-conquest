@@ -149,6 +149,7 @@
 
 - `token` は復帰コード(持っていれば本人)。将来ログインを入れたら `login: { provider, subject }` を足し、token は補助にする
 - `team` は陣営の予約。`sponsorId` はスポンサー拠点への所属(8.16)
+- `plan` はサブスク(null = 無料。入っていれば休眠でも消えない。中身は収益化のときに決める)。`lastSeen` は参加・解答・切断で更新し、7 日より古い無料アカウントは `world.reclaimIdle` が回収する
 - `country` は登録国、`startNodeId` は開始地点(選んだ駅・名所の id。指定が無ければ東京駅)。検索結果の「ここから始めた人数」は `startNodeId` で GROUP BY して数える(DESIGN.md 3.1、2026-10-18)
 - 累計点 `points` は奪取時点の点(強化込み)の合計。現在の点数は nodes から集計する(保存しない)
 - 将来: `stats`(題材ごとの正答率。学習記録)、`flags`(異常検知の印)

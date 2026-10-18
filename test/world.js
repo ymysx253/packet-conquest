@@ -2,7 +2,7 @@
 // 永続ワールドの検証(タイル方式): シード、範囲の読み込み、参加で拠点が生まれる、隣だけ攻撃できる、初心者保護、
 // 回数制の奪取(回数 = つながりの本数)、強化とその減衰、地域の支配(3/4)、集計値、復帰コード、再起動後の復元、配信に答えが含まれないこと
 const assert = require('assert');
-const { World, PROTECT_MS, DECAY_MS } = require('../server/world');
+const { World, PROTECT_MS, DECAY_MS, NEWBIE_MS } = require('../server/world');
 const { MemoryStore } = require('../server/store');
 const { tilesAround, tileOf, distanceKm } = require('../server/map/geo');
 const { NODES } = require('../server/map/tokyo');
@@ -132,6 +132,10 @@ async function solve(world, p, nodeId) {
   await assert.rejects(() => w.ask(a, bNode.id), /守られています/);
   bNode.protectedUntil = 0;
   assert.ok(!(await w.canAttack(a.id, bNode.id)), '拠点 3 つ以下の人は攻撃できない');
+  b.createdAt = Date.now() - NEWBIE_MS - 1000;
+  assert.ok(await w.canAttack(a.id, bNode.id), '作成から 7 日たてば 3 つ以下でも攻撃できる(別アカウントで永久に守る穴をふさぐ)');
+  b.createdAt = Date.now(); b.nodesOwned = 2;
+  assert.ok(!(await w.canAttack(a.id, bNode.id)));
   b.nodesOwned = 4;
   assert.ok(await w.canAttack(a.id, bNode.id), '拠点が 4 つ以上なら攻撃できる');
   for (let i = 0; i < bNode.hits; i++) await solve(w, a, bNode.id);
@@ -214,6 +218,30 @@ async function solve(world, p, nodeId) {
   for (let i = 0; i < homes.length; i++) for (let j = i + 1; j < homes.length; j++) assert.ok(distanceKm(homes[i], homes[j]) >= 0.15 - 1e-6, '間隔 150 m を守る');
   assert.ok(Math.max(...homes.map((h) => distanceKm(h, okutama))) > 0.3, '混むと半径が広がる');
   assert.strictEqual((await w.search('japan', '奥多摩')).find((r) => r.name === '奥多摩駅').starters, 25);
+  // 復帰コードの再発行: 新しいコードで戻れ、古いコードでは戻れない
+  const oldToken = a.token;
+  const newToken = await w.rekey(a);
+  assert.notStrictEqual(newToken, oldToken);
+  assert.strictEqual((await w.join(fakeWs(), 'あき', newToken)).id, a.id, '新しいコードで戻れる');
+  assert.notStrictEqual((await w.join(fakeWs(), 'だれか', oldToken)).id, a.id, '古いコードは新規扱い');
+
+  // 休眠の回収: 7 日間接続が無い無料アカウントは、奪った拠点も自分の拠点も中立に戻してアカウントを削除。サブスクと接続中は対象外
+  const idle = await w.join(fakeWs(), 'きゅうみん', null, tokyoSt.id);
+  const idleHome = w.nodes.get(idle.homeNodeId);
+  const victim = [...w.adj.get(idle.homeNodeId)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false);
+  victim.owner = idle.id; victim.defense = 2; idle.nodesOwned = 2; await w.persistNode(victim);
+  const sub = await w.join(fakeWs(), 'かいいん', null, tokyoSt.id);
+  sub.plan = 'sub';
+  await w.disconnect(idle); await w.disconnect(sub);
+  idle.lastSeen = Date.now() - 8 * 24 * 3600 * 1000; sub.lastSeen = idle.lastSeen; await w.persistPlayer(idle); await w.persistPlayer(sub);
+  assert.strictEqual(await w.reclaimIdle(), 1, '休眠 1 件を回収(会員は残る)');
+  assert.ok(!(await store.loadPlayer(idle.id)) && !(await store.loadNode(idleHome.id)) && !w.nodes.has(idleHome.id), 'アカウントと自分の拠点が消える');
+  assert.strictEqual((await store.loadNode(victim.id)).owner, null, '奪っていた拠点は中立に戻る');
+  assert.strictEqual(victim.defense, 0);
+  assert.ok(await store.loadPlayer(sub.id) && (await store.loadNode(sub.homeNodeId)), 'サブスク会員は残る');
+  assert.ok(await store.loadPlayer(a.id), '接続中の人は残る');
+  assert.ok(w.log.some((l) => l.text.includes('きゅうみん') && l.text.includes('中立')));
+
   // 参加前の人も地図を読める(開始地点を地図から選ぶため)。配信先にはならない
   const gws = fakeWs();
   await w.setView(w.guest(gws), tilesAround(tokyoSt.t0, 1), 0);

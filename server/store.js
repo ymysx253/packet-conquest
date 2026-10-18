@@ -11,6 +11,7 @@
 //   countOwners(country, region)          区・市の中のハック可の固定拠点を所有者ごとに数える(地域の支配。第 14 章)
 //   searchNodes(country, text, limit)     開始地点の検索(名前の一部。ハック可の公開の固定拠点)
 //   countStarters(nodeIds)                各拠点から始めた人数(players.startNodeId)
+//   findIdlePlayers(before) / nodesOwnedBy(playerId) / deleteNode(id) / deletePlayer(id)  休眠アカウントの回収
 
 const { parseTile, distanceKm, tilesAround, tileOf } = require('./map/geo');
 
@@ -69,6 +70,10 @@ class MemoryStore {
       .filter((n) => n.country === country && !n.isPlayerNode && n.hackable !== false && n.status === 'public' && n.name.includes(text))
       .sort((a, b) => b.level - a.level || a.name.localeCompare(b.name, 'ja')).slice(0, limit).map((n) => ({ ...n }));
   }
+  async findIdlePlayers(before) { return [...this.players.values()].filter((p) => (p.lastSeen || 0) < before && !p.plan).map((p) => ({ ...p })); }
+  async nodesOwnedBy(playerId) { return [...this.nodes.values()].filter((n) => n.owner === playerId).map((n) => ({ ...n })); }
+  async deleteNode(id) { const n = this.nodes.get(id); if (!n) return; for (let z = 0; z <= 4; z++) { const s = this.byTile.get(n[`t${z}`]); if (s) s.delete(id); } this.nodes.delete(id); }
+  async deletePlayer(id) { this.players.delete(id); }
   async countStarters(nodeIds) {
     const want = new Set(nodeIds); const out = {};
     for (const p of this.players.values()) if (p.startNodeId && want.has(p.startNodeId)) out[p.startNodeId] = (out[p.startNodeId] || 0) + 1;

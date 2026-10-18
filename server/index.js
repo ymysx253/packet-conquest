@@ -10,6 +10,7 @@ const { loadEnv } = require('./env');
 loadEnv();
 const { World } = require('./world');
 const { createStore } = require('./store');
+const { RateLimiter, clientIp } = require('./limits');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC = path.join(__dirname, '..', 'public');
@@ -23,6 +24,7 @@ const TYPES = {
 };
 
 const world = new World({ store: createStore() });
+const limiter = new RateLimiter(); // 接続元ごとの新規作成・復帰の回数制限(SECURITY.md F2)
 
 // ---------- HTTP ----------
 const server = http.createServer((req, res) => {
@@ -45,8 +47,9 @@ const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 16384 });
 const send = (ws, msg) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify(msg)); };
 const cleanName = (s) => String(s || '').replace(/[\u0000-\u001f\u007f<>]/g, '').trim().slice(0, 12) || 'プレイヤー';
 
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, req) => {
   ws.isAlive = true;
+  ws.ip = clientIp(req);
   ws.on('pong', () => { ws.isAlive = true; });
   // 1 接続のメッセージは順番に処理する(view と ask が入れ違わないように)
   let chain = Promise.resolve();
@@ -73,7 +76,12 @@ async function handle(ws, msg) {
     return;
   }
   if (msg.t === 'join') {
-    const player = await world.join(ws, cleanName(msg.name), typeof msg.token === 'string' ? msg.token.trim() : null,
+    if (ws.player) throw new Error('この接続はすでに参加しています');
+    const token = typeof msg.token === 'string' && msg.token.trim() ? msg.token.trim() : null;
+    // 接続元ごとの回数制限: 復帰の試行は 1 分 5 回、新規作成は 1 時間 3 回・1 日 10 回
+    const over = limiter.take(token ? 'resume' : 'create', ws.ip);
+    if (over) throw new Error(over);
+    const player = await world.join(ws, cleanName(msg.name), token,
       typeof msg.startNodeId === 'string' && msg.startNodeId ? msg.startNodeId.slice(0, 40) : null);
     ws.player = player;
     send(ws, world.welcome(player));
@@ -83,6 +91,7 @@ async function handle(ws, msg) {
   const { player } = ws;
   if (!player) throw new Error('先に参加してください');
   switch (msg.t) {
+    case 'rekey': send(ws, { t: 'rekey', token: await world.rekey(player) }); break;
     case 'view': await world.setView(player, Array.isArray(msg.tiles) ? msg.tiles : [], msg.z); break;
     case 'ask': send(ws, await world.ask(player, String(msg.nodeId))); break;
     case 'answer': send(ws, await world.answer(player, String(msg.qid), Number(msg.choice))); break;
@@ -99,7 +108,11 @@ setInterval(() => {
   }
   world.evict();
 }, 25000);
+// 休眠アカウントの回収は 1 時間ごと(起動時にも 1 回)
+setInterval(() => { limiter.sweep(); world.reclaimIdle().catch((e) => console.error('休眠の回収に失敗:', e.message)); }, 60 * 60 * 1000);
 
-world.init().then(() => {
-  server.listen(PORT, () => console.log(`パケット陣取り / Packet Conquest: http://localhost:${PORT}`));
+world.init().then(async () => {
+  const n = await world.reclaimIdle().catch((e) => { console.error('休眠の回収に失敗:', e.message); return 0; });
+  if (n) console.log(`休眠アカウントを ${n} 件回収`);
+  server.listen(PORT, () => console.log(`パケット陣取り / Packet Conquest: http://localhost:${PORT}(保存: ${process.env.COSMOS_CONNECTION_STRING ? 'Cosmos DB ' + (process.env.COSMOS_DATABASE || 'packet-conquest') : 'メモリ'})`));
 }).catch((e) => { console.error('起動に失敗:', e); process.exit(1); });

@@ -51,6 +51,16 @@ const dbName = process.env.COSMOS_TEST_DATABASE || 'pc-test';
     const reg = await store.loadRegion(saved.region);
     assert.ok(reg && reg.control && reg.control.total > 0, '地域の支配の集計が保存される');
     assert.ok((await store.countOwners('japan', saved.region)).byOwner[a.id] >= 1, '所有者の集計(GROUP BY)が動く');
+    // 休眠の回収(Cosmos のクエリと削除が動くこと)
+    const idle = await w.join(fakeWs(), 'きゅうみん', null);
+    await w.disconnect(idle); idle.lastSeen = Date.now() - 8 * 24 * 3600 * 1000; await w.persistPlayer(idle);
+    assert.strictEqual(await w.reclaimIdle(), 1, '休眠を回収');
+    assert.ok(!(await store.loadPlayer(idle.id)) && !(await store.loadNode(idle.homeNodeId)), 'アカウントと拠点が消える');
+    assert.ok(await store.loadPlayer(a.id), '接続中の人は残る');
+    // 検索と人数
+    const hits2 = await store.searchNodes('japan', '東京', 5);
+    assert.ok(hits2.length > 0 && hits2[0].level >= hits2[hits2.length - 1].level, '検索はレベル順');
+    assert.ok((await store.countStarters([a.startNodeId]))[a.startNodeId] >= 1, 'ここから始めた人数');
     const top = await store.topPlayers(3);
     assert.ok(top.some((p) => p.id === a.id), 'ランキングに出る');
     // 別のワールド(再起動相当)で復元
