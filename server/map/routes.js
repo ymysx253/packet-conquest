@@ -7,7 +7,13 @@ const crypto = require('crypto');
 
 const DIR = path.join(__dirname, 'data', 'routes');
 const MODES = new Set(['air', 'sea']);                 // 今ゲームで使う種類
-const MODES_RESERVED = new Set(['rail', 'cable', 'land']); // 予約(形式としては受け付け、ゲームではまだ使わない)
+const MODES_RESERVED = new Set(['rail', 'land']); // 予約(形式としては受け付け、ゲームではまだ使わない)。海底ケーブルは航路にしない(2026-10-19 決定)
+
+// ゲームでの航路の扱い(設定)。2026-10-19 決定: 航路は「接続」なので向きを区別しない(directed: false)。
+// 記録の bidirectional は出典の事実として残し、directed を true にしたときだけ片道として扱う
+const ROUTE_RULES = Object.freeze({ directed: false });
+// 規模(DATA-FORMAT.md 第 5.2 節 metrics)。2026-10-19 決定: 航路の価値は規模で変える(式は未決。DESIGN.md 第 6 章)
+const METRIC_KEYS = ['passengers', 'flights', 'cargoTons'];
 const STATUSES = new Set(['active', 'seasonal', 'suspended', 'planned', 'ended']);
 const SCHEMES = new Set(['iata', 'icao', 'unlocode', 'wikidata', 'ksj', 'internal']);
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -38,6 +44,13 @@ function validateRouteFile(name, data, sourcesById) {
     if (typeof r.retrievedAt !== 'string' || !DAY.test(r.retrievedAt.slice(0, 10))) fail(`${w}: retrievedAt が要る`);
     if (r.bidirectional !== undefined && typeof r.bidirectional !== 'boolean') fail(`${w}: bidirectional は true/false`);
     for (const p of r.periods || []) if (!DAY.test(p.from || '') || (p.to && !DAY.test(p.to))) fail(`${w}: periods の日付は YYYY-MM-DD`);
+    if (r.metrics !== undefined) {
+      const m = r.metrics;
+      if (!m || !Number.isInteger(m.year) || m.year < 1900) fail(`${w}: metrics は { year, passengers?, flights?, cargoTons? }(1 年間の値)`);
+      for (const k of Object.keys(m)) if (k !== 'year' && !METRIC_KEYS.includes(k)) fail(`${w}: metrics の ${k} は決まった名前でない(${METRIC_KEYS.join('/')})`);
+      for (const k of METRIC_KEYS) if (m[k] !== undefined && !(Number.isFinite(m[k]) && m[k] >= 0)) fail(`${w}: metrics.${k} は 0 以上の数`);
+    }
+    for (const c of r.carriers || []) if (!c || typeof c.code !== 'string' || !c.code || (c.sponsorId !== undefined && typeof c.sponsorId !== 'string')) fail(`${w}: carriers は [{ scheme, code, name, sponsorId? }]`);
     if (r.id !== routeId({ src: r.src, mode: r.mode, from: r.from, to: r.to, carrier: r.carriers && r.carriers[0] && r.carriers[0].code })) fail(`${w}: id が出典・種類・端点・運航者から作った値と違う`);
   }
 }
@@ -50,14 +63,27 @@ function readRouteFiles(dir = DIR) {
 // 今日が運航期間の中か(seasonal 用)
 const inPeriod = (r, today) => (r.periods || []).some((p) => p.from <= today && (!p.to || today <= p.to));
 
-// ゲームで使える航路を選び、拠点 id → [{ to, mode, name, lat, lon }] に変える。使わなかった理由の集計も返す
-function deriveRoutes(byId, files, sources, today = new Date().toISOString().slice(0, 10)) {
+// ゲームで使える航路を選び、拠点 id → [{ to, mode, name, lat, lon, metrics? }] に変える。使わなかった理由の集計も返す。
+// 運航者の名前は要約に入れない(画面に出さない。運航者がスポンサーになったときに別のしくみで出す。2026-10-19 決定)。
+// metrics は同じ 2 拠点・同じ種類の記録のうち、いちばん新しい年の値の合計(複数の運航者・出典の分を足す)
+function deriveRoutes(byId, files, sources, today = new Date().toISOString().slice(0, 10), rules = ROUTE_RULES) {
   const out = new Map();
   const skipped = {};
   const skip = (why) => { skipped[why] = (skipped[why] || 0) + 1; };
-  const add = (a, b, mode) => {
+  const add = (a, b, mode, metrics, key) => {
     if (!out.has(a.id)) out.set(a.id, new Map());
-    out.get(a.id).set(`${b.id}|${mode}`, { to: b.id, mode, name: b.name, lat: b.lat, lon: b.lon });
+    const m = out.get(a.id);
+    const k = `${b.id}|${mode}`;
+    if (!m.has(k)) m.set(k, { to: b.id, mode, name: b.name, lat: b.lat, lon: b.lon, recs: new Map() });
+    if (metrics) m.get(k).recs.set(key, metrics); // 同じ記録を往復で 2 回数えない
+  };
+  const sumLatest = (recs) => {
+    const list = [...recs.values()];
+    if (!list.length) return null;
+    const year = Math.max(...list.map((x) => x.year));
+    const sum = { year };
+    for (const x of list.filter((y) => y.year === year)) for (const k of METRIC_KEYS) if (x[k] !== undefined) sum[k] = (sum[k] || 0) + x[k];
+    return sum;
   };
   for (const { name, data } of files) {
     validateRouteFile(name, data, sources.byId);
@@ -70,13 +96,17 @@ function deriveRoutes(byId, files, sources, today = new Date().toISOString().sli
       if (!a || !b) { skip('端点が拠点に無い'); continue; }
       if (a.hackable === false || b.hackable === false) { skip('端点がハック不可'); continue; }
       if (!a.gateway || !b.gateway) { skip('端点が玄関口(gateway)でない'); continue; }
-      add(a, b, r.mode);
-      if (r.bidirectional !== false) add(b, a, r.mode); // ゲームの線は往復(片道の扱いは DATA-FORMAT.md 第 9 章で未決)
+      const key = `${data.source}|${r.id}`;
+      add(a, b, r.mode, r.metrics, key);
+      if (!rules.directed || r.bidirectional !== false) add(b, a, r.mode, r.metrics, key); // 航路は接続: 向きを区別しない(設定 directed)
     }
   }
   const result = new Map();
-  for (const [id, m] of out) result.set(id, [...m.values()].sort((x, y) => x.to.localeCompare(y.to) || x.mode.localeCompare(y.mode)));
+  for (const [id, m] of out) {
+    result.set(id, [...m.values()].map(({ recs, ...x }) => { const metrics = sumLatest(recs); return metrics ? { ...x, metrics } : x; })
+      .sort((x, y) => x.to.localeCompare(y.to) || x.mode.localeCompare(y.mode)));
+  }
   return { byNode: result, skipped };
 }
 
-module.exports = { routeId, validateRouteFile, readRouteFiles, deriveRoutes, MODES, MODES_RESERVED, DIR };
+module.exports = { routeId, validateRouteFile, readRouteFiles, deriveRoutes, MODES, MODES_RESERVED, ROUTE_RULES, METRIC_KEYS, DIR };

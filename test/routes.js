@@ -1,7 +1,7 @@
 'use strict';
 // 航路の記録と出典の台帳(docs/DATA-FORMAT.md 第 2 章・第 5 章)。小さな作り物のデータで規則を確かめる
 const assert = require('assert');
-const { routeId, validateRouteFile, deriveRoutes, readRouteFiles } = require('../server/map/routes');
+const { routeId, validateRouteFile, deriveRoutes, readRouteFiles, ROUTE_RULES } = require('../server/map/routes');
 const { validateSources, usableIn, loadSources } = require('../server/map/sources');
 
 const TODAY = '2026-10-19';
@@ -57,15 +57,16 @@ assert.match(routeId({ src: 's', mode: 'air', from: 'a', to: 'b' }), /^rt-[0-9a-
 
 const files = [
   file('src-ok', [
-    rec('src-ok', 'air', 'a', 'b'),
-    rec('src-ok', 'air', 'b', 'a'),                       // 逆向きの重複はまとめる
+    rec('src-ok', 'air', 'a', 'b', { metrics: { year: 2024, passengers: 1000, flights: 10 } }),
+    rec('src-ok', 'air', 'b', 'a', { metrics: { year: 2024, passengers: 500 } }), // 逆向きの重複はまとめ、規模は足す
+    rec('src-ok', 'air', 'a', 'b', { carriers: [{ scheme: 'iata-airline', code: 'YY', name: 'テスト航空' }], metrics: { year: 2023, passengers: 99999 } }), // 古い年の値は使わない
     rec('src-ok', 'sea', 'a', 'c', { status: 'ended' }),  // 終わった航路は使わない
     rec('src-ok', 'sea', 'b', 'c', { status: 'seasonal', periods: [{ from: '2026-07-01', to: '2026-08-31' }] }), // 季節外
     rec('src-ok', 'sea', 'a', 'st'),                      // 玄関口でない
     rec('src-ok', 'sea', 'a', 'ng'),                      // ハック不可
     rec('src-ok', 'sea', 'a', 'zz'),                      // 拠点に無い
     rec('src-ok', 'rail', 'a', 'b'),                      // 予約の種類
-    rec('src-ok', 'sea', 'c', 'b', { bidirectional: false }), // 片道
+    rec('src-ok', 'sea', 'c', 'b', { bidirectional: false }), // 片道(ゲームでは接続として往復)
   ]),
   file('src-nc', [rec('src-nc', 'sea', 'b', 'c')]),
   file('src-expired', [rec('src-expired', 'air', 'a', 'c')]),
@@ -74,11 +75,17 @@ const files = [
 const { byNode, skipped } = deriveRoutes(byId, files, sources, TODAY);
 const to = (id) => (byNode.get(id) || []).map((r) => `${r.mode}:${r.to}`);
 assert.deepStrictEqual(to('a'), ['air:b', 'air:c'], 'a は b(往復の重複は 1 本)と c(協力企業の期限内)');
-assert.deepStrictEqual(to('b'), ['air:a'], '片道 c→b は b からは出ない');
+assert.deepStrictEqual(to('b'), ['air:a', 'sea:c'], '航路は接続: 片道の記録も往復として扱う(2026-10-19 決定)');
 assert.deepStrictEqual(to('c'), ['air:a', 'sea:b']);
 assert.deepStrictEqual(to('st'), []);
 assert.deepStrictEqual(to('ng'), []);
 assert.strictEqual(byNode.get('a')[0].name, 'B', '行き先の名前と座標を添える');
+assert.deepStrictEqual(byNode.get('a')[0].metrics, { year: 2024, passengers: 1500, flights: 10 }, '規模はいちばん新しい年の合計(往復の記録を足す)');
+assert.deepStrictEqual(byNode.get('b')[0].metrics, byNode.get('a')[0].metrics, '規模は両端で同じ');
+assert.ok(!JSON.stringify([...byNode.values()]).includes('テスト航空'), '運航者の名前は要約に入れない(画面に出さない)');
+// 設定 directed を true にしたときだけ片道を区別する
+assert.deepStrictEqual(deriveRoutes(byId, files, sources, TODAY, { directed: true }).byNode.get('b').map((r) => `${r.mode}:${r.to}`), ['air:a'], '設定で片道を区別できる');
+assert.strictEqual(ROUTE_RULES.directed, false, 'ゲームの既定は向きを区別しない');
 for (const why of ['状態 ended', '状態 seasonal', '端点が玄関口(gateway)でない', '端点がハック不可', '端点が拠点に無い', '予約の種類 rail', '出典: 使用許諾が非商用', '出典: 契約の期限切れ(2026-01-31)']) assert.ok(skipped[why] >= 1, `使わなかった理由: ${why}`);
 // 季節の期間中は使う
 assert.deepStrictEqual(deriveRoutes(byId, files, sources, '2026-08-01').byNode.get('b').map((r) => `${r.mode}:${r.to}`), ['air:a', 'sea:c']);
@@ -90,6 +97,12 @@ assert.throws(bad((d) => { d.schema = 'x'; }), /schema/);
 assert.throws(bad((d) => { d.source = 'src-nope'; }), /台帳に無い/);
 assert.throws(bad((d, r) => { r.id = 'rt-000000000000'; }), /作った値と違う/);
 assert.throws(bad((d, r) => { r.mode = 'bus'; }), /mode/);
+assert.throws(bad((d, r) => { r.mode = 'cable'; r.id = routeId({ src: r.src, mode: 'cable', from: r.from, to: r.to }); }), /mode/, '海底ケーブルは航路にしない');
+assert.throws(bad((d, r) => { r.metrics = { passengers: 1 }; }), /metrics は/);
+assert.throws(bad((d, r) => { r.metrics = { year: 2024, seats: 1 }; }), /決まった名前でない/);
+assert.throws(bad((d, r) => { r.metrics = { year: 2024, passengers: -1 }; }), /0 以上/);
+assert.throws(bad((d, r) => { r.carriers = [{ name: '名前だけ' }]; }), /carriers/);
+assert.doesNotThrow(bad((d, r) => { r.carriers = [{ scheme: 'iata-airline', code: 'ZZ', name: 'x', sponsorId: 'sp-1' }]; r.id = routeId({ src: r.src, mode: r.mode, from: r.from, to: r.to, carrier: 'ZZ' }); }), 'スポンサーになった運航者は sponsorId で結ぶ');
 assert.throws(bad((d, r) => { r.status = 'open'; }), /status/);
 assert.throws(bad((d, r) => { r.src = 'src-nc'; }), /src はファイルの出典/);
 assert.throws(bad((d, r) => { delete r.retrievedAt; }), /retrievedAt/);

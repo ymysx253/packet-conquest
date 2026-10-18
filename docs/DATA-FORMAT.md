@@ -129,15 +129,15 @@
 | 項目 | 必須 | 内容 |
 |---|---|---|
 | `id` | ○ | `rt-` + 出典・種類・端点・運航者から決まるハッシュ(12 桁)。同じ入力からは同じ id |
-| `mode` | ○ | `air`(空路)/ `sea`(海路)。予約: `rail`(国際列車)、`cable`(海底ケーブル)、`land`(国境の陸路) |
+| `mode` | ○ | `air`(空路)/ `sea`(海路)。予約: `rail`(国際列車)、`land`(国境の陸路)。**海底ケーブルは航路にしない**(2026-10-19 決定。`cable` は受け付けない) |
 | `from` / `to` | ○ | 内部の拠点 id(照合後) |
 | `fromRef` / `toRef` | ○ | 出典が使っていたコード(`{ scheme: "iata", value: "HND" }`)。照合のやり直しと監査に使う |
-| `bidirectional` | | 往復か(既定 `true`)。片道しかない航路(周遊など)は `false` |
+| `bidirectional` | | 出典の上で往復か(既定 `true`)。片道しかない航路(周遊など)は `false`。**ゲームでは航路は「接続」なので向きを区別しない**(2026-10-19 決定)。事実として記録に残し、設定 `ROUTE_RULES.directed`(`server/map/routes.js`、既定 `false`)を `true` にしたときだけ片道として扱う |
 | `scope` | | `domestic` / `international`(端点の国から決まる) |
-| `carriers` | | 運航者 `[{ scheme: "iata-airline" \| "imo" \| "<出典 id>", code, name }]`。**画面に出すかは未決**(第 9 章) |
+| `carriers` | | 運航者 `[{ scheme: "iata-airline" \| "imo" \| "<出典 id>", code, name, sponsorId? }]`。**画面には出さない**(2026-10-19 決定)。運航者がスポンサーになったときだけ、`sponsorId`(`sponsors` コンテナーの id)で結び、スポンサーのしくみ(DESIGN.md 3.8)で出す。記録には残す(照合と監査に使う) |
 | `status` | ○ | `active`(運航中)/ `seasonal`(季節運航)/ `suspended`(運休)/ `planned`(予定)/ `ended`(廃止) |
 | `periods` | | 運航の期間 `[{ from: "2026-04-01", to: "2026-10-31", perWeek: 14, days: "1234567" }]`(`days` は月曜 1 〜日曜 7) |
-| `metrics` | | 実績 `{ year, passengers, flights, cargoTons }`(統計から) |
+| `metrics` | | 規模の実績 `{ year, passengers?, flights?, cargoTons? }`。どれも **1 年間(暦年)** の値で、`passengers` は旅客数(人)、`flights` は運航回数(便。往復なら往と復の合計)、`cargoTons` は貨物(トン)。**航路の価値は規模で変える**(2026-10-19 決定。式は未決、DESIGN.md 第 6 章 #17)。項目名は決まったものだけ |
 | `distanceKm` | | 端点の大円距離(取り込み時に計算) |
 | `src` | ○ | 出典 id(ファイルの `source` と同じ。混ぜたファイルを作らない) |
 | `sourceRecordId` | | 出典側の記録の id(差分の照合に使う) |
@@ -150,6 +150,8 @@
 2. 航路の `status` が `active`、または `seasonal` で今日が `periods` の中
 3. 両端の拠点があり、ハック可で、`gateway` を持ち、扱わない地域(`excluded`)でない
 4. 同じ 2 拠点・同じ種類の航路が複数の出典や運航者にあれば 1 本にまとめる(ゲームの線は 1 本。記録は全部残す)
+5. 向きは区別しない(片道の記録も往復の接続にする)。設定 `ROUTE_RULES.directed` が `true` のときだけ片道を区別する
+6. 拠点の要約の項目は `{ to, mode, name, lat, lon, metrics? }`。`metrics` は 4 でまとめた記録のうち、いちばん新しい年の値の合計(運航者・出典・向きの分を足す)。運航者の名前は要約に入れない
 
 ゲームの規則(`DESIGN.md` 3.4): 自分の拠点からたどれる空港・港を占領すると、航路の先の空港・港を攻撃できる。航路は突破回数に数えない。
 
@@ -170,12 +172,13 @@
 ### 6.2 航路の CSV ひな形(`routes.csv`)
 
 ```
-mode,from_scheme,from_code,to_scheme,to_code,bidirectional,carrier_scheme,carrier_code,carrier_name,status,valid_from,valid_to,per_week,days,record_id
-air,iata,HND,iata,CTS,true,iata-airline,XX,(運航者名),active,2026-04-01,2026-10-31,98,1234567,XX-HND-CTS
-sea,unlocode,JPTYO,unlocode,JPOSM,true,partner,123,(運航者名),active,2026-04-01,,7,1234567,R-0001
+mode,from_scheme,from_code,to_scheme,to_code,bidirectional,carrier_scheme,carrier_code,carrier_name,status,valid_from,valid_to,per_week,days,metrics_year,passengers,flights,cargo_tons,record_id
+air,iata,HND,iata,CTS,true,iata-airline,XX,(運航者名),active,2026-04-01,2026-10-31,98,1234567,2025,1000000,10000,,XX-HND-CTS
+sea,unlocode,JPTYO,unlocode,JPOSM,true,partner,123,(運航者名),active,2026-04-01,,7,1234567,,,,,R-0001
 ```
 
 - `*_scheme` は `iata` / `icao` / `unlocode` / `wikidata` / 協力企業のコード体系(出典 id)
+- 規模(`metrics_year`、`passengers`、`flights`、`cargo_tons`)は分かるものだけ。1 年間の値
 - コードが無い港は、拠点の CSV(6.3)で港を先に出してもらい、その `record_id` を `partner` の体系で指す
 
 ### 6.3 拠点の CSV ひな形(`gateways.csv`)
@@ -226,12 +229,16 @@ port,unlocode,JPOSM,元町港,Motomachi Port,元町港,34.75114,139.35147,JP,dom
 
 ---
 
-## 9. 決めてもらうこと(世界展開のとき)
+## 9. 決めたこと・残り
 
-1. **運航者(航空会社・船会社)の名前を画面に出すか**: 企業名を出すことになる。協力企業なら宣伝になるが、PLACES.md の「企業を攻撃対象にしない」との関係(航路は攻撃対象ではないので出してよい、が案)
-2. **便数で航路の強さを変えるか**: 便の多い航路ほど価値が高い、など。今は「あるか無いか」だけ
-3. **海底ケーブル(`cable`)を航路として入れるか**: ネットワークのゲームとして筋が通る。公開データの使用許諾を調べてから
-4. **片道の航路を攻撃の向きに反映するか**: 今は往復の扱いだけ
+2026-10-19 にユーザーが決めた:
+
+1. **運航者の名前は画面に出さない**。運航者がスポンサーになったときだけ別に出す(`carriers[].sponsorId`)
+2. **航路の価値は規模で変える**(`metrics`)。**式は未決**(DESIGN.md 第 6 章 #17)
+3. **海底ケーブルは航路にしない**(`mode` に `cable` を置かない)
+4. **航路は接続なので片道・往復の区別はない**。区別できる設定(`ROUTE_RULES.directed`)だけ用意しておく
+
+残り: 規模から価値を出す式(空路と海路で同じ物差しにするか、旅客と貨物をどう比べるか、規模の無い航路の扱い)
 
 ---
 
