@@ -13,6 +13,8 @@
 //   countStarters(nodeIds)                各拠点から始めた人数(players.startNodeId)
 //   findIdlePlayers(beforeUp) / nodesOwnedBy(playerId) / deleteNode(id) / deletePlayer(id)  休眠アカウントの回収(稼働時計 lastSeenUp で判定)
 //   loadMeta(id) / saveMeta(doc)          小さな設定・状態(稼働時計 clock など)
+//   topPlayers(n, field, filter)          ランキング(score / points / nodesOwned / weekPoints。filter は { weekKey })
+//   topTeams(n) / loadTeam(id) / saveTeam(doc) / deleteTeam(id)  チーム(合計点・累計・拠点数・人数)
 
 const { parseTile, distanceKm, tilesAround, tileOf } = require('./map/geo');
 
@@ -24,6 +26,7 @@ class MemoryStore {
     this.questions = new Map();
     this.regions = new Map();
     this.meta = new Map();
+    this.teams = new Map();
   }
   _index(n) {
     for (let z = 0; z <= 4; z++) {
@@ -58,7 +61,24 @@ class MemoryStore {
   async loadPlayer(id) { const p = this.players.get(id); return p ? { ...p } : null; }
   async findPlayerByToken(token) { for (const p of this.players.values()) if (p.token === token) return { ...p }; return null; }
   async savePlayer(doc) { this.players.set(doc.id, { ...doc }); }
-  async topPlayers(n = 15) { return [...this.players.values()].sort((a, b) => (b.score || 0) - (a.score || 0) || (b.points || 0) - (a.points || 0)).slice(0, n).map((p) => ({ ...p })); }
+  async topPlayers(n = 15, field = 'score', filter = {}) {
+    let list = [...this.players.values()];
+    if (filter.weekKey) list = list.filter((p) => p.weekKey === filter.weekKey);
+    return list.sort((a, b) => (b[field] || 0) - (a[field] || 0) || (b.points || 0) - (a.points || 0)).slice(0, n).map((p) => ({ ...p }));
+  }
+  async topTeams(n = 15) {
+    const agg = new Map();
+    for (const p of this.players.values()) {
+      if (!p.team) continue;
+      const t = agg.get(p.team) || { team: p.team, score: 0, points: 0, nodes: 0, members: 0 };
+      t.score += p.score || 0; t.points += p.points || 0; t.nodes += p.nodesOwned || 0; t.members++;
+      agg.set(p.team, t);
+    }
+    return [...agg.values()].sort((a, b) => b.score - a.score || b.points - a.points).slice(0, n);
+  }
+  async loadTeam(id) { const t = this.teams.get(id); return t ? { ...t } : null; }
+  async saveTeam(doc) { this.teams.set(doc.id, { ...doc }); }
+  async deleteTeam(id) { this.teams.delete(id); }
   async loadQuestion(nodeId, level) { return this.questions.get(`${nodeId}:${level}`) || null; }
   // ---------- 地域 ----------
   async countRegions() { return this.regions.size; }
@@ -94,6 +114,8 @@ class MemoryStore {
 }
 
 function createStore() {
+  // STORE=memory なら .env があってもメモリ版(手元の見た目の確認用。本番 DB に書かない)
+  if (process.env.STORE === 'memory') return new MemoryStore();
   // Cosmos 版: 環境変数 COSMOS_CONNECTION_STRING があれば server/store-cosmos.js を使う
   if (process.env.COSMOS_CONNECTION_STRING) {
     const { CosmosStore } = require('./store-cosmos');

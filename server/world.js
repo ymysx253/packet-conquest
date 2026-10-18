@@ -13,7 +13,11 @@ const { nodeDocs, regionDocs } = require('./map/load');
 const { distanceKm, tilesAround, tileOf, tileFields, parseTile, tileSize, addrOf, MIN_LEVEL_BY_Z } = require('./map/geo');
 const { getQuestion } = require('./questions');
 
-const COOLDOWN_MS = 4000;               // 不正解のあと操作できない時間
+const COOLDOWN_MS = 4000;               // 不正解のあと操作できない時間(連続不正解で倍増。SECURITY.md F4)
+const COOLDOWN_MAX_MS = 60000;          // 待ち時間の上限
+const RANK_TTL_MS = 10 * 1000;          // ランキングの集計結果を持つ時間
+const RANK_N = 15;
+const TEAM_MAX_MEMBERS = 20;            // チームの人数上限の上限(作成時に 2〜20 で決める。第 3.11 節)
 const MAX_LEVEL = 999;                  // 出題レベルの上限(強化はここまで)
 const PROTECT_MS = 24 * 60 * 60 * 1000; // 初心者保護: 生まれた拠点は 24 時間攻撃されない
 const PROTECT_MAX_NODES = 3;            // 初心者保護: 所持拠点がこの数以下の人は攻撃されない(作成から NEWBIE_MS の間だけ)
@@ -39,6 +43,13 @@ const COLORS = [
 ];
 
 const newId = () => crypto.randomBytes(6).toString('hex');
+// 週の鍵: 日本時間の月曜 0 時で区切る(例 "2026-10-12")。週間ランキングの集計単位
+function weekKeyOf(t = Date.now()) {
+  const jst = new Date(t + 9 * 3600 * 1000);
+  const day = (jst.getUTCDay() + 6) % 7; // 月曜 = 0
+  const monday = new Date(Date.UTC(jst.getUTCFullYear(), jst.getUTCMonth(), jst.getUTCDate() - day));
+  return monday.toISOString().slice(0, 10);
+}
 const now = () => Date.now();
 const edgeKey = (a, b) => (a < b ? `${a}|${b}` : `${b}|${a}`);
 
@@ -56,6 +67,56 @@ class World {
     // 稼働時計(2026-10-18 決定): サーバーが動いていた時間だけを足す。休眠の判定はこの時計で行い、メンテナンス中は日数が進まない
     this.uptime = 0;
     this.lastTick = now();
+    this.teamNames = new Map(); // チーム id → 名前(表示用のキャッシュ)
+    this.rankCache = null;
+  }
+  // ---------- チーム(第 3.11 節、2026-10-18 決定) ----------
+  // 作成と参加のどちらでもできる。所属中は作成できない。脱退は可能。人数の上限は作成時に 2〜TEAM_MAX_MEMBERS で決める
+  async teamInfo(id) {
+    const t = await this.store.loadTeam(id);
+    if (t) this.teamNames.set(t.id, t.name);
+    return t;
+  }
+  async createTeam(p, name, maxMembers) {
+    if (p.team) throw new Error('チームに所属している間は、新しいチームを作れません(先に脱退してください)');
+    const nm = String(name || '').replace(/[\u0000-\u001f\u007f<>]/g, '').trim().slice(0, 16);
+    if (!nm) throw new Error('チーム名を入れてください');
+    const max = Math.max(2, Math.min(TEAM_MAX_MEMBERS, Number(maxMembers) || 10));
+    const team = { id: newId(), type: 'team', name: nm, ownerId: p.id, maxMembers: max, memberCount: 1, createdAt: now() };
+    await this.store.saveTeam(team);
+    this.teamNames.set(team.id, team.name);
+    p.team = team.id; p.reach = null;
+    await this.persistPlayer(p);
+    this.addLog(`${p.name} がチーム「${team.name}」を作りました`);
+    await this.emitPlayers();
+    return team;
+  }
+  async joinTeam(p, teamId) {
+    if (p.team) throw new Error('すでにチームに所属しています(先に脱退してください)');
+    const team = await this.teamInfo(String(teamId || '').trim());
+    if (!team) throw new Error('そのチームは見つかりません');
+    if ((team.memberCount || 0) >= team.maxMembers) throw new Error(`このチームは満員です(${team.maxMembers} 人まで)`);
+    team.memberCount = (team.memberCount || 0) + 1;
+    await this.store.saveTeam(team);
+    p.team = team.id;
+    await this.persistPlayer(p);
+    this.addLog(`${p.name} がチーム「${team.name}」に参加しました`);
+    await this.emitPlayers();
+    return team;
+  }
+  async leaveTeam(p) {
+    if (!p.team) throw new Error('チームに所属していません');
+    const team = await this.teamInfo(p.team);
+    if (team) {
+      team.memberCount = Math.max(0, (team.memberCount || 1) - 1);
+      if (team.memberCount === 0) await this.store.deleteTeam(team.id); else await this.store.saveTeam(team);
+    }
+    const name = team ? team.name : p.team;
+    p.team = null;
+    await this.persistPlayer(p);
+    this.addLog(`${p.name} がチーム「${name}」を脱退しました`);
+    await this.emitPlayers();
+    return name;
   }
 
   // ---------- 起動 ----------
@@ -172,18 +233,45 @@ class World {
     const msg = { t: 'nodes', nodes: [this.pub(n)] };
     for (const p of this.players.values()) if (p.online && p.view.has(n.t0)) this.send(p, msg);
   }
+  // 週の集計欄を今週のものにそろえる(週が変わっていたら 0 から)
+  bumpWeek(p) {
+    const wk = weekKeyOf(now());
+    if (p.weekKey !== wk) { p.weekKey = wk; p.weekPoints = 0; p.weekNodes = 0; }
+    return p;
+  }
+  // ランキング(第 3.1 節、2026-10-18 決定): 総合(現在の点数・累計点・拠点数)と週間(今週の獲得点)、個人とチーム。10 秒は使い回す
+  async rankings() {
+    if (this.rankCache && now() - this.rankCache.at < RANK_TTL_MS) return this.rankCache.data;
+    const wk = weekKeyOf(now());
+    const [score, points, nodes, week, teams] = await Promise.all([
+      this.store.topPlayers(RANK_N, 'score'), this.store.topPlayers(RANK_N, 'points'), this.store.topPlayers(RANK_N, 'nodesOwned'),
+      this.store.topPlayers(RANK_N, 'weekPoints', { weekKey: wk }), this.store.topTeams(RANK_N),
+    ]);
+    const pub = (list) => list.map((x) => this.pubPlayer(x));
+    const teamNames = new Map();
+    for (const t of teams) { const doc = await this.teamInfo(t.team); teamNames.set(t.team, doc ? doc.name : t.team); }
+    const data = {
+      week: wk,
+      score: pub(score), points: pub(points), nodes: pub(nodes), weekPoints: pub(week).map((x, i) => ({ ...x, weekPoints: week[i].weekPoints || 0 })),
+      teams: teams.map((t) => ({ id: t.team, name: teamNames.get(t.team), score: t.score || 0, points: t.points || 0, nodes: t.nodes || 0, members: t.members || 0 })),
+    };
+    this.rankCache = { at: now(), data };
+    return data;
+  }
   async emitPlayers() {
-    const top = await this.store.topPlayers(15);
+    this.rankCache = null;
+    const rank = await this.rankings();
     for (const p of this.players.values()) {
       if (!p.online) continue;
-      const list = top.map((x) => this.pubPlayer(x));
+      const list = rank.score.slice();
       if (!list.some((x) => x.id === p.id)) list.push(this.pubPlayer(p));
-      this.send(p, { t: 'players', players: list, log: this.log.slice(-12), now: now() });
+      this.send(p, { t: 'players', players: list, rankings: rank, me: this.pubPlayer(this.bumpWeek(p)), log: this.log.slice(-12), now: now() });
     }
   }
   pubPlayer(p) {
     const live = this.players.get(p.id);
-    return { id: p.id, name: p.name, color: p.color, online: !!(live && live.online), score: p.score || 0, nodes: p.nodesOwned || 0, points: p.points || 0, newbie: this.isNewbie(p) };
+    return { id: p.id, name: p.name, color: p.color, online: !!(live && live.online), score: p.score || 0, nodes: p.nodesOwned || 0, points: p.points || 0, newbie: this.isNewbie(p),
+      team: p.team || null, teamName: p.team ? (this.teamNames.get(p.team) || null) : null, weekPoints: p.weekKey === weekKeyOf(now()) ? (p.weekPoints || 0) : 0 };
   }
   // 初心者保護(3 拠点以下)の対象か: 作成から 7 日以内
   isNewbie(p) { return now() - (p.createdAt || 0) < NEWBIE_MS; }
@@ -248,6 +336,7 @@ class World {
       let p = [...this.players.values()].find((x) => x.token === token);
       if (!p) { const doc = await this.store.findPlayerByToken(token); if (doc) p = this.attach(doc); }
       if (p) {
+        if (p.team && !this.teamNames.has(p.team)) await this.teamInfo(p.team);
         if (p.ws && p.ws !== ws) { try { p.ws.close(); } catch { /* 古い接続は閉じるだけ */ } }
         p.ws = ws; p.online = true; this.touch(p); p.view = new Set();
         if (name) p.name = name;
@@ -261,6 +350,8 @@ class World {
       country: this.country, startNodeId: startNodeId || DEFAULT_START_ID, // 登録国と開始地点(第 3.1 節)
       plan: null, // サブスク(予約)。入っていれば休眠でも消えない
       movedAt: null, // 最後に引っ越した時刻(1 日 1 回)
+      weekKey: weekKeyOf(now()), weekPoints: 0, weekNodes: 0, // 週間ランキング(日本時間の月曜で区切る)
+      wrongStreak: 0, cooldownUntil: 0, // 連続不正解と待ち時間(再接続で消せないよう保存)
       registered: false, accountId: null, registeredAt: null, // 本登録(予約)。復帰コードはお試しで、本登録しても残る(第 3.1 節)
       points: 0, score: 0, nodesOwned: 0, homeNodeId: null, team: null, sponsorId: null, createdAt: now(), lastSeen: now(), lastSeenUp: this.uptime,
     });
@@ -271,7 +362,7 @@ class World {
     return p;
   }
   attach(doc) {
-    const p = { ...doc, ws: null, online: false, pending: null, cooldownUntil: 0, view: new Set(), viewZ: 0, reach: null, reachAt: 0 };
+    const p = { ...doc, ws: null, online: false, pending: null, cooldownUntil: doc.cooldownUntil || 0, wrongStreak: doc.wrongStreak || 0, view: new Set(), viewZ: 0, reach: null, reachAt: 0 };
     this.players.set(p.id, p);
     return p;
   }
@@ -363,7 +454,7 @@ class World {
     return COLORS.reduce((best, c) => ((used.get(c) || 0) < (used.get(best) || 0) ? c : best), COLORS[0]);
   }
   async persistPlayer(p) {
-    const { ws, online, pending, cooldownUntil, view, viewZ, reach, reachAt, ...doc } = p;
+    const { ws, online, pending, view, viewZ, reach, reachAt, ...doc } = p;
     doc.type = 'player';
     try { await this.store.savePlayer(doc); } catch (e) { console.error('プレイヤーの保存に失敗:', e.message); }
   }
@@ -523,10 +614,17 @@ class World {
     if (!pend || pend.qid !== qid) throw new Error('この問題はもう終わっています');
     p.pending = null; this.touch(p);
     const correct = choice === pend.answerIndex;
-    let outcome;
-    if (correct) outcome = await this.apply(p, pend.nodeId, pend.mode);
-    else { p.cooldownUntil = now() + COOLDOWN_MS; outcome = '不正解。通信が4秒止まります'; }
-    return { t: 'result', qid, correct, answerIndex: pend.answerIndex, explanation: pend.explanation, outcome, cooldownUntil: p.cooldownUntil };
+    let outcome, cooldownMs = 0;
+    if (correct) { p.wrongStreak = 0; outcome = await this.apply(p, pend.nodeId, pend.mode); }
+    else {
+      // 連続不正解で待ち時間を倍増(4 → 8 → 16 → 32 → 60 秒)。保存するので再接続しても消えない(SECURITY.md F4)
+      p.wrongStreak = (p.wrongStreak || 0) + 1;
+      cooldownMs = Math.min(COOLDOWN_MAX_MS, COOLDOWN_MS * 2 ** (p.wrongStreak - 1));
+      p.cooldownUntil = now() + cooldownMs;
+      outcome = `不正解。通信が ${Math.round(cooldownMs / 1000)} 秒止まります${p.wrongStreak > 1 ? `(連続 ${p.wrongStreak} 回目。正解すると戻ります)` : ''}`;
+      await this.persistPlayer(p);
+    }
+    return { t: 'result', qid, correct, answerIndex: pend.answerIndex, explanation: pend.explanation, outcome, cooldownUntil: p.cooldownUntil, cooldownMs };
   }
 
   // 正解したときの効果。状況が変わっていたら反映しない
@@ -562,6 +660,7 @@ class World {
     this.invalidateReach(p.id); if (prev) this.invalidateReach(prev.id);
     p.points = (p.points || 0) + gained;
     p.nodesOwned = (p.nodesOwned || 0) + 1;
+    this.bumpWeek(p); p.weekPoints += gained; p.weekNodes += 1;
     p.score = (p.score || 0) + this.valueOf(n);
     this.addLog(prev ? `${p.name} が ${prev.name} から ${n.name} を奪取` : `${p.name} が ${n.name} に到達`);
     await this.persistNode(n); await this.persistPlayer(p);
@@ -651,8 +750,10 @@ class World {
   // 参加直後に送る自分の情報
   welcome(p) {
     const home = p.homeNodeId ? this.nodes.get(p.homeNodeId) : null;
-    return { t: 'welcome', id: p.id, token: p.token, name: p.name, country: p.country || this.country, startNodeId: p.startNodeId || null, movedAt: p.movedAt || null, home: home ? { id: home.id, lat: home.lat, lon: home.lon } : null, spawn: tokyo.SPAWN_CENTER };
+    return { t: 'welcome', id: p.id, token: p.token, name: p.name, country: p.country || this.country, startNodeId: p.startNodeId || null, movedAt: p.movedAt || null,
+      team: p.team || null, teamName: p.team ? (this.teamNames.get(p.team) || null) : null, cooldownUntil: p.cooldownUntil || 0,
+      home: home ? { id: home.id, lat: home.lat, lon: home.lon } : null, spawn: tokyo.SPAWN_CENTER };
   }
 }
 
-module.exports = { World, PROTECT_MS, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS, MOVE_INTERVAL_MS };
+module.exports = { World, PROTECT_MS, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, TEAM_MAX_MEMBERS, weekKeyOf };

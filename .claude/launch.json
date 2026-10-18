@@ -12,6 +12,12 @@
       "runtimeExecutable": "cmd",
       "runtimeArgs": ["/c", "set PORT=3001&& node server/index.js"],
       "port": 3001
+    },
+    {
+      "name": "packet-conquest-memory",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "set PORT=3002&& set STORE=memory&& node server/index.js"],
+      "port": 3002
     }
   ]
 }

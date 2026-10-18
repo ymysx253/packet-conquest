@@ -12,6 +12,7 @@ const CONTAINERS = [
   { id: 'players', partitionKey: { paths: ['/id'] } },
   { id: 'questions', partitionKey: { paths: ['/nodeId'] } },
   { id: 'meta', partitionKey: { paths: ['/id'] } }, // 小さな設定・状態(稼働時計 clock)。無ければ起動時に作る(共有スループット)
+  { id: 'teams', partitionKey: { paths: ['/id'] } }, // チーム(第 3.11 節)。無ければ起動時に作る
 ];
 const SHARED_RU = 1000;
 const CHUNK = 60; // IN 句に並べるタイル数の上限
@@ -167,10 +168,26 @@ class CosmosStore {
     await this.ensure();
     await this.c.players.items.upsert(doc);
   }
-  async topPlayers(n = 15) {
-    const rows = await this.query('players', { query: 'SELECT TOP @n * FROM c ORDER BY c.score DESC', parameters: [{ name: '@n', value: n }] });
+  async topPlayers(n = 15, field = 'score', filter = {}) {
+    const f = ['score', 'points', 'nodesOwned', 'weekPoints'].includes(field) ? field : 'score';
+    const where = filter.weekKey ? ' WHERE c.weekKey = @wk' : '';
+    const params = [{ name: '@n', value: n }]; if (filter.weekKey) params.push({ name: '@wk', value: filter.weekKey });
+    const rows = await this.query('players', { query: `SELECT TOP @n * FROM c${where} ORDER BY c.${f} DESC`, parameters: params });
     return rows.map((r) => this.strip(r));
   }
+  // チームの合計(所属している人の score / points / nodesOwned を足す)
+  async topTeams(n = 15) {
+    const rows = await this.query('players', {
+      query: 'SELECT c.team, SUM(c.score) AS score, SUM(c.points) AS points, SUM(c.nodesOwned) AS nodes, COUNT(1) AS members FROM c WHERE IS_DEFINED(c.team) AND c.team != null GROUP BY c.team',
+    });
+    return rows.sort((a, b) => (b.score || 0) - (a.score || 0) || (b.points || 0) - (a.points || 0)).slice(0, n);
+  }
+  async loadTeam(id) {
+    await this.ensure();
+    try { const { resource } = await this.c.teams.item(id, id).read(); return this.strip(resource) || null; } catch (e) { if (e.code === 404) return null; throw e; }
+  }
+  async saveTeam(doc) { await this.ensure(); await this.c.teams.items.upsert(doc); }
+  async deleteTeam(id) { await this.ensure(); try { await this.c.teams.item(id, id).delete(); } catch (e) { if (e.code !== 404) throw e; } }
 
   // ---------- 固定問題(フェーズ 2) ----------
   async loadQuestion(nodeId, level) {

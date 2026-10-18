@@ -6,7 +6,7 @@
 ## 現状
 
 - フェーズ1(日本・永続ワールド)を実装中。東京 715 拠点(全駅 + 名所)、Lv1〜10 の生成問題、復帰コード、初心者保護、Cosmos DB 保存(`.env` の接続文字列で切り替え。本番データベース `packet-conquest`)まで済
-- レベルは「問われる知識の難しさ」だけで決める(1〜999。`docs/LEVELS.md`)。制限時間・2 問連続は難易度に使わない。突破に必要な正解の回数は拠点のつながりの本数(`adj` / `hits`。駅は同じ路線の前後の駅)。強化で出題レベルが上がり、24 時間ごとに 1 下がる。都道府県・国は拠点ではなく配下の集まりで、配下の 3/4 以上を持つと支配(DESIGN.md 第 14 章)
+- レベルは「問われる知識の難しさ」だけで決める(1〜999。`docs/LEVELS.md`)。制限時間・2 問連続は難易度に使わない。突破に必要な正解の回数は拠点のつながりの本数(`adj` / `hits`。駅は同じ路線の前後の駅)。強化で出題レベルが上がり、24 時間ごとに 1 下がる。都道府県・国は拠点ではなく配下の集まりで、配下の 3/4 以上を持つと支配(DESIGN.md 第 14 章)。チームは個人に付き(作成か参加、所属中は作成不可)、回数の合算と支配はチーム単位。ランキングは総合 3 種 + 週間 + チーム
 - フェーズ計画と実装手順は `docs/DESIGN.md` 第 5 章、未決事項は第 6 章。未決のものは勝手に決めて実装しない
 
 ## コマンド
@@ -29,7 +29,8 @@ npm.cmd run test:e2e   # サーバー起動中に実行。2人で1試合を通�
 - `server/questions/index.js`: 問題の取得口(レベル → 生成器の対応はここ 1 か所) / `server/questions/subnet.js`: Lv1〜3 サブネット計算 / `server/questions/basics.js`: Lv4〜10(VLSM、集約、IPv6、経路表、ARP/MAC 表、ACL、NAT 表)。Lv11 以上は LEVELS.md の階段に沿って追加する。固定問題は DB(Cosmos DB の questions)に テンプレート id・seed・版 で保存する前提
 - `server/map/data/regions.json`: 地域マスター(宇宙→天体→大陸→国→地方→州→市・区。段(tier)で表す共通の階層。DB の regions と同じ項目) / `server/map/data/tokyo.json`: 東京の拠点マスター(DB の nodes と同じ項目。`region` で区・市を指す)。拠点や地域を足すときはこれらに1行追加し `npm.cmd test` で検証 / `server/map/load.js`: 読み込み・検証・保存用の形(`regionDocs`) / `server/map/geo.js`: 距離・リンク自動生成
 - 画面は緯度・経度を受け取って自分で投影する(サーバーは描画座標を送らない)
-- `public/`: 画面(ビルド不要の HTML / CSS / JS)
+- `public/`: 画面(ビルド不要の HTML / CSS / JS)。`public/data/tokyo-regions.json` は区・市の境界(`tools/import-boundaries.js` が国土数値情報 N03 から作る)
+- 手元の確認は保存をメモリ版にして(環境変数 `STORE=memory`。`.claude/launch.json` の `packet-conquest-memory`)ブラウザで行う。本番 DB に確認用の書き込みをしない。DB の確認は `npm.cmd test` の `pc-test`(作って消す)
 
 ## 守ること
 

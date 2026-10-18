@@ -37,6 +37,7 @@
 | `sessions` | `/playerId` | 長丁場シナリオの途中経過(再開用)。TTL あり | フェーズ 2〜3 | 同時プレイ数 |
 | `events` | `/day` | 通知・逆探知・ログ・週間集計の元データ。TTL あり | フェーズ 2 | 多い(TTL で回収) |
 | `sponsors` | `/id` | スポンサー(店・施設)と掲載条件 | 段階 C | 少ない |
+| `teams` | `/id` | チーム(`{ id, type: "team", name, ownerId, maxMembers, memberCount, createdAt }`)。合計点は players を team で GROUP BY | 手順 8(2026-10-18) | 少ない |
 | `meta` | `/id` | 小さな設定・状態。いまは稼働時計 `clock`(`{ id: "clock", uptimeMs, savedAt }`)。無ければ起動時に SDK が作る(共有スループット) | 手順 5(2026-10-18) | 数件 |
 | `terms` / `devices` | `/category` / `/id` | 技術用語マスター・機器種別マスター(いまは JSON ファイル。問題生成を DB 駆動にするときに移す) | 必要になったら | 数十〜数百件 |
 
@@ -156,6 +157,9 @@
 - `registered` は本登録フラグ(2026-10-18 決定)。復帰コードは「お試し」で、本登録しても残る。`accountId` は本登録のアカウント(別テナントのユーザーフローが返す識別子)、`registeredAt` は登録日時。本登録の仕組みはまだ無いので、いまは全員 false
 - `plan` はサブスク(null = 無料。入っていれば休眠でも消えない。中身は収益化のときに決める)。`lastSeen`(実時刻)と `lastSeenUp`(稼働時計の値)は参加・解答・切断で更新し、稼働時計で 7 日より古い無料アカウントは `world.reclaimIdle` が回収する。メンテナンスで止まっていた時間は稼働時計が進まないので数えない
 - `movedAt` は最後に引っ越した時刻(1 日 1 回の判定)
+- `weekKey` / `weekPoints` / `weekNodes`: 週間ランキング。週の鍵は日本時間の月曜の日付(例 "2026-10-12")。週が変わると 0 から
+- `wrongStreak` / `cooldownUntil`: 連続不正解の回数と待ち時間の終わり。保存するので再接続で短縮できない(SECURITY.md F4)
+- `team`: 所属チームの id(null なら個人)。突破回数の合算と地域の支配は team があればそれを鍵にする
 - `country` は登録国、`startNodeId` は開始地点(選んだ駅・名所の id。指定が無ければ東京駅)。検索結果の「ここから始めた人数」は `startNodeId` で GROUP BY して数える(DESIGN.md 3.1、2026-10-18)
 - 累計点 `points` は奪取時点の点(強化込み)の合計。現在の点数は nodes から集計する(保存しない)
 - 将来: `stats`(題材ごとの正答率。学習記録)、`flags`(異常検知の印)

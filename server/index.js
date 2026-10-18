@@ -92,6 +92,12 @@ async function handle(ws, msg) {
   if (!player) throw new Error('先に参加してください');
   switch (msg.t) {
     case 'rekey': send(ws, { t: 'rekey', token: await world.rekey(player) }); break;
+    case 'team': {
+      if (msg.action === 'create') { const t = await world.createTeam(player, msg.name, msg.max); send(ws, { t: 'team', team: { id: t.id, name: t.name, maxMembers: t.maxMembers, memberCount: t.memberCount } }); }
+      else if (msg.action === 'join') { const t = await world.joinTeam(player, msg.teamId); send(ws, { t: 'team', team: { id: t.id, name: t.name, maxMembers: t.maxMembers, memberCount: t.memberCount } }); }
+      else if (msg.action === 'leave') { await world.leaveTeam(player); send(ws, { t: 'team', team: null }); }
+      break;
+    }
     case 'move': {
       const home = await world.move(player, typeof msg.startNodeId === 'string' ? msg.startNodeId.slice(0, 40) : null);
       send(ws, { t: 'moved', home: { id: home.id, lat: home.lat, lon: home.lon }, startNodeId: player.startNodeId, movedAt: player.movedAt });
@@ -120,5 +126,5 @@ setInterval(() => { limiter.sweep(); world.reclaimIdle().catch((e) => console.er
 world.init().then(async () => {
   const n = await world.reclaimIdle().catch((e) => { console.error('休眠の回収に失敗:', e.message); return 0; });
   if (n) console.log(`休眠アカウントを ${n} 件回収`);
-  server.listen(PORT, () => console.log(`パケット陣取り / Packet Conquest: http://localhost:${PORT}(保存: ${process.env.COSMOS_CONNECTION_STRING ? 'Cosmos DB ' + (process.env.COSMOS_DATABASE || 'packet-conquest') : 'メモリ'})`));
+  server.listen(PORT, () => console.log(`パケット陣取り / Packet Conquest: http://localhost:${PORT}(保存: ${process.env.STORE !== 'memory' && process.env.COSMOS_CONNECTION_STRING ? 'Cosmos DB ' + (process.env.COSMOS_DATABASE || 'packet-conquest') : 'メモリ'})`));
 }).catch((e) => { console.error('起動に失敗:', e); process.exit(1); });

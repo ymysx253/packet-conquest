@@ -68,6 +68,32 @@
       <p class="hint">別の端末やブラウザで続けるときに入力します。他の人には教えないでください。7 日間接続が無いと拠点はすべて中立に戻ります。</p>
     </section>
 
+    <section class="panel" id="teamPanel" hidden aria-labelledby="teamTitle">
+      <h2 id="teamTitle" class="label">チーム</h2>
+      <div id="teamNone">
+        <p class="hint">同じ拠点への正解回数をチームで合算できます。所属中は新しいチームを作れません(脱退はいつでも可)。</p>
+        <div class="team-row">
+          <input id="teamNameInput" maxlength="16" placeholder="チーム名">
+          <input id="teamMaxInput" type="number" min="2" max="20" value="10" aria-label="人数の上限" title="人数の上限(2〜20)">
+          <button type="button" class="btn small" id="teamCreateBtn">作成</button>
+        </div>
+        <div class="team-row">
+          <input id="teamJoinInput" class="mono" maxlength="24" placeholder="チーム コード">
+          <button type="button" class="btn small" id="teamJoinBtn">参加</button>
+        </div>
+      </div>
+      <div id="teamMine" hidden>
+        <p class="np-name" id="teamName"></p>
+        <div class="code-row">
+          <span class="hint">チーム コード</span>
+          <code class="code" id="teamCode"></code>
+          <button type="button" class="btn small" id="teamCopyBtn">コピー</button>
+          <button type="button" class="btn small" id="teamLeaveBtn">脱退</button>
+        </div>
+        <p class="hint" id="teamMeta"></p>
+      </div>
+    </section>
+
     <section class="panel" id="nodePanel" hidden aria-labelledby="npTitle">
       <h2 id="npTitle" class="label">拠点の情報</h2>
       <p class="np-name" id="npName"></p>
@@ -108,7 +134,16 @@
     </section>
 
     <section class="panel" aria-labelledby="scoreTitle">
-      <h2 id="scoreTitle" class="label">順位(現在の点数)</h2>
+      <div class="rank-head">
+        <h2 id="scoreTitle" class="label">順位</h2>
+        <select id="rankKind" aria-label="ランキングの種類">
+          <option value="score">総合: 現在の点数</option>
+          <option value="points">総合: 累計点</option>
+          <option value="nodes">総合: 拠点数</option>
+          <option value="weekPoints">今週の獲得点</option>
+          <option value="teams">チーム(合計点)</option>
+        </select>
+      </div>
       <ol class="scores" id="scores"></ol>
     </section>
 

@@ -2,7 +2,7 @@
 // 永続ワールドの検証(タイル方式): シード、範囲の読み込み、参加で拠点が生まれる、隣だけ攻撃できる、初心者保護、
 // 回数制の奪取(回数 = つながりの本数)、強化とその減衰、地域の支配(3/4)、集計値、復帰コード、再起動後の復元、配信に答えが含まれないこと
 const assert = require('assert');
-const { World, PROTECT_MS, DECAY_MS, NEWBIE_MS, MOVE_INTERVAL_MS } = require('../server/world');
+const { World, PROTECT_MS, DECAY_MS, NEWBIE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, weekKeyOf } = require('../server/world');
 const { MemoryStore } = require('../server/store');
 const { tilesAround, tileOf, distanceKm } = require('../server/map/geo');
 const { NODES } = require('../server/map/tokyo');
@@ -72,7 +72,17 @@ async function solve(world, p, nodeId) {
   assert.ok(!('answerIndex' in q) && q.options.length === 4);
   assert.strictEqual((await w.ask(a, nb)).qid, q.qid, '同じ拠点では問題が変わらない');
   const wrong = await w.answer(a, q.qid, (a.pending.answerIndex + 1) % 4);
-  assert.ok(!wrong.correct && a.cooldownUntil > Date.now(), '不正解で待ち時間');
+  assert.ok(!wrong.correct && a.cooldownUntil > Date.now() && wrong.cooldownMs === COOLDOWN_MS, '不正解で待ち時間 4 秒');
+  assert.strictEqual((await store.loadPlayer(a.id)).cooldownUntil, a.cooldownUntil, '待ち時間は保存される(再接続で消せない)');
+  // 連続不正解で倍増(4 → 8 → 16 …、上限 60 秒)。正解で戻る
+  a.cooldownUntil = 0;
+  const q2 = await w.ask(a, nb); const wrong2 = await w.answer(a, q2.qid, (a.pending.answerIndex + 1) % 4);
+  assert.strictEqual(wrong2.cooldownMs, COOLDOWN_MS * 2, '2 回目は 8 秒');
+  a.cooldownUntil = 0; a.wrongStreak = 10;
+  const q3 = await w.ask(a, nb); const wrong3 = await w.answer(a, q3.qid, (a.pending.answerIndex + 1) % 4);
+  assert.strictEqual(wrong3.cooldownMs, COOLDOWN_MAX_MS, '上限 60 秒');
+  a.cooldownUntil = 0;
+  await assert.rejects(async () => { a.cooldownUntil = Date.now() + 5000; await w.ask(a, nb); }, /待って/, '待ち時間中は出題しない');
   a.cooldownUntil = 0;
 
   // 回数制: つながりの本数(hits)だけ正解すると奪取。途中は侵入の進捗が配信される。集計値が増え、見ている人に差分が届く
@@ -89,6 +99,8 @@ async function solve(world, p, nodeId) {
   }
   await solve(w, a, nb);
   assert.strictEqual(target.owner, a.id, 'つながりの本数ぶん正解して奪取');
+  assert.strictEqual(a.wrongStreak, 0, '正解で連続不正解は戻る');
+  assert.strictEqual(a.weekKey, weekKeyOf(Date.now())); assert.strictEqual(a.weekPoints, target.value, '今週の獲得点');
   assert.deepStrictEqual(target.progress, {}, '奪取で進捗は消える');
   assert.ok(target.fortifiedAt > 0);
   assert.strictEqual(a.nodesOwned, 2); assert.strictEqual(a.points, target.value); assert.strictEqual(a.score, 1 + target.value);
@@ -187,9 +199,46 @@ async function solve(world, p, nodeId) {
   const c = await w2.join(fakeWs(), 'あき', a.token);
   assert.strictEqual(c.id, a.id, '再起動後も復帰コードで戻れる');
 
-  // ランキング
+  // ランキング: 総合(現在の点数・累計点・拠点数)、週間、チーム
   const top = await store.topPlayers(5);
   assert.strictEqual(top[0].id, a.id);
+  const rk = await w.rankings();
+  assert.ok(rk.score[0].id === a.id && rk.points.length > 0 && rk.nodes.length > 0 && rk.week === weekKeyOf(Date.now()), 'ランキングがそろう');
+  assert.ok(rk.weekPoints.some((x) => x.id === a.id && x.weekPoints > 0), '週間ランキングに今週の獲得点');
+  assert.strictEqual(weekKeyOf(Date.UTC(2026, 9, 14, 3)), '2026-10-12', '週の鍵は日本時間の月曜(2026-10-14 水 → 10-12)');
+  assert.strictEqual(weekKeyOf(Date.UTC(2026, 9, 11, 16)), '2026-10-12', '日曜 16 時 UTC は日本時間の月曜 1 時 → 10-12');
+  const tokyoSt0 = NODES.find((n) => n.name === '東京駅');
+  // チーム: 作成 / 参加 / 脱退、所属中は作れない、回数はチームで合算、チームランキング
+  const team1 = await w.createTeam(a, 'あかチーム', 3);
+  assert.ok(a.team === team1.id && team1.maxMembers === 3);
+  await assert.rejects(() => w.createTeam(a, 'もう一つ', 5), /所属している間/);
+  const cee = await w.join(fakeWs(), 'シー', null, tokyoSt0.id);
+  await w.joinTeam(cee, team1.id);
+  assert.strictEqual((await store.loadTeam(team1.id)).memberCount, 2);
+  await assert.rejects(() => w.joinTeam(cee, team1.id), /すでにチーム/);
+  const dee = await w.join(fakeWs(), 'ディー', null, tokyoSt0.id); const eee = await w.join(fakeWs(), 'イー', null, tokyoSt0.id);
+  await w.joinTeam(dee, team1.id);
+  await assert.rejects(() => w.joinTeam(eee, team1.id), /満員/);
+  // 合算: a と cee が同じ拠点を攻める(cee の拠点は a の陣地の隣に生まれたとは限らないので、cee に a の隣の所有拠点を与える)
+  const shared = [...w.adj.get(nb)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false && n.hits >= 2);
+  const c1Launch = w.nodes.get(nb); // a の所有拠点 nb を cee にも隣接させるため、cee の拠点と nb をつなぐ
+  w.addEdge(cee.homeNodeId, c1Launch.id, w.nodes.get(cee.homeNodeId).t0);
+  // cee は nb を持っていないので、nb から先は攻められない。合算を確かめるには cee が shared に隣接する所有拠点を持つ必要がある
+  const c1Own = [...w.adj.get(shared.id)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false && n.id !== nb);
+  if (c1Own) {
+    c1Own.owner = cee.id; await w.persistNode(c1Own); w.addEdge(cee.homeNodeId, c1Own.id, w.nodes.get(cee.homeNodeId).t0); cee.reach = null;
+    const qa = await w.ask(a, shared.id); await w.answer(a, qa.qid, a.pending.answerIndex);
+    assert.strictEqual(shared.progress[team1.id], 1, '進捗はチームの鍵で数える');
+    const qc = await w.ask(cee, shared.id); await w.answer(cee, qc.qid, cee.pending.answerIndex);
+    assert.strictEqual(shared.owner === cee.id ? 2 : shared.progress[team1.id], 2, '仲間の正解が合算される');
+  }
+  const rk2 = await w.rankings();
+  assert.ok(rk2.teams.some((t) => t.id === team1.id && t.name === 'あかチーム' && t.members === 3), 'チームランキング');
+  await w.leaveTeam(dee); await w.leaveTeam(cee);
+  assert.strictEqual((await store.loadTeam(team1.id)).memberCount, 1);
+  await w.leaveTeam(a);
+  assert.strictEqual(await store.loadTeam(team1.id), null, '最後の 1 人が抜けるとチームは消える');
+  assert.strictEqual(a.team, null);
 
   // 開始地点(第 3.1 節): 名前で検索でき、選んだ駅のまわりに拠点が生まれ、その駅とつながる。指定が無ければ東京駅
   const tokyoSt = NODES.find((n) => n.name === '東京駅');

@@ -18,6 +18,8 @@
     selected: null, centerPending: false,
     start: null, picking: false, searchTimer: null, // 開始地点(選んだ駅・名所)と、地図から選ぶモード
     moving: false, movedAt: null, reach: new Set(), // 引っ越しの選択中 / 最後の引っ越し / 自分の拠点から線でつながっている所有拠点
+    rankings: null, me2: null, team: null, cooldownMs: 4000, // ランキング / 自分の集計 / 所属チーム / いまの待ち時間の長さ
+    bounds: null, // 区・市の境界(public/data/tokyo-regions.json)。地域の支配の色分けに使う
   };
   const TOKYO = { lat: 35.68124, lon: 139.76712 }; // 参加前に地図から選ぶときの初期位置(東京駅)
   const store = {
@@ -66,6 +68,8 @@
     switch (m.t) {
       case 'welcome':
         S.me = m.id; S.token = m.token; S.joined = true; S.home = m.home; S.spawn = m.spawn; S.movedAt = m.movedAt || null;
+        S.team = m.team ? { id: m.team, name: m.teamName } : null; S.cooldownUntil = m.cooldownUntil || 0; S.cooldownMs = Math.max(4000, S.cooldownUntil - Date.now());
+        $('teamPanel').hidden = false; renderTeam();
         store.set('pc-token', m.token); store.set('pc-name', m.name);
         $('codeInput').value = m.token;
         $('lobby').hidden = true; $('mePanel').hidden = false; $('onlineChip').hidden = false;
@@ -95,11 +99,16 @@
         renderSelected();
         break;
       case 'players':
-        S.offset = m.now - Date.now(); S.players = m.players; S.log = m.log || S.log;
+        S.offset = m.now - Date.now(); S.players = m.players; S.log = m.log || S.log; S.rankings = m.rankings || S.rankings; S.me2 = m.me || S.me2;
+        if (S.me2 && S.me2.team !== (S.team && S.team.id)) { S.team = S.me2.team ? { id: S.me2.team, name: S.me2.teamName } : null; renderTeam(); }
         renderPlayers(); renderSelected();
         break;
+      case 'team':
+        S.team = m.team ? { id: m.team.id, name: m.team.name, max: m.team.maxMembers, count: m.team.memberCount } : null;
+        renderTeam(); toast(S.team ? `チーム「${S.team.name}」に所属しました` : 'チームを脱退しました');
+        break;
       case 'question': S.question = m; S.result = null; S.chosen = null; renderQuestion(); break;
-      case 'result': S.result = m; S.cooldownUntil = m.cooldownUntil; renderQuestion(); renderSelected(); break;
+      case 'result': S.result = m; S.cooldownUntil = m.cooldownUntil; if (m.cooldownMs) S.cooldownMs = m.cooldownMs; renderQuestion(); renderSelected(); break;
       case 'error':
         if (!S.joined) { $('lobbyError').textContent = m.message; S.wantJoin = false; setJoining(false); } else toast(m.message);
         break;
@@ -184,6 +193,18 @@
     S.wantJoin = true; $('lobbyError').textContent = ''; setJoining(true);
     if (S.ws && S.ws.readyState === 1) sendJoin(); else if (!S.ws || S.ws.readyState !== 0) connect();
   });
+  function renderTeam() {
+    $('teamNone').hidden = !!S.team; $('teamMine').hidden = !S.team;
+    if (S.team) {
+      $('teamName').textContent = S.team.name || '(名前なし)'; $('teamCode').textContent = S.team.id;
+      const t = (S.rankings && (S.rankings.teams || []).find((x) => x.id === S.team.id)) || null;
+      $('teamMeta').textContent = t ? `${t.members}人 ・ 合計 ${t.score}点 ・ ${t.nodes}拠点。同じ拠点への正解回数はチームで合算されます` : 'コードを仲間に伝えると参加できます';
+    }
+  }
+  $('teamCreateBtn').onclick = () => { const name = $('teamNameInput').value.trim(); if (!name) { toast('チーム名を入れてください'); return; } send({ t: 'team', action: 'create', name, max: Number($('teamMaxInput').value) || 10 }); };
+  $('teamJoinBtn').onclick = () => { const id = $('teamJoinInput').value.trim(); if (!id) { toast('チーム コードを入れてください'); return; } send({ t: 'team', action: 'join', teamId: id }); };
+  $('teamLeaveBtn').onclick = () => { if (window.confirm('チームを脱退しますか?')) send({ t: 'team', action: 'leave' }); };
+  $('teamCopyBtn').onclick = () => { const c = S.team ? S.team.id : ''; if (navigator.clipboard && c) navigator.clipboard.writeText(c).then(() => toast('チーム コードをコピーしました'), () => toast('コードを選択してコピーしてください')); };
   $('rekeyBtn').onclick = () => {
     if (!S.joined) return;
     if (window.confirm('復帰コードを新しくします。いまのコードは使えなくなります。よろしいですか?')) send({ t: 'rekey' });
@@ -193,6 +214,12 @@
     if (navigator.clipboard && code) navigator.clipboard.writeText(code).then(() => toast('復帰コードをコピーしました'), () => toast('コードを選択してコピーしてください'));
     else toast('コードを選択してコピーしてください');
   };
+
+  // ---------- 区・市の境界(地域の支配の色分け。第 14.2 節) ----------
+  fetch('data/tokyo-regions.json').then((r) => (r.ok ? r.json() : null)).then((d) => {
+    if (!d || !d.regions) return;
+    S.bounds = Object.entries(d.regions).map(([id, g]) => ({ id, name: g.name, polys: g.polys.map((ring) => ring.map(([lon, lat]) => worldOf(lat, lon))) }));
+  }).catch(() => { /* 境界が無くても遊べる */ });
 
   // ---------- 投影: 固定の縮尺(経度・緯度 → 平面座標。1 単位 = 0.001°) ----------
   const LAT0 = 35.68; // 横方向の補正の基準(東京)。地図が世界に広がったらメルカトルに変える
@@ -393,24 +420,38 @@
     government: '官公庁', university: '大学・研究', market: '市場・商店街', convention: '展示場・会議場', complex: '複合施設',
     observatory: '天文台', ix: '相互接続点',
   };
+  $('rankKind').onchange = renderPlayers;
   function renderPlayers() {
-    const players = [...S.players].sort((a, b) => b.score - a.score || b.points - a.points);
     $('onlineCount').textContent = S.players.filter((p) => p.online).length;
-    const me = playerById(S.me);
+    const me = S.me2 || playerById(S.me);
     if (me) {
-      $('meSwatch').style.background = me.color; $('meName').textContent = me.name;
+      $('meSwatch').style.background = me.color; $('meName').textContent = me.name + (me.teamName ? `(${me.teamName})` : '');
       $('meScore').textContent = `${me.score}点`; $('meNodes').textContent = `${me.nodes}拠点`; $('mePoints').textContent = me.points;
     }
-    $('scores').replaceChildren(...players.slice(0, 15).map((p, i) => {
+    const kind = $('rankKind').value;
+    const R = S.rankings || {};
+    const row = (i, color, name, sub, right, dim) => {
       const li = document.createElement('li');
-      if (!p.online) li.className = 'offline';
+      if (dim) li.className = 'offline';
       const rank = document.createElement('span'); rank.className = 'rank'; rank.textContent = i + 1;
-      const sw = document.createElement('span'); sw.className = 'swatch'; sw.style.background = p.color;
-      const n = document.createElement('span'); n.className = 'pname'; n.textContent = p.name;
-      const sm = document.createElement('small'); sm.textContent = p.id === S.me ? 'あなた' : `${p.nodes}拠点`; n.append(sm);
-      const sc = document.createElement('span'); sc.className = 'pscore'; sc.textContent = `${p.score}点`;
+      const sw = document.createElement('span'); sw.className = 'swatch'; sw.style.background = color || 'transparent';
+      const n = document.createElement('span'); n.className = 'pname'; n.textContent = name;
+      const sm = document.createElement('small'); sm.textContent = sub; n.append(sm);
+      const sc = document.createElement('span'); sc.className = 'pscore'; sc.textContent = right;
       li.append(rank, sw, n, sc); return li;
-    }));
+    };
+    let items;
+    if (kind === 'teams') {
+      items = (R.teams || []).map((t, i) => row(i, S.team && S.team.id === t.id ? (me && me.color) : null, t.name || t.id, `${t.members}人 ・ ${t.nodes}拠点`, `${t.score}点`, false));
+      if (!items.length) { const li = document.createElement('li'); li.className = 'offline'; li.textContent = 'まだチームがありません'; items = [li]; }
+    } else {
+      const list = kind === 'score' ? [...S.players].sort((a, b) => b.score - a.score || b.points - a.points) : kind === 'weekPoints' ? (R.weekPoints || []).filter((p) => (p.weekPoints || 0) > 0) : (R[kind] || []);
+      const val = (p) => kind === 'points' ? `${p.points}点` : kind === 'nodes' ? `${p.nodes}拠点` : kind === 'weekPoints' ? `+${p.weekPoints || 0}点` : `${p.score}点`;
+      items = list.slice(0, 15).map((p, i) => row(i, p.color, p.name, p.id === S.me ? 'あなた' : (p.teamName ? p.teamName : `${p.nodes}拠点`), val(p), !p.online));
+      if (!items.length) { const li = document.createElement('li'); li.className = 'offline'; li.textContent = kind === 'weekPoints' ? '今週はまだ誰も獲得していません' : 'まだ順位がありません'; items = [li]; }
+    }
+    $('scoreTitle').textContent = kind === 'weekPoints' && R.week ? `順位(${R.week} の週)` : '順位';
+    $('scores').replaceChildren(...items);
     $('log').replaceChildren(...S.log.map((l) => { const li = document.createElement('li'); li.textContent = l.text; return li; }));
     $('log').scrollTop = $('log').scrollHeight;
   }
@@ -426,12 +467,13 @@
     $('npOwner').textContent = owner ? `${owner.name}${owner.id === S.me ? '(あなた)' : ''}` : (n.owner ? '他のプレイヤー' : '中立');
     // 突破に必要な回数 = つながりの本数。自分(チーム)の進捗と、他の攻め手の最大進捗
     const hits = n.hits || 1, prog = n.progress || {};
-    const mine = prog[S.me] || 0;
-    const others = Object.entries(prog).filter(([k]) => k !== S.me).map(([, v]) => v);
+    const myKey = S.team ? S.team.id : S.me;
+    const mine = prog[myKey] || 0;
+    const others = Object.entries(prog).filter(([k]) => k !== myKey).map(([, v]) => v);
     const parts = [`正解 ${hits} 回(つながり ${hits} 本)`];
     if (n.hackable === false) parts.length = 0, parts.push('ハック不可');
     else if (n.owner === S.me) { if (others.length) parts.push(`侵入されています: 最大 ${Math.max(...others)}/${hits}`); }
-    else { if (mine) parts.push(`あなた ${mine}/${hits}`); if (others.length) parts.push(`他の攻め手 最大 ${Math.max(...others)}/${hits}`); }
+    else { if (mine) parts.push(`${S.team ? 'チーム' : 'あなた'} ${mine}/${hits}`); if (others.length) parts.push(`他の攻め手 最大 ${Math.max(...others)}/${hits}`); }
     $('npHits').textContent = parts.join(' ・ ');
     const lines = Array.isArray(n.lines) ? n.lines : [];
     $('npLines').hidden = !lines.length;
@@ -544,6 +586,22 @@
     const ratio = zoomRatio();
     const grow = V.w < 600 ? 1.15 : 1;
 
+    // 区・市の境界: 支配者がいればその色で薄く塗る。縮小時は輪郭も濃く
+    if (S.bounds) {
+      const ctl = new Map((S.regions || []).map((g) => [g.id, g.controller]));
+      ctx.lineJoin = 'round';
+      for (const b of S.bounds) {
+        const c = ctl.get(b.id);
+        ctx.beginPath();
+        for (const ring of b.polys) {
+          for (let i = 0; i < ring.length; i++) { const q = toScreen(ring[i]); if (i) ctx.lineTo(q.x, q.y); else ctx.moveTo(q.x, q.y); }
+          ctx.closePath();
+        }
+        if (c && c.color) { ctx.fillStyle = c.color; ctx.globalAlpha = S.overview ? 0.28 : 0.1; ctx.fill(); ctx.globalAlpha = 1; }
+        ctx.strokeStyle = c && c.color ? c.color : C.line; ctx.lineWidth = S.overview ? 1.5 : 1; ctx.globalAlpha = S.overview ? 0.9 : 0.5; ctx.stroke(); ctx.globalAlpha = 1;
+      }
+    }
+
     // 線路(リンク)
     ctx.lineCap = 'round';
     for (const e of S.edges.values()) {
@@ -597,7 +655,8 @@
       if (entries.length && !S.overview) {
         entries.sort((x, y) => (x[0] === S.me ? 1 : 0) - (y[0] === S.me ? 1 : 0));
         for (const [k, v] of entries) {
-          ctx.strokeStyle = k === S.me ? (colorOf(S.me) || C.accent) : C.muted; ctx.lineWidth = 3.5;
+          const mineKey = k === S.me || (S.team && k === S.team.id);
+          ctx.strokeStyle = mineKey ? (colorOf(S.me) || C.accent) : C.muted; ctx.lineWidth = 3.5;
           ctx.beginPath(); ctx.arc(p.x, p.y, ring + 6, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, v / hits)); ctx.stroke();
         }
       }
@@ -661,7 +720,7 @@
   function tickUi() {
     const cd = S.cooldownUntil - now();
     $('cool').hidden = cd <= 0;
-    if (cd > 0) $('coolBar').style.transform = `scaleX(${cd / 4000})`;
+    if (cd > 0) $('coolBar').style.transform = `scaleX(${Math.min(1, cd / (S.cooldownMs || 4000))})`;
   }
   let toastTimer;
   function toast(text) {

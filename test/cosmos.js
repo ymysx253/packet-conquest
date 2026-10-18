@@ -60,6 +60,11 @@ const dbName = process.env.COSMOS_TEST_DATABASE || 'pc-test';
     assert.strictEqual(await w.reclaimIdle(), 1, '休眠を回収');
     assert.ok(!(await store.loadPlayer(idle.id)) && !(await store.loadNode(idle.homeNodeId)), 'アカウントと拠点が消える');
     assert.ok(await store.loadPlayer(a.id), '接続中の人は残る');
+    // ランキングとチーム(Cosmos のクエリが動くこと)
+    const t = await w.createTeam(a, 'テストチーム', 5);
+    const rk = await w.rankings();
+    assert.ok(rk.score.some((x) => x.id === a.id) && rk.teams.some((x) => x.id === t.id && x.members === 1), 'ランキングとチーム集計(GROUP BY SUM)');
+    await w.leaveTeam(a);
     // 検索と人数
     const hits2 = await store.searchNodes('japan', '東京', 5);
     assert.ok(hits2.length > 0 && hits2[0].level >= hits2[hits2.length - 1].level, '検索はレベル順');
