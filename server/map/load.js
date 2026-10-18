@@ -86,7 +86,9 @@ function regionDocs(nodes = []) {
   return REGIONS.map((r) => {
     const s = stats[r.id];
     const path = [...ancestors(r.id)].reverse().concat(r.id);
+    const state = path.find((id) => byId.get(id) && byId.get(id).kind === 'state') || null; // 所属する都道府県(形ファイルの単位)
     return {
+      state,
       id: r.id, type: 'region', name: r.name, nameEn: r.nameEn || null, kind: r.kind, tier: KINDS[r.kind].tier,
       kindLabel: KINDS[r.kind].label, localKind: r.localKind || null, code: r.code || null, country: countryOf(r.id),
       parent: r.parent, path, depth: path.length - 1, status: r.status || 'public', nodeFile: r.nodeFile || null,
@@ -103,7 +105,7 @@ function validate(region, data) {
   if (!data || !Array.isArray(data.nodes)) fail(region, 'nodes がありません');
   if (!data.kinds || typeof data.kinds !== 'object') fail(region, 'kinds がありません');
   const sp = data.spawn;
-  if (!sp || typeof sp.lat !== 'number' || typeof sp.lon !== 'number' || !(sp.radiusKm > 0)) fail(region, 'spawn が不正です');
+  if (sp !== undefined && (!sp || typeof sp.lat !== 'number' || typeof sp.lon !== 'number' || !(sp.radiusKm > 0))) fail(region, 'spawn が不正です');
   const ids = new Set(), names = new Set();
   const regions = loadRegions();
   for (const n of data.nodes) {
@@ -132,15 +134,19 @@ function validate(region, data) {
       if (n.adj.includes(n.id)) fail(region, `${n.id}: adj に自分がいる`);
     }
   }
-  for (const n of data.nodes) for (const m of n.adj || []) if (!ids.has(m)) fail(region, `${n.id}: adj の ${m} が存在しない`);
+  // adj のつながり先が別のファイル(隣の都県)にあることがあるので、ここでは形だけ見る。全体での存在は loadAll が確かめる
+  for (const n of data.nodes) for (const m of n.adj || []) if (!/^[a-z0-9-]+$/.test(m)) fail(region, `${n.id}: adj の ${m} が不正`);
 }
 
-function loadRegion(region) {
+function readRegionFile(region) {
   const file = path.join(DATA_DIR, `${region}.json`);
   let data;
   try { data = JSON.parse(fs.readFileSync(file, 'utf8')); } catch (e) { fail(region, `読み込めません (${e.message})`); }
   validate(region, data);
-
+  return data;
+}
+function loadRegion(region) {
+  const data = readRegionFile(region);
   const KINDS = data.kinds;
   const NODES = data.nodes.map((n, i) => ({
     id: n.id, name: n.name, genre: n.genre, alias: n.alias || null, kind: n.kind, kindLabel: KINDS[n.kind], area: n.area, region: n.region,
@@ -155,6 +161,7 @@ function loadRegion(region) {
     // 問題生成に使う架空のネットワーク。拠点 id から決定的に決める(上限なし。DESIGN.md 第 13 章)
     ...addrOf(n.id),
     adj: Array.isArray(n.adj) ? [...n.adj] : [],
+    adjMaster: Array.isArray(n.adj) ? [...n.adj] : [], // マスターの原文(別のファイルの拠点への線を含む。loadAll が使う)
   }));
 
   // つながり(設計書 第 14 章): マスターの adj を両向きにそろえる。adj が無い地域(古いマスター)は近い 3 拠点で代用
@@ -174,9 +181,38 @@ function loadRegion(region) {
   return {
     REGION: data.region, REGION_NAME: data.name, VERSION: data.version,
     KINDS, NODES, EDGES, ADJ, byId, AREAS,
-    SPAWN_CENTER: { lat: data.spawn.lat, lon: data.spawn.lon, radiusKm: data.spawn.radiusKm, name: data.spawn.name },
+    SPAWN_CENTER: data.spawn ? { lat: data.spawn.lat, lon: data.spawn.lon, radiusKm: data.spawn.radiusKm, name: data.spawn.name } : null,
     nearestNodes: (lat, lon, k) => nearest(NODES, lat, lon, k),
   };
+}
+
+// 地域マスターで nodeFile を持つ都道府県のファイルを全部読み、1 つにまとめる。つながり(adj)は都県境をまたぐので全体で組む
+let allCache = null;
+function loadAll() {
+  if (allCache) return allCache;
+  const regions = loadRegions();
+  const files = regions.REGIONS.filter((r) => r.nodeFile).map((r) => r.nodeFile);
+  if (!files.length) throw new Error('地域マスターに nodeFile を持つ都道府県がありません');
+  const parts = files.map((f) => loadRegion(f));
+  const NODES = parts.flatMap((p) => p.NODES);
+  const byId = Object.fromEntries(NODES.map((n) => [n.id, n]));
+  const dupId = NODES.map((n) => n.id).filter((id, i, a) => a.indexOf(id) !== i);
+  if (dupId.length) throw new Error(`拠点マスター: id が複数のファイルで重複: ${dupId.slice(0, 5).join(', ')}`);
+  // 全体で adj をそろえる(存在しない相手は落とす。両向きに)
+  const ADJ = Object.fromEntries(NODES.map((n) => [n.id, new Set()]));
+  for (const n of NODES) for (const m of n.adjMaster || n.adj || []) if (byId[m] && n.hackable && byId[m].hackable) { ADJ[n.id].add(m); ADJ[m].add(n.id); }
+  for (const n of NODES) { n.adj = [...ADJ[n.id]].sort(); ADJ[n.id] = n.adj; n.hits = Math.max(1, n.adj.length); delete n.adjMaster; }
+  const EDGES = [];
+  for (const n of NODES) for (const m of n.adj) if (n.id < m) EDGES.push({ a: n.id, b: m });
+  const KINDS = Object.assign({}, ...parts.map((p) => p.KINDS));
+  const spawnPart = parts.find((p) => p.SPAWN_CENTER) || parts[0];
+  allCache = {
+    REGION: 'japan', REGION_NAME: '日本', FILES: files, VERSION: parts.map((p) => p.VERSION).join('.'),
+    KINDS, NODES, EDGES, ADJ, byId, AREAS: [...new Set(NODES.map((n) => n.area))],
+    SPAWN_CENTER: spawnPart.SPAWN_CENTER,
+    nearestNodes: (lat, lon, k) => nearest(NODES, lat, lon, k),
+  };
+  return allCache;
 }
 
 // Cosmos DB の nodes に入れる形(docs/DB.md 3.2)。ゲーム状態の初期値つき
@@ -194,4 +230,4 @@ function nodeDocs(nodes, now = Date.now()) {
   }));
 }
 
-module.exports = { loadRegion, validate, loadRegions, validateRegions, regionDocs, nodeDocs, GENRES };
+module.exports = { loadRegion, loadAll, readRegionFile, validate, loadRegions, validateRegions, regionDocs, nodeDocs, GENRES };

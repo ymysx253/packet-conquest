@@ -3,7 +3,7 @@
 const assert = require('assert');
 const { makeBasics, BY_LEVEL, v6Canonical, v6Full, aclEval, wildcardOf, parseIp } = require('../server/questions/basics');
 const { toIp, maskOf, netOf } = require('../server/questions/subnet');
-const { NODES } = require('../server/map/tokyo');
+const { NODES } = require('../server/map/all');
 
 // IPv6 の正規化を別実装(展開 → 再圧縮)で確認する
 function expandV6(s) {

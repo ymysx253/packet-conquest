@@ -14,7 +14,7 @@ if (!process.env.COSMOS_CONNECTION_STRING) {
 const { CosmosStore } = require('../server/store-cosmos');
 const { World } = require('../server/world');
 const { nodeDocs, regionDocs } = require('../server/map/load');
-const tokyo = require('../server/map/tokyo');
+const tokyo = require('../server/map/all');
 const { tilesAround } = require('../server/map/geo');
 const { makeEvent, dayOf } = require('../server/events');
 

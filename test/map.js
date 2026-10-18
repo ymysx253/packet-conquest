@@ -3,20 +3,22 @@
 const assert = require('assert');
 const path = require('path');
 const fs = require('fs');
-const { NODES, EDGES, ADJ, KINDS, AREAS, SPAWN_CENTER, REGION } = require('../server/map/tokyo');
+const { NODES, EDGES, ADJ, KINDS, AREAS, SPAWN_CENTER, REGION } = require('../server/map/all');
 const { validate } = require('../server/map/load');
 const { distanceKm, project, buildLinks } = require('../server/map/geo');
 
-assert.strictEqual(REGION, 'tokyo');
+assert.strictEqual(REGION, 'japan', '全部の都道府県ファイルをまとめて読む');
+const prefOf = (n) => n.region.split('-')[0];
+assert.ok(new Set(NODES.map(prefOf)).size >= 3, '東京・神奈川・千葉が入っている');
 assert.ok(NODES.length >= 60, '都内の拠点が少なすぎます');
 assert.strictEqual(new Set(NODES.map((n) => n.id)).size, NODES.length, 'id が重複');
-assert.strictEqual(new Set(NODES.map((n) => n.name)).size, NODES.length, '名称が重複');
+assert.strictEqual(new Set(NODES.map((n) => prefOf(n) + '|' + n.name)).size, NODES.length, '名称が重複(同じ都道府県の中)');
 // 架空ネットワークは id から決定的に作るので重複してよい(DESIGN.md 第 13 章)。代わりにタイルと国を確認
 for (const n of NODES) { assert.strictEqual(n.country, 'japan'); for (let z = 0; z <= 4; z++) assert.match(n['t' + z], new RegExp('^t' + z + ':-?\\d+:-?\\d+$')); assert.match(n.subnet, /^10\.\d+\.\d+\.0\/20$/); assert.strictEqual(n.span, 4094); }
 for (const n of NODES) {
   assert.ok(KINDS[n.kind], `${n.name}: kind が不正 ${n.kind}`);
-  assert.ok(n.lat > 35.4 && n.lat < 35.9 && n.lon > 139.0 && n.lon < 140.0, `${n.name}: 東京の範囲外`);
-  assert.ok(Number.isInteger(n.level) && n.level >= 1 && (n.level <= 5 || (n.genre !== 'station' && n.level <= 30)), `${n.name}: 東京の拠点は Lv1〜5(象徴的な名所は 30 まで)`);
+  assert.ok(n.lat > 34.8 && n.lat < 36.2 && n.lon > 138.9 && n.lon < 141.0, `${n.name}: 関東南部の範囲外`);
+  assert.ok(Number.isInteger(n.level) && n.level >= 1 && (n.level <= 5 || (n.genre !== 'station' && n.level <= 30)), `${n.name}: 駅は Lv1〜5(象徴的な名所は 30 まで)`);
   assert.ok(Number.isInteger(n.value) && n.value >= 1 && n.value <= 999, `${n.name}: 点数は 1〜999`);
   assert.ok(n.value >= n.level - 1, `${n.name}: Lv に対して点数が低すぎる`);
   if (n.hackable) assert.ok(ADJ[n.id].length >= 1, `${n.name}: つながりがない`);
@@ -60,13 +62,16 @@ assert.strictEqual(R.countryOf('tokyo-chiyoda'), 'japan');
 assert.strictEqual(R.tierOf('tokyo'), 5);
 const docs = regionDocs(NODES);
 const tokyoDoc = docs.find((d) => d.id === 'tokyo');
-assert.strictEqual(tokyoDoc.nodeCount, NODES.length, '東京都の拠点数 = 全拠点');
+assert.strictEqual(tokyoDoc.nodeCount, NODES.filter((n) => prefOf(n) === 'tokyo').length, '東京都の拠点数 = 東京のファイルの拠点');
+assert.strictEqual(docs.find((d) => d.id === 'kanagawa').state, 'kanagawa'); assert.strictEqual(docs.find((d) => d.id === 'kanagawa-14101').state, 'kanagawa', '区・市は所属する都道府県を持つ');
+assert.strictEqual(docs.find((d) => d.id === 'kanagawa-14101').name, '横浜市鶴見区', '政令市の区は市名つき');
+assert.ok(docs.filter((d) => d.kind === 'state').length === 47 && docs.filter((d) => d.kind === 'city').length >= 1800, '全国の都道府県と市区町村');
 assert.deepStrictEqual(tokyoDoc.path, ['universe', 'earth', 'asia', 'japan', 'kanto', 'tokyo']);
 assert.strictEqual(tokyoDoc.code, 'JP-13');
 assert.strictEqual(tokyoDoc.country, 'japan');
 assert.ok(tokyoDoc.center && Math.abs(tokyoDoc.center.lat - 35.68) < 0.1, '中心は都内');
 assert.strictEqual(docs.find((d) => d.id === 'universe').nodeCount, NODES.length, '宇宙まで集計が伝わる');
-assert.strictEqual(docs.filter((d) => d.localKind === '区').length, 23, '23 区');
+assert.strictEqual(docs.filter((d) => d.parent === 'tokyo' && d.localKind === '区').length, 23, '東京 23 区');
 const rawR = JSON.parse(fs.readFileSync(path.join(__dirname, '../server/map/data/regions.json'), 'utf8'));
 const brokenR = (mut) => { const d = JSON.parse(JSON.stringify(rawR)); mut(d); return () => validateRegions(d); };
 const idx = (id) => rawR.regions.findIndex((r) => r.id === id);
@@ -101,7 +106,7 @@ assert.ok(NODES.filter((n) => n.genre === 'station').length >= 50, '駅が主な
 assert.ok(!NODES.some((n) => /DC$|IX$/.test(n.name)), '架空名の DC / IX は使わない');
 assert.throws(broken((d) => { d.nodes[0].region = 'tokyo-chuo'; }), /食い違います/);
 assert.throws(broken((d) => { d.nodes[0].id = 'Bad_ID'; }), /英小文字/);
-assert.throws(broken((d) => { d.nodes.find((n) => n.adj && n.adj.length).adj.push('st-nope'); }), /存在しない/);
+assert.throws(broken((d) => { d.nodes.find((n) => n.adj && n.adj.length).adj.push('ST NOPE'); }), /不正/, 'adj の id の形を検査(別ファイルの拠点への線は許す)');
 assert.throws(broken((d) => { const n = d.nodes.find((x) => x.hackable === false); n.adj = ['st-003766']; }), /ハック不可の拠点に adj/);
 assert.doesNotThrow(broken(() => {}));
 
@@ -113,4 +118,4 @@ const two = buildLinks([{ id: 'a', lat: 35, lon: 139 }, { id: 'b', lat: 36, lon:
 assert.ok(two.some((e) => e.a === 'c' || e.b === 'c'), '離れた拠点も橋でつながる');
 
 const byLevel = [1, 2, 3, 4, 5].map((l) => `Lv${l}:${NODES.filter((n) => n.level === l).length}`).join(' ');
-console.log(`map ok: ${NODES.length} nodes, ${EDGES.length} links, ${AREAS.length} areas (${byLevel})`);
+console.log(`map ok: ${NODES.length} nodes in ${new Set(NODES.map(prefOf)).size} prefs, ${EDGES.length} links, ${AREAS.length} areas, ${docs.length} regions (${byLevel})`);

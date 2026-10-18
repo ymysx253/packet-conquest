@@ -19,7 +19,8 @@
     start: null, picking: false, searchTimer: null, // 開始地点(選んだ駅・名所)と、地図から選ぶモード
     moving: false, movedAt: null, reach: new Set(), // 引っ越しの選択中 / 最後の引っ越し / 自分の拠点から線でつながっている所有拠点
     rankings: null, me2: null, team: null, cooldownMs: 4000, // ランキング / 自分の集計 / 所属チーム / いまの待ち時間の長さ
-    bounds: null, // 区・市の境界(public/data/tokyo-regions.json)。地域の支配の色分けに使う
+    bounds: new Map(), // 区・市の境界(地域 id → { polys })。public/data/bounds/<都道府県>.json を見えている分だけ読む
+    boundsLoaded: new Set(), coarse: null, // 読み込み済みの都道府県 / 縮小時の粗い全国版(japan.json)
   };
   const TOKYO = { lat: 35.68124, lon: 139.76712 }; // 参加前に地図から選ぶときの初期位置(東京駅)
   const store = {
@@ -129,6 +130,7 @@
       S.nodes.clear(); S.edges.clear(); S.tiles.clear(); S.overview = true; S.viewZ = m.z;
       for (const n of m.nodes) S.nodes.set(n.id, n);
       S.regions = Array.isArray(m.regions) ? m.regions : [];
+      if (m.z >= 3) loadCoarse(); else for (const g of S.regions) loadBounds(g.pref);
       return;
     }
     if (S.overview) { S.nodes.clear(); S.edges.clear(); S.tiles.clear(); S.overview = false; S.regions = []; }
@@ -229,11 +231,26 @@
     else toast('コードを選択してコピーしてください');
   };
 
-  // ---------- 区・市の境界(地域の支配の色分け。第 14.2 節) ----------
-  fetch('data/tokyo-regions.json').then((r) => (r.ok ? r.json() : null)).then((d) => {
-    if (!d || !d.regions) return;
-    S.bounds = Object.entries(d.regions).map(([id, g]) => ({ id, name: g.name, polys: g.polys.map((ring) => ring.map(([lon, lat]) => worldOf(lat, lon))) }));
-  }).catch(() => { /* 境界が無くても遊べる */ });
+  // ---------- 区・市の境界(地域の支配の色分け。第 13 章・第 14.2 節) ----------
+  // 都道府県ごとの詳細ファイルは、サーバーから届いた地域の pref を見て必要なぶんだけ取る。縮小時(z3〜4)は粗い全国版を 1 回だけ取る
+  const projectPolys = (polys) => polys.map((ring) => ring.map(([lon, lat]) => worldOf(lat, lon)));
+  function loadBounds(pref) {
+    if (!pref || S.boundsLoaded.has(pref)) return;
+    S.boundsLoaded.add(pref);
+    fetch(`data/bounds/${pref}.json`).then((r) => (r.ok ? r.json() : null)).then((d) => {
+      if (!d || !d.regions) return;
+      for (const [id, g] of Object.entries(d.regions)) S.bounds.set(id, { id, name: g.name, pref, polys: projectPolys(g.polys) });
+    }).catch(() => { /* 境界が無くても遊べる */ });
+  }
+  function loadCoarse() {
+    if (S.coarse) return;
+    S.coarse = new Map();
+    fetch('data/bounds/japan.json').then((r) => (r.ok ? r.json() : null)).then((d) => {
+      if (!d || !d.regions) return;
+      for (const [id, g] of Object.entries(d.regions)) S.coarse.set(id, { id, name: g.name, pref: g.pref, polys: projectPolys(g.polys) });
+    }).catch(() => { /* 無くても遊べる */ });
+  }
+  loadBounds('tokyo'); // 開始地点の既定は東京
 
   // ---------- 投影: 固定の縮尺(経度・緯度 → 平面座標。1 単位 = 0.001°) ----------
   const LAT0 = 35.68; // 横方向の補正の基準(東京)。地図が世界に広がったらメルカトルに変える
@@ -649,11 +666,18 @@
     const ratio = zoomRatio();
     const grow = V.w < 600 ? 1.15 : 1;
 
-    // 区・市の境界: 支配者がいればその色で薄く塗る。縮小時は輪郭も濃く
-    if (S.bounds) {
+    // 区・市の境界: 支配者がいればその色で薄く塗る。縮小時は輪郭も濃く。z3 以上は粗い全国版
+    const boundSet = S.overview && S.viewZ >= 3 && S.coarse ? S.coarse : S.bounds;
+    if (boundSet && boundSet.size) {
       const ctl = new Map((S.regions || []).map((g) => [g.id, g.controller]));
       ctx.lineJoin = 'round';
-      for (const b of S.bounds) {
+      const lo = toWorld(0, 0), hi = toWorld(V.w, V.h);
+      for (const b of boundSet.values()) {
+        // 画面の外の地域は描かない(全国を読んだときの負荷を抑える)
+        const r0 = b.polys[0] && b.polys[0][0];
+        if (!r0) continue;
+        if (!b.bbox) { let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity; for (const ring of b.polys) for (const q of ring) { if (q.x < x0) x0 = q.x; if (q.x > x1) x1 = q.x; if (q.y < y0) y0 = q.y; if (q.y > y1) y1 = q.y; } b.bbox = [x0, y0, x1, y1]; }
+        if (b.bbox[2] < lo.x || b.bbox[0] > hi.x || b.bbox[3] < lo.y || b.bbox[1] > hi.y) continue;
         const c = ctl.get(b.id);
         ctx.beginPath();
         for (const ring of b.polys) {

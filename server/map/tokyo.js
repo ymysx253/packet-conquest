@@ -1,5 +1,3 @@
 'use strict';
-// 東京の拠点マスター。中身は server/map/data/tokyo.json にあり、ここは読み込むだけ。
-const { loadRegion } = require('./load');
-
-module.exports = loadRegion('tokyo');
+// 互換のための別名。拠点マスターは都道府県ごとのファイル(tokyo.json、kanagawa.json …)にあり、server/map/all.js が全部まとめて読む。
+module.exports = require('./all');

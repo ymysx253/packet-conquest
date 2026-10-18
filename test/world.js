@@ -6,7 +6,7 @@ const { World, PROTECT_MS, DECAY_MS, NEWBIE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, C
 const { MemoryStore } = require('../server/store');
 const { EventLog, dayOf } = require('../server/events');
 const { tilesAround, tileOf, distanceKm } = require('../server/map/geo');
-const { NODES } = require('../server/map/tokyo');
+const { NODES } = require('../server/map/all');
 
 const fakeWs = () => { const ws = { readyState: 1, sent: [], send(s) { this.sent.push(JSON.parse(s)); }, close() { this.readyState = 3; } }; return ws; };
 const last = (ws, t) => [...ws.sent].reverse().find((m) => m.t === t);
@@ -413,7 +413,7 @@ async function solve(world, p, nodeId) {
   // 支配の断面: 同じ日に 2 回呼んでも地域ごとに 1 件。tick で日付が変わったときだけ走る
   const n1 = await w.snapshotControl(); const n2 = await w.snapshotControl(); await events.flush();
   assert.ok(n1 >= 50 && n1 === n2, '区・市 + 東京都 + 日本');
-  const daily = await store.eventsByDay(today, { kind: 'control.daily' });
+  const daily = await store.eventsByDay(today, { kind: 'control.daily', limit: 5000 });
   assert.strictEqual(daily.length, n1, '上書きなので地域ごとに 1 件');
   assert.ok(daily.every((e) => e.id === `ctl-${today}-${e.regionId}` && e.ttl === -1 && [3, 5, 6].includes(e.detail.tier) && !('playerId' in e)), 'id は ctl-日付-地域、無期限');
   const ctlCount = daily.length;

@@ -7,7 +7,7 @@
 //
 // やること:
 //   1. 地方(8 つ)と 47 都道府県(kind: state、id はローマ字、code は JP-PP)を足す(あるものは触らない)
-//   2. 市区町村(kind: city、id は <都道府県 id>-<行政区域コード>、名前は N03_004。政令市の区は「横浜市中区」のように市名を付ける)を足す
+//   2. 市区町村(kind: city、id は <都道府県 id>-<行政区域コード>、名前は N03_004(+ 政令市の区は N03_005 を付けて「横浜市鶴見区」))を足す
 //      既存の東京の区・市(id が tokyo-chiyoda など)は名前と code で一致させて残す
 //   3. 拠点の無い地域も入れる(形だけ先に出すため)。nodeFile は拠点ファイルがある都道府県にだけ付ける
 const fs = require('fs');
@@ -68,12 +68,19 @@ for (const f of files) {
     const p = ft.properties;
     const code = p.N03_007; if (!code || seen.has(code)) continue;
     seen.add(code);
-    const gun = p.N03_003 || '', town = p.N03_004 || '';
-    if (!town) continue; // 所属未定地など
-    const name = /市$/.test(gun) ? `${gun}${town}` : town; // 政令市の区は市名を付ける
+    // N03 の項目: N03_003 郡名、N03_004 市区町村名、N03_005 政令市の区名(2024 年版以降の形)
+    const gun = p.N03_003 || '', city = p.N03_004 || '', ward = p.N03_005 || '';
+    if (!city) continue; // 所属未定地など
+    const town = ward || city;
+    const name = ward ? `${city}${ward}` : city; // 政令市の区は「横浜市鶴見区」
     const fullCode = `JP-${pp}-${code}`;
     const existing = byCode.get(fullCode);
-    if (existing) { existing.parent = prefId; if (!existing.localKind) existing.localKind = localKindOf(town); kept++; continue; }
+    if (existing) {
+      existing.parent = prefId;
+      if (!existing.localKind) existing.localKind = localKindOf(town);
+      if (!existing.id.startsWith('tokyo-') && existing.name !== name) existing.name = name; // 取り込み直しで名前を直す
+      kept++; continue;
+    }
     const r = { id: `${prefId}-${code}`, name, nameEn: null, kind: 'city', parent: prefId, code: fullCode, status: 'public', localKind: localKindOf(town) };
     if (gun && !/市$/.test(gun)) r.county = gun; // 郡名(表示の補助)
     R.regions.push(r); byId.set(r.id, r); byCode.set(fullCode, r); added.city++;

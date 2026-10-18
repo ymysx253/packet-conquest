@@ -8,7 +8,7 @@
 //   - 強化は 24 時間ごとに 1 下がる。地域の支配は配下の 3/4 以上で、所有が変わるたびに集計する
 
 const crypto = require('crypto');
-const tokyo = require('./map/tokyo');
+const tokyo = require('./map/all');
 const { nodeDocs, regionDocs } = require('./map/load');
 const { distanceKm, tilesAround, tileOf, tileFields, parseTile, tileSize, addrOf, MIN_LEVEL_BY_Z } = require('./map/geo');
 const { getQuestion } = require('./questions');
@@ -197,6 +197,7 @@ class World {
     let count = 0;
     for (const r of await this.store.loadRegions()) {
       if (![3, 5, 6].includes(r.tier)) continue;
+      if (!(r.nodeCount > 0) && !(r.control && r.control.controller)) continue; // 拠点の無い地域(全国の形だけ入れたもの)は残さない
       const c = r.control || {};
       const counts = Object.fromEntries(Object.entries(c.counts || {}).sort((a, b) => b[1] - a[1]).slice(0, 3));
       this.events.add('control.daily', { id: `ctl-${day}-${r.id}`, at, regionId: r.id, detail: { tier: r.tier, controller: c.controller || null, total: c.total || 0, counts } });
@@ -863,7 +864,7 @@ class World {
     for (const r of all) {
       if (r.tier !== tier || !r.center) continue;
       if (r.center.lat < minLat || r.center.lat > maxLat || r.center.lon < minLon || r.center.lon > maxLon) continue;
-      out.push({ id: r.id, name: r.name, tier: r.tier, lat: r.center.lat, lon: r.center.lon, nodeCount: r.nodeCount || 0,
+      out.push({ id: r.id, name: r.name, tier: r.tier, pref: r.state || (r.tier === 5 ? r.id : null), lat: r.center.lat, lon: r.center.lon, nodeCount: r.nodeCount || 0,
         total: r.control ? r.control.total : 0, controller: await this.controllerInfo(r.control && r.control.controller) });
     }
     return out;

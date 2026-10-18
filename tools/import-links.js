@@ -21,17 +21,20 @@ if (!sectionFile || !stationFile) {
   process.exit(1);
 }
 const ROOT = path.join(__dirname, '..');
-const NODE_FILE = path.join(ROOT, 'server/map/data/tokyo.json');
-const TODAY = '2026-10-18';
+const DATA = path.join(ROOT, 'server/map/data');
+const REGIONS = JSON.parse(fs.readFileSync(path.join(DATA, 'regions.json'), 'utf8'));
+// 対象は地域マスターで nodeFile を持つ都道府県のファイル全部(都県境をまたぐ路線のつながりを作るため、まとめて計算する)
+const NODE_FILES = REGIONS.regions.filter((x) => x.nodeFile).map((x) => path.join(DATA, `${x.nodeFile}.json`));
+const TODAY = '2026-10-19';
 const LANDMARK_MAX_LINKS = 8; // 名所のつながりの上限(レベルが 8 を超える象徴拠点でも 8 本まで)
 
 const distKm = (a, b) => { const R = 6371, toRad = (d) => (d * Math.PI) / 180; const dLat = toRad(b.lat - a.lat), dLon = toRad(b.lon - a.lon); const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLon / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
 const vkey = (c) => `${c[0].toFixed(6)},${c[1].toFixed(6)}`;
 const lineKey = (p) => `${p.N02_004} ${p.N02_003}`;
 
-// ---------- 拠点マスター ----------
-const T = JSON.parse(fs.readFileSync(NODE_FILE, 'utf8'));
-const nodes = T.nodes;
+// ---------- 拠点マスター(全ファイルをまとめる) ----------
+const FILES = NODE_FILES.map((f) => ({ file: f, T: JSON.parse(fs.readFileSync(f, 'utf8')) }));
+const nodes = FILES.flatMap((x) => x.T.nodes);
 const byId = new Map(nodes.map((n) => [n.id, n]));
 const stations = nodes.filter((n) => n.genre === 'station');
 const baseName = (name) => name.replace(/駅(\(.*\))?$/, '');
@@ -133,13 +136,11 @@ for (;;) {
   bridges.push(`${best.a.name}–${best.b.name} (${(best.d * 1000).toFixed(0)} m)`);
 }
 
-// ---------- 書き戻し ----------
+// ---------- 書き戻し(ファイルごと) ----------
 for (const n of nodes) {
   if (n.hackable === false) { delete n.adj; continue; }
   n.adj = [...adj.get(n.id)].sort();
 }
-T.version = (T.version || 0) + 1;
-T.updatedAt = TODAY;
 const oneLine = (o) => '    ' + JSON.stringify(o).replace(/,"/g, ', "').replace(/":/g, '": ').replace(/^\{/, '{ ').replace(/\}$/, ' }');
 function writeList(head, key, items, groupKey) {
   let out = JSON.stringify(head, null, 2).replace(/\n}$/, `,\n  "${key}": [\n`);
@@ -147,12 +148,16 @@ function writeList(head, key, items, groupKey) {
   out += items.map((it) => { const gap = prev && prev !== it[groupKey] ? '\n' : ''; prev = it[groupKey]; return gap + oneLine(it); }).join(',\n');
   return out + '\n  ]\n}\n';
 }
-const { nodes: _omit, ...head } = T;
-fs.writeFileSync(NODE_FILE, writeList(head, 'nodes', nodes, 'area'));
+for (const { file, T } of FILES) {
+  T.version = (T.version || 0) + 1;
+  T.updatedAt = TODAY;
+  const { nodes: list, ...head } = T;
+  fs.writeFileSync(file, writeList(head, 'nodes', list, 'area'));
+}
 
 const deg = {}; for (const n of hackable) { const d = adj.get(n.id).size; deg[d] = (deg[d] || 0) + 1; }
 const top = hackable.map((n) => ({ name: n.name, d: adj.get(n.id).size })).sort((a, b) => b.d - a.d).slice(0, 8);
-console.log(`路線のつながり ${lineEdges / 2} 本、名所のつながり ${landmarkEdges} 本、橋 ${bridges.length} 本。拠点に結びつかなかった N02 の駅 ${unmapped} 件(都外など)`);
+console.log(`対象 ${FILES.length} ファイル ${nodes.length} 拠点。路線のつながり ${lineEdges / 2} 本、名所のつながり ${landmarkEdges} 本、橋 ${bridges.length} 本。拠点に結びつかなかった N02 の駅 ${unmapped} 件(対象外の都道府県など)`);
 console.log('つながりの本数 → 拠点数', JSON.stringify(deg));
 console.log('多い順', top.map((t) => `${t.name} ${t.d}`).join(' / '));
 if (bridges.length) console.log('橋:', bridges.join(' / '));

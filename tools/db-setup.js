@@ -10,7 +10,7 @@ const { loadEnv } = require('../server/env');
 loadEnv(path.join(__dirname, '..', '.env'));
 const { CosmosStore } = require('../server/store-cosmos');
 const { nodeDocs, regionDocs } = require('../server/map/load');
-const tokyo = require('../server/map/tokyo');
+const tokyo = require('../server/map/all');
 
 const args = process.argv.slice(2);
 const flag = (name) => { const i = args.indexOf(name); return i >= 0 ? (args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : true) : null; };
