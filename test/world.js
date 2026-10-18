@@ -330,7 +330,8 @@ async function solve(world, p, nodeId) {
   assert.ok(w3.uptime >= upBefore, '稼働時計が保存から復元される');
 
   // 引っ越し(1 日 1 回): 自分の拠点が新しい場所に移り、所有拠点は残るが線が切れた所有拠点からは広げられない
-  const mover = await w.join(fakeWs(), 'ひっこし', null, tokyoSt.id);
+  const wsM = fakeWs();
+  const mover = await w.join(wsM, 'ひっこし', null, tokyoSt.id);
   const mHome0 = w.nodes.get(mover.homeNodeId);
   const mTarget = [...w.adj.get(mHome0.id)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false);
   for (let i = 0; i < mTarget.hits; i++) await solve(w, mover, mTarget.id);
@@ -338,7 +339,12 @@ async function solve(world, p, nodeId) {
   const beyond = [...w.adj.get(mTarget.id)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false);
   assert.ok(await w.canAttack(mover.id, beyond.id), '線がつながっている所有拠点からは広げられる');
   await assert.rejects(() => w.move(mover, tokyoSt.id), /違う開始地点/);
+  await w.setView(mover, tilesAround(takao.t0, 1), 0); // 画面で行き先の駅を選んだ(そのタイルは送り済み)
   const newHome = await w.move(mover, takao.id);
+  // 画面は引っ越しで拠点を全部消して取り直す。選んだ駅と新しい拠点がもう一度届くこと(2026-10-19 の不具合)
+  wsM.sent = [];
+  await w.setView(mover, tilesAround(newHome.t0, 1), 0);
+  { const m = last(wsM, 'tiles'); assert.ok(m.nodes.some((n) => n.id === takao.id) && m.nodes.some((n) => n.id === newHome.id), '引っ越し後、選んだ駅と新しい拠点が届く'); }
   assert.ok(!w.nodes.has(mHome0.id) && !(await store.loadNode(mHome0.id)), '古い自分の拠点は消える');
   assert.ok(distanceKm(newHome, takao) <= 1.05 && mover.homeNodeId === newHome.id, '新しい拠点は引っ越し先のそば');
   assert.strictEqual(mover.nodesOwned, 2, '所有拠点は残る(自分の拠点 1 + 固定 1)');

@@ -471,6 +471,7 @@ class World {
       p.score = Math.max(0, (p.score || 0) - this.valueOf(old));
     }
     p.pending = null; p.movedAt = now(); this.invalidateReach(p.id);
+    p.view = new Set(); // 画面は引っ越しで持っている拠点を全部消して取り直すので、見ている範囲も空に戻す(戻さないと、選んだ駅のタイルが「送り済み」扱いで二度と届かない)
     const home = await this.spawnHome(p);
     this.addLog(`${p.name} が ${home.area} へ引っ越しました`);
     await this.persistPlayer(p);
