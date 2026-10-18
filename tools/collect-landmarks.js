@@ -83,6 +83,7 @@ const RESTRICTED = [
   { name: '硫黄島', lat: [24.72, 24.82], lon: [141.26, 141.37] },
   { name: '南鳥島', lat: [24.27, 24.31], lon: [153.96, 154.0] },
   { name: '沖ノ鳥島', lat: [20.4, 20.45], lon: [136.04, 136.1] },
+  { name: '尖閣諸島(領有をめぐる争いがある地域は扱わない)', lat: [25.6, 26.1], lon: [123.3, 124.7] },
 ];
 const inRestricted = (c) => RESTRICTED.some((z) => c.lat >= z.lat[0] && c.lat <= z.lat[1] && c.lon >= z.lon[0] && c.lon <= z.lon[1]);
 // 残すが「要確認」の印を付けるもの
@@ -198,7 +199,8 @@ function existingNodes() {
   const out = [];
   for (const r of R.regions.filter((x) => x.nodeFile)) {
     const f = path.join(ROOT, 'server/map/data', `${r.nodeFile}.json`);
-    if (fs.existsSync(f)) for (const n of JSON.parse(fs.readFileSync(f, 'utf8')).nodes) out.push({ name: n.name, lat: n.lat, lon: n.lon, genre: n.genre, pref: r.id });
+    // この道具と離島の道具が入れたもの(id が lm- / isl-)は除く。比べるのは駅と手で入れた名所だけ(自分の取り込み結果と重複扱いしない)
+    if (fs.existsSync(f)) for (const n of JSON.parse(fs.readFileSync(f, 'utf8')).nodes) if (!/^(lm|isl)-/.test(n.id)) out.push({ name: n.name, lat: n.lat, lon: n.lon, genre: n.genre, pref: r.id });
   }
   return out;
 }
@@ -259,6 +261,9 @@ async function companiesOf(qids) {
 
   // 2. 都道府県・市区町村
   locate(cands);
+  // 北方領土(6 村と根室市の歯舞群島)は扱わない(実際に行けない地域で、運用の主体も違うため)
+  const NORTHERN = /^hokkaido-0(1695|1696|1697|1698|1699|1700)$/;
+  for (const c of cands) if (c.region && (NORTHERN.test(c.region) || (c.region === 'hokkaido-01223' && c.lon > 145.85))) { c.region = null; c.northern = true; }
   const located = cands.filter((c) => c.region);
   console.log(`境界の中にあるもの: ${located.length} 件(海上など境界外 ${cands.length - located.length} 件は除外)`);
 

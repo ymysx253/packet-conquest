@@ -114,6 +114,16 @@ for (const n of NODES) {
 assert.ok(NODES.filter((n) => n.genre === 'station').length >= 50, '駅が主な拠点');
 // 全国の名所(2026-10-19): Wikidata から取り込んだもの(id が lm-)は出どころを持つ。企業名の施設はハック不可。各都道府県に名所がある
 const LM = NODES.filter((n) => n.id.startsWith('lm-'));
+// 離島の空港・港・島(2026-10-19): Wikidata の id を持ち、ハック可。北方領土・尖閣・立ち入り制限の島には置かない
+const ISL = NODES.filter((n) => n.id.startsWith('isl-'));
+for (const n of ISL) {
+  assert.ok(/^Q[0-9]+$/.test(n.wikidata || '') && n.id === 'isl-' + n.wikidata.toLowerCase(), `${n.name}: Wikidata の id`);
+  assert.ok(n.hackable !== false && n.kind === 'GW' && ['airport', 'port', 'nature'].includes(n.genre), `${n.name}: 離島の拠点は玄関口(ハック可)`);
+  assert.ok(!/^hokkaido-0169[5-9]$|^hokkaido-01700$/.test(n.region), `${n.name}: 北方領土に置かない`);
+  assert.ok(!(n.lat > 25.6 && n.lat < 26.1 && n.lon > 123.3 && n.lon < 124.7), `${n.name}: 尖閣諸島に置かない`);
+  assert.ok(n.adj.length >= 1, `${n.name}: 離島の拠点もどこかとつながる`);
+}
+if (ISL.length) assert.ok(ISL.length >= 50 && ISL.some((n) => n.name === '御蔵島') && ISL.some((n) => n.name === '母島'), '有人の離島に拠点がある');
 for (const n of LM) {
   assert.match(n.wikidata || '', /^Q[0-9]+$/, `${n.name}: Wikidata の id`);
   assert.strictEqual(n.id, 'lm-' + n.wikidata.toLowerCase());

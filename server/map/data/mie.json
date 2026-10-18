@@ -1,7 +1,7 @@
 {
   "region": "mie",
   "name": "三重県",
-  "version": 13,
+  "version": 18,
   "updatedAt": "2026-10-19",
   "note": "三重県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -51,7 +51,7 @@
     { "id": "lm-q4802133", "name": "三重県立看護大学", "genre": "university", "kind": "EDU", "area": "津市", "region": "mie-24201", "lat": 34.76015, "lon": 136.48825, "level": 1, "value": 1, "wikidata": "Q4802133", "adj": ["lm-q11512013", "st-006784"] },
     { "id": "lm-q106211284", "name": "石水博物館", "genre": "museum", "kind": "LM", "area": "津市", "region": "mie-24201", "lat": 34.69794, "lon": 136.50473, "level": 1, "value": 1, "wikidata": "Q106211284", "adj": ["st-007066"] },
     { "id": "lm-q7849881", "name": "津市立三重短期大学", "genre": "university", "kind": "EDU", "area": "津市", "region": "mie-24201", "lat": 34.7486, "lon": 136.512, "level": 1, "value": 1, "wikidata": "Q7849881", "adj": ["st-006858"] },
-    { "id": "lm-q11660863", "name": "霧山城", "genre": "heritage", "kind": "LM", "area": "津市", "region": "mie-24201", "lat": 34.52319, "lon": 136.28936, "level": 1, "value": 1, "wikidata": "Q11660863", "adj": ["st-007770"] },
+    { "id": "lm-q11660863", "name": "霧山城", "genre": "heritage", "kind": "LM", "area": "津市", "region": "mie-24201", "lat": 34.52319, "lon": 136.28936, "level": 1, "value": 1, "wikidata": "Q11660863", "adj": ["lm-q11465569", "st-007770"] },
     { "id": "lm-q11512013", "name": "明合古墳", "genre": "monument", "kind": "LM", "area": "津市", "region": "mie-24201", "lat": 34.76743, "lon": 136.43961, "level": 1, "value": 1, "wikidata": "Q11512013", "adj": ["lm-q4802133"] },
     { "id": "lm-q11403863", "name": "北畠神社", "genre": "shrine_temple", "kind": "LM", "area": "津市", "region": "mie-24201", "lat": 34.5186, "lon": 136.299, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11403863" },
     { "id": "st-006626", "name": "伊勢上野駅", "genre": "station", "kind": "HUB", "area": "津市", "region": "mie-24201", "lat": 34.80065, "lon": 136.54254, "level": 1, "value": 1, "lines": ["伊勢鉄道 伊勢線"], "adj": ["st-006579", "st-006706"] },
@@ -84,9 +84,9 @@
     { "id": "st-007530", "name": "家城駅", "genre": "station", "kind": "HUB", "area": "津市", "region": "mie-24201", "lat": 34.62603, "lon": 136.31962, "level": 1, "value": 1, "lines": ["東海旅客鉄道 名松線"], "adj": ["st-007481", "st-007608"] },
     { "id": "st-007608", "name": "伊勢竹原駅", "genre": "station", "kind": "HUB", "area": "津市", "region": "mie-24201", "lat": 34.60039, "lon": 136.30941, "level": 1, "value": 1, "lines": ["東海旅客鉄道 名松線"], "adj": ["st-007530", "st-007672"] },
     { "id": "st-007672", "name": "伊勢鎌倉駅", "genre": "station", "kind": "HUB", "area": "津市", "region": "mie-24201", "lat": 34.57428, "lon": 136.27861, "level": 1, "value": 1, "lines": ["東海旅客鉄道 名松線"], "adj": ["st-007608", "st-007715"] },
-    { "id": "st-007715", "name": "伊勢八知駅", "genre": "station", "kind": "HUB", "area": "津市", "region": "mie-24201", "lat": 34.55542, "lon": 136.26403, "level": 1, "value": 1, "lines": ["東海旅客鉄道 名松線"], "adj": ["st-007672", "st-007770"] },
+    { "id": "st-007715", "name": "伊勢八知駅", "genre": "station", "kind": "HUB", "area": "津市", "region": "mie-24201", "lat": 34.55542, "lon": 136.26403, "level": 1, "value": 1, "lines": ["東海旅客鉄道 名松線"], "adj": ["lm-q11464901", "st-007672", "st-007770"] },
     { "id": "st-007770", "name": "比津駅", "genre": "station", "kind": "HUB", "area": "津市", "region": "mie-24201", "lat": 34.53266, "lon": 136.27097, "level": 1, "value": 1, "lines": ["東海旅客鉄道 名松線"], "adj": ["lm-q11660863", "st-007715", "st-007817"] },
-    { "id": "st-007817", "name": "伊勢奥津駅", "genre": "station", "kind": "HUB", "area": "津市", "region": "mie-24201", "lat": 34.51231, "lon": 136.26035, "level": 1, "value": 1, "lines": ["東海旅客鉄道 名松線"], "adj": ["st-007770"] },
+    { "id": "st-007817", "name": "伊勢奥津駅", "genre": "station", "kind": "HUB", "area": "津市", "region": "mie-24201", "lat": 34.51231, "lon": 136.26035, "level": 1, "value": 1, "lines": ["東海旅客鉄道 名松線"], "adj": ["lm-q11355210", "st-007770"] },
 
     { "id": "lm-q24865208", "name": "四日市市立博物館", "genre": "museum", "kind": "LM", "area": "四日市市", "region": "mie-24202", "lat": 34.968, "lon": 136.61556, "level": 1, "value": 1, "wikidata": "Q24865208", "adj": ["st-006143"] },
     { "id": "lm-q8054564", "name": "四日市ドーム", "genre": "stadium", "kind": "LM", "area": "四日市市", "region": "mie-24202", "lat": 34.98306, "lon": 136.6475, "level": 1, "value": 1, "wikidata": "Q8054564", "adj": ["st-006022"] },
@@ -132,7 +132,6 @@
     { "id": "lm-q3288629", "name": "三重県営サンアリーナ", "genre": "stadium", "kind": "LM", "area": "伊勢市", "region": "mie-24203", "lat": 34.48956, "lon": 136.76897, "level": 1, "value": 1, "wikidata": "Q3288629", "adj": ["st-007891"] },
     { "id": "lm-q11340103", "name": "マコンデ美術館", "genre": "museum", "kind": "LM", "area": "伊勢市", "region": "mie-24203", "lat": 34.49078, "lon": 136.81167, "level": 1, "value": 1, "wikidata": "Q11340103", "adj": ["st-007847"] },
     { "id": "lm-q11261371", "name": "おかげ横丁", "genre": "market", "kind": "LM", "area": "伊勢市", "region": "mie-24203", "lat": 34.46243, "lon": 136.72283, "level": 1, "value": 1, "wikidata": "Q11261371", "adj": ["st-007892"] },
-    { "id": "lm-q11371781", "name": "ゼロ距離水族館伊勢シーパラダイス", "genre": "zoo_aquarium", "kind": "LM", "area": "伊勢市", "region": "mie-24203", "lat": 34.50722, "lon": 136.79194, "level": 1, "value": 1, "wikidata": "Q11371781", "adj": ["st-007847"] },
     { "id": "lm-q687168", "name": "伊勢神宮", "genre": "shrine_temple", "kind": "LM", "area": "伊勢市", "region": "mie-24203", "lat": 34.455, "lon": 136.72583, "level": 5, "value": 5, "hackable": false, "wikidata": "Q687168" },
     { "id": "lm-q11581011", "name": "皇大神宮", "genre": "shrine_temple", "kind": "LM", "area": "伊勢市", "region": "mie-24203", "lat": 34.45498, "lon": 136.72516, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11581011" },
     { "id": "lm-q64969614", "name": "二見興玉神社", "genre": "shrine_temple", "kind": "LM", "area": "伊勢市", "region": "mie-24203", "lat": 34.50895, "lon": 136.78782, "level": 1, "value": 1, "hackable": false, "wikidata": "Q64969614" },
@@ -142,7 +141,7 @@
     { "id": "st-007833", "name": "二見浦駅", "genre": "station", "kind": "HUB", "area": "伊勢市", "region": "mie-24203", "lat": 34.50374, "lon": 136.77744, "level": 1, "value": 1, "lines": ["東海旅客鉄道 参宮線"], "adj": ["st-007847", "st-007848"] },
     { "id": "st-007835", "name": "宮川駅", "genre": "station", "kind": "HUB", "area": "伊勢市", "region": "mie-24203", "lat": 34.50307, "lon": 136.67183, "level": 1, "value": 1, "lines": ["東海旅客鉄道 参宮線"], "adj": ["st-007849", "st-007868"] },
     { "id": "st-007844", "name": "宮町駅", "genre": "station", "kind": "HUB", "area": "伊勢市", "region": "mie-24203", "lat": 34.4981, "lon": 136.69808, "level": 1, "value": 1, "lines": ["近畿日本鉄道 山田線"], "adj": ["st-007814", "st-007857"] },
-    { "id": "st-007847", "name": "松下駅", "genre": "station", "kind": "HUB", "area": "伊勢市", "region": "mie-24203", "lat": 34.49635, "lon": 136.79895, "level": 1, "value": 1, "lines": ["東海旅客鉄道 参宮線"], "adj": ["lm-q11340103", "lm-q11371781", "st-007833", "st-007872"] },
+    { "id": "st-007847", "name": "松下駅", "genre": "station", "kind": "HUB", "area": "伊勢市", "region": "mie-24203", "lat": 34.49635, "lon": 136.79895, "level": 1, "value": 1, "lines": ["東海旅客鉄道 参宮線"], "adj": ["lm-q11340103", "st-007833", "st-007872"] },
     { "id": "st-007848", "name": "五十鈴ヶ丘駅", "genre": "station", "kind": "HUB", "area": "伊勢市", "region": "mie-24203", "lat": 34.49581, "lon": 136.73947, "level": 1, "value": 1, "lines": ["東海旅客鉄道 参宮線"], "adj": ["st-007833", "st-007857"] },
     { "id": "st-007849", "name": "山田上口駅", "genre": "station", "kind": "HUB", "area": "伊勢市", "region": "mie-24203", "lat": 34.49581, "lon": 136.69442, "level": 1, "value": 1, "lines": ["東海旅客鉄道 参宮線"], "adj": ["st-007835", "st-007857"] },
     { "id": "st-007857", "name": "伊勢市駅", "genre": "station", "kind": "HUB", "area": "伊勢市", "region": "mie-24203", "lat": 34.49206, "lon": 136.70935, "level": 2, "value": 2, "lines": ["東海旅客鉄道 参宮線", "近畿日本鉄道 山田線"], "adj": ["st-007844", "st-007848", "st-007849", "st-007869"] },
@@ -150,8 +149,12 @@
     { "id": "st-007891", "name": "朝熊駅", "genre": "station", "kind": "HUB", "area": "伊勢市", "region": "mie-24203", "lat": 34.47722, "lon": 136.75726, "level": 1, "value": 1, "lines": ["近畿日本鉄道 鳥羽線"], "adj": ["lm-q3288629", "st-007888", "st-007892"] },
     { "id": "st-007892", "name": "五十鈴川駅", "genre": "station", "kind": "HUB", "area": "伊勢市", "region": "mie-24203", "lat": 34.47673, "lon": 136.72672, "level": 1, "value": 1, "lines": ["近畿日本鉄道 鳥羽線"], "adj": ["lm-q11261371", "lm-q1797584", "st-007869", "st-007891"] },
 
-    { "id": "lm-q6922333", "name": "明神岳", "genre": "nature", "kind": "LM", "area": "松阪市", "region": "mie-24204", "lat": 34.36083, "lon": 136.095, "level": 2, "value": 2, "wikidata": "Q6922333", "adj": ["lm-q6924017"] },
+    { "id": "lm-q6922333", "name": "明神岳", "genre": "nature", "kind": "LM", "area": "松阪市", "region": "mie-24204", "lat": 34.36083, "lon": 136.095, "level": 2, "value": 2, "wikidata": "Q6922333", "adj": ["lm-q6921201", "lm-q6921722"] },
+    { "id": "lm-q6921201", "name": "桧塚奥峰", "genre": "nature", "kind": "LM", "area": "松阪市", "region": "mie-24204", "lat": 34.36389, "lon": 136.11194, "level": 1, "value": 1, "wikidata": "Q6921201", "adj": ["lm-q6922333"] },
+    { "id": "lm-q6921722", "name": "国見山 (三重県松阪市・奈良県東吉野村)", "genre": "nature", "kind": "LM", "area": "松阪市", "region": "mie-24204", "lat": 34.37583, "lon": 136.08667, "level": 1, "value": 1, "wikidata": "Q6921722", "adj": ["lm-q6922333", "lm-q6924017"] },
     { "id": "lm-q5640634", "name": "阿坂城", "genre": "heritage", "kind": "LM", "area": "松阪市", "region": "mie-24204", "lat": 34.59372, "lon": 136.45437, "level": 1, "value": 1, "wikidata": "Q5640634", "adj": ["st-007557"] },
+    { "id": "lm-q11465569", "name": "局ヶ岳", "genre": "nature", "kind": "LM", "area": "松阪市", "region": "mie-24204", "lat": 34.46056, "lon": 136.32694, "level": 1, "value": 1, "wikidata": "Q11465569", "adj": ["lm-q11660863"] },
+    { "id": "lm-q11355210", "name": "三峰山", "genre": "nature", "kind": "LM", "area": "松阪市", "region": "mie-24204", "lat": 34.44861, "lon": 136.20639, "level": 1, "value": 1, "wikidata": "Q11355210", "adj": ["lm-q6924017", "st-007817"] },
     { "id": "lm-q1107060", "name": "宝塚古墳", "genre": "monument", "kind": "LM", "area": "松阪市", "region": "mie-24204", "lat": 34.55, "lon": 136.515, "level": 1, "value": 1, "wikidata": "Q1107060", "adj": ["st-007695"] },
     { "id": "st-007488", "name": "伊勢中川駅", "genre": "station", "kind": "HUB", "area": "松阪市", "region": "mie-24204", "lat": 34.63597, "lon": 136.47753, "level": 2, "value": 2, "lines": ["近畿日本鉄道 名古屋線", "近畿日本鉄道 大阪線", "近畿日本鉄道 山田線"], "adj": ["st-007353", "st-007394", "st-007566"] },
     { "id": "st-007557", "name": "権現前駅", "genre": "station", "kind": "HUB", "area": "松阪市", "region": "mie-24204", "lat": 34.61804, "lon": 136.48197, "level": 1, "value": 1, "lines": ["東海旅客鉄道 名松線"], "adj": ["lm-q5640634", "st-007438", "st-007613"] },
@@ -165,11 +168,9 @@
     { "id": "st-007737", "name": "櫛田駅", "genre": "station", "kind": "HUB", "area": "松阪市", "region": "mie-24204", "lat": 34.54905, "lon": 136.58268, "level": 1, "value": 1, "lines": ["近畿日本鉄道 山田線"], "adj": ["st-007695", "st-007753"] },
     { "id": "st-007753", "name": "漕代駅", "genre": "station", "kind": "HUB", "area": "松阪市", "region": "mie-24204", "lat": 34.54113, "lon": 136.60068, "level": 1, "value": 1, "lines": ["近畿日本鉄道 山田線"], "adj": ["st-007737", "st-007757"] },
 
-    { "id": "lm-q10855542", "name": "桑名城", "genre": "heritage", "kind": "LM", "area": "桑名市", "region": "mie-24205", "lat": 35.06462, "lon": 136.69872, "level": 2, "value": 2, "wikidata": "Q10855542", "adj": ["lm-q11321015", "st-005776", "st-005785"] },
+    { "id": "lm-q10855542", "name": "桑名城", "genre": "heritage", "kind": "LM", "area": "桑名市", "region": "mie-24205", "lat": 35.06462, "lon": 136.69872, "level": 2, "value": 2, "wikidata": "Q10855542", "adj": ["st-005776", "st-005785"] },
     { "id": "lm-q11537504", "name": "桑名市立中央図書館", "genre": "library", "kind": "EDU", "area": "桑名市", "region": "mie-24205", "lat": 35.06314, "lon": 136.68725, "level": 1, "value": 1, "wikidata": "Q11537504", "adj": ["st-005785"] },
     { "id": "lm-q11465297", "name": "尾張大橋", "genre": "bridge", "kind": "LM", "area": "桑名市", "region": "mie-24205", "lat": 35.10483, "lon": 136.71281, "level": 1, "value": 1, "wikidata": "Q11465297", "adj": ["st-005655"] },
-    { "id": "lm-q11392512", "name": "六華苑", "genre": "park", "kind": "LM", "area": "桑名市", "region": "mie-24205", "lat": 35.07094, "lon": 136.69244, "level": 1, "value": 1, "wikidata": "Q11392512", "adj": ["st-005776"] },
-    { "id": "lm-q11321015", "name": "トゥインクル", "genre": "bridge", "kind": "LM", "area": "桑名市", "region": "mie-24205", "lat": 35.03306, "lon": 136.72806, "level": 1, "value": 1, "wikidata": "Q11321015", "adj": ["lm-q10855542"] },
     { "id": "lm-q2496699", "name": "ナガシマスパーランド", "genre": "park", "kind": "LM", "area": "桑名市", "region": "mie-24205", "lat": 35.0297, "lon": 136.73001, "level": 2, "value": 2, "hackable": false, "wikidata": "Q2496699" },
     { "id": "lm-q116140", "name": "多度大社", "genre": "shrine_temple", "kind": "LM", "area": "桑名市", "region": "mie-24205", "lat": 35.13444, "lon": 136.62391, "level": 1, "value": 1, "hackable": false, "wikidata": "Q116140" },
     { "id": "st-005574", "name": "多度駅", "genre": "station", "kind": "HUB", "area": "桑名市", "region": "mie-24205", "lat": 35.13348, "lon": 136.64071, "level": 1, "value": 1, "lines": ["養老鉄道 養老線"], "adj": ["st-005498", "st-005645"] },
@@ -179,7 +180,7 @@
     { "id": "st-005709", "name": "下深谷駅", "genre": "station", "kind": "HUB", "area": "桑名市", "region": "mie-24205", "lat": 35.09643, "lon": 136.66145, "level": 1, "value": 1, "lines": ["養老鉄道 養老線"], "adj": ["st-005645", "st-005746"] },
     { "id": "st-005746", "name": "播磨駅", "genre": "station", "kind": "HUB", "area": "桑名市", "region": "mie-24205", "lat": 35.07852, "lon": 136.67435, "level": 1, "value": 1, "lines": ["養老鉄道 養老線"], "adj": ["st-005709", "st-005776"] },
     { "id": "st-005769", "name": "七和駅", "genre": "station", "kind": "HUB", "area": "桑名市", "region": "mie-24205", "lat": 35.06928, "lon": 136.61513, "level": 1, "value": 1, "lines": ["三岐鉄道 北勢線"], "adj": ["st-005758", "st-005789"] },
-    { "id": "st-005776", "name": "桑名駅", "genre": "station", "kind": "HUB", "area": "桑名市", "region": "mie-24205", "lat": 35.0673, "lon": 136.68357, "level": 2, "value": 2, "lines": ["東海旅客鉄道 関西線", "近畿日本鉄道 名古屋線", "養老鉄道 養老線"], "adj": ["lm-q10855542", "lm-q11392512", "st-005704", "st-005705", "st-005746", "st-005812", "st-005871"] },
+    { "id": "st-005776", "name": "桑名駅", "genre": "station", "kind": "HUB", "area": "桑名市", "region": "mie-24205", "lat": 35.0673, "lon": 136.68357, "level": 2, "value": 2, "lines": ["東海旅客鉄道 関西線", "近畿日本鉄道 名古屋線", "養老鉄道 養老線"], "adj": ["lm-q10855542", "st-005704", "st-005705", "st-005746", "st-005812", "st-005871"] },
     { "id": "st-005785", "name": "西桑名駅", "genre": "station", "kind": "HUB", "area": "桑名市", "region": "mie-24205", "lat": 35.06507, "lon": 136.68371, "level": 1, "value": 1, "lines": ["三岐鉄道 北勢線"], "adj": ["lm-q10855542", "lm-q11537504", "st-005798"] },
     { "id": "st-005789", "name": "星川駅", "genre": "station", "kind": "HUB", "area": "桑名市", "region": "mie-24205", "lat": 35.06409, "lon": 136.63063, "level": 1, "value": 1, "lines": ["三岐鉄道 北勢線"], "adj": ["st-005769", "st-005797"] },
     { "id": "st-005797", "name": "在良駅", "genre": "station", "kind": "HUB", "area": "桑名市", "region": "mie-24205", "lat": 35.06089, "lon": 136.64318, "level": 1, "value": 1, "lines": ["三岐鉄道 北勢線"], "adj": ["st-005789", "st-005802"] },
@@ -189,6 +190,7 @@
     { "id": "st-005812", "name": "益生駅", "genre": "station", "kind": "HUB", "area": "桑名市", "region": "mie-24205", "lat": 35.05842, "lon": 136.67889, "level": 1, "value": 1, "lines": ["近畿日本鉄道 名古屋線"], "adj": ["st-005776", "st-005860"] },
 
     { "id": "lm-q11589845", "name": "神戸城", "genre": "heritage", "kind": "LM", "area": "鈴鹿市", "region": "mie-24207", "lat": 34.87911, "lon": 136.57742, "level": 1, "value": 1, "wikidata": "Q11589845", "adj": ["st-006353"] },
+    { "id": "lm-q11389042", "name": "入道ヶ岳", "genre": "nature", "kind": "LM", "area": "鈴鹿市", "region": "mie-24207", "lat": 34.97389, "lon": 136.43389, "level": 1, "value": 1, "wikidata": "Q11389042", "adj": ["lm-q11650840"] },
     { "id": "lm-q7651180", "name": "鈴鹿医療科学大学", "genre": "university", "kind": "EDU", "area": "鈴鹿市", "region": "mie-24207", "lat": 34.8586, "lon": 136.599, "level": 1, "value": 1, "wikidata": "Q7651180", "adj": ["st-006428"] },
     { "id": "lm-q7651156", "name": "鈴鹿大学", "genre": "university", "kind": "EDU", "area": "鈴鹿市", "region": "mie-24207", "lat": 34.8086, "lon": 136.539, "level": 1, "value": 1, "wikidata": "Q7651156", "adj": ["st-006579"] },
     { "id": "lm-q3541617", "name": "椿大神社", "genre": "shrine_temple", "kind": "LM", "area": "鈴鹿市", "region": "mie-24207", "lat": 34.9643, "lon": 136.45203, "level": 2, "value": 2, "hackable": false, "wikidata": "Q3541617" },
@@ -212,7 +214,7 @@
     { "id": "st-006579", "name": "中瀬古駅", "genre": "station", "kind": "HUB", "area": "鈴鹿市", "region": "mie-24207", "lat": 34.81258, "lon": 136.54301, "level": 1, "value": 1, "lines": ["伊勢鉄道 伊勢線"], "adj": ["lm-q7651156", "st-006514", "st-006626"] },
 
     { "id": "lm-q3337064", "name": "夏見廃寺", "genre": "monument", "kind": "LM", "area": "名張市", "region": "mie-24208", "lat": 34.62197, "lon": 136.11095, "level": 1, "value": 1, "wikidata": "Q3337064", "adj": ["st-007542"] },
-    { "id": "lm-q11635843", "name": "赤目四十八滝", "genre": "nature", "kind": "LM", "area": "名張市", "region": "mie-24208", "lat": 34.55917, "lon": 136.09167, "level": 1, "value": 1, "wikidata": "Q11635843", "adj": ["lm-q6924017", "st-007610"] },
+    { "id": "lm-q11635843", "name": "赤目四十八滝", "genre": "nature", "kind": "LM", "area": "名張市", "region": "mie-24208", "lat": 34.55917, "lon": 136.09167, "level": 1, "value": 1, "wikidata": "Q11635843", "adj": ["st-007610"] },
     { "id": "lm-q11609095", "name": "美旗古墳群", "genre": "monument", "kind": "LM", "area": "名張市", "region": "mie-24208", "lat": 34.66203, "lon": 136.13461, "level": 1, "value": 1, "wikidata": "Q11609095", "adj": ["st-007355"] },
     { "id": "st-007355", "name": "美旗駅", "genre": "station", "kind": "HUB", "area": "名張市", "region": "mie-24208", "lat": 34.66265, "lon": 136.13268, "level": 1, "value": 1, "lines": ["近畿日本鉄道 大阪線"], "adj": ["lm-q11609095", "st-007266", "st-007469"] },
     { "id": "st-007469", "name": "桔梗が丘駅", "genre": "station", "kind": "HUB", "area": "名張市", "region": "mie-24208", "lat": 34.64177, "lon": 136.11308, "level": 1, "value": 1, "lines": ["近畿日本鉄道 大阪線"], "adj": ["st-007355", "st-007542"] },
@@ -228,10 +230,9 @@
 
     { "id": "lm-q846676", "name": "亀山城", "genre": "heritage", "kind": "LM", "area": "亀山市", "region": "mie-24210", "lat": 34.85615, "lon": 136.45059, "level": 1, "value": 1, "wikidata": "Q846676", "adj": ["st-006437"] },
     { "id": "lm-q105142505", "name": "野村一里塚", "genre": "monument", "kind": "LM", "area": "亀山市", "region": "mie-24210", "lat": 34.85722, "lon": 136.43722, "level": 1, "value": 1, "wikidata": "Q105142505", "adj": ["st-006437"] },
-    { "id": "lm-q11305597", "name": "サンシャインブリッジ (亀山市)", "genre": "bridge", "kind": "LM", "area": "亀山市", "region": "mie-24210", "lat": 34.86769, "lon": 136.41183, "level": 1, "value": 1, "wikidata": "Q11305597", "adj": ["st-006442"] },
     { "id": "st-006392", "name": "井田川駅", "genre": "station", "kind": "HUB", "area": "亀山市", "region": "mie-24210", "lat": 34.86746, "lon": 136.4919, "level": 1, "value": 1, "lines": ["東海旅客鉄道 関西線"], "adj": ["st-006335", "st-006437"] },
     { "id": "st-006437", "name": "亀山駅", "genre": "station", "kind": "HUB", "area": "亀山市", "region": "mie-24210", "lat": 34.85011, "lon": 136.4499, "level": 2, "value": 2, "lines": ["東海旅客鉄道 紀勢線", "東海旅客鉄道 関西線", "西日本旅客鉄道 関西線"], "adj": ["lm-q105142505", "lm-q846676", "st-006392", "st-006442", "st-006570"] },
-    { "id": "st-006442", "name": "関駅", "genre": "station", "kind": "HUB", "area": "亀山市", "region": "mie-24210", "lat": 34.84909, "lon": 136.39515, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 関西線"], "adj": ["lm-q11305597", "st-006437", "st-006459"] },
+    { "id": "st-006442", "name": "関駅", "genre": "station", "kind": "HUB", "area": "亀山市", "region": "mie-24210", "lat": 34.84909, "lon": 136.39515, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 関西線"], "adj": ["st-006437", "st-006459"] },
     { "id": "st-006459", "name": "加太駅", "genre": "station", "kind": "HUB", "area": "亀山市", "region": "mie-24210", "lat": 34.84325, "lon": 136.34079, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 関西線"], "adj": ["st-006442", "st-006448"] },
     { "id": "st-006570", "name": "下庄駅", "genre": "station", "kind": "HUB", "area": "亀山市", "region": "mie-24210", "lat": 34.8142, "lon": 136.47957, "level": 1, "value": 1, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["st-006437", "st-006784"] },
 
@@ -255,7 +256,7 @@
     { "id": "st-008692", "name": "有井駅", "genre": "station", "kind": "HUB", "area": "熊野市", "region": "mie-24212", "lat": 33.87645, "lon": 136.08581, "level": 1, "value": 1, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["st-008674", "st-008766"] },
 
     { "id": "lm-q11634688", "name": "貨物鉄道博物館", "genre": "museum", "kind": "LM", "area": "いなべ市", "region": "mie-24214", "lat": 35.12356, "lon": 136.51886, "level": 1, "value": 1, "wikidata": "Q11634688", "adj": ["st-005617"] },
-    { "id": "st-005458", "name": "西藤原駅", "genre": "station", "kind": "HUB", "area": "いなべ市", "region": "mie-24214", "lat": 35.17045, "lon": 136.47787, "level": 1, "value": 1, "lines": ["三岐鉄道 三岐線"], "adj": ["st-005481"] },
+    { "id": "st-005458", "name": "西藤原駅", "genre": "station", "kind": "HUB", "area": "いなべ市", "region": "mie-24214", "lat": 35.17045, "lon": 136.47787, "level": 1, "value": 1, "lines": ["三岐鉄道 三岐線"], "adj": ["lm-q11489178", "st-005481"] },
     { "id": "st-005481", "name": "西野尻駅", "genre": "station", "kind": "HUB", "area": "いなべ市", "region": "mie-24214", "lat": 35.16426, "lon": 136.48761, "level": 1, "value": 1, "lines": ["三岐鉄道 三岐線"], "adj": ["st-005458", "st-005537"] },
     { "id": "st-005537", "name": "東藤原駅", "genre": "station", "kind": "HUB", "area": "いなべ市", "region": "mie-24214", "lat": 35.14773, "lon": 136.49872, "level": 1, "value": 1, "lines": ["三岐鉄道 三岐線"], "adj": ["st-005481", "st-005580"] },
     { "id": "st-005540", "name": "阿下喜駅", "genre": "station", "kind": "HUB", "area": "いなべ市", "region": "mie-24214", "lat": 35.14624, "lon": 136.51854, "level": 1, "value": 1, "lines": ["三岐鉄道 北勢線"], "adj": ["st-005575", "st-005580"] },
@@ -282,6 +283,7 @@
 
     { "id": "lm-q1333693", "name": "上野城", "genre": "heritage", "kind": "LM", "area": "伊賀市", "region": "mie-24216", "lat": 34.77009, "lon": 136.12719, "level": 10, "value": 10, "wikidata": "Q1333693", "adj": ["st-006684", "st-006694", "st-006751", "st-006758", "st-006760", "st-006793", "st-006817", "st-006841"] },
     { "id": "lm-q4306401", "name": "伊賀流忍者博物館", "genre": "museum", "kind": "LM", "area": "伊賀市", "region": "mie-24216", "lat": 34.77172, "lon": 136.12911, "level": 1, "value": 1, "wikidata": "Q4306401", "adj": ["st-006751"] },
+    { "id": "lm-q11464901", "name": "尼ヶ岳", "genre": "nature", "kind": "LM", "area": "伊賀市", "region": "mie-24216", "lat": 34.55758, "lon": 136.21964, "level": 1, "value": 1, "wikidata": "Q11464901", "adj": ["st-007715"] },
     { "id": "st-006448", "name": "柘植駅", "genre": "station", "kind": "HUB", "area": "伊賀市", "region": "mie-24216", "lat": 34.84749, "lon": 136.25574, "level": 2, "value": 2, "lines": ["西日本旅客鉄道 草津線", "西日本旅客鉄道 関西線"], "adj": ["st-006337", "st-006459", "st-006536"] },
     { "id": "st-006536", "name": "新堂駅", "genre": "station", "kind": "HUB", "area": "伊賀市", "region": "mie-24216", "lat": 34.82053, "lon": 136.206, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 関西線"], "adj": ["st-006448", "st-006609"] },
     { "id": "st-006609", "name": "佐那具駅", "genre": "station", "kind": "HUB", "area": "伊賀市", "region": "mie-24216", "lat": 34.80465, "lon": 136.16412, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 関西線"], "adj": ["st-006536", "st-006684"] },
@@ -312,7 +314,7 @@
     { "id": "lm-q17221655", "name": "パラミタミュージアム", "genre": "museum", "kind": "LM", "area": "菰野町", "region": "mie-24341", "lat": 35.01278, "lon": 136.48982, "level": 1, "value": 1, "wikidata": "Q17221655", "adj": ["st-005945"] },
     { "id": "st-005945", "name": "大羽根園駅", "genre": "station", "kind": "HUB", "area": "菰野町", "region": "mie-24341", "lat": 35.01252, "lon": 136.49382, "level": 1, "value": 1, "lines": ["近畿日本鉄道 湯の山線"], "adj": ["lm-q17221655", "st-005947", "st-005952"] },
     { "id": "st-005947", "name": "中菰野駅", "genre": "station", "kind": "HUB", "area": "菰野町", "region": "mie-24341", "lat": 35.01241, "lon": 136.50386, "level": 1, "value": 1, "lines": ["近畿日本鉄道 湯の山線"], "adj": ["st-005945", "st-005973"] },
-    { "id": "st-005952", "name": "湯の山温泉駅", "genre": "station", "kind": "HUB", "area": "菰野町", "region": "mie-24341", "lat": 35.01155, "lon": 136.47329, "level": 1, "value": 1, "lines": ["近畿日本鉄道 湯の山線"], "adj": ["lm-q6920956", "st-005945"] },
+    { "id": "st-005952", "name": "湯の山温泉駅", "genre": "station", "kind": "HUB", "area": "菰野町", "region": "mie-24341", "lat": 35.01155, "lon": 136.47329, "level": 1, "value": 1, "lines": ["近畿日本鉄道 湯の山線"], "adj": ["lm-q11650840", "lm-q6920956", "st-005945"] },
     { "id": "st-005973", "name": "菰野駅", "genre": "station", "kind": "HUB", "area": "菰野町", "region": "mie-24341", "lat": 35.00877, "lon": 136.51695, "level": 1, "value": 1, "lines": ["近畿日本鉄道 湯の山線"], "adj": ["st-005947", "st-006024"] },
 
     { "id": "st-005860", "name": "伊勢朝日駅", "genre": "station", "kind": "HUB", "area": "朝日町", "region": "mie-24343", "lat": 35.0386, "lon": 136.66889, "level": 1, "value": 1, "lines": ["近畿日本鉄道 名古屋線"], "adj": ["st-005812", "st-005928"] },
@@ -329,7 +331,6 @@
     { "id": "st-007757", "name": "斎宮駅", "genre": "station", "kind": "HUB", "area": "明和町", "region": "mie-24442", "lat": 34.53792, "lon": 136.61489, "level": 1, "value": 1, "lines": ["近畿日本鉄道 山田線"], "adj": ["st-007753", "st-007774"] },
     { "id": "st-007774", "name": "明星駅", "genre": "station", "kind": "HUB", "area": "明和町", "region": "mie-24442", "lat": 34.53153, "lon": 136.64218, "level": 1, "value": 1, "lines": ["近畿日本鉄道 山田線"], "adj": ["st-007757", "st-007793"] },
 
-    { "id": "lm-q11435955", "name": "大杉谷", "genre": "nature", "kind": "LM", "area": "大台町", "region": "mie-24443", "lat": 34.21028, "lon": 136.14861, "level": 1, "value": 1, "wikidata": "Q11435955", "adj": ["st-008451"] },
     { "id": "st-007944", "name": "栃原駅", "genre": "station", "kind": "HUB", "area": "大台町", "region": "mie-24443", "lat": 34.44401, "lon": 136.50977, "level": 1, "value": 1, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["st-007889", "st-007984"] },
     { "id": "st-007984", "name": "川添駅", "genre": "station", "kind": "HUB", "area": "大台町", "region": "mie-24443", "lat": 34.41997, "lon": 136.47387, "level": 1, "value": 1, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["st-007944", "st-008051"] },
     { "id": "st-008051", "name": "三瀬谷駅", "genre": "station", "kind": "HUB", "area": "大台町", "region": "mie-24443", "lat": 34.39507, "lon": 136.40996, "level": 1, "value": 1, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["st-007984", "st-008144"] },
@@ -345,13 +346,12 @@
 
     { "id": "st-008394", "name": "紀伊長島駅", "genre": "station", "kind": "HUB", "area": "紀北町", "region": "mie-24543", "lat": 34.20955, "lon": 136.34046, "level": 1, "value": 1, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["st-008320", "st-008426"] },
     { "id": "st-008426", "name": "三野瀬駅", "genre": "station", "kind": "HUB", "area": "紀北町", "region": "mie-24543", "lat": 34.1672, "lon": 136.28159, "level": 1, "value": 1, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["st-008320", "st-008394", "st-008451"] },
-    { "id": "st-008451", "name": "船津駅(東海旅客鉄道)", "genre": "station", "kind": "HUB", "area": "紀北町", "region": "mie-24543", "lat": 34.14219, "lon": 136.22861, "level": 1, "value": 1, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["lm-q11435955", "st-008426", "st-008467"] },
+    { "id": "st-008451", "name": "船津駅(東海旅客鉄道)", "genre": "station", "kind": "HUB", "area": "紀北町", "region": "mie-24543", "lat": 34.14219, "lon": 136.22861, "level": 1, "value": 1, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["st-008426", "st-008467"] },
     { "id": "st-008467", "name": "相賀駅", "genre": "station", "kind": "HUB", "area": "紀北町", "region": "mie-24543", "lat": 34.11196, "lon": 136.22714, "level": 1, "value": 1, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["st-008451", "st-008495"] },
 
-    { "id": "lm-q3482030", "name": "七里御浜", "genre": "nature", "kind": "LM", "area": "御浜町", "region": "mie-24561", "lat": 33.78889, "lon": 136.039, "level": 1, "value": 1, "wikidata": "Q3482030", "adj": ["st-008810"] },
     { "id": "st-008766", "name": "神志山駅", "genre": "station", "kind": "HUB", "area": "御浜町", "region": "mie-24561", "lat": 33.84039, "lon": 136.0627, "level": 1, "value": 1, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["lm-q38278530", "st-008692", "st-008783"] },
     { "id": "st-008783", "name": "紀伊市木駅", "genre": "station", "kind": "HUB", "area": "御浜町", "region": "mie-24561", "lat": 33.82833, "lon": 136.05562, "level": 1, "value": 1, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["st-008766", "st-008810"] },
-    { "id": "st-008810", "name": "阿田和駅", "genre": "station", "kind": "HUB", "area": "御浜町", "region": "mie-24561", "lat": 33.80528, "lon": 136.0428, "level": 1, "value": 1, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["lm-q3482030", "st-008783", "st-008852"] },
+    { "id": "st-008810", "name": "阿田和駅", "genre": "station", "kind": "HUB", "area": "御浜町", "region": "mie-24561", "lat": 33.80528, "lon": 136.0428, "level": 1, "value": 1, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["st-008783", "st-008852"] },
 
     { "id": "st-008852", "name": "紀伊井田駅", "genre": "station", "kind": "HUB", "area": "紀宝町", "region": "mie-24562", "lat": 33.7603, "lon": 136.02408, "level": 1, "value": 1, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["st-008810", "st-008865"] },
     { "id": "st-008865", "name": "鵜殿駅", "genre": "station", "kind": "HUB", "area": "紀宝町", "region": "mie-24562", "lat": 33.73707, "lon": 136.01593, "level": 1, "value": 1, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["st-008852", "st-008874"] }

@@ -1,7 +1,7 @@
 {
   "region": "nagano",
   "name": "長野県",
-  "version": 13,
+  "version": 18,
   "updatedAt": "2026-10-19",
   "note": "長野県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -227,7 +227,7 @@
     { "id": "st-002789", "name": "木曽平沢駅", "genre": "station", "kind": "HUB", "area": "塩尻市", "region": "nagano-20215", "lat": 35.97885, "lon": 137.83215, "level": 1, "value": 1, "lines": ["東海旅客鉄道 中央線"], "adj": ["st-002741", "st-002805"] },
     { "id": "st-002805", "name": "奈良井駅", "genre": "station", "kind": "HUB", "area": "塩尻市", "region": "nagano-20215", "lat": 35.96891, "lon": 137.8157, "level": 1, "value": 1, "lines": ["東海旅客鉄道 中央線"], "adj": ["st-002789", "st-002865"] },
 
-    { "id": "lm-q10856353", "name": "龍岡城", "genre": "heritage", "kind": "LM", "area": "佐久市", "region": "nagano-20217", "lat": 36.19606, "lon": 138.50155, "level": 1, "value": 1, "wikidata": "Q10856353", "adj": ["st-002548"] },
+    { "id": "lm-q10856353", "name": "龍岡城", "genre": "heritage", "kind": "LM", "area": "佐久市", "region": "nagano-20217", "lat": 36.19606, "lon": 138.50155, "level": 1, "value": 1, "wikidata": "Q10856353", "adj": ["lm-q3826863", "st-002548"] },
     { "id": "st-002448", "name": "中佐都駅", "genre": "station", "kind": "HUB", "area": "佐久市", "region": "nagano-20217", "lat": 36.28101, "lon": 138.45323, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 小海線"], "adj": ["st-002440", "st-002451"] },
     { "id": "st-002451", "name": "佐久平駅", "genre": "station", "kind": "HUB", "area": "佐久市", "region": "nagano-20217", "lat": 36.27802, "lon": 138.4639, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 北陸新幹線", "東日本旅客鉄道 小海線"], "adj": ["st-002275", "st-002361", "st-002448", "st-002455"] },
     { "id": "st-002455", "name": "岩村田駅", "genre": "station", "kind": "HUB", "area": "佐久市", "region": "nagano-20217", "lat": 36.27459, "lon": 138.47207, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 小海線"], "adj": ["st-002451", "st-002483"] },
@@ -372,7 +372,7 @@
     { "id": "st-002264", "name": "北細野駅", "genre": "station", "kind": "HUB", "area": "松川村", "region": "nagano-20482", "lat": 36.40669, "lon": 137.86259, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 大糸線"], "adj": ["st-002234", "st-002272"] },
     { "id": "st-002272", "name": "細野駅", "genre": "station", "kind": "HUB", "area": "松川村", "region": "nagano-20482", "lat": 36.39738, "lon": 137.86577, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 大糸線"], "adj": ["st-002264", "st-002314"] },
 
-    { "id": "lm-q3695423", "name": "白馬岳", "genre": "nature", "kind": "LM", "area": "白馬村", "region": "nagano-20485", "lat": 36.75855, "lon": 137.75843, "level": 2, "value": 2, "wikidata": "Q3695423", "adj": ["st-001880"] },
+    { "id": "lm-q3695423", "name": "白馬岳", "genre": "nature", "kind": "LM", "area": "白馬村", "region": "nagano-20485", "lat": 36.75855, "lon": 137.75843, "level": 2, "value": 2, "wikidata": "Q3695423", "adj": ["lm-q11418561"] },
     { "id": "lm-q7548232", "name": "白馬クロスカントリー競技場", "genre": "stadium", "kind": "LM", "area": "白馬村", "region": "nagano-20485", "lat": 36.634, "lon": 137.858, "level": 1, "value": 1, "wikidata": "Q7548232", "adj": ["st-002038"] },
     { "id": "st-001910", "name": "信濃森上駅", "genre": "station", "kind": "HUB", "area": "白馬村", "region": "nagano-20485", "lat": 36.71104, "lon": 137.87191, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 大糸線"], "adj": ["st-001875", "st-001946"] },
     { "id": "st-001946", "name": "白馬駅", "genre": "station", "kind": "HUB", "area": "白馬村", "region": "nagano-20485", "lat": 36.69674, "lon": 137.8643, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 大糸線"], "adj": ["st-001910", "st-001992"] },

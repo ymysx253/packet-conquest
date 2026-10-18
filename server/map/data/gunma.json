@@ -1,7 +1,7 @@
 {
   "region": "gunma",
   "name": "群馬県",
-  "version": 14,
+  "version": 19,
   "updatedAt": "2026-10-19",
   "note": "群馬県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -53,11 +53,10 @@
     { "id": "lm-q18700337", "name": "アーツ前橋", "genre": "museum", "kind": "LM", "area": "前橋市", "region": "gunma-10201", "lat": 36.39063, "lon": 139.07139, "level": 1, "value": 1, "wikidata": "Q18700337", "adj": ["st-002288"] },
     { "id": "lm-q85884023", "name": "遠見山古墳", "genre": "monument", "kind": "LM", "area": "前橋市", "region": "gunma-10201", "lat": 36.40956, "lon": 139.04373, "level": 1, "value": 1, "wikidata": "Q85884023", "adj": ["st-002247"] },
     { "id": "lm-q5618887", "name": "群馬医療福祉大学", "genre": "university", "kind": "EDU", "area": "前橋市", "region": "gunma-10201", "lat": 36.35596, "lon": 139.04742, "level": 1, "value": 1, "wikidata": "Q5618887", "adj": ["st-002340"] },
-    { "id": "lm-q11159918", "name": "群馬県立敷島公園サッカー・ラグビー場", "genre": "stadium", "kind": "LM", "area": "前橋市", "region": "gunma-10201", "lat": 36.41333, "lon": 139.05389, "level": 1, "value": 1, "wikidata": "Q11159918", "adj": ["st-002247"] },
     { "id": "lm-q11281524", "name": "るなぱあく", "genre": "park", "kind": "LM", "area": "前橋市", "region": "gunma-10201", "lat": 36.3953, "lon": 139.06307, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11281524" },
     { "id": "st-002242", "name": "膳駅", "genre": "station", "kind": "HUB", "area": "前橋市", "region": "gunma-10201", "lat": 36.4169, "lon": 139.22248, "level": 1, "value": 1, "lines": ["上毛電気鉄道 上毛線"], "adj": ["st-002240", "st-002245"] },
     { "id": "st-002245", "name": "粕川駅", "genre": "station", "kind": "HUB", "area": "前橋市", "region": "gunma-10201", "lat": 36.4169, "lon": 139.21133, "level": 1, "value": 1, "lines": ["上毛電気鉄道 上毛線"], "adj": ["st-002242", "st-002252"] },
-    { "id": "st-002247", "name": "群馬総社駅", "genre": "station", "kind": "HUB", "area": "前橋市", "region": "gunma-10201", "lat": 36.4142, "lon": 139.03253, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["lm-q11159918", "lm-q178017", "lm-q8191836", "lm-q85884023", "st-002209", "st-002301"] },
+    { "id": "st-002247", "name": "群馬総社駅", "genre": "station", "kind": "HUB", "area": "前橋市", "region": "gunma-10201", "lat": 36.4142, "lon": 139.03253, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["lm-q178017", "lm-q8191836", "lm-q85884023", "st-002209", "st-002301"] },
     { "id": "st-002248", "name": "樋越駅", "genre": "station", "kind": "HUB", "area": "前橋市", "region": "gunma-10201", "lat": 36.41541, "lon": 139.17371, "level": 1, "value": 1, "lines": ["上毛電気鉄道 上毛線"], "adj": ["st-002253", "st-002254"] },
     { "id": "st-002252", "name": "新屋駅", "genre": "station", "kind": "HUB", "area": "前橋市", "region": "gunma-10201", "lat": 36.41378, "lon": 139.19698, "level": 1, "value": 1, "lines": ["上毛電気鉄道 上毛線"], "adj": ["st-002245", "st-002253"] },
     { "id": "st-002253", "name": "北原駅", "genre": "station", "kind": "HUB", "area": "前橋市", "region": "gunma-10201", "lat": 36.41358, "lon": 139.18502, "level": 1, "value": 1, "lines": ["上毛電気鉄道 上毛線"], "adj": ["st-002248", "st-002252"] },
@@ -129,19 +128,18 @@
     { "id": "st-002454", "name": "境町駅", "genre": "station", "kind": "HUB", "area": "伊勢崎市", "region": "gunma-10204", "lat": 36.27745, "lon": 139.25454, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["st-002436", "st-002459"] },
 
     { "id": "lm-q1038062", "name": "新田金山城", "genre": "heritage", "kind": "LM", "area": "太田市", "region": "gunma-10205", "lat": 36.3178, "lon": 139.37748, "level": 10, "value": 10, "wikidata": "Q1038062", "adj": ["st-002354", "st-002372", "st-002383", "st-002408", "st-002415", "st-002437", "st-002446"] },
-    { "id": "lm-q5618891", "name": "群馬松嶺福祉短期大学", "genre": "university", "kind": "EDU", "area": "太田市", "region": "gunma-10205", "lat": 36.29173, "lon": 139.39687, "level": 1, "value": 1, "wikidata": "Q5618891", "adj": ["st-002437"] },
     { "id": "st-002336", "name": "藪塚駅", "genre": "station", "kind": "HUB", "area": "太田市", "region": "gunma-10205", "lat": 36.35883, "lon": 139.31569, "level": 1, "value": 1, "lines": ["東武鉄道 桐生線"], "adj": ["st-002293", "st-002372"] },
     { "id": "st-002372", "name": "治良門橋駅", "genre": "station", "kind": "HUB", "area": "太田市", "region": "gunma-10205", "lat": 36.33356, "lon": 139.34058, "level": 1, "value": 1, "lines": ["東武鉄道 桐生線"], "adj": ["lm-q1038062", "st-002336", "st-002408"] },
     { "id": "st-002408", "name": "三枚橋駅", "genre": "station", "kind": "HUB", "area": "太田市", "region": "gunma-10205", "lat": 36.31388, "lon": 139.35474, "level": 1, "value": 1, "lines": ["東武鉄道 桐生線"], "adj": ["lm-q1038062", "st-002372", "st-002437"] },
     { "id": "st-002415", "name": "韮川駅", "genre": "station", "kind": "HUB", "area": "太田市", "region": "gunma-10205", "lat": 36.30831, "lon": 139.40264, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["lm-q1038062", "st-002383", "st-002437"] },
-    { "id": "st-002437", "name": "太田駅", "genre": "station", "kind": "HUB", "area": "太田市", "region": "gunma-10205", "lat": 36.29407, "lon": 139.37919, "level": 2, "value": 2, "lines": ["東武鉄道 伊勢崎線", "東武鉄道 小泉線", "東武鉄道 桐生線"], "adj": ["lm-q1038062", "lm-q5618891", "st-002408", "st-002415", "st-002446", "st-002449"] },
+    { "id": "st-002437", "name": "太田駅", "genre": "station", "kind": "HUB", "area": "太田市", "region": "gunma-10205", "lat": 36.29407, "lon": 139.37919, "level": 2, "value": 2, "lines": ["東武鉄道 伊勢崎線", "東武鉄道 小泉線", "東武鉄道 桐生線"], "adj": ["lm-q1038062", "st-002408", "st-002415", "st-002446", "st-002449"] },
     { "id": "st-002446", "name": "細谷駅", "genre": "station", "kind": "HUB", "area": "太田市", "region": "gunma-10205", "lat": 36.28257, "lon": 139.34837, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["lm-q1038062", "st-002437", "st-002460"] },
     { "id": "st-002449", "name": "竜舞駅", "genre": "station", "kind": "HUB", "area": "太田市", "region": "gunma-10205", "lat": 36.27919, "lon": 139.40872, "level": 1, "value": 1, "lines": ["東武鉄道 小泉線"], "adj": ["st-002437", "st-002464", "st-002471"] },
     { "id": "st-002459", "name": "世良田駅", "genre": "station", "kind": "HUB", "area": "太田市", "region": "gunma-10205", "lat": 36.27309, "lon": 139.28108, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["st-002454", "st-002460"] },
     { "id": "st-002460", "name": "木崎駅", "genre": "station", "kind": "HUB", "area": "太田市", "region": "gunma-10205", "lat": 36.27117, "lon": 139.31224, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["st-002446", "st-002459"] },
 
-    { "id": "lm-q11554573", "name": "沼田城", "genre": "heritage", "kind": "LM", "area": "沼田市", "region": "gunma-10206", "lat": 36.6487, "lon": 139.039, "level": 2, "value": 2, "wikidata": "Q11554573", "adj": ["lm-q11416484", "st-001977", "st-002035"] },
-    { "id": "lm-q11416484", "name": "吹割の滝", "genre": "nature", "kind": "LM", "area": "沼田市", "region": "gunma-10206", "lat": 36.70217, "lon": 139.20742, "level": 1, "value": 1, "wikidata": "Q11416484", "adj": ["lm-q11554573"] },
+    { "id": "lm-q11554573", "name": "沼田城", "genre": "heritage", "kind": "LM", "area": "沼田市", "region": "gunma-10206", "lat": 36.6487, "lon": 139.039, "level": 2, "value": 2, "wikidata": "Q11554573", "adj": ["st-001977", "st-002035"] },
+    { "id": "lm-q11416484", "name": "吹割の滝", "genre": "nature", "kind": "LM", "area": "沼田市", "region": "gunma-10206", "lat": 36.70217, "lon": 139.20742, "level": 1, "value": 1, "wikidata": "Q11416484", "adj": ["lm-q11545926"] },
     { "id": "st-002035", "name": "沼田駅", "genre": "station", "kind": "HUB", "area": "沼田市", "region": "gunma-10206", "lat": 36.64335, "lon": 139.03491, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["lm-q11554573", "st-001977", "st-002071"] },
     { "id": "st-002071", "name": "岩本駅", "genre": "station", "kind": "HUB", "area": "沼田市", "region": "gunma-10206", "lat": 36.60227, "lon": 139.0476, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["st-002035", "st-002112"] },
 
@@ -202,10 +200,13 @@
     { "id": "lm-q11617227", "name": "茅野遺跡", "genre": "heritage", "kind": "LM", "area": "榛東村", "region": "gunma-10344", "lat": 36.45445, "lon": 138.97793, "level": 1, "value": 1, "wikidata": "Q11617227", "adj": ["st-002209"] },
 
     { "id": "lm-q3892307", "name": "高天原山", "genre": "nature", "kind": "LM", "area": "上野村", "region": "gunma-10366", "lat": 35.99194, "lon": 138.68861, "level": 2, "value": 2, "wikidata": "Q3892307", "adj": ["lm-q3891235", "lm-q6921689"] },
-    { "id": "lm-q3891235", "name": "御巣鷹山", "genre": "nature", "kind": "LM", "area": "上野村", "region": "gunma-10366", "lat": 36.0159, "lon": 138.688, "level": 2, "value": 2, "wikidata": "Q3891235", "adj": ["lm-q11362665", "lm-q3892307"] },
+    { "id": "lm-q3891235", "name": "御巣鷹山", "genre": "nature", "kind": "LM", "area": "上野村", "region": "gunma-10366", "lat": 36.0159, "lon": 138.688, "level": 2, "value": 2, "wikidata": "Q3891235", "adj": ["lm-q11631856", "lm-q3892307"] },
+    { "id": "lm-q11631856", "name": "諏訪山", "genre": "nature", "kind": "LM", "area": "上野村", "region": "gunma-10366", "lat": 36.04003, "lon": 138.72958, "level": 1, "value": 1, "wikidata": "Q11631856", "adj": ["lm-q11362665", "lm-q3891235"] },
 
     { "id": "lm-q994071", "name": "妙義山", "genre": "nature", "kind": "LM", "area": "下仁田町", "region": "gunma-10382", "lat": 36.28861, "lon": 138.74444, "level": 2, "value": 2, "wikidata": "Q994071", "adj": ["st-002402"] },
     { "id": "st-002536", "name": "下仁田駅", "genre": "station", "kind": "HUB", "area": "下仁田町", "region": "gunma-10382", "lat": 36.21054, "lon": 138.7871, "level": 1, "value": 1, "lines": ["上信電鉄 上信線"], "adj": ["st-002508"] },
+
+    { "id": "lm-q3826863", "name": "荒船山", "genre": "nature", "kind": "LM", "area": "南牧村", "region": "gunma-10383", "lat": 36.20389, "lon": 138.63694, "level": 1, "value": 1, "wikidata": "Q3826863", "adj": ["lm-q10856353"] },
 
     { "id": "lm-q11541606", "name": "楽山園", "genre": "park", "kind": "LM", "area": "甘楽町", "region": "gunma-10384", "lat": 36.22842, "lon": 138.91394, "level": 1, "value": 1, "wikidata": "Q11541606", "adj": ["st-002478"] },
     { "id": "st-002478", "name": "上州福島駅", "genre": "station", "kind": "HUB", "area": "甘楽町", "region": "gunma-10384", "lat": 36.25642, "lon": 138.92909, "level": 1, "value": 1, "lines": ["上信電鉄 上信線"], "adj": ["lm-q11541606", "st-002467", "st-002480"] },
@@ -219,7 +220,7 @@
     { "id": "st-002121", "name": "群馬大津駅", "genre": "station", "kind": "HUB", "area": "長野原町", "region": "gunma-10424", "lat": 36.55371, "lon": 138.62769, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 吾妻線"], "adj": ["st-002130", "st-002134"] },
     { "id": "st-002130", "name": "羽根尾駅", "genre": "station", "kind": "HUB", "area": "長野原町", "region": "gunma-10424", "lat": 36.54967, "lon": 138.60485, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 吾妻線"], "adj": ["st-002121", "st-002136"] },
     { "id": "st-002134", "name": "長野原草津口駅", "genre": "station", "kind": "HUB", "area": "長野原町", "region": "gunma-10424", "lat": 36.54658, "lon": 138.64939, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 吾妻線"], "adj": ["st-002121", "st-002135"] },
-    { "id": "st-002135", "name": "川原湯温泉駅", "genre": "station", "kind": "HUB", "area": "長野原町", "region": "gunma-10424", "lat": 36.54487, "lon": 138.69635, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 吾妻線"], "adj": ["lm-q109594587", "lm-q11416636", "st-002110", "st-002134"] },
+    { "id": "st-002135", "name": "川原湯温泉駅", "genre": "station", "kind": "HUB", "area": "長野原町", "region": "gunma-10424", "lat": 36.54487, "lon": 138.69635, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 吾妻線"], "adj": ["lm-q109594587", "st-002110", "st-002134"] },
 
     { "id": "st-002136", "name": "袋倉駅", "genre": "station", "kind": "HUB", "area": "嬬恋村", "region": "gunma-10425", "lat": 36.544, "lon": 138.57851, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 吾妻線"], "adj": ["st-002130", "st-002153"] },
     { "id": "st-002153", "name": "万座・鹿沢口駅", "genre": "station", "kind": "HUB", "area": "嬬恋村", "region": "gunma-10425", "lat": 36.53184, "lon": 138.55123, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 吾妻線"], "adj": ["st-002136", "st-002170"] },
@@ -227,18 +228,18 @@
 
     { "id": "lm-q11437813", "name": "大理石村ロックハート城", "genre": "park", "kind": "LM", "area": "高山村", "region": "gunma-10428", "lat": 36.63083, "lon": 138.98806, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11437813" },
 
-    { "id": "lm-q11416636", "name": "吾妻渓谷", "genre": "nature", "kind": "LM", "area": "東吾妻町", "region": "gunma-10429", "lat": 36.56232, "lon": 138.72126, "level": 1, "value": 1, "wikidata": "Q11416636", "adj": ["st-002135"] },
     { "id": "st-002103", "name": "群馬原町駅", "genre": "station", "kind": "HUB", "area": "東吾妻町", "region": "gunma-10429", "lat": 36.57117, "lon": 138.82342, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 吾妻線"], "adj": ["st-002082", "st-002131"] },
     { "id": "st-002110", "name": "岩島駅", "genre": "station", "kind": "HUB", "area": "東吾妻町", "region": "gunma-10429", "lat": 36.56356, "lon": 138.75922, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 吾妻線"], "adj": ["st-002126", "st-002135"] },
     { "id": "st-002126", "name": "矢倉駅", "genre": "station", "kind": "HUB", "area": "東吾妻町", "region": "gunma-10429", "lat": 36.55265, "lon": 138.78454, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 吾妻線"], "adj": ["st-002110", "st-002131"] },
     { "id": "st-002131", "name": "郷原駅", "genre": "station", "kind": "HUB", "area": "東吾妻町", "region": "gunma-10429", "lat": 36.54864, "lon": 138.80042, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 吾妻線"], "adj": ["st-002103", "st-002126"] },
 
-    { "id": "lm-q11613163", "name": "至仏山", "genre": "nature", "kind": "LM", "area": "片品村", "region": "gunma-10443", "lat": 36.9022, "lon": 139.1727, "level": 2, "value": 2, "wikidata": "Q11613163", "adj": ["lm-q11355802"] },
+    { "id": "lm-q11613163", "name": "至仏山", "genre": "nature", "kind": "LM", "area": "片品村", "region": "gunma-10443", "lat": 36.9022, "lon": 139.1727, "level": 2, "value": 2, "wikidata": "Q11613163", "adj": ["lm-q11545926", "lm-q3695438"] },
 
-    { "id": "lm-q3695438", "name": "平ヶ岳", "genre": "nature", "kind": "LM", "area": "みなかみ町", "region": "gunma-10449", "lat": 37.00194, "lon": 139.17083, "level": 2, "value": 2, "wikidata": "Q3695438", "adj": ["lm-q11355802", "lm-q6920545"] },
+    { "id": "lm-q3695438", "name": "平ヶ岳", "genre": "nature", "kind": "LM", "area": "みなかみ町", "region": "gunma-10449", "lat": 37.00194, "lon": 139.17083, "level": 2, "value": 2, "wikidata": "Q3695438", "adj": ["lm-q11613163", "lm-q3321652"] },
+    { "id": "lm-q11545926", "name": "武尊山", "genre": "nature", "kind": "LM", "area": "みなかみ町", "region": "gunma-10449", "lat": 36.80528, "lon": 139.1325, "level": 1, "value": 1, "wikidata": "Q11545926", "adj": ["lm-q11416484", "lm-q11613163", "st-001794"] },
     { "id": "lm-q10917796", "name": "名胡桃城", "genre": "heritage", "kind": "LM", "area": "みなかみ町", "region": "gunma-10449", "lat": 36.66972, "lon": 138.99167, "level": 1, "value": 1, "wikidata": "Q10917796", "adj": ["st-001977"] },
     { "id": "st-001775", "name": "土合駅", "genre": "station", "kind": "HUB", "area": "みなかみ町", "region": "gunma-10449", "lat": 36.83011, "lon": 138.96531, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["lm-q1109030", "st-001739", "st-001794"] },
-    { "id": "st-001794", "name": "湯檜曽駅", "genre": "station", "kind": "HUB", "area": "みなかみ町", "region": "gunma-10449", "lat": 36.8032, "lon": 138.98588, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["st-001775", "st-001813"] },
+    { "id": "st-001794", "name": "湯檜曽駅", "genre": "station", "kind": "HUB", "area": "みなかみ町", "region": "gunma-10449", "lat": 36.8032, "lon": 138.98588, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["lm-q11545926", "st-001775", "st-001813"] },
     { "id": "st-001813", "name": "水上駅", "genre": "station", "kind": "HUB", "area": "みなかみ町", "region": "gunma-10449", "lat": 36.77907, "lon": 138.96919, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["st-001794", "st-001877"] },
     { "id": "st-001877", "name": "上牧駅", "genre": "station", "kind": "HUB", "area": "みなかみ町", "region": "gunma-10449", "lat": 36.7366, "lon": 138.98474, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["st-001813", "st-001977"] },
     { "id": "st-001952", "name": "上毛高原駅", "genre": "station", "kind": "HUB", "area": "みなかみ町", "region": "gunma-10449", "lat": 36.69354, "lon": 138.97749, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越新幹線"], "adj": ["st-001717", "st-002389"] },

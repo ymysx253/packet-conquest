@@ -1,7 +1,7 @@
 {
   "region": "okayama",
   "name": "岡山県",
-  "version": 13,
+  "version": 18,
   "updatedAt": "2026-10-19",
   "note": "岡山県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -104,9 +104,8 @@
 
     { "id": "lm-q11353811", "name": "万富東大寺瓦窯跡", "genre": "heritage", "kind": "LM", "area": "岡山市東区", "region": "okayama-33103", "lat": 34.762, "lon": 134.07881, "level": 1, "value": 1, "wikidata": "Q11353811", "adj": ["st-006805"] },
     { "id": "lm-q11558379", "name": "浦間茶臼山古墳", "genre": "monument", "kind": "LM", "area": "岡山市東区", "region": "okayama-33103", "lat": 34.71006, "lon": 134.06703, "level": 1, "value": 1, "wikidata": "Q11558379", "adj": ["st-007083"] },
-    { "id": "lm-q6052304", "name": "環太平洋大学", "genre": "university", "kind": "EDU", "area": "岡山市東区", "region": "okayama-33103", "lat": 34.72936, "lon": 134.01106, "level": 1, "value": 1, "wikidata": "Q6052304", "adj": ["st-006903"] },
     { "id": "st-006805", "name": "万富駅", "genre": "station", "kind": "HUB", "area": "岡山市東区", "region": "okayama-33103", "lat": 34.75824, "lon": 134.08061, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["lm-q11353811", "st-006703", "st-006903"] },
-    { "id": "st-006903", "name": "瀬戸駅", "genre": "station", "kind": "HUB", "area": "岡山市東区", "region": "okayama-33103", "lat": 34.73464, "lon": 134.04193, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["lm-q6052304", "st-006805", "st-007082"] },
+    { "id": "st-006903", "name": "瀬戸駅", "genre": "station", "kind": "HUB", "area": "岡山市東区", "region": "okayama-33103", "lat": 34.73464, "lon": 134.04193, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["st-006805", "st-007082"] },
     { "id": "st-007082", "name": "上道駅", "genre": "station", "kind": "HUB", "area": "岡山市東区", "region": "okayama-33103", "lat": 34.69953, "lon": 134.02106, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["st-006903", "st-007173"] },
     { "id": "st-007332", "name": "大多羅駅", "genre": "station", "kind": "HUB", "area": "岡山市東区", "region": "okayama-33103", "lat": 34.66547, "lon": 134.00666, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 赤穂線"], "adj": ["st-007173", "st-007366"] },
     { "id": "st-007366", "name": "西大寺駅", "genre": "station", "kind": "HUB", "area": "岡山市東区", "region": "okayama-33103", "lat": 34.66181, "lon": 134.03605, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 赤穂線"], "adj": ["st-007332", "st-007367"] },
@@ -121,6 +120,7 @@
     { "id": "st-007761", "name": "迫川駅", "genre": "station", "kind": "HUB", "area": "岡山市南区", "region": "okayama-33104", "lat": 34.53589, "lon": 133.88101, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 宇野線"], "adj": ["st-007743", "st-007775"] },
 
     { "id": "lm-q2977589", "name": "大原美術館", "genre": "museum", "kind": "LM", "area": "倉敷市", "region": "okayama-33202", "lat": 34.59615, "lon": 133.77067, "level": 3, "value": 3, "wikidata": "Q2977589", "adj": ["st-007598", "st-007604", "st-007627"] },
+    { "id": "lm-q11676287", "name": "鷲羽山", "genre": "nature", "kind": "LM", "area": "倉敷市", "region": "okayama-33202", "lat": 34.43548, "lon": 133.81245, "level": 1, "value": 1, "wikidata": "Q11676287", "adj": ["st-007919"] },
     { "id": "lm-q6940226", "name": "岡山県倉敷スポーツ公園野球場", "genre": "stadium", "kind": "LM", "area": "倉敷市", "region": "okayama-33202", "lat": 34.62068, "lon": 133.804, "level": 1, "value": 1, "wikidata": "Q6940226", "adj": ["st-007527"] },
     { "id": "lm-q11541408", "name": "楯築遺跡", "genre": "monument", "kind": "LM", "area": "倉敷市", "region": "okayama-33202", "lat": 34.66306, "lon": 133.82549, "level": 1, "value": 1, "wikidata": "Q11541408", "adj": ["st-007261"] },
     { "id": "lm-q6445627", "name": "倉敷市立短期大学", "genre": "university", "kind": "EDU", "area": "倉敷市", "region": "okayama-33202", "lat": 34.49786, "lon": 133.80883, "level": 1, "value": 1, "wikidata": "Q6445627", "adj": ["st-007859"] },
@@ -145,7 +145,7 @@
     { "id": "st-007780", "name": "木見駅", "genre": "station", "kind": "HUB", "area": "倉敷市", "region": "okayama-33202", "lat": 34.5275, "lon": 133.82369, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 本四備讃線"], "adj": ["st-007732", "st-007859"] },
     { "id": "st-007789", "name": "三菱自工前駅", "genre": "station", "kind": "HUB", "area": "倉敷市", "region": "okayama-33202", "lat": 34.52281, "lon": 133.73376, "level": 1, "value": 1, "lines": ["水島臨海鉄道 水島本線"], "adj": ["st-007778"] },
     { "id": "st-007859", "name": "上の町駅", "genre": "station", "kind": "HUB", "area": "倉敷市", "region": "okayama-33202", "lat": 34.49055, "lon": 133.81501, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 本四備讃線"], "adj": ["lm-q6445627", "st-007780", "st-007919"] },
-    { "id": "st-007919", "name": "児島駅", "genre": "station", "kind": "HUB", "area": "倉敷市", "region": "okayama-33202", "lat": 34.4638, "lon": 133.8079, "level": 2, "value": 2, "lines": ["四国旅客鉄道 本四備讃線", "西日本旅客鉄道 本四備讃線"], "adj": ["st-007859", "st-008252"] },
+    { "id": "st-007919", "name": "児島駅", "genre": "station", "kind": "HUB", "area": "倉敷市", "region": "okayama-33202", "lat": 34.4638, "lon": 133.8079, "level": 2, "value": 2, "lines": ["四国旅客鉄道 本四備讃線", "西日本旅客鉄道 本四備讃線"], "adj": ["lm-q11676287", "st-007859", "st-008252"] },
 
     { "id": "lm-q767818", "name": "津山城", "genre": "heritage", "kind": "LM", "area": "津山市", "region": "okayama-33203", "lat": 35.06277, "lon": 134.00495, "level": 2, "value": 2, "wikidata": "Q767818", "adj": ["st-005819", "st-005821"] },
     { "id": "lm-q11625972", "name": "衆楽園", "genre": "park", "kind": "LM", "area": "津山市", "region": "okayama-33203", "lat": 35.07173, "lon": 134.0061, "level": 1, "value": 1, "wikidata": "Q11625972", "adj": ["st-005819"] },
@@ -167,12 +167,13 @@
     { "id": "st-007771", "name": "八浜駅", "genre": "station", "kind": "HUB", "area": "玉野市", "region": "okayama-33204", "lat": 34.53213, "lon": 133.92095, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 宇野線"], "adj": ["st-007775", "st-007804"] },
     { "id": "st-007775", "name": "常山駅", "genre": "station", "kind": "HUB", "area": "玉野市", "region": "okayama-33204", "lat": 34.53117, "lon": 133.89364, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 宇野線"], "adj": ["st-007761", "st-007771"] },
     { "id": "st-007804", "name": "備前田井駅", "genre": "station", "kind": "HUB", "area": "玉野市", "region": "okayama-33204", "lat": 34.51595, "lon": 133.94322, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 宇野線"], "adj": ["st-007771", "st-007852"] },
-    { "id": "st-007852", "name": "宇野駅", "genre": "station", "kind": "HUB", "area": "玉野市", "region": "okayama-33204", "lat": 34.49514, "lon": 133.95381, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 宇野線"], "adj": ["lm-q103946447", "st-007804"] },
+    { "id": "st-007852", "name": "宇野駅", "genre": "station", "kind": "HUB", "area": "玉野市", "region": "okayama-33204", "lat": 34.49514, "lon": 133.95381, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 宇野線"], "adj": ["lm-q4556499", "st-007804"] },
 
-    { "id": "lm-q11599876", "name": "笠岡市立カブトガニ博物館", "genre": "museum", "kind": "LM", "area": "笠岡市", "region": "okayama-33205", "lat": 34.47739, "lon": 133.52153, "level": 1, "value": 1, "wikidata": "Q11599876", "adj": ["st-007830"] },
+    { "id": "lm-q11599876", "name": "笠岡市立カブトガニ博物館", "genre": "museum", "kind": "LM", "area": "笠岡市", "region": "okayama-33205", "lat": 34.47739, "lon": 133.52153, "level": 1, "value": 1, "wikidata": "Q11599876", "adj": ["isl-q7498240", "st-007830"] },
+    { "id": "isl-q7498240", "name": "白石島", "genre": "nature", "kind": "GW", "area": "笠岡市", "region": "okayama-33205", "lat": 34.40278, "lon": 133.52167, "level": 2, "value": 2, "wikidata": "Q7498240", "adj": ["isl-q11636071", "lm-q11599876"] },
     { "id": "st-007830", "name": "笠岡駅", "genre": "station", "kind": "HUB", "area": "笠岡市", "region": "okayama-33205", "lat": 34.50436, "lon": 133.50543, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["lm-q11599876", "st-007828", "st-007842"] },
 
-    { "id": "lm-q4087274", "name": "美星スペースガードセンター", "genre": "observatory", "kind": "EDU", "area": "井原市", "region": "okayama-33207", "lat": 34.67197, "lon": 133.54444, "level": 2, "value": 2, "wikidata": "Q4087274", "adj": ["st-007513"] },
+    { "id": "lm-q4087274", "name": "美星スペースガードセンター", "genre": "observatory", "kind": "EDU", "area": "井原市", "region": "okayama-33207", "lat": 34.67197, "lon": 133.54444, "level": 2, "value": 2, "wikidata": "Q4087274", "adj": ["lm-q11487483", "st-007513"] },
     { "id": "st-007619", "name": "早雲の里荏原駅", "genre": "station", "kind": "HUB", "area": "井原市", "region": "okayama-33207", "lat": 34.59657, "lon": 133.5074, "level": 1, "value": 1, "lines": ["井原鉄道 井原線"], "adj": ["st-007589", "st-007624"] },
     { "id": "st-007624", "name": "井原駅", "genre": "station", "kind": "HUB", "area": "井原市", "region": "okayama-33207", "lat": 34.59261, "lon": 133.46856, "level": 1, "value": 1, "lines": ["井原鉄道 井原線"], "adj": ["st-007619", "st-007634"] },
     { "id": "st-007634", "name": "いずえ駅", "genre": "station", "kind": "HUB", "area": "井原市", "region": "okayama-33207", "lat": 34.58792, "lon": 133.45024, "level": 1, "value": 1, "lines": ["井原鉄道 井原線"], "adj": ["st-007624", "st-007651"] },
@@ -193,11 +194,11 @@
 
     { "id": "lm-q577273", "name": "備中松山城", "genre": "heritage", "kind": "LM", "area": "高梁市", "region": "okayama-33209", "lat": 34.80909, "lon": 133.62232, "level": 2, "value": 2, "wikidata": "Q577273", "adj": ["st-006518", "st-006686"] },
     { "id": "lm-q6404014", "name": "吉備国際大学", "genre": "university", "kind": "EDU", "area": "高梁市", "region": "okayama-33209", "lat": 34.7975, "lon": 133.62417, "level": 1, "value": 1, "wikidata": "Q6404014", "adj": ["st-006686"] },
-    { "id": "lm-q6404018", "name": "吉備国際大学短期大学部", "genre": "university", "kind": "EDU", "area": "高梁市", "region": "okayama-33209", "lat": 34.79639, "lon": 133.62056, "level": 1, "value": 1, "wikidata": "Q6404018", "adj": ["st-006686"] },
+    { "id": "lm-q11487483", "name": "弥高山", "genre": "nature", "kind": "LM", "area": "高梁市", "region": "okayama-33209", "lat": 34.73722, "lon": 133.40944, "level": 1, "value": 1, "wikidata": "Q11487483", "adj": ["lm-q4087274"] },
     { "id": "st-006374", "name": "方谷駅", "genre": "station", "kind": "HUB", "area": "高梁市", "region": "okayama-33209", "lat": 34.87687, "lon": 133.55583, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["st-006233", "st-006434"] },
     { "id": "st-006434", "name": "備中川面駅", "genre": "station", "kind": "HUB", "area": "高梁市", "region": "okayama-33209", "lat": 34.85056, "lon": 133.58773, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["st-006374", "st-006518"] },
     { "id": "st-006518", "name": "木野山駅", "genre": "station", "kind": "HUB", "area": "高梁市", "region": "okayama-33209", "lat": 34.82598, "lon": 133.61342, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["lm-q577273", "st-006434", "st-006686"] },
-    { "id": "st-006686", "name": "備中高梁駅", "genre": "station", "kind": "HUB", "area": "高梁市", "region": "okayama-33209", "lat": 34.78937, "lon": 133.61726, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["lm-q577273", "lm-q6404014", "lm-q6404018", "st-006518", "st-006803"] },
+    { "id": "st-006686", "name": "備中高梁駅", "genre": "station", "kind": "HUB", "area": "高梁市", "region": "okayama-33209", "lat": 34.78937, "lon": 133.61726, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["lm-q577273", "lm-q6404014", "st-006518", "st-006803"] },
     { "id": "st-006803", "name": "備中広瀬駅", "genre": "station", "kind": "HUB", "area": "高梁市", "region": "okayama-33209", "lat": 34.75861, "lon": 133.60611, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["st-006686", "st-006973"] },
 
     { "id": "st-005737", "name": "新郷駅", "genre": "station", "kind": "HUB", "area": "新見市", "region": "okayama-33210", "lat": 35.0817, "lon": 133.36789, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["st-005662", "st-005858"] },

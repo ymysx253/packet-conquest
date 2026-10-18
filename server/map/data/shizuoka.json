@@ -1,7 +1,7 @@
 {
   "region": "shizuoka",
   "name": "静岡県",
-  "version": 13,
+  "version": 18,
   "updatedAt": "2026-10-19",
   "note": "静岡県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -198,7 +198,7 @@
     { "id": "st-006168", "name": "南伊東駅", "genre": "station", "kind": "HUB", "area": "伊東市", "region": "shizuoka-22208", "lat": 34.95835, "lon": 139.08828, "level": 1, "value": 1, "lines": ["伊豆急行 伊豆急行線"], "adj": ["st-006117", "st-006191"] },
     { "id": "st-006191", "name": "川奈駅", "genre": "station", "kind": "HUB", "area": "伊東市", "region": "shizuoka-22208", "lat": 34.95094, "lon": 139.12386, "level": 1, "value": 1, "lines": ["伊豆急行 伊豆急行線"], "adj": ["st-006168", "st-006290"] },
     { "id": "st-006290", "name": "富戸駅", "genre": "station", "kind": "HUB", "area": "伊東市", "region": "shizuoka-22208", "lat": 34.91068, "lon": 139.13229, "level": 1, "value": 1, "lines": ["伊豆急行 伊豆急行線"], "adj": ["st-006191", "st-006336"] },
-    { "id": "st-006336", "name": "城ヶ崎海岸駅", "genre": "station", "kind": "HUB", "area": "伊東市", "region": "shizuoka-22208", "lat": 34.8904, "lon": 139.12209, "level": 1, "value": 1, "lines": ["伊豆急行 伊豆急行線"], "adj": ["lm-q11380531", "lm-q1196909", "st-006290", "st-006370"] },
+    { "id": "st-006336", "name": "城ヶ崎海岸駅", "genre": "station", "kind": "HUB", "area": "伊東市", "region": "shizuoka-22208", "lat": 34.8904, "lon": 139.12209, "level": 1, "value": 1, "lines": ["伊豆急行 伊豆急行線"], "adj": ["isl-q1196909", "lm-q11380531", "st-006290", "st-006370"] },
     { "id": "st-006370", "name": "伊豆高原駅", "genre": "station", "kind": "HUB", "area": "伊東市", "region": "shizuoka-22208", "lat": 34.87828, "lon": 139.10882, "level": 1, "value": 1, "lines": ["伊豆急行 伊豆急行線"], "adj": ["st-006336", "st-006456"] },
 
     { "id": "lm-q4304536", "name": "蓬莱橋", "genre": "bridge", "kind": "LM", "area": "島田市", "region": "shizuoka-22209", "lat": 34.82167, "lon": 138.18611, "level": 1, "value": 1, "wikidata": "Q4304536", "adj": ["st-006489"] },
@@ -275,7 +275,7 @@
     { "id": "lm-q1001826", "name": "玉泉寺", "genre": "shrine_temple", "kind": "LM", "area": "下田市", "region": "shizuoka-22219", "lat": 34.67587, "lon": 138.96242, "level": 1, "value": 1, "hackable": false, "wikidata": "Q1001826" },
     { "id": "st-006965", "name": "稲梓駅", "genre": "station", "kind": "HUB", "area": "下田市", "region": "shizuoka-22219", "lat": 34.72285, "lon": 138.94978, "level": 1, "value": 1, "lines": ["伊豆急行 伊豆急行線"], "adj": ["lm-q22032181", "st-006846", "st-007079"] },
     { "id": "st-007079", "name": "蓮台寺駅", "genre": "station", "kind": "HUB", "area": "下田市", "region": "shizuoka-22219", "lat": 34.69947, "lon": 138.94129, "level": 1, "value": 1, "lines": ["伊豆急行 伊豆急行線"], "adj": ["st-006965", "st-007218"] },
-    { "id": "st-007218", "name": "伊豆急下田駅", "genre": "station", "kind": "HUB", "area": "下田市", "region": "shizuoka-22219", "lat": 34.67905, "lon": 138.94414, "level": 1, "value": 1, "lines": ["伊豆急行 伊豆急行線"], "adj": ["lm-q2248108", "st-007079"] },
+    { "id": "st-007218", "name": "伊豆急下田駅", "genre": "station", "kind": "HUB", "area": "下田市", "region": "shizuoka-22219", "lat": 34.67905, "lon": 138.94414, "level": 1, "value": 1, "lines": ["伊豆急行 伊豆急行線"], "adj": ["st-007079"] },
 
     { "id": "lm-q11265813", "name": "ぐりんぱ", "genre": "park", "kind": "LM", "area": "裾野市", "region": "shizuoka-22220", "lat": 35.29435, "lon": 138.78451, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11265813" },
     { "id": "st-005311", "name": "岩波駅", "genre": "station", "kind": "HUB", "area": "裾野市", "region": "shizuoka-22220", "lat": 35.21536, "lon": 138.9193, "level": 1, "value": 1, "lines": ["東海旅客鉄道 御殿場線"], "adj": ["st-005222", "st-005446"] },

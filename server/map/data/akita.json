@@ -1,7 +1,7 @@
 {
   "region": "akita",
   "name": "秋田県",
-  "version": 13,
+  "version": 18,
   "updatedAt": "2026-10-19",
   "note": "秋田県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -186,8 +186,9 @@
     { "id": "st-000854", "name": "大曲駅", "genre": "station", "kind": "HUB", "area": "大仙市", "region": "akita-05212", "lat": 39.46626, "lon": 140.47912, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 奥羽線", "東日本旅客鉄道 田沢湖線"], "adj": ["lm-q11511086", "st-000849", "st-000852", "st-000864"] },
 
     { "id": "lm-q1016960", "name": "大館能代空港", "genre": "airport", "kind": "GW", "area": "北秋田市", "region": "akita-05213", "lat": 40.19194, "lon": 140.37167, "level": 2, "value": 2, "wikidata": "Q1016960", "adj": ["st-000690", "st-000697"] },
-    { "id": "lm-q11450153", "name": "安の滝", "genre": "nature", "kind": "LM", "area": "北秋田市", "region": "akita-05213", "lat": 39.9441, "lon": 140.614, "level": 1, "value": 1, "wikidata": "Q11450153", "adj": ["lm-q11618041", "lm-q419255", "st-000742"] },
-    { "id": "lm-q11618041", "name": "茶釜の滝", "genre": "nature", "kind": "LM", "area": "北秋田市", "region": "akita-05213", "lat": 40.01111, "lon": 140.5575, "level": 1, "value": 1, "wikidata": "Q11618041", "adj": ["lm-q11450153"] },
+    { "id": "lm-q11450153", "name": "安の滝", "genre": "nature", "kind": "LM", "area": "北秋田市", "region": "akita-05213", "lat": 39.9441, "lon": 140.614, "level": 1, "value": 1, "wikidata": "Q11450153", "adj": ["lm-q11539369", "lm-q419255"] },
+    { "id": "lm-q11539369", "name": "森吉山", "genre": "nature", "kind": "LM", "area": "北秋田市", "region": "akita-05213", "lat": 39.98333, "lon": 140.55, "level": 1, "value": 1, "wikidata": "Q11539369", "adj": ["lm-q11450153", "lm-q11618041", "st-000742"] },
+    { "id": "lm-q11618041", "name": "茶釜の滝", "genre": "nature", "kind": "LM", "area": "北秋田市", "region": "akita-05213", "lat": 40.01111, "lon": 140.5575, "level": 1, "value": 1, "wikidata": "Q11618041", "adj": ["lm-q11539369"] },
     { "id": "lm-q11378977", "name": "伊勢堂岱遺跡", "genre": "heritage", "kind": "LM", "area": "北秋田市", "region": "akita-05213", "lat": 40.20111, "lon": 140.34806, "level": 1, "value": 1, "wikidata": "Q11378977", "adj": ["st-000690"] },
     { "id": "st-000672", "name": "糠沢駅", "genre": "station", "kind": "HUB", "area": "北秋田市", "region": "akita-05213", "lat": 40.2499, "lon": 140.39655, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 奥羽線"], "adj": ["st-000665", "st-000674"] },
     { "id": "st-000674", "name": "鷹巣駅", "genre": "station", "kind": "HUB", "area": "北秋田市", "region": "akita-05213", "lat": 40.23242, "lon": 140.37079, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 奥羽線", "秋田内陸縦貫鉄道 秋田内陸線"], "adj": ["st-000672", "st-000680", "st-000683"] },
@@ -207,16 +208,15 @@
     { "id": "st-000735", "name": "萱草駅", "genre": "station", "kind": "HUB", "area": "北秋田市", "region": "akita-05213", "lat": 39.95877, "lon": 140.41208, "level": 1, "value": 1, "lines": ["秋田内陸縦貫鉄道 秋田内陸線"], "adj": ["st-000731", "st-000739"] },
     { "id": "st-000739", "name": "笑内駅", "genre": "station", "kind": "HUB", "area": "北秋田市", "region": "akita-05213", "lat": 39.93541, "lon": 140.41316, "level": 1, "value": 1, "lines": ["秋田内陸縦貫鉄道 秋田内陸線"], "adj": ["st-000735", "st-000741"] },
     { "id": "st-000741", "name": "岩野目駅", "genre": "station", "kind": "HUB", "area": "北秋田市", "region": "akita-05213", "lat": 39.92126, "lon": 140.43027, "level": 1, "value": 1, "lines": ["秋田内陸縦貫鉄道 秋田内陸線"], "adj": ["st-000739", "st-000749"] },
-    { "id": "st-000742", "name": "阿仁マタギ駅", "genre": "station", "kind": "HUB", "area": "北秋田市", "region": "akita-05213", "lat": 39.91944, "lon": 140.51612, "level": 1, "value": 1, "lines": ["秋田内陸縦貫鉄道 秋田内陸線"], "adj": ["lm-q11450153", "st-000748", "st-000761"] },
+    { "id": "st-000742", "name": "阿仁マタギ駅", "genre": "station", "kind": "HUB", "area": "北秋田市", "region": "akita-05213", "lat": 39.91944, "lon": 140.51612, "level": 1, "value": 1, "lines": ["秋田内陸縦貫鉄道 秋田内陸線"], "adj": ["lm-q11539369", "st-000748", "st-000761"] },
     { "id": "st-000748", "name": "奥阿仁駅", "genre": "station", "kind": "HUB", "area": "北秋田市", "region": "akita-05213", "lat": 39.91094, "lon": 140.48832, "level": 1, "value": 1, "lines": ["秋田内陸縦貫鉄道 秋田内陸線"], "adj": ["st-000742", "st-000749"] },
     { "id": "st-000749", "name": "比立内駅", "genre": "station", "kind": "HUB", "area": "北秋田市", "region": "akita-05213", "lat": 39.9048, "lon": 140.45353, "level": 1, "value": 1, "lines": ["秋田内陸縦貫鉄道 秋田内陸線"], "adj": ["st-000741", "st-000748"] },
 
-    { "id": "lm-q11444958", "name": "奈曽の白滝", "genre": "nature", "kind": "LM", "area": "にかほ市", "region": "akita-05214", "lat": 39.18144, "lon": 139.94325, "level": 1, "value": 1, "wikidata": "Q11444958", "adj": ["st-000939"] },
     { "id": "st-000909", "name": "仁賀保駅", "genre": "station", "kind": "HUB", "area": "にかほ市", "region": "akita-05214", "lat": 39.28981, "lon": 139.96471, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-000880", "st-000925"] },
     { "id": "st-000925", "name": "金浦駅", "genre": "station", "kind": "HUB", "area": "にかほ市", "region": "akita-05214", "lat": 39.25629, "lon": 139.92075, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-000909", "st-000935"] },
     { "id": "st-000935", "name": "象潟駅", "genre": "station", "kind": "HUB", "area": "にかほ市", "region": "akita-05214", "lat": 39.2079, "lon": 139.90224, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-000925", "st-000939"] },
-    { "id": "st-000939", "name": "上浜駅", "genre": "station", "kind": "HUB", "area": "にかほ市", "region": "akita-05214", "lat": 39.16386, "lon": 139.9025, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["lm-q11444958", "st-000935", "st-000944"] },
-    { "id": "st-000944", "name": "小砂川駅", "genre": "station", "kind": "HUB", "area": "にかほ市", "region": "akita-05214", "lat": 39.13656, "lon": 139.88619, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-000939", "st-000948"] },
+    { "id": "st-000939", "name": "上浜駅", "genre": "station", "kind": "HUB", "area": "にかほ市", "region": "akita-05214", "lat": 39.16386, "lon": 139.9025, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-000935", "st-000944"] },
+    { "id": "st-000944", "name": "小砂川駅", "genre": "station", "kind": "HUB", "area": "にかほ市", "region": "akita-05214", "lat": 39.13656, "lon": 139.88619, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["isl-q49493", "st-000939", "st-000948"] },
 
     { "id": "lm-q174309", "name": "田沢湖", "genre": "nature", "kind": "LM", "area": "仙北市", "region": "akita-05215", "lat": 39.725, "lon": 140.66139, "level": 3, "value": 3, "wikidata": "Q174309", "adj": ["st-000795"] },
     { "id": "lm-q419247", "name": "秋田駒ヶ岳", "genre": "nature", "kind": "LM", "area": "仙北市", "region": "akita-05215", "lat": 39.76083, "lon": 140.80361, "level": 3, "value": 3, "wikidata": "Q419247", "adj": ["st-000795"] },
@@ -237,7 +237,7 @@
     { "id": "st-000830", "name": "生田駅", "genre": "station", "kind": "HUB", "area": "仙北市", "region": "akita-05215", "lat": 39.612, "lon": 140.60092, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 田沢湖線"], "adj": ["st-000823", "st-000833"] },
     { "id": "st-000833", "name": "角館駅", "genre": "station", "kind": "HUB", "area": "仙北市", "region": "akita-05215", "lat": 39.59134, "lon": 140.57091, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 田沢湖線", "秋田内陸縦貫鉄道 秋田内陸線"], "adj": ["lm-q98206589", "st-000821", "st-000830", "st-000837"] },
 
-    { "id": "lm-q1196132", "name": "十和田湖", "genre": "nature", "kind": "LM", "area": "小坂町", "region": "akita-05303", "lat": 40.46667, "lon": 140.86667, "level": 4, "value": 4, "wikidata": "Q1196132", "adj": ["lm-q10864690", "lm-q11532270"] },
+    { "id": "lm-q1196132", "name": "十和田湖", "genre": "nature", "kind": "LM", "area": "小坂町", "region": "akita-05303", "lat": 40.46667, "lon": 140.86667, "level": 4, "value": 4, "wikidata": "Q1196132", "adj": ["lm-q10864690", "lm-q11532270", "lm-q1168847"] },
 
     { "id": "st-000703", "name": "北金岡駅", "genre": "station", "kind": "HUB", "area": "三種町", "region": "akita-05348", "lat": 40.14276, "lon": 140.06299, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 奥羽線"], "adj": ["st-000692", "st-000712"] },
     { "id": "st-000712", "name": "森岳駅", "genre": "station", "kind": "HUB", "area": "三種町", "region": "akita-05348", "lat": 40.10421, "lon": 140.07068, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 奥羽線"], "adj": ["st-000703", "st-000723"] },

@@ -1,7 +1,7 @@
 {
   "region": "yamagata",
   "name": "山形県",
-  "version": 13,
+  "version": 18,
   "updatedAt": "2026-10-19",
   "note": "山形県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -49,7 +49,8 @@
     { "id": "lm-q11468661", "name": "山形美術館", "genre": "museum", "kind": "LM", "area": "山形市", "region": "yamagata-06201", "lat": 38.25589, "lon": 140.3324, "level": 2, "value": 2, "wikidata": "Q11468661", "adj": ["st-001171", "st-001194"] },
     { "id": "lm-q4707630", "name": "山形県立博物館", "genre": "museum", "kind": "LM", "area": "山形市", "region": "yamagata-06201", "lat": 38.2544, "lon": 140.329, "level": 1, "value": 1, "wikidata": "Q4707630", "adj": ["st-001194"] },
     { "id": "lm-q836096", "name": "山形県立保健医療大学", "genre": "university", "kind": "EDU", "area": "山形市", "region": "yamagata-06201", "lat": 38.297, "lon": 140.34615, "level": 1, "value": 1, "wikidata": "Q836096", "adj": ["st-001137"] },
-    { "id": "lm-q6364092", "name": "東北芸術工科大学", "genre": "university", "kind": "EDU", "area": "山形市", "region": "yamagata-06201", "lat": 38.21844, "lon": 140.34556, "level": 1, "value": 1, "wikidata": "Q6364092", "adj": ["lm-q167951", "st-001194"] },
+    { "id": "lm-q6364092", "name": "東北芸術工科大学", "genre": "university", "kind": "EDU", "area": "山形市", "region": "yamagata-06201", "lat": 38.21844, "lon": 140.34556, "level": 1, "value": 1, "wikidata": "Q6364092", "adj": ["lm-q11659146", "st-001194"] },
+    { "id": "lm-q11659146", "name": "雁戸山", "genre": "nature", "kind": "LM", "area": "山形市", "region": "yamagata-06201", "lat": 38.199, "lon": 140.47742, "level": 1, "value": 1, "wikidata": "Q11659146", "adj": ["lm-q167951", "lm-q6364092"] },
     { "id": "lm-q6890444", "name": "最上義光歴史館", "genre": "museum", "kind": "LM", "area": "山形市", "region": "yamagata-06201", "lat": 38.25508, "lon": 140.33342, "level": 1, "value": 1, "wikidata": "Q6890444", "adj": ["st-001194"] },
     { "id": "lm-q11467772", "name": "山寺芭蕉記念館", "genre": "museum", "kind": "LM", "area": "山形市", "region": "yamagata-06201", "lat": 38.30953, "lon": 140.43897, "level": 1, "value": 1, "wikidata": "Q11467772", "adj": ["st-001134"] },
     { "id": "lm-q11500081", "name": "文翔館", "genre": "museum", "kind": "LM", "area": "山形市", "region": "yamagata-06201", "lat": 38.25689, "lon": 140.34122, "level": 1, "value": 1, "wikidata": "Q11500081", "adj": ["st-001171"] },
@@ -58,7 +59,7 @@
     { "id": "lm-q65265784", "name": "嶋遺跡", "genre": "heritage", "kind": "LM", "area": "山形市", "region": "yamagata-06201", "lat": 38.28428, "lon": 140.31875, "level": 1, "value": 1, "wikidata": "Q65265784", "adj": ["st-001157"] },
     { "id": "lm-q7813289", "name": "東北文教大学短期大学部", "genre": "university", "kind": "EDU", "area": "山形市", "region": "yamagata-06201", "lat": 38.2093, "lon": 140.303, "level": 1, "value": 1, "wikidata": "Q7813289", "adj": ["st-001206"] },
     { "id": "lm-q1760419", "name": "立石寺", "genre": "shrine_temple", "kind": "LM", "area": "山形市", "region": "yamagata-06201", "lat": 38.31256, "lon": 140.43739, "level": 2, "value": 2, "hackable": false, "wikidata": "Q1760419" },
-    { "id": "st-001118", "name": "面白山高原駅", "genre": "station", "kind": "HUB", "area": "山形市", "region": "yamagata-06201", "lat": 38.33295, "lon": 140.49715, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 仙山線"], "adj": ["st-001122", "st-001134"] },
+    { "id": "st-001118", "name": "面白山高原駅", "genre": "station", "kind": "HUB", "area": "山形市", "region": "yamagata-06201", "lat": 38.33295, "lon": 140.49715, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 仙山線"], "adj": ["lm-q11663802", "st-001122", "st-001134"] },
     { "id": "st-001130", "name": "漆山駅", "genre": "station", "kind": "HUB", "area": "山形市", "region": "yamagata-06201", "lat": 38.31411, "lon": 140.34762, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 奥羽線"], "adj": ["st-001120", "st-001137"] },
     { "id": "st-001134", "name": "山寺駅", "genre": "station", "kind": "HUB", "area": "山形市", "region": "yamagata-06201", "lat": 38.30958, "lon": 140.43479, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 仙山線"], "adj": ["lm-q11467772", "st-001118", "st-001139"] },
     { "id": "st-001137", "name": "南出羽駅", "genre": "station", "kind": "HUB", "area": "山形市", "region": "yamagata-06201", "lat": 38.30194, "lon": 140.34449, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 奥羽線"], "adj": ["lm-q836096", "st-001130", "st-001148"] },
@@ -74,10 +75,9 @@
     { "id": "lm-q11565006", "name": "滑川大滝", "genre": "nature", "kind": "LM", "area": "米沢市", "region": "yamagata-06202", "lat": 37.77889, "lon": 140.22083, "level": 1, "value": 1, "wikidata": "Q11565006", "adj": ["lm-q2669374", "st-001341"] },
     { "id": "lm-q11604262", "name": "米沢市上杉博物館", "genre": "museum", "kind": "LM", "area": "米沢市", "region": "yamagata-06202", "lat": 37.90753, "lon": 140.10666, "level": 1, "value": 1, "wikidata": "Q11604262", "adj": ["st-001309"] },
     { "id": "lm-q18458054", "name": "山形県立米沢栄養大学", "genre": "university", "kind": "EDU", "area": "米沢市", "region": "yamagata-06202", "lat": 37.89073, "lon": 140.1234, "level": 1, "value": 1, "wikidata": "Q18458054", "adj": ["st-001309"] },
-    { "id": "lm-q11352292", "name": "一ノ坂遺跡", "genre": "heritage", "kind": "LM", "area": "米沢市", "region": "yamagata-06202", "lat": 37.90944, "lon": 140.08153, "level": 1, "value": 1, "wikidata": "Q11352292", "adj": ["st-001293"] },
     { "id": "st-001279", "name": "置賜駅", "genre": "station", "kind": "HUB", "area": "米沢市", "region": "yamagata-06202", "lat": 37.95479, "lon": 140.14296, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 奥羽線"], "adj": ["st-001273", "st-001302"] },
     { "id": "st-001283", "name": "成島駅", "genre": "station", "kind": "HUB", "area": "米沢市", "region": "yamagata-06202", "lat": 37.94305, "lon": 140.07572, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 米坂線"], "adj": ["st-001276", "st-001293"] },
-    { "id": "st-001293", "name": "西米沢駅", "genre": "station", "kind": "HUB", "area": "米沢市", "region": "yamagata-06202", "lat": 37.91673, "lon": 140.08514, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 米坂線"], "adj": ["lm-q11262656", "lm-q11352292", "st-001283", "st-001309"] },
+    { "id": "st-001293", "name": "西米沢駅", "genre": "station", "kind": "HUB", "area": "米沢市", "region": "yamagata-06202", "lat": 37.91673, "lon": 140.08514, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 米坂線"], "adj": ["lm-q11262656", "st-001283", "st-001309"] },
     { "id": "st-001302", "name": "米沢駅", "genre": "station", "kind": "HUB", "area": "米沢市", "region": "yamagata-06202", "lat": 37.91124, "lon": 140.1277, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 奥羽線", "東日本旅客鉄道 米坂線"], "adj": ["st-001279", "st-001309", "st-001319"] },
     { "id": "st-001309", "name": "南米沢駅", "genre": "station", "kind": "HUB", "area": "米沢市", "region": "yamagata-06202", "lat": 37.89606, "lon": 140.10902, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 米坂線"], "adj": ["lm-q11262656", "lm-q11604262", "lm-q18458054", "st-001293", "st-001302"] },
     { "id": "st-001319", "name": "関根駅", "genre": "station", "kind": "HUB", "area": "米沢市", "region": "yamagata-06202", "lat": 37.865, "lon": 140.14557, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 奥羽線"], "adj": ["st-001302", "st-001328"] },
@@ -94,7 +94,6 @@
     { "id": "lm-q7850298", "name": "鶴岡工業高等専門学校", "genre": "university", "kind": "EDU", "area": "鶴岡市", "region": "yamagata-06203", "lat": 38.7098, "lon": 139.797, "level": 1, "value": 1, "wikidata": "Q7850298", "adj": ["st-001015"] },
     { "id": "lm-q11620557", "name": "落合ダム", "genre": "bridge", "kind": "LM", "area": "鶴岡市", "region": "yamagata-06203", "lat": 38.55444, "lon": 139.81056, "level": 1, "value": 1, "wikidata": "Q11620557", "adj": ["lm-q11353357"] },
     { "id": "lm-q98113983", "name": "酒井氏庭園", "genre": "park", "kind": "LM", "area": "鶴岡市", "region": "yamagata-06203", "lat": 38.72861, "lon": 139.82139, "level": 1, "value": 1, "wikidata": "Q98113983", "adj": ["st-001017"] },
-    { "id": "lm-q10938643", "name": "大鳥池", "genre": "nature", "kind": "LM", "area": "鶴岡市", "region": "yamagata-06203", "lat": 38.3625, "lon": 139.82917, "level": 1, "value": 1, "wikidata": "Q10938643", "adj": ["lm-q3072106"] },
     { "id": "st-001001", "name": "藤島駅", "genre": "station", "kind": "HUB", "area": "鶴岡市", "region": "yamagata-06203", "lat": 38.76913, "lon": 139.89464, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-000996", "st-001017"] },
     { "id": "st-001015", "name": "羽前大山駅", "genre": "station", "kind": "HUB", "area": "鶴岡市", "region": "yamagata-06203", "lat": 38.74212, "lon": 139.76793, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["lm-q11675955", "lm-q7850298", "st-001017", "st-001026"] },
     { "id": "st-001017", "name": "鶴岡駅", "genre": "station", "kind": "HUB", "area": "鶴岡市", "region": "yamagata-06203", "lat": 38.74017, "lon": 139.83392, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["lm-q11675874", "lm-q7850299", "lm-q98113983", "st-001001", "st-001015"] },
@@ -113,6 +112,7 @@
     { "id": "lm-q7813298", "name": "東北公益文科大学", "genre": "university", "kind": "EDU", "area": "酒田市", "region": "yamagata-06204", "lat": 38.8933, "lon": 139.82, "level": 1, "value": 1, "wikidata": "Q7813298", "adj": ["st-000979"] },
     { "id": "lm-q28690428", "name": "出羽大橋", "genre": "bridge", "kind": "LM", "area": "酒田市", "region": "yamagata-06204", "lat": 38.90478, "lon": 139.82881, "level": 1, "value": 1, "wikidata": "Q28690428", "adj": ["st-000979"] },
     { "id": "lm-q11426288", "name": "城輪柵", "genre": "heritage", "kind": "LM", "area": "酒田市", "region": "yamagata-06204", "lat": 38.96361, "lon": 139.90922, "level": 1, "value": 1, "wikidata": "Q11426288", "adj": ["st-000968"] },
+    { "id": "isl-q49493", "name": "飛島", "genre": "nature", "kind": "GW", "area": "酒田市", "region": "yamagata-06204", "lat": 39.19444, "lon": 139.54889, "level": 2, "value": 2, "wikidata": "Q49493", "adj": ["st-000944"] },
     { "id": "st-000965", "name": "南鳥海駅", "genre": "station", "kind": "HUB", "area": "酒田市", "region": "yamagata-06204", "lat": 38.98829, "lon": 139.89892, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-000959", "st-000968"] },
     { "id": "st-000968", "name": "本楯駅", "genre": "station", "kind": "HUB", "area": "酒田市", "region": "yamagata-06204", "lat": 38.96855, "lon": 139.88196, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["lm-q11426288", "st-000965", "st-000979"] },
     { "id": "st-000979", "name": "酒田駅", "genre": "station", "kind": "HUB", "area": "酒田市", "region": "yamagata-06204", "lat": 38.92136, "lon": 139.84655, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["lm-q11521018", "lm-q22118833", "lm-q28690428", "lm-q3539675", "lm-q7813298", "st-000968", "st-000984"] },
@@ -132,7 +132,7 @@
     { "id": "st-001112", "name": "寒河江駅", "genre": "station", "kind": "HUB", "area": "寒河江市", "region": "yamagata-06206", "lat": 38.37205, "lon": 140.27471, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 左沢線"], "adj": ["st-001106", "st-001115"] },
     { "id": "st-001115", "name": "南寒河江駅", "genre": "station", "kind": "HUB", "area": "寒河江市", "region": "yamagata-06206", "lat": 38.356, "lon": 140.2774, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 左沢線"], "adj": ["st-001112", "st-001119"] },
 
-    { "id": "lm-q167951", "name": "蔵王連峰", "genre": "nature", "kind": "LM", "area": "上山市", "region": "yamagata-06207", "lat": 38.141, "lon": 140.443, "level": 3, "value": 3, "wikidata": "Q167951", "adj": ["lm-q11489343", "lm-q6364092"] },
+    { "id": "lm-q167951", "name": "蔵王連峰", "genre": "nature", "kind": "LM", "area": "上山市", "region": "yamagata-06207", "lat": 38.141, "lon": 140.443, "level": 3, "value": 3, "wikidata": "Q167951", "adj": ["lm-q11489343", "lm-q11659146"] },
     { "id": "lm-q847251", "name": "上山城", "genre": "heritage", "kind": "LM", "area": "上山市", "region": "yamagata-06207", "lat": 38.1575, "lon": 140.27611, "level": 2, "value": 2, "wikidata": "Q847251", "adj": ["st-001214", "st-001218"] },
     { "id": "st-001214", "name": "茂吉記念館前駅", "genre": "station", "kind": "HUB", "area": "上山市", "region": "yamagata-06207", "lat": 38.17086, "lon": 140.29805, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 奥羽線"], "adj": ["lm-q847251", "st-001206", "st-001218"] },
     { "id": "st-001218", "name": "かみのやま温泉駅", "genre": "station", "kind": "HUB", "area": "上山市", "region": "yamagata-06207", "lat": 38.15118, "lon": 140.27796, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 奥羽線"], "adj": ["lm-q847251", "st-001214", "st-001224"] },
@@ -141,6 +141,7 @@
     { "id": "st-001059", "name": "袖崎駅", "genre": "station", "kind": "HUB", "area": "村山市", "region": "yamagata-06208", "lat": 38.54896, "lon": 140.39131, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 奥羽線"], "adj": ["st-001047", "st-001072"] },
     { "id": "st-001072", "name": "村山駅", "genre": "station", "kind": "HUB", "area": "村山市", "region": "yamagata-06208", "lat": 38.47633, "lon": 140.38644, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 奥羽線"], "adj": ["st-001059", "st-001075"] },
 
+    { "id": "lm-q11588590", "name": "祝瓶山", "genre": "nature", "kind": "LM", "area": "長井市", "region": "yamagata-06209", "lat": 38.19708, "lon": 139.87954, "level": 1, "value": 1, "wikidata": "Q11588590", "adj": ["lm-q3072106"] },
     { "id": "st-001220", "name": "白兎駅", "genre": "station", "kind": "HUB", "area": "長井市", "region": "yamagata-06209", "lat": 38.14964, "lon": 140.04099, "level": 1, "value": 1, "lines": ["山形鉄道 フラワー長井線"], "adj": ["st-001216", "st-001223"] },
     { "id": "st-001223", "name": "羽前成田駅", "genre": "station", "kind": "HUB", "area": "長井市", "region": "yamagata-06209", "lat": 38.13106, "lon": 140.03512, "level": 1, "value": 1, "lines": ["山形鉄道 フラワー長井線"], "adj": ["st-001220", "st-001227"] },
     { "id": "st-001227", "name": "あやめ公園駅", "genre": "station", "kind": "HUB", "area": "長井市", "region": "yamagata-06209", "lat": 38.11419, "lon": 140.03278, "level": 1, "value": 1, "lines": ["山形鉄道 フラワー長井線"], "adj": ["st-001223", "st-001230"] },
@@ -181,7 +182,7 @@
 
     { "id": "lm-q3174863", "name": "月山", "genre": "nature", "kind": "LM", "area": "西川町", "region": "yamagata-06322", "lat": 38.54556, "lon": 140.02694, "level": 3, "value": 3, "wikidata": "Q3174863", "adj": ["lm-q3322191"] },
 
-    { "id": "lm-q3072106", "name": "朝日岳", "genre": "nature", "kind": "LM", "area": "朝日町", "region": "yamagata-06323", "lat": 38.2603, "lon": 139.922, "level": 2, "value": 2, "wikidata": "Q3072106", "adj": ["lm-q10938643", "lm-q4948440"] },
+    { "id": "lm-q3072106", "name": "朝日岳", "genre": "nature", "kind": "LM", "area": "朝日町", "region": "yamagata-06323", "lat": 38.2603, "lon": 139.922, "level": 2, "value": 2, "wikidata": "Q3072106", "adj": ["lm-q11378334", "lm-q11588590", "lm-q4948440"] },
     { "id": "lm-q4948440", "name": "東北大学学術資源研究公開センター植物園", "genre": "zoo_aquarium", "kind": "LM", "area": "朝日町", "region": "yamagata-06323", "lat": 38.2333, "lon": 140, "level": 1, "value": 1, "wikidata": "Q4948440", "adj": ["lm-q3072106", "st-001211"] },
 
     { "id": "st-001104", "name": "左沢駅", "genre": "station", "kind": "HUB", "area": "大江町", "region": "yamagata-06324", "lat": 38.38218, "lon": 140.20807, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 左沢線"], "adj": ["st-001105"] },

@@ -1,7 +1,7 @@
 {
   "region": "kyoto",
   "name": "京都府",
-  "version": 13,
+  "version": 18,
   "updatedAt": "2026-10-19",
   "note": "京都府の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -46,6 +46,7 @@
   "nodes": [
     { "id": "lm-q1152190", "name": "立命館大学", "genre": "university", "kind": "EDU", "area": "京都市北区", "region": "kyoto-26101", "lat": 35.03258, "lon": 135.72404, "level": 4, "value": 4, "wikidata": "Q1152190", "adj": ["st-005883", "st-005884", "st-005888", "st-005892"] },
     { "id": "lm-q2221774", "name": "京都産業大学", "genre": "university", "kind": "EDU", "area": "京都市北区", "region": "kyoto-26101", "lat": 35.07024, "lon": 135.75844, "level": 2, "value": 2, "wikidata": "Q2221774", "adj": ["st-005748", "st-005756"] },
+    { "id": "lm-q143683", "name": "船岡山", "genre": "nature", "kind": "LM", "area": "京都市北区", "region": "kyoto-26101", "lat": 35.03889, "lon": 135.74167, "level": 1, "value": 1, "wikidata": "Q143683", "adj": ["st-005863"] },
     { "id": "lm-q270983", "name": "鹿苑寺", "genre": "shrine_temple", "kind": "LM", "area": "京都市北区", "region": "kyoto-26101", "lat": 35.0395, "lon": 135.7285, "level": 5, "value": 5, "hackable": false, "wikidata": "Q270983" },
     { "id": "lm-q700448", "name": "賀茂別雷神社", "genre": "shrine_temple", "kind": "LM", "area": "京都市北区", "region": "kyoto-26101", "lat": 35.06051, "lon": 135.75275, "level": 4, "value": 4, "hackable": false, "wikidata": "Q700448" },
     { "id": "lm-q901256", "name": "大徳寺", "genre": "shrine_temple", "kind": "LM", "area": "京都市北区", "region": "kyoto-26101", "lat": 35.04389, "lon": 135.74611, "level": 3, "value": 3, "hackable": false, "wikidata": "Q901256" },
@@ -76,7 +77,7 @@
     { "id": "lm-q17993668", "name": "白雲神社", "genre": "shrine_temple", "kind": "LM", "area": "京都市上京区", "region": "kyoto-26102", "lat": 35.02175, "lon": 135.76122, "level": 1, "value": 1, "hackable": false, "wikidata": "Q17993668" },
     { "id": "lm-q3140297", "name": "本禅寺", "genre": "shrine_temple", "kind": "LM", "area": "京都市上京区", "region": "kyoto-26102", "lat": 35.02664, "lon": 135.76829, "level": 1, "value": 1, "hackable": false, "wikidata": "Q3140297" },
     { "id": "lm-q11294371", "name": "カトリック西陣聖ヨゼフ教会", "genre": "shrine_temple", "kind": "LM", "area": "京都市上京区", "region": "kyoto-26102", "lat": 35.02674, "lon": 135.75589, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11294371" },
-    { "id": "st-005863", "name": "鞍馬口駅", "genre": "station", "kind": "HUB", "area": "京都市上京区", "region": "kyoto-26102", "lat": 35.03741, "lon": 135.75933, "level": 1, "value": 1, "lines": ["京都市 烏丸線"], "adj": ["lm-q921088", "st-005845", "st-005877"] },
+    { "id": "st-005863", "name": "鞍馬口駅", "genre": "station", "kind": "HUB", "area": "京都市上京区", "region": "kyoto-26102", "lat": 35.03741, "lon": 135.75933, "level": 1, "value": 1, "lines": ["京都市 烏丸線"], "adj": ["lm-q143683", "lm-q921088", "st-005845", "st-005877"] },
     { "id": "st-005877", "name": "今出川駅", "genre": "station", "kind": "HUB", "area": "京都市上京区", "region": "kyoto-26102", "lat": 35.02996, "lon": 135.75934, "level": 1, "value": 1, "lines": ["京都市 烏丸線"], "adj": ["lm-q11375124", "lm-q921088", "st-005863", "st-005929"] },
 
     { "id": "lm-q336264", "name": "京都大学", "genre": "university", "kind": "EDU", "area": "京都市左京区", "region": "kyoto-26103", "lat": 35.02621, "lon": 135.78084, "level": 5, "value": 5, "wikidata": "Q336264", "adj": ["st-005859", "st-005870", "st-005876", "st-005918", "st-005969"] },
@@ -332,13 +333,12 @@
     { "id": "st-005114", "name": "石原駅", "genre": "station", "kind": "HUB", "area": "福知山市", "region": "kyoto-26201", "lat": 35.30059, "lon": 135.17921, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-005102", "st-005124"] },
     { "id": "st-005124", "name": "福知山駅", "genre": "station", "kind": "HUB", "area": "福知山市", "region": "kyoto-26201", "lat": 35.29689, "lon": 135.11753, "level": 2, "value": 2, "lines": ["WILLER　TRAINS 宮福線", "西日本旅客鉄道 山陰線", "西日本旅客鉄道 福知山線"], "adj": ["lm-q2969288", "st-005028", "st-005097", "st-005114", "st-005252"] },
 
-    { "id": "lm-q10856308", "name": "田辺城", "genre": "heritage", "kind": "LM", "area": "舞鶴市", "region": "kyoto-26202", "lat": 35.44578, "lon": 135.33097, "level": 1, "value": 1, "wikidata": "Q10856308", "adj": ["st-004705"] },
     { "id": "st-004507", "name": "丹後神崎駅", "genre": "station", "kind": "HUB", "area": "舞鶴市", "region": "kyoto-26202", "lat": 35.50611, "lon": 135.29366, "level": 1, "value": 1, "lines": ["WILLER　TRAINS 宮津線"], "adj": ["st-004469", "st-004606"] },
     { "id": "st-004565", "name": "松尾寺駅", "genre": "station", "kind": "HUB", "area": "舞鶴市", "region": "kyoto-26202", "lat": 35.4859, "lon": 135.44925, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 小浜線"], "adj": ["st-004578", "st-004621"] },
     { "id": "st-004606", "name": "東雲駅", "genre": "station", "kind": "HUB", "area": "舞鶴市", "region": "kyoto-26202", "lat": 35.4743, "lon": 135.28513, "level": 1, "value": 1, "lines": ["WILLER　TRAINS 宮津線"], "adj": ["st-004507", "st-004689"] },
     { "id": "st-004621", "name": "東舞鶴駅", "genre": "station", "kind": "HUB", "area": "舞鶴市", "region": "kyoto-26202", "lat": 35.46855, "lon": 135.39479, "level": 2, "value": 2, "lines": ["西日本旅客鉄道 小浜線", "西日本旅客鉄道 舞鶴線"], "adj": ["st-004565", "st-004705"] },
     { "id": "st-004689", "name": "四所駅", "genre": "station", "kind": "HUB", "area": "舞鶴市", "region": "kyoto-26202", "lat": 35.44619, "lon": 135.29048, "level": 1, "value": 1, "lines": ["WILLER　TRAINS 宮津線"], "adj": ["st-004606", "st-004705"] },
-    { "id": "st-004705", "name": "西舞鶴駅", "genre": "station", "kind": "HUB", "area": "舞鶴市", "region": "kyoto-26202", "lat": 35.44243, "lon": 135.33067, "level": 2, "value": 2, "lines": ["WILLER　TRAINS 宮津線", "西日本旅客鉄道 舞鶴線"], "adj": ["lm-q10856308", "st-004621", "st-004689", "st-004792"] },
+    { "id": "st-004705", "name": "西舞鶴駅", "genre": "station", "kind": "HUB", "area": "舞鶴市", "region": "kyoto-26202", "lat": 35.44243, "lon": 135.33067, "level": 2, "value": 2, "lines": ["WILLER　TRAINS 宮津線", "西日本旅客鉄道 舞鶴線"], "adj": ["st-004621", "st-004689", "st-004792"] },
     { "id": "st-004792", "name": "真倉駅", "genre": "station", "kind": "HUB", "area": "舞鶴市", "region": "kyoto-26202", "lat": 35.4078, "lon": 135.32673, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 舞鶴線"], "adj": ["st-004705", "st-004971"] },
 
     { "id": "st-004971", "name": "梅迫駅", "genre": "station", "kind": "HUB", "area": "綾部市", "region": "kyoto-26203", "lat": 35.34939, "lon": 135.31098, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 舞鶴線"], "adj": ["st-004792", "st-005029"] },
@@ -368,7 +368,7 @@
     { "id": "lm-q11442700", "name": "天橋立ビューランド", "genre": "park", "kind": "LM", "area": "宮津市", "region": "kyoto-26205", "lat": 35.5525, "lon": 135.18175, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11442700" },
     { "id": "st-004272", "name": "傘松駅", "genre": "station", "kind": "HUB", "area": "宮津市", "region": "kyoto-26205", "lat": 35.58604, "lon": 135.1958, "level": 1, "value": 1, "lines": ["丹後海陸交通 天橋立鋼索鉄道"], "adj": ["st-004277"] },
     { "id": "st-004277", "name": "府中駅", "genre": "station", "kind": "HUB", "area": "宮津市", "region": "kyoto-26205", "lat": 35.5832, "lon": 135.19524, "level": 1, "value": 1, "lines": ["丹後海陸交通 天橋立鋼索鉄道"], "adj": ["st-004272", "st-004343"] },
-    { "id": "st-004343", "name": "天橋立駅", "genre": "station", "kind": "HUB", "area": "宮津市", "region": "kyoto-26205", "lat": 35.55781, "lon": 135.18218, "level": 1, "value": 1, "lines": ["WILLER　TRAINS 宮津線"], "adj": ["lm-q11657656", "st-004277", "st-004363", "st-004419"] },
+    { "id": "st-004343", "name": "天橋立駅", "genre": "station", "kind": "HUB", "area": "宮津市", "region": "kyoto-26205", "lat": 35.55781, "lon": 135.18218, "level": 1, "value": 1, "lines": ["WILLER　TRAINS 宮津線"], "adj": ["st-004277", "st-004363", "st-004419"] },
     { "id": "st-004363", "name": "岩滝口駅", "genre": "station", "kind": "HUB", "area": "宮津市", "region": "kyoto-26205", "lat": 35.55056, "lon": 135.15058, "level": 1, "value": 1, "lines": ["WILLER　TRAINS 宮津線"], "adj": ["st-004343", "st-004390"] },
     { "id": "st-004389", "name": "栗田駅", "genre": "station", "kind": "HUB", "area": "宮津市", "region": "kyoto-26205", "lat": 35.54418, "lon": 135.23497, "level": 1, "value": 1, "lines": ["WILLER　TRAINS 宮津線"], "adj": ["st-004419", "st-004469"] },
     { "id": "st-004419", "name": "宮津駅", "genre": "station", "kind": "HUB", "area": "宮津市", "region": "kyoto-26205", "lat": 35.53402, "lon": 135.19935, "level": 2, "value": 2, "lines": ["WILLER　TRAINS 宮津線", "WILLER　TRAINS 宮福線"], "adj": ["st-004343", "st-004389", "st-004447"] },
@@ -425,6 +425,7 @@
     { "id": "st-004231", "name": "久美浜駅", "genre": "station", "kind": "HUB", "area": "京丹後市", "region": "kyoto-26212", "lat": 35.60222, "lon": 134.89475, "level": 1, "value": 1, "lines": ["WILLER　TRAINS 宮津線"], "adj": ["st-004208", "st-004355"] },
     { "id": "st-004291", "name": "京丹後大宮駅", "genre": "station", "kind": "HUB", "area": "京丹後市", "region": "kyoto-26212", "lat": 35.58049, "lon": 135.09386, "level": 1, "value": 1, "lines": ["WILLER　TRAINS 宮津線"], "adj": ["st-004111", "st-004390"] },
 
+    { "id": "lm-q6922225", "name": "深山", "genre": "nature", "kind": "LM", "area": "南丹市", "region": "kyoto-26213", "lat": 35.04167, "lon": 135.37778, "level": 1, "value": 1, "wikidata": "Q6922225", "adj": ["lm-q6921633"] },
     { "id": "st-005373", "name": "胡麻駅", "genre": "station", "kind": "HUB", "area": "南丹市", "region": "kyoto-26213", "lat": 35.19504, "lon": 135.46942, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-005322", "st-005416"] },
     { "id": "st-005416", "name": "鍼灸大学前駅", "genre": "station", "kind": "HUB", "area": "南丹市", "region": "kyoto-26213", "lat": 35.17956, "lon": 135.4895, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-005373", "st-005489"] },
     { "id": "st-005489", "name": "日吉駅", "genre": "station", "kind": "HUB", "area": "南丹市", "region": "kyoto-26213", "lat": 35.16198, "lon": 135.50356, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-005416", "st-005576"] },
@@ -465,7 +466,6 @@
     { "id": "st-005203", "name": "和知駅", "genre": "station", "kind": "HUB", "area": "京丹波町", "region": "kyoto-26407", "lat": 35.26088, "lon": 135.39922, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-005188", "st-005322"] },
     { "id": "st-005322", "name": "下山駅", "genre": "station", "kind": "HUB", "area": "京丹波町", "region": "kyoto-26407", "lat": 35.21194, "lon": 135.42296, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-005203", "st-005373"] },
 
-    { "id": "lm-q11657656", "name": "阿蘇海", "genre": "nature", "kind": "LM", "area": "与謝野町", "region": "kyoto-26465", "lat": 35.56667, "lon": 135.16667, "level": 1, "value": 1, "wikidata": "Q11657656", "adj": ["st-004343"] },
     { "id": "st-004390", "name": "与謝野駅", "genre": "station", "kind": "HUB", "area": "与謝野町", "region": "kyoto-26465", "lat": 35.54321, "lon": 135.12579, "level": 1, "value": 1, "lines": ["WILLER　TRAINS 宮津線"], "adj": ["st-004291", "st-004363"] }
   ]
 }

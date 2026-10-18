@@ -1,7 +1,7 @@
 {
   "region": "tochigi",
   "name": "栃木県",
-  "version": 14,
+  "version": 19,
   "updatedAt": "2026-10-19",
   "note": "栃木県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -58,7 +58,6 @@
     { "id": "lm-q7903284", "name": "宇都宮競輪場", "genre": "stadium", "kind": "LM", "area": "宇都宮市", "region": "tochigi-09201", "lat": 36.5725, "lon": 139.884, "level": 1, "value": 1, "wikidata": "Q7903284", "adj": ["lm-q11449808", "st-002116"] },
     { "id": "lm-q7903281", "name": "宇都宮共和大学", "genre": "university", "kind": "EDU", "area": "宇都宮市", "region": "tochigi-09201", "lat": 36.5607, "lon": 139.829, "level": 1, "value": 1, "wikidata": "Q7903281", "adj": ["st-002142"] },
     { "id": "lm-q11536246", "name": "根古谷台遺跡", "genre": "heritage", "kind": "LM", "area": "宇都宮市", "region": "tochigi-09201", "lat": 36.535, "lon": 139.83306, "level": 1, "value": 1, "wikidata": "Q11536246", "adj": ["st-002142"] },
-    { "id": "lm-q101847935", "name": "上神主・茂原官衙遺跡", "genre": "heritage", "kind": "LM", "area": "宇都宮市", "region": "tochigi-09201", "lat": 36.465, "lon": 139.88361, "level": 1, "value": 1, "wikidata": "Q101847935", "adj": ["st-002183"] },
     { "id": "lm-q11273193", "name": "とちのきファミリーランド", "genre": "park", "kind": "LM", "area": "宇都宮市", "region": "tochigi-09201", "lat": 36.51239, "lon": 139.85853, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11273193" },
     { "id": "st-002072", "name": "岡本駅", "genre": "station", "kind": "HUB", "area": "宇都宮市", "region": "tochigi-09201", "lat": 36.59746, "lon": 139.94314, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-002046", "st-002113"] },
     { "id": "st-002113", "name": "宇都宮駅", "genre": "station", "kind": "HUB", "area": "宇都宮市", "region": "tochigi-09201", "lat": 36.55984, "lon": 139.8989, "level": 3, "value": 3, "lines": ["宇都宮ライトレール 宇都宮芳賀ライトレール線", "東日本旅客鉄道 日光線", "東日本旅客鉄道 東北新幹線", "東日本旅客鉄道 東北線"], "adj": ["lm-q8010544", "st-001720", "st-002072", "st-002142", "st-002183", "st-002407", "st-010143"] },
@@ -67,7 +66,7 @@
     { "id": "st-002142", "name": "鶴田駅", "genre": "station", "kind": "HUB", "area": "宇都宮市", "region": "tochigi-09201", "lat": 36.53821, "lon": 139.85814, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 日光線"], "adj": ["lm-q11536246", "lm-q7903281", "lm-q8010544", "st-002104", "st-002113"] },
     { "id": "st-002155", "name": "江曾島駅", "genre": "station", "kind": "HUB", "area": "宇都宮市", "region": "tochigi-09201", "lat": 36.53054, "lon": 139.86056, "level": 1, "value": 1, "lines": ["東武鉄道 宇都宮線"], "adj": ["st-002137", "st-002169"] },
     { "id": "st-002169", "name": "西川田駅", "genre": "station", "kind": "HUB", "area": "宇都宮市", "region": "tochigi-09201", "lat": 36.51384, "lon": 139.85004, "level": 1, "value": 1, "lines": ["東武鉄道 宇都宮線"], "adj": ["st-002155", "st-002193"] },
-    { "id": "st-002183", "name": "雀宮駅", "genre": "station", "kind": "HUB", "area": "宇都宮市", "region": "tochigi-09201", "lat": 36.49411, "lon": 139.8771, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["lm-q101847935", "st-002113", "st-002225"] },
+    { "id": "st-002183", "name": "雀宮駅", "genre": "station", "kind": "HUB", "area": "宇都宮市", "region": "tochigi-09201", "lat": 36.49411, "lon": 139.8771, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-002113", "st-002225"] },
     { "id": "st-010143", "name": "東宿郷駅", "genre": "station", "kind": "HUB", "area": "宇都宮市", "region": "tochigi-09201", "lat": 36.5583, "lon": 139.9033, "level": 1, "value": 1, "lines": ["宇都宮ライトレール 宇都宮芳賀ライトレール線"], "adj": ["lm-q8010544", "st-002113", "st-010144"] },
     { "id": "st-010144", "name": "駅東公園前", "genre": "station", "kind": "HUB", "area": "宇都宮市", "region": "tochigi-09201", "lat": 36.558, "lon": 139.90754, "level": 1, "value": 1, "lines": ["宇都宮ライトレール 宇都宮芳賀ライトレール線"], "adj": ["lm-q1143960", "lm-q8010544", "st-010143", "st-010145"] },
     { "id": "st-010145", "name": "峰駅", "genre": "station", "kind": "HUB", "area": "宇都宮市", "region": "tochigi-09201", "lat": 36.55756, "lon": 139.9152, "level": 1, "value": 1, "lines": ["宇都宮ライトレール 宇都宮芳賀ライトレール線"], "adj": ["lm-q1143960", "lm-q8010544", "st-010144", "st-010146"] },
@@ -85,11 +84,10 @@
 
     { "id": "lm-q11257294", "name": "あしかがフラワーパーク", "genre": "park", "kind": "LM", "area": "足利市", "region": "tochigi-09202", "lat": 36.315, "lon": 139.52203, "level": 1, "value": 1, "wikidata": "Q11257294", "adj": ["st-002405"] },
     { "id": "lm-q11536081", "name": "栗田美術館", "genre": "museum", "kind": "LM", "area": "足利市", "region": "tochigi-09202", "lat": 36.31668, "lon": 139.52163, "level": 1, "value": 1, "wikidata": "Q11536081", "adj": ["st-002405"] },
-    { "id": "lm-q11636776", "name": "足利市総合運動場陸上競技場", "genre": "stadium", "kind": "LM", "area": "足利市", "region": "tochigi-09202", "lat": 36.3448, "lon": 139.461, "level": 1, "value": 1, "wikidata": "Q11636776", "adj": ["st-002373"] },
     { "id": "lm-q2882839", "name": "鑁阿寺", "genre": "shrine_temple", "kind": "LM", "area": "足利市", "region": "tochigi-09202", "lat": 36.3375, "lon": 139.45222, "level": 2, "value": 2, "hackable": false, "wikidata": "Q2882839" },
     { "id": "st-002308", "name": "小俣駅", "genre": "station", "kind": "HUB", "area": "足利市", "region": "tochigi-09202", "lat": 36.37542, "lon": 139.3739, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 両毛線"], "adj": ["st-002255", "st-002354"] },
     { "id": "st-002354", "name": "山前駅", "genre": "station", "kind": "HUB", "area": "足利市", "region": "tochigi-09202", "lat": 36.34779, "lon": 139.41069, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 両毛線"], "adj": ["lm-q1038062", "st-002308", "st-002373"] },
-    { "id": "st-002373", "name": "足利駅", "genre": "station", "kind": "HUB", "area": "足利市", "region": "tochigi-09202", "lat": 36.3321, "lon": 139.45555, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 両毛線"], "adj": ["lm-q11636776", "st-002354", "st-002405"] },
+    { "id": "st-002373", "name": "足利駅", "genre": "station", "kind": "HUB", "area": "足利市", "region": "tochigi-09202", "lat": 36.3321, "lon": 139.45555, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 両毛線"], "adj": ["st-002354", "st-002405"] },
     { "id": "st-002375", "name": "足利市駅", "genre": "station", "kind": "HUB", "area": "足利市", "region": "tochigi-09202", "lat": 36.32986, "lon": 139.44756, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["st-002383", "st-002403"] },
     { "id": "st-002383", "name": "野州山辺駅", "genre": "station", "kind": "HUB", "area": "足利市", "region": "tochigi-09202", "lat": 36.32595, "lon": 139.43142, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["lm-q1038062", "st-002375", "st-002415"] },
     { "id": "st-002401", "name": "富田駅", "genre": "station", "kind": "HUB", "area": "足利市", "region": "tochigi-09202", "lat": 36.31619, "lon": 139.52788, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 両毛線"], "adj": ["st-002398", "st-002405"] },
@@ -99,9 +97,9 @@
     { "id": "st-002443", "name": "県駅", "genre": "station", "kind": "HUB", "area": "足利市", "region": "tochigi-09202", "lat": 36.29101, "lon": 139.47172, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["st-002417", "st-002457"] },
 
     { "id": "lm-q106764096", "name": "CITY FOOTBALL STATION", "genre": "stadium", "kind": "LM", "area": "栃木市", "region": "tochigi-09203", "lat": 36.3375, "lon": 139.64528, "level": 1, "value": 1, "wikidata": "Q106764096", "adj": ["st-002381"] },
+    { "id": "lm-q11475591", "name": "岩船山", "genre": "nature", "kind": "LM", "area": "栃木市", "region": "tochigi-09203", "lat": 36.33036, "lon": 139.65425, "level": 1, "value": 1, "wikidata": "Q11475591", "adj": ["st-002381"] },
     { "id": "lm-q11361383", "name": "下野国庁跡", "genre": "heritage", "kind": "LM", "area": "栃木市", "region": "tochigi-09203", "lat": 36.37986, "lon": 139.78508, "level": 1, "value": 1, "wikidata": "Q11361383", "adj": ["st-002349"] },
-    { "id": "lm-q121354289", "name": "西方城", "genre": "heritage", "kind": "LM", "area": "栃木市", "region": "tochigi-09203", "lat": 36.47361, "lon": 139.72, "level": 1, "value": 1, "wikidata": "Q121354289", "adj": ["st-002206"] },
-    { "id": "st-002206", "name": "東武金崎駅", "genre": "station", "kind": "HUB", "area": "栃木市", "region": "tochigi-09203", "lat": 36.4671, "lon": 139.74912, "level": 1, "value": 1, "lines": ["東武鉄道 日光線"], "adj": ["lm-q121354289", "st-002175", "st-002230"] },
+    { "id": "st-002206", "name": "東武金崎駅", "genre": "station", "kind": "HUB", "area": "栃木市", "region": "tochigi-09203", "lat": 36.4671, "lon": 139.74912, "level": 1, "value": 1, "lines": ["東武鉄道 日光線"], "adj": ["st-002175", "st-002230"] },
     { "id": "st-002230", "name": "家中駅", "genre": "station", "kind": "HUB", "area": "栃木市", "region": "tochigi-09203", "lat": 36.43037, "lon": 139.74752, "level": 1, "value": 1, "lines": ["東武鉄道 日光線"], "adj": ["st-002206", "st-002262"] },
     { "id": "st-002260", "name": "野州大塚駅", "genre": "station", "kind": "HUB", "area": "栃木市", "region": "tochigi-09203", "lat": 36.40897, "lon": 139.77303, "level": 1, "value": 1, "lines": ["東武鉄道 宇都宮線"], "adj": ["st-002236", "st-002268"] },
     { "id": "st-002262", "name": "合戦場駅", "genre": "station", "kind": "HUB", "area": "栃木市", "region": "tochigi-09203", "lat": 36.40708, "lon": 139.74077, "level": 1, "value": 1, "lines": ["東武鉄道 日光線"], "adj": ["st-002230", "st-002290"] },
@@ -110,7 +108,7 @@
     { "id": "st-002313", "name": "栃木駅", "genre": "station", "kind": "HUB", "area": "栃木市", "region": "tochigi-09203", "lat": 36.37198, "lon": 139.73188, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 両毛線", "東武鉄道 日光線"], "adj": ["st-002290", "st-002349", "st-002360", "st-002367"] },
     { "id": "st-002360", "name": "大平下駅", "genre": "station", "kind": "HUB", "area": "栃木市", "region": "tochigi-09203", "lat": 36.34402, "lon": 139.69645, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 両毛線"], "adj": ["st-002313", "st-002381"] },
     { "id": "st-002367", "name": "新大平下駅", "genre": "station", "kind": "HUB", "area": "栃木市", "region": "tochigi-09203", "lat": 36.33962, "lon": 139.70221, "level": 1, "value": 1, "lines": ["東武鉄道 日光線"], "adj": ["st-002313", "st-002400"] },
-    { "id": "st-002381", "name": "岩舟駅", "genre": "station", "kind": "HUB", "area": "栃木市", "region": "tochigi-09203", "lat": 36.32657, "lon": 139.6588, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 両毛線"], "adj": ["lm-q106764096", "st-002360", "st-002398"] },
+    { "id": "st-002381", "name": "岩舟駅", "genre": "station", "kind": "HUB", "area": "栃木市", "region": "tochigi-09203", "lat": 36.32657, "lon": 139.6588, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 両毛線"], "adj": ["lm-q106764096", "lm-q11475591", "st-002360", "st-002398"] },
     { "id": "st-002400", "name": "静和駅", "genre": "station", "kind": "HUB", "area": "栃木市", "region": "tochigi-09203", "lat": 36.31696, "lon": 139.68539, "level": 1, "value": 1, "lines": ["東武鉄道 日光線"], "adj": ["st-002367", "st-002482"] },
     { "id": "st-002482", "name": "藤岡駅", "genre": "station", "kind": "HUB", "area": "栃木市", "region": "tochigi-09203", "lat": 36.25507, "lon": 139.64547, "level": 1, "value": 1, "lines": ["東武鉄道 日光線"], "adj": ["st-002400", "st-002520"] },
 
@@ -132,15 +130,16 @@
     { "id": "st-002150", "name": "樅山駅", "genre": "station", "kind": "HUB", "area": "鹿沼市", "region": "tochigi-09205", "lat": 36.53344, "lon": 139.74173, "level": 1, "value": 1, "lines": ["東武鉄道 日光線"], "adj": ["st-002118", "st-002175"] },
     { "id": "st-002175", "name": "楡木駅", "genre": "station", "kind": "HUB", "area": "鹿沼市", "region": "tochigi-09205", "lat": 36.50659, "lon": 139.74531, "level": 1, "value": 1, "lines": ["東武鉄道 日光線"], "adj": ["st-002150", "st-002206"] },
 
-    { "id": "lm-q37580", "name": "華厳滝", "genre": "nature", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.73789, "lon": 139.502, "level": 4, "value": 4, "wikidata": "Q37580", "adj": ["lm-q11504890", "lm-q117923"] },
+    { "id": "lm-q37580", "name": "華厳滝", "genre": "nature", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.73789, "lon": 139.502, "level": 4, "value": 4, "wikidata": "Q37580", "adj": ["lm-q11438109", "lm-q11504890", "lm-q117923"] },
     { "id": "lm-q1063133", "name": "日光の社寺", "genre": "monument", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.7565, "lon": 139.5994, "level": 4, "value": 4, "wikidata": "Q1063133", "adj": ["st-001859", "st-001862"] },
     { "id": "lm-q117923", "name": "中禅寺湖", "genre": "nature", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.74056, "lon": 139.46222, "level": 3, "value": 3, "wikidata": "Q117923", "adj": ["lm-q37580", "lm-q37814"] },
-    { "id": "lm-q37814", "name": "竜頭の滝", "genre": "nature", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.75882, "lon": 139.45126, "level": 2, "value": 2, "wikidata": "Q37814", "adj": ["lm-q11563734", "lm-q117923"] },
+    { "id": "lm-q37814", "name": "竜頭の滝", "genre": "nature", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.75882, "lon": 139.45126, "level": 2, "value": 2, "wikidata": "Q37814", "adj": ["lm-q11563442", "lm-q117923"] },
     { "id": "lm-q1188532", "name": "東武ワールドスクウェア", "genre": "park", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.8078, "lon": 139.712, "level": 2, "value": 2, "wikidata": "Q1188532", "adj": ["st-001787", "st-001795"] },
     { "id": "lm-q28040588", "name": "神橋", "genre": "bridge", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.75336, "lon": 139.60399, "level": 1, "value": 1, "wikidata": "Q28040588", "adj": ["st-001859"] },
-    { "id": "lm-q11563442", "name": "湯ノ湖", "genre": "nature", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.79971, "lon": 139.42457, "level": 1, "value": 1, "wikidata": "Q11563442", "adj": ["lm-q11563734"] },
+    { "id": "lm-q11438109", "name": "大真名子山", "genre": "nature", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.79222, "lon": 139.51028, "level": 1, "value": 1, "wikidata": "Q11438109", "adj": ["lm-q11463253", "lm-q37580"] },
+    { "id": "lm-q11563442", "name": "湯ノ湖", "genre": "nature", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.79971, "lon": 139.42457, "level": 1, "value": 1, "wikidata": "Q11563442", "adj": ["lm-q37814"] },
     { "id": "lm-q15277559", "name": "逍遥園", "genre": "park", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.75406, "lon": 139.60039, "level": 1, "value": 1, "wikidata": "Q15277559", "adj": ["st-001859"] },
-    { "id": "lm-q11563734", "name": "湯滝", "genre": "nature", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.79611, "lon": 139.42847, "level": 1, "value": 1, "wikidata": "Q11563734", "adj": ["lm-q11563442", "lm-q37814"] },
+    { "id": "lm-q11463253", "name": "小真名子山", "genre": "nature", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.80722, "lon": 139.51083, "level": 1, "value": 1, "wikidata": "Q11463253", "adj": ["lm-q11438109"] },
     { "id": "lm-q15262331", "name": "日光植物園", "genre": "zoo_aquarium", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.75, "lon": 139.6, "level": 1, "value": 1, "wikidata": "Q15262331", "adj": ["st-001859"] },
     { "id": "lm-q11504890", "name": "日光田母沢御用邸記念公園", "genre": "park", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.7525, "lon": 139.59139, "level": 1, "value": 1, "wikidata": "Q11504890", "adj": ["lm-q37580", "st-001859"] },
     { "id": "lm-q696641", "name": "日光東照宮", "genre": "shrine_temple", "kind": "LM", "area": "日光市", "region": "tochigi-09206", "lat": 36.75917, "lon": 139.59861, "level": 4, "value": 4, "hackable": false, "wikidata": "Q696641" },
@@ -196,7 +195,8 @@
     { "id": "st-001789", "name": "矢板駅", "genre": "station", "kind": "HUB", "area": "矢板市", "region": "tochigi-09211", "lat": 36.80763, "lon": 139.93334, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001771", "st-001847"] },
     { "id": "st-001847", "name": "片岡駅", "genre": "station", "kind": "HUB", "area": "矢板市", "region": "tochigi-09211", "lat": 36.75564, "lon": 139.9449, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001789", "st-001895"] },
 
-    { "id": "lm-q3695587", "name": "那須岳", "genre": "nature", "kind": "LM", "area": "那須塩原市", "region": "tochigi-09213", "lat": 37.15, "lon": 139.95, "level": 3, "value": 3, "wikidata": "Q3695587", "adj": ["st-001578"] },
+    { "id": "lm-q3695587", "name": "那須岳", "genre": "nature", "kind": "LM", "area": "那須塩原市", "region": "tochigi-09213", "lat": 37.15, "lon": 139.95, "level": 3, "value": 3, "wikidata": "Q3695587", "adj": ["lm-q11355744", "st-001578"] },
+    { "id": "lm-q11355744", "name": "三本槍岳", "genre": "nature", "kind": "LM", "area": "那須塩原市", "region": "tochigi-09213", "lat": 37.14972, "lon": 139.96167, "level": 1, "value": 1, "wikidata": "Q11355744", "adj": ["lm-q3695587"] },
     { "id": "lm-q61886401", "name": "那須塩原市図書館", "genre": "library", "kind": "EDU", "area": "那須塩原市", "region": "tochigi-09213", "lat": 36.96929, "lon": 140.05866, "level": 1, "value": 1, "wikidata": "Q61886401", "adj": ["st-001705"] },
     { "id": "st-001705", "name": "黒磯駅", "genre": "station", "kind": "HUB", "area": "那須塩原市", "region": "tochigi-09213", "lat": 36.96915, "lon": 140.05933, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["lm-q61886401", "st-001690", "st-001720"] },
     { "id": "st-001720", "name": "那須塩原駅", "genre": "station", "kind": "HUB", "area": "那須塩原市", "region": "tochigi-09213", "lat": 36.93097, "lon": 140.02026, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 東北新幹線", "東日本旅客鉄道 東北線"], "adj": ["st-001629", "st-001705", "st-001737", "st-002113"] },
@@ -245,8 +245,7 @@
     { "id": "st-002219", "name": "国谷駅", "genre": "station", "kind": "HUB", "area": "壬生町", "region": "tochigi-09361", "lat": 36.45221, "lon": 139.82433, "level": 1, "value": 1, "lines": ["東武鉄道 宇都宮線"], "adj": ["st-002205", "st-002236"] },
     { "id": "st-002236", "name": "壬生駅", "genre": "station", "kind": "HUB", "area": "壬生町", "region": "tochigi-09361", "lat": 36.4229, "lon": 139.80533, "level": 1, "value": 1, "lines": ["東武鉄道 宇都宮線"], "adj": ["lm-q11429498", "lm-q17191453", "lm-q17989167", "lm-q17990657", "st-002219", "st-002260"] },
 
-    { "id": "lm-q132540132", "name": "松原大橋", "genre": "bridge", "kind": "LM", "area": "野木町", "region": "tochigi-09364", "lat": 36.2395, "lon": 139.72247, "level": 1, "value": 1, "wikidata": "Q132540132", "adj": ["st-002509"] },
-    { "id": "st-002509", "name": "野木駅", "genre": "station", "kind": "HUB", "area": "野木町", "region": "tochigi-09364", "lat": 36.22873, "lon": 139.73372, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["lm-q132540132", "st-002476", "st-002547"] },
+    { "id": "st-002509", "name": "野木駅", "genre": "station", "kind": "HUB", "area": "野木町", "region": "tochigi-09364", "lat": 36.22873, "lon": 139.73372, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-002476", "st-002547"] },
 
     { "id": "st-002013", "name": "仁井田駅", "genre": "station", "kind": "HUB", "area": "高根沢町", "region": "tochigi-09386", "lat": 36.65731, "lon": 140.03007, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 烏山線"], "adj": ["st-001997", "st-002023"] },
     { "id": "st-002023", "name": "下野花岡駅", "genre": "station", "kind": "HUB", "area": "高根沢町", "region": "tochigi-09386", "lat": 36.65015, "lon": 140.00904, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 烏山線"], "adj": ["st-002013", "st-002046"] },
@@ -259,6 +258,7 @@
     { "id": "st-001676", "name": "黒田原駅", "genre": "station", "kind": "HUB", "area": "那須町", "region": "tochigi-09407", "lat": 37.02376, "lon": 140.12168, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001661", "st-001690"] },
     { "id": "st-001690", "name": "高久駅", "genre": "station", "kind": "HUB", "area": "那須町", "region": "tochigi-09407", "lat": 36.99573, "lon": 140.08708, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["lm-q27919845", "st-001676", "st-001705"] },
 
+    { "id": "lm-q18337037", "name": "尺丈山", "genre": "nature", "kind": "LM", "area": "那珂川町", "region": "tochigi-09411", "lat": 36.7125, "lon": 140.29222, "level": 1, "value": 1, "wikidata": "Q18337037", "adj": ["st-001899"] },
     { "id": "lm-q42704985", "name": "那珂川町馬頭広重美術館", "genre": "museum", "kind": "LM", "area": "那珂川町", "region": "tochigi-09411", "lat": 36.73911, "lon": 140.17094, "level": 1, "value": 1, "wikidata": "Q42704985", "adj": ["lm-q11567217"] }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "region": "wakayama",
   "name": "和歌山県",
-  "version": 13,
+  "version": 18,
   "updatedAt": "2026-10-19",
   "note": "和歌山県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -67,7 +67,6 @@
     { "id": "lm-q11604926", "name": "紀の川河口大橋", "genre": "bridge", "kind": "LM", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.22494, "lon": 135.14464, "level": 1, "value": 1, "wikidata": "Q11604926", "adj": ["st-008382"] },
     { "id": "lm-q11604933", "name": "紀ノ川大橋", "genre": "bridge", "kind": "LM", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.23183, "lon": 135.15831, "level": 1, "value": 1, "wikidata": "Q11604933", "adj": ["st-008358"] },
     { "id": "lm-q11605042", "name": "紀州大橋", "genre": "bridge", "kind": "LM", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.25189, "lon": 135.21961, "level": 1, "value": 1, "wikidata": "Q11605042", "adj": ["st-008350"] },
-    { "id": "lm-q11659423", "name": "雑賀城", "genre": "heritage", "kind": "LM", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.19069, "lon": 135.17119, "level": 1, "value": 1, "wikidata": "Q11659423", "adj": ["st-008411"] },
     { "id": "lm-q7007362", "name": "淡嶋神社", "genre": "shrine_temple", "kind": "LM", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.2738, "lon": 135.06667, "level": 1, "value": 1, "hackable": false, "wikidata": "Q7007362" },
     { "id": "lm-q11339346", "name": "ポルトヨーロッパ", "genre": "park", "kind": "LM", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.15417, "lon": 135.17692, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11339346" },
     { "id": "st-008294", "name": "和歌山大学前駅", "genre": "station", "kind": "HUB", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.27587, "lon": 135.14692, "level": 1, "value": 1, "lines": ["南海電気鉄道 南海本線"], "adj": ["lm-q1078073", "st-008274", "st-008328"] },
@@ -100,7 +99,7 @@
     { "id": "st-008402", "name": "交通センター前駅", "genre": "station", "kind": "HUB", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.2039, "lon": 135.21795, "level": 1, "value": 1, "lines": ["和歌山電鐵 貴志川線"], "adj": ["st-008396", "st-008403"] },
     { "id": "st-008403", "name": "岡崎前駅", "genre": "station", "kind": "HUB", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.2035, "lon": 135.2247, "level": 1, "value": 1, "lines": ["和歌山電鐵 貴志川線"], "adj": ["st-008402", "st-008404"] },
     { "id": "st-008404", "name": "吉礼駅", "genre": "station", "kind": "HUB", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.20326, "lon": 135.23558, "level": 1, "value": 1, "lines": ["和歌山電鐵 貴志川線"], "adj": ["st-008400", "st-008403"] },
-    { "id": "st-008411", "name": "紀三井寺駅", "genre": "station", "kind": "HUB", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.18839, "lon": 135.18763, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 紀勢線"], "adj": ["lm-q11659423", "lm-q4707175", "st-008384", "st-008421"] },
+    { "id": "st-008411", "name": "紀三井寺駅", "genre": "station", "kind": "HUB", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.18839, "lon": 135.18763, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 紀勢線"], "adj": ["lm-q4707175", "st-008384", "st-008421"] },
 
     { "id": "lm-q11417475", "name": "和歌山県立自然博物館", "genre": "zoo_aquarium", "kind": "LM", "area": "海南市", "region": "wakayama-30202", "lat": 34.15864, "lon": 135.19208, "level": 1, "value": 1, "wikidata": "Q11417475", "adj": ["st-008452"] },
     { "id": "lm-q11562906", "name": "温山荘園", "genre": "park", "kind": "LM", "area": "海南市", "region": "wakayama-30202", "lat": 34.15814, "lon": 135.19449, "level": 1, "value": 1, "wikidata": "Q11562906", "adj": ["st-008452"] },
@@ -119,7 +118,7 @@
     { "id": "st-008224", "name": "下兵庫駅", "genre": "station", "kind": "HUB", "area": "橋本市", "region": "wakayama-30203", "lat": 34.32242, "lon": 135.63406, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 和歌山線"], "adj": ["st-008214", "st-008232"] },
     { "id": "st-008232", "name": "橋本駅", "genre": "station", "kind": "HUB", "area": "橋本市", "region": "wakayama-30203", "lat": 34.31817, "lon": 135.61419, "level": 2, "value": 2, "lines": ["南海電気鉄道 高野線", "西日本旅客鉄道 和歌山線"], "adj": ["st-008194", "st-008224", "st-008242", "st-008250"] },
     { "id": "st-008242", "name": "紀伊山田駅", "genre": "station", "kind": "HUB", "area": "橋本市", "region": "wakayama-30203", "lat": 34.31277, "lon": 135.58382, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 和歌山線"], "adj": ["st-008232", "st-008249"] },
-    { "id": "st-008249", "name": "高野口駅", "genre": "station", "kind": "HUB", "area": "橋本市", "region": "wakayama-30203", "lat": 34.30768, "lon": 135.55646, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 和歌山線"], "adj": ["st-008242", "st-008257"] },
+    { "id": "st-008249", "name": "高野口駅", "genre": "station", "kind": "HUB", "area": "橋本市", "region": "wakayama-30203", "lat": 34.30768, "lon": 135.55646, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 和歌山線"], "adj": ["lm-q11408389", "st-008242", "st-008257"] },
     { "id": "st-008250", "name": "紀伊清水駅", "genre": "station", "kind": "HUB", "area": "橋本市", "region": "wakayama-30203", "lat": 34.30727, "lon": 135.60438, "level": 1, "value": 1, "lines": ["南海電気鉄道 高野線"], "adj": ["st-008232", "st-008268"] },
     { "id": "st-008268", "name": "学文路駅", "genre": "station", "kind": "HUB", "area": "橋本市", "region": "wakayama-30203", "lat": 34.29649, "lon": 135.57946, "level": 1, "value": 1, "lines": ["南海電気鉄道 高野線"], "adj": ["st-008250", "st-008277"] },
 
@@ -135,6 +134,7 @@
     { "id": "st-008676", "name": "市役所前駅", "genre": "station", "kind": "HUB", "area": "御坊市", "region": "wakayama-30205", "lat": 33.88928, "lon": 135.15298, "level": 1, "value": 1, "lines": ["紀州鉄道 紀州鉄道線"], "adj": ["st-008672", "st-008686"] },
     { "id": "st-008686", "name": "西御坊駅", "genre": "station", "kind": "HUB", "area": "御坊市", "region": "wakayama-30205", "lat": 33.88662, "lon": 135.15296, "level": 1, "value": 1, "lines": ["紀州鉄道 紀州鉄道線"], "adj": ["lm-q11504711", "st-008676"] },
 
+    { "id": "lm-q11679330", "name": "龍神岳", "genre": "nature", "kind": "LM", "area": "田辺市", "region": "wakayama-30206", "lat": 34.05875, "lon": 135.57431, "level": 1, "value": 1, "wikidata": "Q11679330", "adj": ["lm-q11673069"] },
     { "id": "lm-q11588121", "name": "磯間岩陰遺跡", "genre": "heritage", "kind": "LM", "area": "田辺市", "region": "wakayama-30206", "lat": 33.72106, "lon": 135.38331, "level": 1, "value": 1, "wikidata": "Q11588121", "adj": ["st-008867"] },
     { "id": "lm-q11577335", "name": "田辺市立美術館", "genre": "museum", "kind": "LM", "area": "田辺市", "region": "wakayama-30206", "lat": 33.69739, "lon": 135.40075, "level": 1, "value": 1, "wikidata": "Q11577335", "adj": ["st-008896"] },
     { "id": "lm-q705035", "name": "熊野本宮大社", "genre": "shrine_temple", "kind": "LM", "area": "田辺市", "region": "wakayama-30206", "lat": 33.8404, "lon": 135.77355, "level": 3, "value": 3, "hackable": false, "wikidata": "Q705035" },
@@ -143,18 +143,18 @@
     { "id": "st-008877", "name": "紀伊新庄駅", "genre": "station", "kind": "HUB", "area": "田辺市", "region": "wakayama-30206", "lat": 33.72149, "lon": 135.40194, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 紀勢線"], "adj": ["st-008867", "st-008896"] },
 
     { "id": "lm-q11501731", "name": "新宮城", "genre": "heritage", "kind": "LM", "area": "新宮市", "region": "wakayama-30207", "lat": 33.72992, "lon": 135.99247, "level": 1, "value": 1, "wikidata": "Q11501731", "adj": ["st-008874"] },
-    { "id": "lm-q11384093", "name": "佐藤春夫記念館", "genre": "museum", "kind": "LM", "area": "新宮市", "region": "wakayama-30207", "lat": 33.73186, "lon": 135.98463, "level": 1, "value": 1, "wikidata": "Q11384093", "adj": ["lm-q17216692", "st-008874"] },
+    { "id": "lm-q11384093", "name": "佐藤春夫記念館", "genre": "museum", "kind": "LM", "area": "新宮市", "region": "wakayama-30207", "lat": 33.73186, "lon": 135.98463, "level": 1, "value": 1, "wikidata": "Q11384093", "adj": ["st-008874"] },
     { "id": "lm-q11070871", "name": "徐福公園", "genre": "park", "kind": "LM", "area": "新宮市", "region": "wakayama-30207", "lat": 33.72594, "lon": 135.9955, "level": 1, "value": 1, "wikidata": "Q11070871", "adj": ["st-008874"] },
-    { "id": "lm-q17216692", "name": "桑ノ木の滝", "genre": "nature", "kind": "LM", "area": "新宮市", "region": "wakayama-30207", "lat": 33.72222, "lon": 135.936, "level": 1, "value": 1, "wikidata": "Q17216692", "adj": ["lm-q11384093"] },
     { "id": "lm-q335618", "name": "熊野速玉大社", "genre": "shrine_temple", "kind": "LM", "area": "新宮市", "region": "wakayama-30207", "lat": 33.73209, "lon": 135.98361, "level": 3, "value": 3, "hackable": false, "wikidata": "Q335618" },
     { "id": "st-008874", "name": "新宮駅", "genre": "station", "kind": "HUB", "area": "新宮市", "region": "wakayama-30207", "lat": 33.7251, "lon": 135.99384, "level": 2, "value": 2, "lines": ["東海旅客鉄道 紀勢線", "西日本旅客鉄道 紀勢線"], "adj": ["lm-q11070871", "lm-q11384093", "lm-q11501731", "st-008865", "st-008901"] },
     { "id": "st-008901", "name": "三輪崎駅", "genre": "station", "kind": "HUB", "area": "新宮市", "region": "wakayama-30207", "lat": 33.68918, "lon": 135.98452, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 紀勢線"], "adj": ["st-008874", "st-008913"] },
     { "id": "st-008913", "name": "紀伊佐野駅", "genre": "station", "kind": "HUB", "area": "新宮市", "region": "wakayama-30207", "lat": 33.67957, "lon": 135.97022, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 紀勢線"], "adj": ["st-008901", "st-008927"] },
 
+    { "id": "lm-q11679422", "name": "龍門山", "genre": "nature", "kind": "LM", "area": "紀の川市", "region": "wakayama-30208", "lat": 34.23778, "lon": 135.41083, "level": 1, "value": 1, "wikidata": "Q11679422", "adj": ["st-008302"] },
     { "id": "lm-q92454092", "name": "丸山古墳", "genre": "monument", "kind": "LM", "area": "紀の川市", "region": "wakayama-30208", "lat": 34.21633, "lon": 135.30992, "level": 1, "value": 1, "wikidata": "Q92454092", "adj": ["st-008393"] },
     { "id": "lm-q5358314", "name": "粉河寺", "genre": "shrine_temple", "kind": "LM", "area": "紀の川市", "region": "wakayama-30208", "lat": 34.28096, "lon": 135.40591, "level": 1, "value": 1, "hackable": false, "wikidata": "Q5358314" },
     { "id": "st-008297", "name": "名手駅", "genre": "station", "kind": "HUB", "area": "紀の川市", "region": "wakayama-30208", "lat": 34.27292, "lon": 135.43364, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 和歌山線"], "adj": ["st-008289", "st-008302"] },
-    { "id": "st-008302", "name": "粉河駅", "genre": "station", "kind": "HUB", "area": "紀の川市", "region": "wakayama-30208", "lat": 34.27055, "lon": 135.40347, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 和歌山線"], "adj": ["st-008297", "st-008306"] },
+    { "id": "st-008302", "name": "粉河駅", "genre": "station", "kind": "HUB", "area": "紀の川市", "region": "wakayama-30208", "lat": 34.27055, "lon": 135.40347, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 和歌山線"], "adj": ["lm-q11679422", "st-008297", "st-008306"] },
     { "id": "st-008306", "name": "紀伊長田駅", "genre": "station", "kind": "HUB", "area": "紀の川市", "region": "wakayama-30208", "lat": 34.26827, "lon": 135.39146, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 和歌山線"], "adj": ["st-008302", "st-008312"] },
     { "id": "st-008312", "name": "打田駅", "genre": "station", "kind": "HUB", "area": "紀の川市", "region": "wakayama-30208", "lat": 34.26518, "lon": 135.36496, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 和歌山線"], "adj": ["st-008306", "st-008316"] },
     { "id": "st-008316", "name": "下井阪駅", "genre": "station", "kind": "HUB", "area": "紀の川市", "region": "wakayama-30208", "lat": 34.26199, "lon": 135.33976, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 和歌山線"], "adj": ["lm-q7960871", "st-008312", "st-008327"] },
@@ -182,7 +182,7 @@
     { "id": "st-008324", "name": "上古沢駅", "genre": "station", "kind": "HUB", "area": "九度山町", "region": "wakayama-30343", "lat": 34.25713, "lon": 135.54768, "level": 1, "value": 1, "lines": ["南海電気鉄道 高野線"], "adj": ["st-008311", "st-008360"] },
 
     { "id": "lm-q1797624", "name": "高野山大学", "genre": "university", "kind": "EDU", "area": "高野町", "region": "wakayama-30344", "lat": 34.21197, "lon": 135.58494, "level": 2, "value": 2, "wikidata": "Q1797624", "adj": ["st-008362", "st-008373"] },
-    { "id": "lm-q11673069", "name": "高野山霊宝館", "genre": "museum", "kind": "LM", "area": "高野町", "region": "wakayama-30344", "lat": 34.21128, "lon": 135.58147, "level": 1, "value": 1, "wikidata": "Q11673069", "adj": ["st-008373"] },
+    { "id": "lm-q11673069", "name": "高野山霊宝館", "genre": "museum", "kind": "LM", "area": "高野町", "region": "wakayama-30344", "lat": 34.21128, "lon": 135.58147, "level": 1, "value": 1, "wikidata": "Q11673069", "adj": ["lm-q11679330", "st-008373"] },
     { "id": "lm-q1203429", "name": "金剛峯寺", "genre": "shrine_temple", "kind": "LM", "area": "高野町", "region": "wakayama-30344", "lat": 34.21408, "lon": 135.58409, "level": 3, "value": 3, "hackable": false, "wikidata": "Q1203429" },
     { "id": "lm-q4333366", "name": "奥之院", "genre": "shrine_temple", "kind": "LM", "area": "高野町", "region": "wakayama-30344", "lat": 34.2175, "lon": 135.605, "level": 1, "value": 1, "hackable": false, "wikidata": "Q4333366" },
     { "id": "lm-q3198664", "name": "金剛三昧院", "genre": "shrine_temple", "kind": "LM", "area": "高野町", "region": "wakayama-30344", "lat": 34.21019, "lon": 135.58697, "level": 1, "value": 1, "hackable": false, "wikidata": "Q3198664" },
@@ -227,8 +227,9 @@
     { "id": "st-009231", "name": "見老津駅", "genre": "station", "kind": "HUB", "area": "すさみ町", "region": "wakayama-30406", "lat": 33.51593, "lon": 135.57547, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 紀勢線"], "adj": ["st-009191", "st-009236"] },
     { "id": "st-009236", "name": "江住駅", "genre": "station", "kind": "HUB", "area": "すさみ町", "region": "wakayama-30406", "lat": 33.5092, "lon": 135.60307, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 紀勢線"], "adj": ["st-009231", "st-009248"] },
 
-    { "id": "lm-q1365882", "name": "那智滝", "genre": "nature", "kind": "LM", "area": "那智勝浦町", "region": "wakayama-30421", "lat": 33.672, "lon": 135.891, "level": 3, "value": 3, "wikidata": "Q1365882", "adj": ["st-008957"] },
+    { "id": "lm-q1365882", "name": "那智滝", "genre": "nature", "kind": "LM", "area": "那智勝浦町", "region": "wakayama-30421", "lat": 33.672, "lon": 135.891, "level": 3, "value": 3, "wikidata": "Q1365882", "adj": ["lm-q11642744", "st-008957"] },
     { "id": "lm-q122594", "name": "那智勝浦観測所", "genre": "observatory", "kind": "EDU", "area": "那智勝浦町", "region": "wakayama-30421", "lat": 33.61, "lon": 135.92472, "level": 2, "value": 2, "wikidata": "Q122594", "adj": ["st-009001", "st-009025"] },
+    { "id": "lm-q11642744", "name": "那智山", "genre": "nature", "kind": "LM", "area": "那智勝浦町", "region": "wakayama-30421", "lat": 33.68333, "lon": 135.88333, "level": 1, "value": 1, "wikidata": "Q11642744", "adj": ["lm-q1365882"] },
     { "id": "lm-q11361369", "name": "下里古墳", "genre": "monument", "kind": "LM", "area": "那智勝浦町", "region": "wakayama-30421", "lat": 33.58425, "lon": 135.92278, "level": 1, "value": 1, "wikidata": "Q11361369", "adj": ["st-009048"] },
     { "id": "lm-q710359", "name": "熊野那智大社", "genre": "shrine_temple", "kind": "LM", "area": "那智勝浦町", "region": "wakayama-30421", "lat": 33.66857, "lon": 135.89049, "level": 2, "value": 2, "hackable": false, "wikidata": "Q710359" },
     { "id": "lm-q1476235", "name": "青岸渡寺", "genre": "shrine_temple", "kind": "LM", "area": "那智勝浦町", "region": "wakayama-30421", "lat": 33.66964, "lon": 135.88989, "level": 2, "value": 2, "hackable": false, "wikidata": "Q1476235" },
@@ -248,12 +249,11 @@
     { "id": "lm-q11322055", "name": "トルコ記念館", "genre": "museum", "kind": "LM", "area": "串本町", "region": "wakayama-30428", "lat": 33.46917, "lon": 135.85861, "level": 2, "value": 2, "wikidata": "Q11322055", "adj": ["st-009224"] },
     { "id": "lm-q11565690", "name": "潮岬", "genre": "nature", "kind": "LM", "area": "串本町", "region": "wakayama-30428", "lat": 33.4375, "lon": 135.75444, "level": 1, "value": 1, "wikidata": "Q11565690", "adj": ["st-009265"] },
     { "id": "lm-q11367892", "name": "串本応挙芦雪館", "genre": "museum", "kind": "LM", "area": "串本町", "region": "wakayama-30428", "lat": 33.47044, "lon": 135.77828, "level": 1, "value": 1, "wikidata": "Q11367892", "adj": ["st-009265"] },
-    { "id": "lm-q11367893", "name": "串本海中公園", "genre": "park", "kind": "LM", "area": "串本町", "region": "wakayama-30428", "lat": 33.48086, "lon": 135.74497, "level": 1, "value": 1, "wikidata": "Q11367893", "adj": ["st-009255"] },
     { "id": "st-009208", "name": "紀伊田原駅", "genre": "station", "kind": "HUB", "area": "串本町", "region": "wakayama-30428", "lat": 33.53599, "lon": 135.86794, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 紀勢線"], "adj": ["st-009114", "st-009224"] },
     { "id": "st-009224", "name": "古座駅", "genre": "station", "kind": "HUB", "area": "串本町", "region": "wakayama-30428", "lat": 33.51779, "lon": 135.82094, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 紀勢線"], "adj": ["lm-q11322055", "st-009208", "st-009251"] },
     { "id": "st-009248", "name": "和深駅", "genre": "station", "kind": "HUB", "area": "串本町", "region": "wakayama-30428", "lat": 33.5011, "lon": 135.65459, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 紀勢線"], "adj": ["st-009236", "st-009257"] },
     { "id": "st-009251", "name": "紀伊姫駅", "genre": "station", "kind": "HUB", "area": "串本町", "region": "wakayama-30428", "lat": 33.49703, "lon": 135.79619, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 紀勢線"], "adj": ["st-009224", "st-009265"] },
-    { "id": "st-009255", "name": "紀伊有田駅", "genre": "station", "kind": "HUB", "area": "串本町", "region": "wakayama-30428", "lat": 33.49087, "lon": 135.73585, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 紀勢線"], "adj": ["lm-q11367893", "st-009259", "st-009265"] },
+    { "id": "st-009255", "name": "紀伊有田駅", "genre": "station", "kind": "HUB", "area": "串本町", "region": "wakayama-30428", "lat": 33.49087, "lon": 135.73585, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 紀勢線"], "adj": ["st-009259", "st-009265"] },
     { "id": "st-009257", "name": "田子駅", "genre": "station", "kind": "HUB", "area": "串本町", "region": "wakayama-30428", "lat": 33.4903, "lon": 135.67712, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 紀勢線"], "adj": ["st-009248", "st-009259"] },
     { "id": "st-009259", "name": "田並駅", "genre": "station", "kind": "HUB", "area": "串本町", "region": "wakayama-30428", "lat": 33.48797, "lon": 135.71859, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 紀勢線"], "adj": ["st-009255", "st-009257"] },
     { "id": "st-009265", "name": "串本駅", "genre": "station", "kind": "HUB", "area": "串本町", "region": "wakayama-30428", "lat": 33.47521, "lon": 135.78137, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 紀勢線"], "adj": ["lm-q11367892", "lm-q11565690", "st-009251", "st-009255"] }

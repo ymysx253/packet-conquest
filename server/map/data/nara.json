@@ -1,7 +1,7 @@
 {
   "region": "nara",
   "name": "奈良県",
-  "version": 13,
+  "version": 18,
   "updatedAt": "2026-10-19",
   "note": "奈良県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -295,7 +295,7 @@
 
     { "id": "lm-q3139461", "name": "大台ヶ原山", "genre": "nature", "kind": "LM", "area": "上北山村", "region": "nara-29451", "lat": 34.11, "lon": 136.03, "level": 2, "value": 2, "wikidata": "Q3139461", "adj": ["lm-q11391726"] },
 
-    { "id": "lm-q6924017", "name": "高見山", "genre": "nature", "kind": "LM", "area": "東吉野村", "region": "nara-29453", "lat": 34.429, "lon": 136.088, "level": 2, "value": 2, "wikidata": "Q6924017", "adj": ["lm-q11635843", "lm-q6922333"] },
+    { "id": "lm-q6924017", "name": "高見山", "genre": "nature", "kind": "LM", "area": "東吉野村", "region": "nara-29453", "lat": 34.429, "lon": 136.088, "level": 2, "value": 2, "wikidata": "Q6924017", "adj": ["lm-q11355210", "lm-q6921722"] },
     { "id": "lm-q246370", "name": "丹生川上神社", "genre": "shrine_temple", "kind": "LM", "area": "東吉野村", "region": "nara-29453", "lat": 34.39026, "lon": 135.98645, "level": 1, "value": 1, "hackable": false, "wikidata": "Q246370" }
   ]
 }

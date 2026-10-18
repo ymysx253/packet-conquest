@@ -1,7 +1,7 @@
 {
   "region": "niigata",
   "name": "新潟県",
-  "version": 13,
+  "version": 18,
   "updatedAt": "2026-10-19",
   "note": "新潟県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -53,20 +53,17 @@
     { "id": "lm-q11503053", "name": "新潟県立大学", "genre": "university", "kind": "EDU", "area": "新潟市東区", "region": "niigata-15102", "lat": 37.9236, "lon": 139.127, "level": 1, "value": 1, "wikidata": "Q11503053", "adj": ["st-001294"] },
     { "id": "st-001294", "name": "大形駅", "genre": "station", "kind": "HUB", "area": "新潟市東区", "region": "niigata-15102", "lat": 37.91525, "lon": 139.12856, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 白新線"], "adj": ["lm-q11503053", "lm-q1197536", "st-001290", "st-001296", "st-001304"] },
     { "id": "st-001304", "name": "東新潟駅", "genre": "station", "kind": "HUB", "area": "新潟市東区", "region": "niigata-15102", "lat": 37.90849, "lon": 139.10788, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 白新線"], "adj": ["st-001294", "st-001296"] },
-    { "id": "st-001308", "name": "越後石山駅", "genre": "station", "kind": "HUB", "area": "新潟市東区", "region": "niigata-15102", "lat": 37.89692, "lon": 139.09481, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 信越線"], "adj": ["lm-q494749", "lm-q7034385", "st-001296", "st-001316"] },
+    { "id": "st-001308", "name": "越後石山駅", "genre": "station", "kind": "HUB", "area": "新潟市東区", "region": "niigata-15102", "lat": 37.89692, "lon": 139.09481, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 信越線"], "adj": ["lm-q494749", "st-001296", "st-001316"] },
 
     { "id": "lm-q494749", "name": "新潟スタジアム", "genre": "stadium", "kind": "LM", "area": "新潟市中央区", "region": "niigata-15103", "lat": 37.8825, "lon": 139.05917, "level": 4, "value": 4, "wikidata": "Q494749", "adj": ["st-001296", "st-001301", "st-001308", "st-010187"] },
     { "id": "lm-q5640656", "name": "白山公園", "genre": "park", "kind": "LM", "area": "新潟市中央区", "region": "niigata-15103", "lat": 37.91446, "lon": 139.03917, "level": 1, "value": 1, "wikidata": "Q5640656", "adj": ["st-001301"] },
     { "id": "lm-q4854329", "name": "萬代橋", "genre": "bridge", "kind": "LM", "area": "新潟市中央区", "region": "niigata-15103", "lat": 37.91944, "lon": 139.05306, "level": 1, "value": 1, "wikidata": "Q4854329", "adj": ["st-001296"] },
     { "id": "lm-q7754223", "name": "日本歯科大学", "genre": "university", "kind": "EDU", "area": "新潟市中央区", "region": "niigata-15103", "lat": 37.91, "lon": 139.01, "level": 1, "value": 1, "wikidata": "Q7754223", "adj": ["st-001306"] },
-    { "id": "lm-q7034385", "name": "新潟県立野球場", "genre": "stadium", "kind": "LM", "area": "新潟市中央区", "region": "niigata-15103", "lat": 37.87942, "lon": 139.06427, "level": 1, "value": 1, "wikidata": "Q7034385", "adj": ["st-001308"] },
-    { "id": "lm-q11502897", "name": "新潟市民芸術文化会館", "genre": "theater", "kind": "LM", "area": "新潟市中央区", "region": "niigata-15103", "lat": 37.91344, "lon": 139.04047, "level": 1, "value": 1, "wikidata": "Q11502897", "adj": ["st-010187"] },
-    { "id": "lm-q7034374", "name": "新潟市陸上競技場", "genre": "stadium", "kind": "LM", "area": "新潟市中央区", "region": "niigata-15103", "lat": 37.91304, "lon": 139.03614, "level": 1, "value": 1, "wikidata": "Q7034374", "adj": ["st-001301"] },
     { "id": "lm-q24805640", "name": "カトリック新潟教会", "genre": "shrine_temple", "kind": "LM", "area": "新潟市中央区", "region": "niigata-15103", "lat": 37.925, "lon": 139.03861, "level": 1, "value": 1, "hackable": false, "wikidata": "Q24805640" },
     { "id": "st-001296", "name": "新潟駅", "genre": "station", "kind": "HUB", "area": "新潟市中央区", "region": "niigata-15103", "lat": 37.91225, "lon": 139.06163, "level": 3, "value": 3, "lines": ["東日本旅客鉄道 上越新幹線", "東日本旅客鉄道 信越線", "東日本旅客鉄道 白新線", "東日本旅客鉄道 越後線"], "adj": ["lm-q4854329", "lm-q494749", "st-001294", "st-001304", "st-001308", "st-001406", "st-010187"] },
-    { "id": "st-001301", "name": "白山駅", "genre": "station", "kind": "HUB", "area": "新潟市中央区", "region": "niigata-15103", "lat": 37.91189, "lon": 139.03008, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 越後線"], "adj": ["lm-q494749", "lm-q5640656", "lm-q7034374", "st-001306", "st-010187"] },
+    { "id": "st-001301", "name": "白山駅", "genre": "station", "kind": "HUB", "area": "新潟市中央区", "region": "niigata-15103", "lat": 37.91189, "lon": 139.03008, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 越後線"], "adj": ["lm-q494749", "lm-q5640656", "st-001306", "st-010187"] },
     { "id": "st-001306", "name": "関屋駅", "genre": "station", "kind": "HUB", "area": "新潟市中央区", "region": "niigata-15103", "lat": 37.90553, "lon": 139.01423, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 越後線"], "adj": ["lm-q7754223", "st-001301", "st-001307"] },
-    { "id": "st-010187", "name": "上所駅", "genre": "station", "kind": "HUB", "area": "新潟市中央区", "region": "niigata-15103", "lat": 37.90716, "lon": 139.04595, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 越後線"], "adj": ["lm-q11502897", "lm-q494749", "st-001296", "st-001301"] },
+    { "id": "st-010187", "name": "上所駅", "genre": "station", "kind": "HUB", "area": "新潟市中央区", "region": "niigata-15103", "lat": 37.90716, "lon": 139.04595, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 越後線"], "adj": ["lm-q494749", "st-001296", "st-001301"] },
 
     { "id": "lm-q11246368", "name": "北方文化博物館", "genre": "museum", "kind": "LM", "area": "新潟市江南区", "region": "niigata-15104", "lat": 37.82962, "lon": 139.15215, "level": 1, "value": 1, "wikidata": "Q11246368", "adj": ["st-001336"] },
     { "id": "st-001316", "name": "亀田駅", "genre": "station", "kind": "HUB", "area": "新潟市江南区", "region": "niigata-15104", "lat": 37.87718, "lon": 139.10824, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 信越線"], "adj": ["st-001308", "st-001330"] },
@@ -97,6 +94,7 @@
 
     { "id": "lm-q3114304", "name": "長岡技術科学大学", "genre": "university", "kind": "EDU", "area": "長岡市", "region": "niigata-15202", "lat": 37.42526, "lon": 138.77818, "level": 2, "value": 2, "wikidata": "Q3114304", "adj": ["st-001510", "st-001517"] },
     { "id": "lm-q11652026", "name": "長岡城", "genre": "heritage", "kind": "LM", "area": "長岡市", "region": "niigata-15202", "lat": 37.44742, "lon": 138.85314, "level": 1, "value": 1, "wikidata": "Q11652026", "adj": ["st-001489"] },
+    { "id": "lm-q152041", "name": "弥彦山", "genre": "nature", "kind": "LM", "area": "長岡市", "region": "niigata-15202", "lat": 37.70472, "lon": 138.80889, "level": 1, "value": 1, "wikidata": "Q152041", "adj": ["st-001390"] },
     { "id": "lm-q11503104", "name": "新潟県立歴史博物館", "genre": "museum", "kind": "LM", "area": "長岡市", "region": "niigata-15202", "lat": 37.43833, "lon": 138.76778, "level": 1, "value": 1, "wikidata": "Q11503104", "adj": ["lm-q104708800", "st-001510"] },
     { "id": "lm-q11535106", "name": "栃尾城", "genre": "heritage", "kind": "LM", "area": "長岡市", "region": "niigata-15202", "lat": 37.47225, "lon": 138.98792, "level": 1, "value": 1, "wikidata": "Q11535106", "adj": ["st-001458"] },
     { "id": "lm-q6433124", "name": "越路橋", "genre": "bridge", "kind": "LM", "area": "長岡市", "region": "niigata-15202", "lat": 37.39333, "lon": 138.81194, "level": 1, "value": 1, "wikidata": "Q6433124", "adj": ["st-001504"] },
@@ -117,6 +115,7 @@
     { "id": "st-001531", "name": "塚山駅", "genre": "station", "kind": "HUB", "area": "長岡市", "region": "niigata-15202", "lat": 37.35467, "lon": 138.7289, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 信越線"], "adj": ["st-001517", "st-001521"] },
     { "id": "st-001558", "name": "越後川口駅", "genre": "station", "kind": "HUB", "area": "長岡市", "region": "niigata-15202", "lat": 37.27294, "lon": 138.86206, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 上越線", "東日本旅客鉄道 飯山線"], "adj": ["st-001548", "st-001564", "st-001569"] },
 
+    { "id": "lm-q11604549", "name": "粟ヶ岳 (新潟県)", "genre": "nature", "kind": "LM", "area": "三条市", "region": "niigata-15204", "lat": 37.55525, "lon": 139.1886, "level": 1, "value": 1, "wikidata": "Q11604549", "adj": ["st-001403"] },
     { "id": "st-001409", "name": "保内駅", "genre": "station", "kind": "HUB", "area": "三条市", "region": "niigata-15204", "lat": 37.63902, "lon": 139.014, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 信越線"], "adj": ["st-001403", "st-001415"] },
     { "id": "st-001413", "name": "北三条駅", "genre": "station", "kind": "HUB", "area": "三条市", "region": "niigata-15204", "lat": 37.63264, "lon": 138.95638, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 弥彦線"], "adj": ["st-001406", "st-001415"] },
     { "id": "st-001415", "name": "東三条駅", "genre": "station", "kind": "HUB", "area": "三条市", "region": "niigata-15204", "lat": 37.62809, "lon": 138.97283, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 信越線", "東日本旅客鉄道 弥彦線"], "adj": ["st-001409", "st-001413", "st-001418"] },
@@ -151,12 +150,11 @@
     { "id": "st-001299", "name": "中浦駅", "genre": "station", "kind": "HUB", "area": "新発田市", "region": "niigata-15206", "lat": 37.91212, "lon": 139.30266, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-001281", "st-001312"] },
     { "id": "st-001312", "name": "月岡駅", "genre": "station", "kind": "HUB", "area": "新発田市", "region": "niigata-15206", "lat": 37.88935, "lon": 139.27248, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-001299", "st-001320"] },
 
-    { "id": "lm-q114234565", "name": "山本調整池", "genre": "nature", "kind": "LM", "area": "小千谷市", "region": "niigata-15208", "lat": 37.29111, "lon": 138.80556, "level": 1, "value": 1, "wikidata": "Q114234565", "adj": ["st-001548"] },
-    { "id": "st-001548", "name": "小千谷駅", "genre": "station", "kind": "HUB", "area": "小千谷市", "region": "niigata-15208", "lat": 37.31006, "lon": 138.81328, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["lm-q114234565", "st-001520", "st-001558"] },
+    { "id": "st-001548", "name": "小千谷駅", "genre": "station", "kind": "HUB", "area": "小千谷市", "region": "niigata-15208", "lat": 37.31006, "lon": 138.81328, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["st-001520", "st-001558"] },
     { "id": "st-001569", "name": "内ヶ巻駅", "genre": "station", "kind": "HUB", "area": "小千谷市", "region": "niigata-15208", "lat": 37.25003, "lon": 138.8514, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 飯山線"], "adj": ["st-001558", "st-001572"] },
     { "id": "st-001572", "name": "越後岩沢駅", "genre": "station", "kind": "HUB", "area": "小千谷市", "region": "niigata-15208", "lat": 37.24056, "lon": 138.79671, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 飯山線"], "adj": ["st-001569", "st-001589"] },
 
-    { "id": "st-001403", "name": "加茂駅", "genre": "station", "kind": "HUB", "area": "加茂市", "region": "niigata-15209", "lat": 37.65791, "lon": 139.04815, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 信越線"], "adj": ["st-001392", "st-001409"] },
+    { "id": "st-001403", "name": "加茂駅", "genre": "station", "kind": "HUB", "area": "加茂市", "region": "niigata-15209", "lat": 37.65791, "lon": 139.04815, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 信越線"], "adj": ["lm-q11604549", "st-001392", "st-001409"] },
 
     { "id": "lm-q15867362", "name": "十日町市博物館", "genre": "museum", "kind": "LM", "area": "十日町市", "region": "niigata-15210", "lat": 37.14083, "lon": 138.75583, "level": 1, "value": 1, "wikidata": "Q15867362", "adj": ["st-001621"] },
     { "id": "st-001589", "name": "下条駅", "genre": "station", "kind": "HUB", "area": "十日町市", "region": "niigata-15210", "lat": 37.19806, "lon": 138.78005, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 飯山線"], "adj": ["st-001572", "st-001607"] },
@@ -172,11 +170,12 @@
     { "id": "st-001445", "name": "見附駅", "genre": "station", "kind": "HUB", "area": "見附市", "region": "niigata-15211", "lat": 37.53908, "lon": 138.90411, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 信越線"], "adj": ["st-001432", "st-001458"] },
 
     { "id": "lm-q11522758", "name": "村上城", "genre": "heritage", "kind": "LM", "area": "村上市", "region": "niigata-15212", "lat": 38.21985, "lon": 139.485, "level": 2, "value": 2, "wikidata": "Q11522758", "adj": ["st-001203", "st-001210"] },
+    { "id": "lm-q11378334", "name": "以東岳", "genre": "nature", "kind": "LM", "area": "村上市", "region": "niigata-15212", "lat": 38.34278, "lon": 139.84889, "level": 1, "value": 1, "wikidata": "Q11378334", "adj": ["lm-q3072106"] },
     { "id": "lm-q61721910", "name": "イヨボヤ会館", "genre": "zoo_aquarium", "kind": "LM", "area": "村上市", "region": "niigata-15212", "lat": 38.22778, "lon": 139.47139, "level": 1, "value": 1, "wikidata": "Q61721910", "adj": ["st-001203"] },
     { "id": "st-001065", "name": "府屋駅", "genre": "station", "kind": "HUB", "area": "村上市", "region": "niigata-15212", "lat": 38.51336, "lon": 139.53032, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-001056", "st-001070"] },
     { "id": "st-001070", "name": "勝木駅", "genre": "station", "kind": "HUB", "area": "村上市", "region": "niigata-15212", "lat": 38.48963, "lon": 139.51729, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-001065", "st-001076"] },
     { "id": "st-001076", "name": "越後寒川駅", "genre": "station", "kind": "HUB", "area": "村上市", "region": "niigata-15212", "lat": 38.44807, "lon": 139.48929, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-001070", "st-001094"] },
-    { "id": "st-001094", "name": "今川駅", "genre": "station", "kind": "HUB", "area": "村上市", "region": "niigata-15212", "lat": 38.40981, "lon": 139.46822, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-001076", "st-001111"] },
+    { "id": "st-001094", "name": "今川駅", "genre": "station", "kind": "HUB", "area": "村上市", "region": "niigata-15212", "lat": 38.40981, "lon": 139.46822, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["isl-q49511", "st-001076", "st-001111"] },
     { "id": "st-001111", "name": "桑川駅", "genre": "station", "kind": "HUB", "area": "村上市", "region": "niigata-15212", "lat": 38.37437, "lon": 139.45843, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-001094", "st-001129"] },
     { "id": "st-001129", "name": "越後早川駅", "genre": "station", "kind": "HUB", "area": "村上市", "region": "niigata-15212", "lat": 38.31552, "lon": 139.44991, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-001111", "st-001164"] },
     { "id": "st-001164", "name": "間島駅", "genre": "station", "kind": "HUB", "area": "村上市", "region": "niigata-15212", "lat": 38.27204, "lon": 139.45005, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-001129", "st-001203"] },
@@ -230,7 +229,6 @@
     { "id": "lm-q4802140", "name": "新潟県立看護大学", "genre": "university", "kind": "EDU", "area": "上越市", "region": "niigata-15222", "lat": 37.10569, "lon": 138.26844, "level": 1, "value": 1, "wikidata": "Q4802140", "adj": ["lm-q11453446", "st-001637"] },
     { "id": "lm-q17213360", "name": "リージョンプラザ上越", "genre": "stadium", "kind": "LM", "area": "上越市", "region": "niigata-15222", "lat": 37.15442, "lon": 138.25144, "level": 1, "value": 1, "wikidata": "Q17213360", "adj": ["st-001613"] },
     { "id": "lm-q11453446", "name": "宮口古墳群", "genre": "heritage", "kind": "LM", "area": "上越市", "region": "niigata-15222", "lat": 37.09314, "lon": 138.35703, "level": 1, "value": 1, "wikidata": "Q11453446", "adj": ["lm-q4802140"] },
-    { "id": "lm-q11360163", "name": "上越市立水族博物館", "genre": "zoo_aquarium", "kind": "LM", "area": "上越市", "region": "niigata-15222", "lat": 37.1735, "lon": 138.23297, "level": 1, "value": 1, "wikidata": "Q11360163", "adj": ["st-001600"] },
     { "id": "lm-q172417", "name": "居多神社", "genre": "shrine_temple", "kind": "LM", "area": "上越市", "region": "niigata-15222", "lat": 37.16646, "lon": 138.22334, "level": 1, "value": 1, "hackable": false, "wikidata": "Q172417" },
     { "id": "st-001554", "name": "柿崎駅", "genre": "station", "kind": "HUB", "area": "上越市", "region": "niigata-15222", "lat": 37.27707, "lon": 138.38539, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 信越線"], "adj": ["st-001546", "st-001567"] },
     { "id": "st-001567", "name": "上下浜駅", "genre": "station", "kind": "HUB", "area": "上越市", "region": "niigata-15222", "lat": 37.25188, "lon": 138.36106, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 信越線"], "adj": ["st-001554", "st-001574"] },
@@ -240,7 +238,7 @@
     { "id": "st-001590", "name": "くびき駅", "genre": "station", "kind": "HUB", "area": "上越市", "region": "niigata-15222", "lat": 37.19791, "lon": 138.36195, "level": 1, "value": 1, "lines": ["北越急行 ほくほく線"], "adj": ["st-001583", "st-001593"] },
     { "id": "st-001593", "name": "大池いこいの森駅", "genre": "station", "kind": "HUB", "area": "上越市", "region": "niigata-15222", "lat": 37.1846, "lon": 138.37308, "level": 1, "value": 1, "lines": ["北越急行 ほくほく線"], "adj": ["st-001590", "st-001608"] },
     { "id": "st-001594", "name": "黒井駅", "genre": "station", "kind": "HUB", "area": "上越市", "region": "niigata-15222", "lat": 37.18359, "lon": 138.2678, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 信越線"], "adj": ["st-001583", "st-001600"] },
-    { "id": "st-001600", "name": "直江津駅", "genre": "station", "kind": "HUB", "area": "上越市", "region": "niigata-15222", "lat": 37.1697, "lon": 138.24128, "level": 2, "value": 2, "lines": ["えちごトキめき鉄道 妙高はねうまライン", "えちごトキめき鉄道 日本海ひすいライン", "東日本旅客鉄道 信越線"], "adj": ["lm-q11360163", "lm-q1197131", "st-001594", "st-001606", "st-001613"] },
+    { "id": "st-001600", "name": "直江津駅", "genre": "station", "kind": "HUB", "area": "上越市", "region": "niigata-15222", "lat": 37.1697, "lon": 138.24128, "level": 2, "value": 2, "lines": ["えちごトキめき鉄道 妙高はねうまライン", "えちごトキめき鉄道 日本海ひすいライン", "東日本旅客鉄道 信越線"], "adj": ["lm-q1197131", "st-001594", "st-001606", "st-001613"] },
     { "id": "st-001605", "name": "有間川駅", "genre": "station", "kind": "HUB", "area": "上越市", "region": "niigata-15222", "lat": 37.16318, "lon": 138.13587, "level": 1, "value": 1, "lines": ["えちごトキめき鉄道 日本海ひすいライン"], "adj": ["st-001606", "st-001610"] },
     { "id": "st-001606", "name": "谷浜駅", "genre": "station", "kind": "HUB", "area": "上越市", "region": "niigata-15222", "lat": 37.16266, "lon": 138.17497, "level": 1, "value": 1, "lines": ["えちごトキめき鉄道 日本海ひすいライン"], "adj": ["lm-q1197131", "st-001600", "st-001605"] },
     { "id": "st-001608", "name": "うらがわら駅", "genre": "station", "kind": "HUB", "area": "上越市", "region": "niigata-15222", "lat": 37.15946, "lon": 138.41863, "level": 1, "value": 1, "lines": ["北越急行 ほくほく線"], "adj": ["st-001593", "st-001611"] },
@@ -261,7 +259,8 @@
     { "id": "st-001336", "name": "京ヶ瀬駅", "genre": "station", "kind": "HUB", "area": "阿賀野市", "region": "niigata-15223", "lat": 37.81741, "lon": 139.17772, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["lm-q11246368", "st-001329", "st-001349"] },
 
     { "id": "lm-q1019284", "name": "佐渡空港", "genre": "airport", "kind": "GW", "area": "佐渡市", "region": "niigata-15224", "lat": 38.06111, "lon": 138.41417, "level": 2, "value": 2, "wikidata": "Q1019284", "adj": ["lm-q11398862", "lm-q85159020"] },
-    { "id": "lm-q11398862", "name": "加茂湖", "genre": "nature", "kind": "LM", "area": "佐渡市", "region": "niigata-15224", "lat": 38.0638, "lon": 138.4368, "level": 1, "value": 1, "wikidata": "Q11398862", "adj": ["lm-q1019284", "st-001324"] },
+    { "id": "lm-q11398862", "name": "加茂湖", "genre": "nature", "kind": "LM", "area": "佐渡市", "region": "niigata-15224", "lat": 38.0638, "lon": 138.4368, "level": 1, "value": 1, "wikidata": "Q11398862", "adj": ["lm-q1019284", "lm-q20982992", "st-001324"] },
+    { "id": "lm-q20982992", "name": "金剛山", "genre": "nature", "kind": "LM", "area": "佐渡市", "region": "niigata-15224", "lat": 38.1723, "lon": 138.4193, "level": 1, "value": 1, "wikidata": "Q20982992", "adj": ["lm-q11398862"] },
     { "id": "lm-q127378385", "name": "佐渡島の金山", "genre": "monument", "kind": "LM", "area": "佐渡市", "region": "niigata-15224", "lat": 38.04083, "lon": 138.25778, "level": 1, "value": 1, "wikidata": "Q127378385", "adj": ["lm-q85159020"] },
     { "id": "lm-q85159020", "name": "佐渡博物館", "genre": "museum", "kind": "LM", "area": "佐渡市", "region": "niigata-15224", "lat": 37.98611, "lon": 138.34472, "level": 1, "value": 1, "wikidata": "Q85159020", "adj": ["lm-q1019284", "lm-q127378385"] },
     { "id": "lm-q172382", "name": "度津神社", "genre": "shrine_temple", "kind": "LM", "area": "佐渡市", "region": "niigata-15224", "lat": 37.86032, "lon": 138.33074, "level": 1, "value": 1, "hackable": false, "wikidata": "Q172382" },
@@ -278,8 +277,9 @@
     { "id": "st-001575", "name": "小出駅", "genre": "station", "kind": "HUB", "area": "魚沼市", "region": "niigata-15225", "lat": 37.23247, "lon": 138.9546, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 上越線", "東日本旅客鉄道 只見線"], "adj": ["st-001563", "st-001573", "st-001592"] },
 
     { "id": "lm-q609375", "name": "国際大学", "genre": "university", "kind": "EDU", "area": "南魚沼市", "region": "niigata-15226", "lat": 37.14826, "lon": 138.94739, "level": 2, "value": 2, "wikidata": "Q609375", "adj": ["lm-q6920545", "st-001603", "st-001631"] },
-    { "id": "lm-q6920545", "name": "越後駒ヶ岳", "genre": "nature", "kind": "LM", "area": "南魚沼市", "region": "niigata-15226", "lat": 37.12278, "lon": 139.07472, "level": 2, "value": 2, "wikidata": "Q6920545", "adj": ["lm-q3695438", "lm-q609375"] },
-    { "id": "lm-q11425150", "name": "坂戸城", "genre": "heritage", "kind": "LM", "area": "南魚沼市", "region": "niigata-15226", "lat": 37.05907, "lon": 138.89839, "level": 1, "value": 1, "wikidata": "Q11425150", "adj": ["st-001654"] },
+    { "id": "lm-q6920545", "name": "越後駒ヶ岳", "genre": "nature", "kind": "LM", "area": "南魚沼市", "region": "niigata-15226", "lat": 37.12278, "lon": 139.07472, "level": 2, "value": 2, "wikidata": "Q6920545", "adj": ["lm-q609375"] },
+    { "id": "lm-q11479929", "name": "巻機山", "genre": "nature", "kind": "LM", "area": "南魚沼市", "region": "niigata-15226", "lat": 36.97861, "lon": 138.96417, "level": 1, "value": 1, "wikidata": "Q11479929", "adj": ["lm-q11425150"] },
+    { "id": "lm-q11425150", "name": "坂戸城", "genre": "heritage", "kind": "LM", "area": "南魚沼市", "region": "niigata-15226", "lat": 37.05907, "lon": 138.89839, "level": 1, "value": 1, "wikidata": "Q11425150", "adj": ["lm-q11479929", "st-001654"] },
     { "id": "st-001592", "name": "八色駅", "genre": "station", "kind": "HUB", "area": "南魚沼市", "region": "niigata-15226", "lat": 37.19118, "lon": 138.9345, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["st-001575", "st-001603"] },
     { "id": "st-001603", "name": "浦佐駅", "genre": "station", "kind": "HUB", "area": "南魚沼市", "region": "niigata-15226", "lat": 37.16803, "lon": 138.92293, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 上越新幹線", "東日本旅客鉄道 上越線"], "adj": ["lm-q609375", "st-001489", "st-001592", "st-001631", "st-001717"] },
     { "id": "st-001631", "name": "五日町駅", "genre": "station", "kind": "HUB", "area": "南魚沼市", "region": "niigata-15226", "lat": 37.12056, "lon": 138.90877, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["lm-q609375", "st-001603", "st-001654"] },
@@ -294,7 +294,7 @@
     { "id": "st-001254", "name": "中条駅", "genre": "station", "kind": "HUB", "area": "胎内市", "region": "niigata-15227", "lat": 38.05076, "lon": 139.39857, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-001233", "st-001265"] },
 
     { "id": "lm-q195684", "name": "彌彦神社", "genre": "shrine_temple", "kind": "LM", "area": "弥彦村", "region": "niigata-15342", "lat": 37.7066, "lon": 138.826, "level": 1, "value": 1, "hackable": false, "wikidata": "Q195684" },
-    { "id": "st-001390", "name": "弥彦駅", "genre": "station", "kind": "HUB", "area": "弥彦村", "region": "niigata-15342", "lat": 37.69935, "lon": 138.83241, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 弥彦線"], "adj": ["st-001393"] },
+    { "id": "st-001390", "name": "弥彦駅", "genre": "station", "kind": "HUB", "area": "弥彦村", "region": "niigata-15342", "lat": 37.69935, "lon": 138.83241, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 弥彦線"], "adj": ["lm-q152041", "st-001393"] },
     { "id": "st-001393", "name": "矢作駅", "genre": "station", "kind": "HUB", "area": "弥彦村", "region": "niigata-15342", "lat": 37.69049, "lon": 138.85202, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 弥彦線"], "adj": ["st-001390", "st-001395"] },
 
     { "id": "st-001384", "name": "田上駅", "genre": "station", "kind": "HUB", "area": "田上町", "region": "niigata-15361", "lat": 37.71988, "lon": 139.07512, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 信越線"], "adj": ["st-001375", "st-001392"] },
@@ -331,6 +331,8 @@
     { "id": "st-001231", "name": "越後大島駅", "genre": "station", "kind": "HUB", "area": "関川村", "region": "niigata-15581", "lat": 38.09983, "lon": 139.51763, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 米坂線"], "adj": ["st-001225", "st-001235"] },
     { "id": "st-001235", "name": "越後下関駅", "genre": "station", "kind": "HUB", "area": "関川村", "region": "niigata-15581", "lat": 38.09013, "lon": 139.5594, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 米坂線"], "adj": ["st-001231", "st-001240"] },
     { "id": "st-001240", "name": "越後片貝駅", "genre": "station", "kind": "HUB", "area": "関川村", "region": "niigata-15581", "lat": 38.07056, "lon": 139.62194, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 米坂線"], "adj": ["st-001235", "st-001242"] },
-    { "id": "st-001242", "name": "越後金丸駅", "genre": "station", "kind": "HUB", "area": "関川村", "region": "niigata-15581", "lat": 38.06688, "lon": 139.66343, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 米坂線"], "adj": ["st-001240", "st-001245"] }
+    { "id": "st-001242", "name": "越後金丸駅", "genre": "station", "kind": "HUB", "area": "関川村", "region": "niigata-15581", "lat": 38.06688, "lon": 139.66343, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 米坂線"], "adj": ["st-001240", "st-001245"] },
+
+    { "id": "isl-q49511", "name": "粟島", "genre": "nature", "kind": "GW", "area": "粟島浦村", "region": "niigata-15586", "lat": 38.46098, "lon": 139.24055, "level": 3, "value": 3, "wikidata": "Q49511", "adj": ["st-001094"] }
   ]
 }

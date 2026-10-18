@@ -1,7 +1,7 @@
 {
   "region": "gifu",
   "name": "岐阜県",
-  "version": 13,
+  "version": 18,
   "updatedAt": "2026-10-19",
   "note": "岐阜県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -317,6 +317,6 @@
     { "id": "st-004734", "name": "御嵩口駅", "genre": "station", "kind": "HUB", "area": "御嵩町", "region": "gifu-21521", "lat": 35.43103, "lon": 137.12191, "level": 1, "value": 1, "lines": ["名古屋鉄道 広見線"], "adj": ["st-004723", "st-004744"] },
     { "id": "st-004744", "name": "御嵩駅", "genre": "station", "kind": "HUB", "area": "御嵩町", "region": "gifu-21521", "lat": 35.42973, "lon": 137.12719, "level": 1, "value": 1, "lines": ["名古屋鉄道 広見線"], "adj": ["st-004734"] },
 
-    { "id": "lm-q6919709", "name": "別山", "genre": "nature", "kind": "LM", "area": "白川村", "region": "gifu-21604", "lat": 36.10556, "lon": 136.76556, "level": 2, "value": 2, "wikidata": "Q6919709", "adj": ["lm-q1157629", "lm-q11580715"] }
+    { "id": "lm-q6919709", "name": "別山", "genre": "nature", "kind": "LM", "area": "白川村", "region": "gifu-21604", "lat": 36.10556, "lon": 136.76556, "level": 2, "value": 2, "wikidata": "Q6919709", "adj": ["lm-q1157629"] }
   ]
 }

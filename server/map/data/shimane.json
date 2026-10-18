@@ -1,7 +1,7 @@
 {
   "region": "shimane",
   "name": "島根県",
-  "version": 13,
+  "version": 18,
   "updatedAt": "2026-10-19",
   "note": "島根県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -61,7 +61,6 @@
     { "id": "lm-q18990378", "name": "出雲玉作史跡公園", "genre": "park", "kind": "LM", "area": "松江市", "region": "shimane-32201", "lat": 35.41634, "lon": 133.01239, "level": 1, "value": 1, "wikidata": "Q18990378", "adj": ["st-004736"] },
     { "id": "lm-q11577586", "name": "由志園", "genre": "park", "kind": "LM", "area": "松江市", "region": "shimane-32201", "lat": 35.49099, "lon": 133.17616, "level": 1, "value": 1, "wikidata": "Q11577586", "adj": ["lm-q1077275"] },
     { "id": "lm-q21583279", "name": "いずもまがたまの里 伝承館", "genre": "museum", "kind": "LM", "area": "松江市", "region": "shimane-32201", "lat": 35.4319, "lon": 133.00538, "level": 1, "value": 1, "wikidata": "Q21583279", "adj": ["st-004736"] },
-    { "id": "lm-q11451825", "name": "宍道湖大橋", "genre": "bridge", "kind": "LM", "area": "松江市", "region": "shimane-32201", "lat": 35.46667, "lon": 133.05228, "level": 1, "value": 1, "wikidata": "Q11451825", "adj": ["st-004625"] },
     { "id": "lm-q3461072", "name": "佐太神社", "genre": "shrine_temple", "kind": "LM", "area": "松江市", "region": "shimane-32201", "lat": 35.50892, "lon": 133.00644, "level": 2, "value": 2, "hackable": false, "wikidata": "Q3461072" },
     { "id": "st-004585", "name": "朝日ヶ丘駅", "genre": "station", "kind": "HUB", "area": "松江市", "region": "shimane-32201", "lat": 35.48106, "lon": 132.98758, "level": 1, "value": 1, "lines": ["一畑電車 北松江線"], "adj": ["st-004589", "st-004599"] },
     { "id": "st-004589", "name": "長江駅", "genre": "station", "kind": "HUB", "area": "松江市", "region": "shimane-32201", "lat": 35.47962, "lon": 132.97464, "level": 1, "value": 1, "lines": ["一畑電車 北松江線"], "adj": ["lm-q1151248", "st-004585", "st-004600"] },
@@ -69,7 +68,7 @@
     { "id": "st-004600", "name": "秋鹿町駅", "genre": "station", "kind": "HUB", "area": "松江市", "region": "shimane-32201", "lat": 35.47739, "lon": 132.95714, "level": 1, "value": 1, "lines": ["一畑電車 北松江線"], "adj": ["lm-q1151248", "st-004589", "st-004607"] },
     { "id": "st-004607", "name": "松江フォーゲルパーク駅", "genre": "station", "kind": "HUB", "area": "松江市", "region": "shimane-32201", "lat": 35.47483, "lon": 132.94419, "level": 1, "value": 1, "lines": ["一畑電車 北松江線"], "adj": ["lm-q1151248", "lm-q6788091", "st-004600", "st-004610"] },
     { "id": "st-004610", "name": "高ノ宮駅", "genre": "station", "kind": "HUB", "area": "松江市", "region": "shimane-32201", "lat": 35.47191, "lon": 132.93081, "level": 1, "value": 1, "lines": ["一畑電車 北松江線"], "adj": ["st-004607", "st-004630"] },
-    { "id": "st-004625", "name": "松江しんじ湖温泉駅", "genre": "station", "kind": "HUB", "area": "松江市", "region": "shimane-32201", "lat": 35.46695, "lon": 133.04496, "level": 1, "value": 1, "lines": ["一畑電車 北松江線"], "adj": ["lm-q11451825", "lm-q11577460", "lm-q1778875", "lm-q2655425", "st-004599"] },
+    { "id": "st-004625", "name": "松江しんじ湖温泉駅", "genre": "station", "kind": "HUB", "area": "松江市", "region": "shimane-32201", "lat": 35.46695, "lon": 133.04496, "level": 1, "value": 1, "lines": ["一畑電車 北松江線"], "adj": ["lm-q11577460", "lm-q1778875", "lm-q2655425", "st-004599"] },
     { "id": "st-004630", "name": "津ノ森駅", "genre": "station", "kind": "HUB", "area": "松江市", "region": "shimane-32201", "lat": 35.46643, "lon": 132.91945, "level": 1, "value": 1, "lines": ["一畑電車 北松江線"], "adj": ["st-004610", "st-004648"] },
     { "id": "st-004638", "name": "松江駅", "genre": "station", "kind": "HUB", "area": "松江市", "region": "shimane-32201", "lat": 35.4639, "lon": 133.06275, "level": 3, "value": 3, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["lm-q1072918", "lm-q11466267", "lm-q2655425", "lm-q55523137", "st-004690", "st-004697"] },
     { "id": "st-004690", "name": "乃木駅", "genre": "station", "kind": "HUB", "area": "松江市", "region": "shimane-32201", "lat": 35.44571, "lon": 133.04846, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["lm-q6788084", "st-004638", "st-004736"] },
@@ -131,7 +130,7 @@
     { "id": "st-005171", "name": "田儀駅", "genre": "station", "kind": "HUB", "area": "出雲市", "region": "shimane-32203", "lat": 35.27502, "lon": 132.58929, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-005148", "st-005259"] },
 
     { "id": "lm-q1431559", "name": "石見空港", "genre": "airport", "kind": "GW", "area": "益田市", "region": "shimane-32204", "lat": 34.67639, "lon": 131.79028, "level": 2, "value": 2, "wikidata": "Q1431559", "adj": ["st-007236", "st-007414"] },
-    { "id": "lm-q132396562", "name": "島根県立石見美術館", "genre": "museum", "kind": "LM", "area": "益田市", "region": "shimane-32204", "lat": 34.67298, "lon": 131.84808, "level": 1, "value": 1, "wikidata": "Q132396562", "adj": ["lm-q1976445", "st-007236"] },
+    { "id": "lm-q132396562", "name": "島根県立石見美術館", "genre": "museum", "kind": "LM", "area": "益田市", "region": "shimane-32204", "lat": 34.67298, "lon": 131.84808, "level": 1, "value": 1, "wikidata": "Q132396562", "adj": ["st-007236"] },
     { "id": "lm-q11311482", "name": "スクモ塚古墳", "genre": "monument", "kind": "LM", "area": "益田市", "region": "shimane-32204", "lat": 34.70114, "lon": 131.84839, "level": 1, "value": 1, "wikidata": "Q11311482", "adj": ["st-007236"] },
     { "id": "lm-q17222556", "name": "益田市立雪舟の郷記念館", "genre": "museum", "kind": "LM", "area": "益田市", "region": "shimane-32204", "lat": 34.68503, "lon": 131.8475, "level": 1, "value": 1, "wikidata": "Q17222556", "adj": ["st-007236"] },
     { "id": "st-006829", "name": "鎌手駅", "genre": "station", "kind": "HUB", "area": "益田市", "region": "shimane-32204", "lat": 34.75168, "lon": 131.87844, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-006738", "st-006962"] },
@@ -154,7 +153,8 @@
     { "id": "st-005724", "name": "温泉津駅", "genre": "station", "kind": "HUB", "area": "大田市", "region": "shimane-32205", "lat": 35.09123, "lon": 132.35129, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-005676", "st-005749"] },
     { "id": "st-005749", "name": "石見福光駅", "genre": "station", "kind": "HUB", "area": "大田市", "region": "shimane-32205", "lat": 35.07613, "lon": 132.32871, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-005724", "st-005813"] },
 
-    { "id": "lm-q3329561", "name": "足立美術館", "genre": "museum", "kind": "LM", "area": "安来市", "region": "shimane-32206", "lat": 35.38001, "lon": 133.19417, "level": 2, "value": 2, "wikidata": "Q3329561", "adj": ["lm-q17989005"] },
+    { "id": "lm-q3329561", "name": "足立美術館", "genre": "museum", "kind": "LM", "area": "安来市", "region": "shimane-32206", "lat": 35.38001, "lon": 133.19417, "level": 2, "value": 2, "wikidata": "Q3329561", "adj": ["lm-q17989005", "lm-q18391310"] },
+    { "id": "lm-q18391310", "name": "比婆山", "genre": "nature", "kind": "LM", "area": "安来市", "region": "shimane-32206", "lat": 35.3139, "lon": 133.237, "level": 1, "value": 1, "wikidata": "Q18391310", "adj": ["lm-q3329561"] },
     { "id": "lm-q17989005", "name": "岩舟古墳", "genre": "monument", "kind": "LM", "area": "安来市", "region": "shimane-32206", "lat": 35.39992, "lon": 133.19011, "level": 1, "value": 1, "wikidata": "Q17989005", "adj": ["lm-q3329561", "st-004731"] },
     { "id": "lm-q122942300", "name": "荒島古墳群", "genre": "monument", "kind": "LM", "area": "安来市", "region": "shimane-32206", "lat": 35.42972, "lon": 133.19861, "level": 1, "value": 1, "wikidata": "Q122942300", "adj": ["st-004731"] },
     { "id": "st-004731", "name": "荒島駅", "genre": "station", "kind": "HUB", "area": "安来市", "region": "shimane-32206", "lat": 35.43187, "lon": 133.20675, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["lm-q1077275", "lm-q122942300", "lm-q17989005", "st-004748", "st-004750"] },
@@ -168,31 +168,29 @@
     { "id": "st-006153", "name": "波子駅", "genre": "station", "kind": "HUB", "area": "江津市", "region": "shimane-32207", "lat": 34.96354, "lon": 132.15133, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["lm-q11476470", "st-006109", "st-006196"] },
 
     { "id": "lm-q11398844", "name": "加茂岩倉遺跡", "genre": "heritage", "kind": "LM", "area": "雲南市", "region": "shimane-32209", "lat": 35.36014, "lon": 132.8835, "level": 1, "value": 1, "wikidata": "Q11398844", "adj": ["st-004983"] },
-    { "id": "lm-q11679434", "name": "龍頭八重滝", "genre": "nature", "kind": "LM", "area": "雲南市", "region": "shimane-32209", "lat": 35.19528, "lon": 132.78444, "level": 1, "value": 1, "wikidata": "Q11679434", "adj": ["lm-q11354473"] },
-    { "id": "lm-q11354473", "name": "三刀屋城", "genre": "heritage", "kind": "LM", "area": "雲南市", "region": "shimane-32209", "lat": 35.29345, "lon": 132.87163, "level": 1, "value": 1, "wikidata": "Q11354473", "adj": ["lm-q11679434", "st-005129"] },
+    { "id": "lm-q11679434", "name": "龍頭八重滝", "genre": "nature", "kind": "LM", "area": "雲南市", "region": "shimane-32209", "lat": 35.19528, "lon": 132.78444, "level": 1, "value": 1, "wikidata": "Q11679434", "adj": ["st-005129"] },
     { "id": "st-004983", "name": "加茂中駅", "genre": "station", "kind": "HUB", "area": "雲南市", "region": "shimane-32209", "lat": 35.34506, "lon": 132.91124, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["lm-q11398844", "st-004887", "st-005012"] },
     { "id": "st-005012", "name": "幡屋駅", "genre": "station", "kind": "HUB", "area": "雲南市", "region": "shimane-32209", "lat": 35.33474, "lon": 132.93969, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["st-004983", "st-005040"] },
     { "id": "st-005040", "name": "出雲大東駅", "genre": "station", "kind": "HUB", "area": "雲南市", "region": "shimane-32209", "lat": 35.32522, "lon": 132.95794, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["st-005012", "st-005094"] },
     { "id": "st-005094", "name": "南大東駅", "genre": "station", "kind": "HUB", "area": "雲南市", "region": "shimane-32209", "lat": 35.30807, "lon": 132.92748, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["st-005040", "st-005129"] },
-    { "id": "st-005129", "name": "木次駅", "genre": "station", "kind": "HUB", "area": "雲南市", "region": "shimane-32209", "lat": 35.29462, "lon": 132.90192, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["lm-q11354473", "st-005094", "st-005168"] },
+    { "id": "st-005129", "name": "木次駅", "genre": "station", "kind": "HUB", "area": "雲南市", "region": "shimane-32209", "lat": 35.29462, "lon": 132.90192, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["lm-q11679434", "st-005094", "st-005168"] },
     { "id": "st-005168", "name": "日登駅", "genre": "station", "kind": "HUB", "area": "雲南市", "region": "shimane-32209", "lat": 35.27624, "lon": 132.93142, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["st-005129", "st-005192"] },
     { "id": "st-005192", "name": "下久野駅", "genre": "station", "kind": "HUB", "area": "雲南市", "region": "shimane-32209", "lat": 35.26507, "lon": 132.99301, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["st-005168", "st-005285"] },
 
     { "id": "lm-q106781912", "name": "岩屋寺の切開", "genre": "nature", "kind": "LM", "area": "奥出雲町", "region": "shimane-32343", "lat": 35.19417, "lon": 133.10233, "level": 1, "value": 1, "wikidata": "Q106781912", "adj": ["st-005425"] },
     { "id": "lm-q11673379", "name": "鬼の舌震", "genre": "nature", "kind": "LM", "area": "奥出雲町", "region": "shimane-32343", "lat": 35.16833, "lon": 133.02333, "level": 1, "value": 1, "wikidata": "Q11673379", "adj": ["st-005364"] },
-    { "id": "lm-q11356147", "name": "三沢城", "genre": "heritage", "kind": "LM", "area": "奥出雲町", "region": "shimane-32343", "lat": 35.20389, "lon": 132.96259, "level": 1, "value": 1, "wikidata": "Q11356147", "adj": ["st-005364"] },
     { "id": "st-005285", "name": "出雲八代駅", "genre": "station", "kind": "HUB", "area": "奥出雲町", "region": "shimane-32343", "lat": 35.22762, "lon": 133.00116, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["st-005192", "st-005364"] },
     { "id": "st-005331", "name": "亀嵩駅", "genre": "station", "kind": "HUB", "area": "奥出雲町", "region": "shimane-32343", "lat": 35.20598, "lon": 133.05243, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["st-005364", "st-005425"] },
-    { "id": "st-005364", "name": "出雲三成駅", "genre": "station", "kind": "HUB", "area": "奥出雲町", "region": "shimane-32343", "lat": 35.19659, "lon": 133.00999, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["lm-q11356147", "lm-q11673379", "st-005285", "st-005331"] },
+    { "id": "st-005364", "name": "出雲三成駅", "genre": "station", "kind": "HUB", "area": "奥出雲町", "region": "shimane-32343", "lat": 35.19659, "lon": 133.00999, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["lm-q11673379", "st-005285", "st-005331"] },
     { "id": "st-005425", "name": "出雲横田駅", "genre": "station", "kind": "HUB", "area": "奥出雲町", "region": "shimane-32343", "lat": 35.1773, "lon": 133.09304, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["lm-q106781912", "st-005331", "st-005531"] },
     { "id": "st-005531", "name": "八川駅", "genre": "station", "kind": "HUB", "area": "奥出雲町", "region": "shimane-32343", "lat": 35.14914, "lon": 133.08991, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["st-005425", "st-005694", "st-005725"] },
-    { "id": "st-005694", "name": "出雲坂根駅", "genre": "station", "kind": "HUB", "area": "奥出雲町", "region": "shimane-32343", "lat": 35.10256, "lon": 133.1204, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["st-005531", "st-005725"] },
+    { "id": "st-005694", "name": "出雲坂根駅", "genre": "station", "kind": "HUB", "area": "奥出雲町", "region": "shimane-32343", "lat": 35.10256, "lon": 133.1204, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["lm-q6923566", "st-005531", "st-005725"] },
     { "id": "st-005725", "name": "三井野原駅", "genre": "station", "kind": "HUB", "area": "奥出雲町", "region": "shimane-32343", "lat": 35.09092, "lon": 133.11614, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 木次線"], "adj": ["st-005531", "st-005694", "st-005846"] },
 
     { "id": "lm-q21655231", "name": "丸山城", "genre": "heritage", "kind": "LM", "area": "川本町", "region": "shimane-32441", "lat": 34.98141, "lon": 132.40619, "level": 1, "value": 1, "wikidata": "Q21655231", "adj": ["st-005813"] },
 
     { "id": "lm-q846305", "name": "津和野城", "genre": "heritage", "kind": "LM", "area": "津和野町", "region": "shimane-32501", "lat": 34.46111, "lon": 131.76381, "level": 10, "value": 10, "wikidata": "Q846305", "adj": ["st-007884", "st-007902"] },
-    { "id": "lm-q11505003", "name": "日原天文台", "genre": "observatory", "kind": "EDU", "area": "津和野町", "region": "shimane-32501", "lat": 34.53056, "lon": 131.84167, "level": 1, "value": 1, "wikidata": "Q11505003", "adj": ["st-007769"] },
+    { "id": "lm-q11505003", "name": "日原天文台", "genre": "observatory", "kind": "EDU", "area": "津和野町", "region": "shimane-32501", "lat": 34.53056, "lon": 131.84167, "level": 1, "value": 1, "wikidata": "Q11505003", "adj": ["lm-q6921478", "st-007769"] },
     { "id": "lm-q11369899", "name": "乙女峠マリア聖堂", "genre": "shrine_temple", "kind": "LM", "area": "津和野町", "region": "shimane-32501", "lat": 34.47311, "lon": 131.77064, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11369899" },
     { "id": "st-007643", "name": "東青原駅", "genre": "station", "kind": "HUB", "area": "津和野町", "region": "shimane-32501", "lat": 34.58532, "lon": 131.79788, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山口線"], "adj": ["st-007555", "st-007705"] },
     { "id": "st-007705", "name": "青原駅", "genre": "station", "kind": "HUB", "area": "津和野町", "region": "shimane-32501", "lat": 34.56101, "lon": 131.80047, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山口線"], "adj": ["st-007643", "st-007769"] },
@@ -200,8 +198,11 @@
     { "id": "st-007884", "name": "青野山駅", "genre": "station", "kind": "HUB", "area": "津和野町", "region": "shimane-32501", "lat": 34.48083, "lon": 131.80361, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山口線"], "adj": ["lm-q846305", "st-007769", "st-007902"] },
     { "id": "st-007902", "name": "津和野駅", "genre": "station", "kind": "HUB", "area": "津和野町", "region": "shimane-32501", "lat": 34.47318, "lon": 131.77399, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山口線"], "adj": ["lm-q846305", "st-007884", "st-007981"] },
 
-    { "id": "lm-q55529473", "name": "海士町中央図書館", "genre": "library", "kind": "EDU", "area": "海士町", "region": "shimane-32525", "lat": 36.09683, "lon": 133.09617, "level": 1, "value": 1, "wikidata": "Q55529473", "adj": ["lm-q1148447", "lm-q11548750"] },
+    { "id": "lm-q55529473", "name": "海士町中央図書館", "genre": "library", "kind": "EDU", "area": "海士町", "region": "shimane-32525", "lat": 36.09683, "lon": 133.09617, "level": 1, "value": 1, "wikidata": "Q55529473", "adj": ["lm-q1148447", "lm-q11567667"] },
 
-    { "id": "lm-q1148447", "name": "隠岐空港", "genre": "airport", "kind": "GW", "area": "隠岐の島町", "region": "shimane-32528", "lat": 36.17833, "lon": 133.32333, "level": 2, "value": 2, "wikidata": "Q1148447", "adj": ["lm-q55529473"] }
+    { "id": "lm-q11567667", "name": "焼火山", "genre": "nature", "kind": "LM", "area": "西ノ島町", "region": "shimane-32526", "lat": 36.07472, "lon": 133.03194, "level": 1, "value": 1, "wikidata": "Q11567667", "adj": ["lm-q11548750", "lm-q55529473"] },
+
+    { "id": "lm-q1148447", "name": "隠岐空港", "genre": "airport", "kind": "GW", "area": "隠岐の島町", "region": "shimane-32528", "lat": 36.17833, "lon": 133.32333, "level": 2, "value": 2, "wikidata": "Q1148447", "adj": ["lm-q11437553", "lm-q55529473"] },
+    { "id": "lm-q11437553", "name": "大満寺山", "genre": "nature", "kind": "LM", "area": "隠岐の島町", "region": "shimane-32528", "lat": 36.25675, "lon": 133.33053, "level": 1, "value": 1, "wikidata": "Q11437553", "adj": ["lm-q1148447"] }
   ]
 }

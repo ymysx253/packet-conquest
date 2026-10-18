@@ -1,7 +1,7 @@
 {
   "region": "kumamoto",
   "name": "熊本県",
-  "version": 13,
+  "version": 18,
   "updatedAt": "2026-10-19",
   "note": "熊本県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -98,6 +98,7 @@
     { "id": "st-009805", "name": "健軍町駅", "genre": "station", "kind": "HUB", "area": "熊本市東区", "region": "kumamoto-43102", "lat": 32.77839, "lon": 130.76084, "level": 1, "value": 1, "lines": ["熊本市 健軍線"], "adj": ["lm-q11548314", "lm-q24866260", "st-009804"] },
 
     { "id": "lm-q11647034", "name": "金峰山", "genre": "nature", "kind": "LM", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.81389, "lon": 130.63861, "level": 2, "value": 2, "wikidata": "Q11647034", "adj": ["lm-q17213009"] },
+    { "id": "lm-q11615318", "name": "花岡山", "genre": "nature", "kind": "LM", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.79647, "lon": 130.68555, "level": 1, "value": 1, "wikidata": "Q11615318", "adj": ["st-009785"] },
     { "id": "lm-q6443426", "name": "熊本県立総合体育館", "genre": "stadium", "kind": "LM", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.81429, "lon": 130.70172, "level": 1, "value": 1, "wikidata": "Q6443426", "adj": ["st-009742"] },
     { "id": "lm-q17213009", "name": "島田美術館", "genre": "museum", "kind": "LM", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.80975, "lon": 130.68606, "level": 1, "value": 1, "wikidata": "Q17213009", "adj": ["lm-q11647034", "st-009748"] },
     { "id": "st-009719", "name": "崇城大学前駅", "genre": "station", "kind": "HUB", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.83047, "lon": 130.69499, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["lm-q24866261", "st-009690", "st-009740"] },
@@ -106,7 +107,7 @@
     { "id": "st-009740", "name": "上熊本駅", "genre": "station", "kind": "HUB", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.8178, "lon": 130.69945, "level": 2, "value": 2, "lines": ["九州旅客鉄道 鹿児島線", "熊本市 上熊本線", "熊本電気鉄道 菊池線"], "adj": ["st-009719", "st-009725", "st-009742", "st-009785"] },
     { "id": "st-009742", "name": "県立体育館前駅", "genre": "station", "kind": "HUB", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.81492, "lon": 130.69901, "level": 1, "value": 1, "lines": ["熊本市 上熊本線"], "adj": ["lm-q6443426", "st-009740", "st-009744"] },
     { "id": "st-009744", "name": "本妙寺入口駅", "genre": "station", "kind": "HUB", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.8139, "lon": 130.69856, "level": 1, "value": 1, "lines": ["熊本市 上熊本線"], "adj": ["st-009742", "st-009746"] },
-    { "id": "st-009785", "name": "熊本駅", "genre": "station", "kind": "HUB", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.78999, "lon": 130.68939, "level": 3, "value": 3, "lines": ["九州旅客鉄道 九州新幹線", "九州旅客鉄道 豊肥線", "九州旅客鉄道 鹿児島線", "熊本市 幹線", "熊本市 田崎線"], "adj": ["st-009638", "st-009740", "st-009772", "st-009790", "st-009801", "st-009815", "st-009869"] },
+    { "id": "st-009785", "name": "熊本駅", "genre": "station", "kind": "HUB", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.78999, "lon": 130.68939, "level": 3, "value": 3, "lines": ["九州旅客鉄道 九州新幹線", "九州旅客鉄道 豊肥線", "九州旅客鉄道 鹿児島線", "熊本市 幹線", "熊本市 田崎線"], "adj": ["lm-q11615318", "st-009638", "st-009740", "st-009772", "st-009790", "st-009801", "st-009815", "st-009869"] },
     { "id": "st-009790", "name": "二本木口駅", "genre": "station", "kind": "HUB", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.78717, "lon": 130.68943, "level": 1, "value": 1, "lines": ["熊本市 田崎線"], "adj": ["st-009785", "st-009795"] },
     { "id": "st-009795", "name": "田崎橋駅", "genre": "station", "kind": "HUB", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.7851, "lon": 130.68852, "level": 1, "value": 1, "lines": ["熊本市 田崎線"], "adj": ["st-009790"] },
 
@@ -189,8 +190,9 @@
     { "id": "st-009863", "name": "小川駅", "genre": "station", "kind": "HUB", "area": "宇城市", "region": "kumamoto-43213", "lat": 32.60048, "lon": 130.69426, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["st-009858", "st-009865"] },
 
     { "id": "lm-q11657616", "name": "阿蘇カドリー・ドミニオン", "genre": "zoo_aquarium", "kind": "LM", "area": "阿蘇市", "region": "kumamoto-43214", "lat": 32.931, "lon": 131.06672, "level": 1, "value": 1, "wikidata": "Q11657616", "adj": ["st-009642"] },
+    { "id": "lm-q11438960", "name": "大観峰", "genre": "nature", "kind": "LM", "area": "阿蘇市", "region": "kumamoto-43214", "lat": 32.99639, "lon": 131.06722, "level": 1, "value": 1, "wikidata": "Q11438960", "adj": ["st-009639"] },
     { "id": "lm-q715639", "name": "阿蘇神社", "genre": "shrine_temple", "kind": "LM", "area": "阿蘇市", "region": "kumamoto-43214", "lat": 32.94778, "lon": 131.11597, "level": 2, "value": 2, "hackable": false, "wikidata": "Q715639" },
-    { "id": "st-009639", "name": "内牧駅", "genre": "station", "kind": "HUB", "area": "阿蘇市", "region": "kumamoto-43214", "lat": 32.94216, "lon": 131.0431, "level": 1, "value": 1, "lines": ["九州旅客鉄道 豊肥線"], "adj": ["st-009642", "st-009652"] },
+    { "id": "st-009639", "name": "内牧駅", "genre": "station", "kind": "HUB", "area": "阿蘇市", "region": "kumamoto-43214", "lat": 32.94216, "lon": 131.0431, "level": 1, "value": 1, "lines": ["九州旅客鉄道 豊肥線"], "adj": ["lm-q11438960", "st-009642", "st-009652"] },
     { "id": "st-009641", "name": "波野駅", "genre": "station", "kind": "HUB", "area": "阿蘇市", "region": "kumamoto-43214", "lat": 32.93874, "lon": 131.19462, "level": 1, "value": 1, "lines": ["九州旅客鉄道 豊肥線"], "adj": ["st-009643", "st-009647"] },
     { "id": "st-009642", "name": "阿蘇駅", "genre": "station", "kind": "HUB", "area": "阿蘇市", "region": "kumamoto-43214", "lat": 32.93748, "lon": 131.07954, "level": 1, "value": 1, "lines": ["九州旅客鉄道 豊肥線"], "adj": ["lm-q11657616", "st-009639", "st-009644"] },
     { "id": "st-009643", "name": "宮地駅", "genre": "station", "kind": "HUB", "area": "阿蘇市", "region": "kumamoto-43214", "lat": 32.93707, "lon": 131.11735, "level": 1, "value": 1, "lines": ["九州旅客鉄道 豊肥線"], "adj": ["st-009641", "st-009644"] },
@@ -228,7 +230,6 @@
 
     { "id": "lm-q11650601", "name": "鍋ヶ滝", "genre": "nature", "kind": "LM", "area": "小国町", "region": "kumamoto-43424", "lat": 33.1375, "lon": 131.03556, "level": 1, "value": 1, "wikidata": "Q11650601", "adj": ["st-009457"] },
 
-    { "id": "lm-q11579903", "name": "白水の滝 (大分県)", "genre": "nature", "kind": "LM", "area": "高森町", "region": "kumamoto-43428", "lat": 32.88049, "lon": 131.27083, "level": 1, "value": 1, "wikidata": "Q11579903", "adj": ["lm-q3695986", "st-009653"] },
     { "id": "lm-q21993283", "name": "高森湧水トンネル公園", "genre": "park", "kind": "LM", "area": "高森町", "region": "kumamoto-43428", "lat": 32.81356, "lon": 131.12269, "level": 1, "value": 1, "hackable": false, "wikidata": "Q21993283" },
     { "id": "st-009733", "name": "高森駅", "genre": "station", "kind": "HUB", "area": "高森町", "region": "kumamoto-43428", "lat": 32.81973, "lon": 131.1224, "level": 1, "value": 1, "lines": ["南阿蘇鉄道 高森線"], "adj": ["st-009739"] },
 
@@ -278,8 +279,7 @@
     { "id": "st-009902", "name": "多良木駅", "genre": "station", "kind": "HUB", "area": "多良木町", "region": "kumamoto-43505", "lat": 32.26294, "lon": 130.9335, "level": 1, "value": 1, "lines": ["くま川鉄道 湯前線"], "adj": ["st-009899", "st-009903"] },
     { "id": "st-009903", "name": "公立病院前駅", "genre": "station", "kind": "HUB", "area": "多良木町", "region": "kumamoto-43505", "lat": 32.25622, "lon": 130.9222, "level": 1, "value": 1, "lines": ["くま川鉄道 湯前線"], "adj": ["st-009902", "st-009906"] },
 
-    { "id": "lm-q17225954", "name": "湯前まんが美術館", "genre": "museum", "kind": "LM", "area": "湯前町", "region": "kumamoto-43506", "lat": 32.28047, "lon": 130.98158, "level": 1, "value": 1, "wikidata": "Q17225954", "adj": ["st-009897"] },
-    { "id": "st-009897", "name": "湯前駅", "genre": "station", "kind": "HUB", "area": "湯前町", "region": "kumamoto-43506", "lat": 32.28132, "lon": 130.98026, "level": 1, "value": 1, "lines": ["くま川鉄道 湯前線"], "adj": ["lm-q17225954", "st-009898"] },
+    { "id": "st-009897", "name": "湯前駅", "genre": "station", "kind": "HUB", "area": "湯前町", "region": "kumamoto-43506", "lat": 32.28132, "lon": 130.98026, "level": 1, "value": 1, "lines": ["くま川鉄道 湯前線"], "adj": ["lm-q11480478", "st-009898"] },
 
     { "id": "st-009920", "name": "川村駅", "genre": "station", "kind": "HUB", "area": "相良村", "region": "kumamoto-43510", "lat": 32.20723, "lon": 130.79496, "level": 1, "value": 1, "lines": ["くま川鉄道 湯前線"], "adj": ["lm-q8011484", "st-009914", "st-009922"] },
 
