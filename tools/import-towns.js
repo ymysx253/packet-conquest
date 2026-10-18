@@ -2,7 +2,7 @@
 // 町・字(ジャンル town)を拠点マスターに入れる(2026-10-18 決定。docs/GENRE.md、docs/PLACES.md)。何度実行しても同じ結果になる。
 //
 // 使い方:
-//   node tools/import-towns.js <e-Stat 小地域境界データ(GML)のフォルダ>
+//   node tools/import-towns.js <e-Stat 小地域境界データ(GML)のフォルダ> [国土数値情報 N03 の GeoJSON のフォルダ]
 //   フォルダには r2kaNN.gml(都道府県ごと。国勢調査 2020 年 小地域(町丁・字等)、世界測地系緯度経度)を置く。複数の都道府県をまとめて渡せる
 //
 // 順番: import-stations → import-landmarks → import-islands → import-gateways → **import-towns** → fetch-codes → import-links → import-routes
@@ -17,7 +17,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const [, , gmlDir] = process.argv;
+const [, , gmlDir, n03Dir] = process.argv; // n03Dir(任意): 国土数値情報 N03 の GeoJSON。2020 年以降に変わった市区町村(浜松市の区の再編など)を位置で引くのに使う
 if (!gmlDir) { console.error('使い方: node tools/import-towns.js <e-Stat 小地域境界データ(GML)のフォルダ>'); process.exit(1); }
 
 const ROOT = path.join(__dirname, '..');
@@ -25,10 +25,15 @@ const DATA = path.join(ROOT, 'server/map/data');
 const SOURCE = 'src-estat-boundary-2020';
 const TODAY = new Date().toISOString().slice(0, 10);
 // 入れない区画(名前): 河川敷、湖・水面の扱いのもの
-const SKIP_NAME = /河川敷|水面|水域/;
+const SKIP_NAME = /河川敷|水面|水域|無番地/; // 無番地 = 番地の無い国有地などの区画
+// 湖・湾・大きな川の水面が 1 つの区画になっているもの(人口 0 のときだけ。同じ名前の陸の町は残す)。
+// 周りの町・字と一気につながる近道にもなるので入れない
+const WATER_BODY = /(琵琶湖|霞ヶ浦|霞ケ浦|北浦|厚岸湾|厚岸湖|風蓮湖|中海|宍道湖|浜名湖|諏訪湖|猪苗代湖|十和田湖|田沢湖|八郎潟|サロマ湖|能取湖|涛沸湖|網走湖|洞爺湖|支笏湖|屈斜路湖|阿寒湖|小川原湖|河口湖|山中湖|芦ノ湖|中禅寺湖|印旛沼|手賀沼|牛久沼|信濃川|天竜川|木曽川|利根川|阿賀野川|最上川|北上川|石狩川|筑後川|吉野川|四万十川|多摩川|荒川|江戸川|淀川|長良川|揖斐川|球磨川|阿武隈川|那珂川|鬼怒川|渡良瀬川|富士川|大井川|相模川)$/;
+// 扱わない地域(DB にも入れない): 尖閣諸島(石垣市登野城尖閣)。北方領土と竹島は国勢調査の小地域に無い
+const EXCLUDE_NAME = /尖閣/;
 // 非公開にする区画(名前 → 理由)
 const HIDE_RULES = [
-  { re: /基地|駐屯地|分屯地/, reason: 'military' },      // 米軍・自衛隊の基地・駐屯地(横田基地、朝霞駐屯地 など)
+  { re: /基地|駐屯地|分屯地|演習場/, reason: 'military' }, // 米軍・自衛隊の基地・駐屯地・演習場(横田基地、朝霞駐屯地、えびの市 浦演習場 など)
 ];
 // 非公開にする区画(市区町村コード + 名前 → 理由)
 const HIDE_TOWNS = { '13101|千代田': 'restricted' };     // 皇居(皇居の居住区画は扱わない。PLACES.md 第 3 章)
@@ -47,9 +52,11 @@ for (const f of files) {
   for (const m of text.matchAll(/<fme:r2ka[0-9]{2} [\s\S]*?<\/fme:r2ka[0-9]{2}>/g)) {
     const x = m[0];
     if (get(x, 'HCODE') !== '8101') continue; // 8154 は水面
+    // 輪の点は [経度, 緯度, 経度, 緯度, …] の数値の並び(全国で数千万点になるので配列の配列にしない)
     const rings = [...x.matchAll(/<gml:(exterior|interior)>[\s\S]*?<gml:posList>([^<]*)<\/gml:posList>/g)].map((r) => {
-      const v = r[2].trim().split(/\s+/).map(Number); const pts = [];
-      for (let i = 0; i + 1 < v.length; i += 2) pts.push([v[i + 1], v[i]]); // GML は 緯度 経度 の順 → [経度, 緯度]
+      const v = r[2].trim().split(/\s+/);
+      const pts = new Float64Array(v.length - (v.length % 2));
+      for (let i = 0; i + 1 < v.length; i += 2) { pts[i] = Number(v[i + 1]); pts[i + 1] = Number(v[i]); } // GML は 緯度 経度 の順
       return { hole: r[1] === 'interior', pts };
     });
     feats.push({ pref: get(x, 'PREF'), city: get(x, 'CITY'), cityName: get(x, 'CITY_NAME'), sArea: get(x, 'S_AREA'), kihon1: get(x, 'KIHON1'),
@@ -61,12 +68,14 @@ for (const f of files) {
 // ---------- 町・字にまとめる ----------
 // 「銀座一丁目」→「銀座」、「百合ケ丘一丁目大原」→「百合ケ丘」(丁目のあとに字の名前が続く形もある)。
 // 名前そのものが「壱丁目」のような町(上尾市など)は、取り除くと空になるのでそのまま残す
-const stripChome = (s) => { const t = s.replace(/[一二三四五六七八九十〇壱弐参]+丁目.*$/, ''); return t || s; };
+// 岩手県の「地割」(「崎山第四地割」)も丁目と同じくまとめる(「崎山」)
+const stripChome = (s) => { const t = s.replace(/[一二三四五六七八九十〇壱弐参ニ]+丁目.*$/, '').replace(/第[一二三四五六七八九十〇]+地割.*$/, ''); return t || s; };
 // 名前を整える: 先頭の「大字」「字」は含めない。「有馬(第一)」「金井(上ノ町)」のような括弧の区分は取ってまとめる。
 // 「奥山,大字押戸」のように 2 つの字を並べたものは「奥山・押戸」。括弧だけの名前(「(陸上自衛隊朝霞駐屯地)」)は括弧を外す
 const stripOaza = (s) => {
-  const t = s.replace(/[,，、]\s*(大字|字)?/g, '・').replace(/^(大字|字)/, '');
-  const p = t.replace(/[（(].*$/, '').trim();
+  // 「富田町大字春田」(旧町名 + 大字)は大字のあと(「春田」)を町名にする
+  const t = s.replace(/^[^,，、・]+?大字(?=.)/, '').replace(/[,，、]\s*(大字|字)?/g, '・').replace(/^(大字|字)/, '');
+  const p = t.replace(/[（(].*$/, '').replace(/[）)]$/, '').trim(); // 開き括弧の無い閉じ括弧(「内山)」)も取る
   return p || t.replace(/^[（(]|[）)]$/g, '');
 };
 const commonPrefix = (list) => { let p = list[0] || ''; for (const s of list) while (p && !s.startsWith(p)) p = p.slice(0, -1); return p; };
@@ -116,11 +125,36 @@ for (const [pid, { T }] of nodeFiles) {
   for (const n of T.nodes) if (n.genre !== 'town') others.push(n);
 }
 
+// 国勢調査(2020 年)のあとに変わった市区町村(浜松市の区の再編 2024 年 など)は、コードでは引けないので、
+// 町・字の代表点がいまの行政区域(N03)のどれに入るかで決める。N03 のフォルダを渡したときだけ
+let n03Rings = null;
+function regionAtPoint(p) {
+  if (!n03Dir) return null;
+  if (!n03Rings) {
+    n03Rings = [];
+    const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : /^N03-[0-9]{8}_[0-9]{2}\.geojson$/.test(e.name) ? [path.join(d, e.name)] : []));
+    for (const f of walk(n03Dir)) {
+      for (const ft of JSON.parse(fs.readFileSync(f, 'utf8')).features) {
+        const code = ft.properties.N03_007; if (!code) continue;
+        const polys = ft.geometry.type === 'Polygon' ? [ft.geometry.coordinates] : ft.geometry.coordinates;
+        for (const poly of polys) {
+          const ring = poly[0]; const pts = new Float64Array(ring.length * 2); const bb = [180, 90, -180, -90];
+          ring.forEach(([x, y], i) => { pts[2 * i] = x; pts[2 * i + 1] = y; if (x < bb[0]) bb[0] = x; if (y < bb[1]) bb[1] = y; if (x > bb[2]) bb[2] = x; if (y > bb[3]) bb[3] = y; });
+          n03Rings.push({ code, pts, bb });
+        }
+      }
+    }
+  }
+  const hit = n03Rings.find((r) => p.lon >= r.bb[0] && p.lon <= r.bb[2] && p.lat >= r.bb[1] && p.lat <= r.bb[3] && pointInRing([p.lon, p.lat], r.pts));
+  return hit ? regionByCode.get(hit.code) || null : null;
+}
+
 // ---------- 点と線 ----------
-function pointInRing([x, y], ring) {
+function pointInRing([x, y], ring) { // ring は [経度, 緯度, …] の並び
   let inside = false;
-  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-    const [xi, yi] = ring[i], [xj, yj] = ring[j];
+  const n = ring.length / 2;
+  for (let i = 0, j = n - 1; i < n; j = i++) {
+    const xi = ring[2 * i], yi = ring[2 * i + 1], xj = ring[2 * j], yj = ring[2 * j + 1];
     if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
   }
   return inside;
@@ -131,13 +165,13 @@ const inTown = (p, t) => {
 };
 for (const t of towns) {
   const bb = [180, 90, -180, -90];
-  for (const f of t.feats) for (const r of f.rings) for (const [x, y] of r.pts) { bb[0] = Math.min(bb[0], x); bb[1] = Math.min(bb[1], y); bb[2] = Math.max(bb[2], x); bb[3] = Math.max(bb[3], y); }
+  for (const f of t.feats) for (const r of f.rings) for (let i = 0; i < r.pts.length; i += 2) { const x = r.pts[i], y = r.pts[i + 1]; if (x < bb[0]) bb[0] = x; if (y < bb[1]) bb[1] = y; if (x > bb[2]) bb[2] = x; if (y > bb[3]) bb[3] = y; }
   t.bb = bb;
   const main = t.feats.slice().sort((a, b) => b.area - a.area)[0]; // 代表点はいちばん広い区画の代表点(区画の中にある点)
   t.lat = main.lat; t.lon = main.lon;
   t.sArea = t.feats.map((f) => f.sArea).sort()[0];
   t.id = `tw-${t.code5}-${t.sArea}`;
-  t.region = regionByCode.get(t.code5) || null;
+  t.region = regionByCode.get(t.code5) || regionAtPoint(t) || null;
   t.jinko = t.feats.reduce((s, f) => s + f.jinko, 0);
 }
 
@@ -145,7 +179,7 @@ for (const t of towns) {
 const report = { skipped: [], hidden: [], noRegion: [], moved: 0 };
 const keep = [];
 for (const t of towns) {
-  if (SKIP_NAME.test(t.name)) { report.skipped.push(`${t.cityName} ${t.name}`); continue; }
+  if (!t.name || SKIP_NAME.test(t.name) || EXCLUDE_NAME.test(t.name) || (t.jinko === 0 && WATER_BODY.test(t.name))) { report.skipped.push(`${t.cityName} ${t.name}`); continue; }
   if (!t.region) { report.noRegion.push(`${t.code5} ${t.cityName} ${t.name}`); continue; }
   const rule = HIDE_RULES.find((x) => x.re.test(t.name));
   t.hidden = HIDE_TOWNS[`${t.code5}|${t.name}`] || (rule && rule.reason) || (RESTRICTED.some(([s, n, w, e]) => t.lat >= s && t.lat <= n && t.lon >= w && t.lon <= e) ? 'restricted' : null);
@@ -166,31 +200,65 @@ const seenName = new Map();
 for (const t of keep) { const k = `${t.region.parent}|${t.display}`; const c = (seenName.get(k) || 0) + 1; seenName.set(k, c); if (c > 1) t.display = `${t.display}(${t.sArea})`; }
 
 // 既存の拠点から 25 m 以内なら、代表点を少しずらす(同じ場所の二重登録を避ける。テストの決まり)
-const placed = [...others]; // 既存の拠点と、先に置いた町・字
-const near25 = (p) => placed.find((n) => n !== p && Math.abs(n.lat - p.lat) < 0.001 && Math.abs(n.lon - p.lon) < 0.0012 && distKm(n, p) < 0.025);
+// 近さの判定は、約 100 m のます目に分けて近所だけ比べる(全国で 10 万件を超えるため)
+const grid25 = new Map();
+const cell25 = (lat, lon) => `${Math.floor(lat / 0.001)}:${Math.floor(lon / 0.0012)}`;
+const put25 = (n) => { const k = cell25(n.lat, n.lon); if (!grid25.has(k)) grid25.set(k, []); grid25.get(k).push(n); };
+for (const n of others) put25(n);
+const near25 = (p) => {
+  const cy = Math.floor(p.lat / 0.001), cx = Math.floor(p.lon / 0.0012);
+  for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) for (const n of grid25.get(`${cy + dy}:${cx + dx}`) || []) if (n !== p && distKm(n, p) < 0.025) return n;
+  return null;
+};
 for (const t of keep) {
   let tries = 0;
   while (near25(t) && tries < 8) { const ang = (tries * Math.PI) / 4; t.lat += 0.0004 * Math.cos(ang); t.lon += 0.0005 * Math.sin(ang); tries++; }
   if (tries) report.moved++;
-  placed.push(t);
+  put25(t);
 }
 
-// 境界が接している町・字(同じ辺を持つ区画どうし)。公開の町・字だけ
-const edgeOwner = new Map();
-const key = (a, b) => { const s = `${a[0].toFixed(7)},${a[1].toFixed(7)}`, e = `${b[0].toFixed(7)},${b[1].toFixed(7)}`; return s < e ? `${s}|${e}` : `${e}|${s}`; };
+// 境界が接している町・字: 境界の点を 2 つ以上共有している町・字どうし(角で 1 点だけ接するものは除く)。公開の町・字だけ。
+// 点は 0.1 m 単位の整数にして表で引く。全国で数千万点になるので、表は経度で 64 に分ける(Map の上限は約 1,600 万件)
 const pub = keep.filter((t) => !t.hidden);
-for (const t of pub) for (const f of t.feats) for (const r of f.rings) for (let i = 0; i + 1 < r.pts.length; i++) {
-  const k = key(r.pts[i], r.pts[i + 1]);
-  const s = edgeOwner.get(k); if (!s) edgeOwner.set(k, new Set([t.id])); else s.add(t.id);
-}
+const SHARDS = 64;
+// 点ごとに最初の 2 つの持ち主を覚える(3 つの町・字が集まる角でも、後から来た町・字は前の 2 つと組になる)
+const vertexOwner = Array.from({ length: SHARDS }, () => new Map());
+const vertexOwner2 = Array.from({ length: SHARDS }, () => new Map());
+const pairCount = new Map();
+const bump = (a, b) => { const k = a < b ? `${a}|${b}` : `${b}|${a}`; pairCount.set(k, (pairCount.get(k) || 0) + 1); };
+pub.forEach((t, ti) => {
+  const seen = new Set(); // 同じ町・字の中で同じ点を 2 回数えない
+  for (const f of t.feats) for (const r of f.rings) for (let i = 0; i < r.pts.length; i += 2) {
+    const lonQ = Math.round((r.pts[i] - 122) * 1e6), latQ = Math.round((r.pts[i + 1] - 20) * 1e6);
+    const vq = latQ * 33554432 + lonQ; // 2^25。どちらも 2^25 未満なので 2^50 未満の整数になる
+    if (seen.has(vq)) continue;
+    seen.add(vq);
+    const s1 = vertexOwner[lonQ % SHARDS], s2 = vertexOwner2[lonQ % SHARDS];
+    const o1 = s1.get(vq);
+    if (o1 === undefined) { s1.set(vq, ti); continue; }
+    bump(o1, ti);
+    const o2 = s2.get(vq);
+    if (o2 === undefined) s2.set(vq, ti); else bump(o2, ti);
+  }
+});
 const borders = new Map(pub.map((t) => [t.id, new Set()]));
-for (const s of edgeOwner.values()) if (s.size > 1) for (const a of s) for (const b of s) if (a !== b) borders.get(a).add(b);
+for (const [k, c] of pairCount) {
+  if (c < 2) continue;
+  const [a, b] = k.split('|').map(Number);
+  borders.get(pub[a].id).add(pub[b].id); borders.get(pub[b].id).add(pub[a].id);
+}
+vertexOwner.length = 0; vertexOwner2.length = 0;
 
-// 町・字の中にある駅・名所(公開・ハック可)
+// 町・字の中にある駅・名所(公開・ハック可)。町・字の範囲を約 5 km のます目に登録して、近所の町・字だけ調べる
+const townGrid = new Map();
+const G5 = 0.05;
+for (const t of pub) for (let y = Math.floor(t.bb[1] / G5); y <= Math.floor(t.bb[3] / G5); y++) for (let x = Math.floor(t.bb[0] / G5); x <= Math.floor(t.bb[2] / G5); x++) {
+  const k = `${y}:${x}`; if (!townGrid.has(k)) townGrid.set(k, []); townGrid.get(k).push(t);
+}
 const contains = new Map(pub.map((t) => [t.id, []]));
 for (const n of others) {
   if (n.hackable === false || n.status === 'hidden' || n.isPlayerNode) continue;
-  const cands = pub.filter((t) => n.lon >= t.bb[0] && n.lon <= t.bb[2] && n.lat >= t.bb[1] && n.lat <= t.bb[3]);
+  const cands = townGrid.get(`${Math.floor(n.lat / G5)}:${Math.floor(n.lon / G5)}`) || [];
   const t = cands.find((x) => inTown(n, x));
   if (t) contains.get(t.id).push(n.id);
 }

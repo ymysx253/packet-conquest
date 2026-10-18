@@ -8,7 +8,13 @@
 //   - 強化は 24 時間ごとに 1 下がる。地域の支配は配下の 3/4 以上で、所有が変わるたびに集計する
 
 const crypto = require('crypto');
-const tokyo = require('./map/all');
+// 全国の拠点マスター(約 11 万件。読むのに約 20 秒・500 MB)は、保存が空のとき(メモリ版の起動・テスト)の最初の投入にだけ使う。
+// 本番(Cosmos DB)は保存から範囲ごとに読むので、起動時には読まない(2026-10-19)
+let allMapsCache = null;
+const allMaps = () => (allMapsCache || (allMapsCache = require('./map/all')));
+// 既定の開始地点(東京駅)と開始位置の目安は、東京のファイルの見出しから
+const TOKYO_MASTER = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, 'map', 'data', 'tokyo.json'), 'utf8'));
+const SPAWN_CENTER = TOKYO_MASTER.spawn ? { lat: TOKYO_MASTER.spawn.lat, lon: TOKYO_MASTER.spawn.lon, radiusKm: TOKYO_MASTER.spawn.radiusKm, name: TOKYO_MASTER.spawn.name } : null;
 const { nodeDocs, regionDocs } = require('./map/load');
 const { distanceKm, tilesAround, tileOf, tileFields, parseTile, tileSize, addrOf, MIN_LEVEL_BY_Z } = require('./map/geo');
 const { getQuestion } = require('./questions');
@@ -36,7 +42,7 @@ const TICK_CAP_MS = 5 * 60 * 1000;          // 稼働時計: 1 回の刻みで�
 const HOME_LINKS = 2;                   // プレイヤーの拠点がつながる近隣拠点の数(開始地点 + 近い 1 つ)
 const SPAWN_RINGS_KM = [0.3, 0.6, 1.0];  // 開始地点のまわりに置く半径。空きがなければ広げ、1 km でも無ければ満員(第 3.1 節)
 const SPAWN_TRIES = 80;                 // 半径ごとの試行回数
-const DEFAULT_START_ID = (tokyo.NODES.find((n) => n.name === '東京駅') || tokyo.NODES[0]).id; // 指定が無いときの開始地点
+const DEFAULT_START_ID = (TOKYO_MASTER.nodes.find((n) => n.name === '東京駅') || TOKYO_MASTER.nodes[0]).id; // 指定が無いときの開始地点
 const MIN_GAP_KM = 0.15;                // 拠点どうしの最小距離
 const LOG_MAX = 60;
 const MAX_VIEW_TILES = 80;              // 1 人が一度に見られるタイル数
@@ -169,10 +175,10 @@ class World {
   // ---------- 起動 ----------
   async init() {
     if ((await this.store.countNodes()) === 0) {
-      await this.store.seedNodes(nodeDocs(tokyo.NODES));
+      await this.store.seedNodes(nodeDocs(allMaps().NODES));
     }
     if ((await this.store.countRegions()) === 0) {
-      await this.store.seedRegions(regionDocs(tokyo.NODES));
+      await this.store.seedRegions(regionDocs(allMaps().NODES));
     }
     const clock = await this.store.loadMeta('clock');
     this.uptime = clock && Number.isFinite(clock.uptimeMs) ? clock.uptimeMs : 0;
@@ -923,7 +929,7 @@ class World {
       if (!home) { const d = await this.store.loadNode(p.homeNodeId); if (d) home = this.adopt(d); }
     }
     // 自分の拠点が無いときの目安は、選んだ開始地点(無ければ東京)
-    let spawn = tokyo.SPAWN_CENTER;
+    let spawn = SPAWN_CENTER;
     if (!home && p.startNodeId) { try { const s = await this.startNode(p); spawn = { ...spawn, lat: s.lat, lon: s.lon, name: s.name }; } catch { /* 選べない開始地点なら既定のまま */ } }
     return { t: 'welcome', id: p.id, token: p.token, name: p.name, country: p.country || this.country, startNodeId: p.startNodeId || null, movedAt: p.movedAt || null, area: this.areaNameOf(p),
       team: p.team || null, teamName: p.team ? (this.teamNames.get(p.team) || null) : null, cooldownUntil: p.cooldownUntil || 0,

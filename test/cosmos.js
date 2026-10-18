@@ -20,18 +20,20 @@ const { makeEvent, dayOf } = require('../server/events');
 
 const fakeWs = () => ({ readyState: 1, sent: [], send(s) { this.sent.push(JSON.parse(s)); }, close() {} });
 const dbName = process.env.COSMOS_TEST_DATABASE || 'pc-test';
+// 保存のしくみを確かめるテストなので、入れるのは東京都の拠点だけ(全国は約 11 万件で、テスト用 DB への書き込みに 1 時間かかる)
+const SEED = tokyo.NODES.filter((n) => n.region.startsWith('tokyo-'));
 
 (async () => {
   const store = new CosmosStore({ connectionString: process.env.COSMOS_CONNECTION_STRING, database: dbName });
   await store.ensure();
   try {
     // シード(空なら)
-    if ((await store.countNodes()) === 0) await store.seedNodes(nodeDocs(tokyo.NODES));
-    await store.seedRegions(regionDocs(tokyo.NODES));
-    assert.strictEqual(await store.countNodes(), tokyo.NODES.length, '全拠点が入る');
+    if ((await store.countNodes()) === 0) await store.seedNodes(nodeDocs(SEED));
+    await store.seedRegions(regionDocs(SEED));
+    assert.strictEqual(await store.countNodes(), SEED.length, '東京都の全拠点が入る');
 
     // タイルの読み込み
-    const home = tokyo.NODES.find((n) => n.name === '東京駅');
+    const home = SEED.find((n) => n.name === '東京駅');
     const around = await store.loadTiles('japan', tilesAround(home.t0, 1), 1);
     assert.ok(around.length > 20 && around.some((n) => n.id === home.id), '周辺のタイルから東京駅が読める');
     const lv4 = await store.loadTiles('japan', [home.t2], 4);

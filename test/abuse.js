@@ -30,7 +30,8 @@ const last = (c, t) => [...c.inbox].reverse().find((m) => m.t === t);
   let out = '';
   server.stdout.on('data', (d) => { out += d; }); server.stderr.on('data', (d) => { out += d; });
   try {
-    for (let i = 0; i < 100 && !out.includes('http://localhost'); i++) await wait(100);
+    // メモリ版は全国の拠点マスター(約 11 万件)を読んで入れるので、起動に 15 秒ほどかかる(最大 60 秒待つ)
+    for (let i = 0; i < 600 && !out.includes('http://localhost'); i++) await wait(100);
     assert.ok(out.includes('保存: メモリ'), 'メモリ版で起動する: ' + out);
 
     // F5 セキュリティヘッダ
