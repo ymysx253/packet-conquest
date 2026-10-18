@@ -134,7 +134,7 @@
 - **航路の要約(`routes`)**: `[{ to, mode: "air" | "sea", name, lat, lon }]`。`routes` コンテナーの記録から、使ってよい出典・運航中・両端が玄関口のものだけを `load.js` が作る派生値
 - `location` は Cosmos DB の地理空間クエリ用(GeoJSON Point は経度・緯度の順)。lat / lon と二重に持つ
 - プレイヤーの拠点は `id` が `home-` で始まり、`isPlayerNode: true`、`kind: "HOME"`、`region` は開始地点の区(いまは `area` に「東京駅周辺」。region は `tokyo-chiyoda` にする)、`subnet` は 172.16.0.0/12 の /24、`span: 254`
-- `status`: public(地図に出る)/ pending(審査中)/ hidden(非公開)。public 以外は配信しない
+- `status`: public(地図に出る)/ pending(審査中)/ hidden(非公開)。public 以外は配信しない。マスターの非公開の拠点は `hiddenReason` を持つ(`military` = 自衛隊・米軍の飛行場。2026-10-18)
 - 将来の項目(フェーズ 2): `traps`(設置したトラップ。配信は所有者だけ)、`questionLevel`(固定問題の現在レベル)
 
 ### 3.3 `players`(`world.js` の `join`。保存時は ws / online / pending / cooldownUntil を除く)

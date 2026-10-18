@@ -101,6 +101,7 @@ function deriveRoutes(byId, files, sources, today = new Date().toISOString().sli
       if (!(r.status === 'active' || (r.status === 'seasonal' && inPeriod(r, today)))) { skip(`状態 ${r.status}`); continue; }
       const a = byId[r.from], b = byId[r.to];
       if (!a || !b) { skip('端点が拠点に無い'); continue; }
+      if ((a.status && a.status !== 'public') || (b.status && b.status !== 'public')) { skip('端点が非公開'); continue; } // 自衛隊・米軍の飛行場など。記録は残す
       if (a.hackable === false || b.hackable === false) { skip('端点がハック不可'); continue; }
       if (!a.gateway || !b.gateway) { skip('端点が玄関口(gateway)でない'); continue; }
       const key = `${data.source}|${r.id}`;

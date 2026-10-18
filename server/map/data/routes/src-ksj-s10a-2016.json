@@ -1,7 +1,7 @@
 {
   "schema": "pc.routes/1",
   "source": "src-ksj-s10a-2016",
-  "generatedAt": "2026-10-18T12:10:55.852Z",
+  "generatedAt": "2026-10-18T12:47:02.932Z",
   "routes": [
     {"mode":"sea","from":"pt-q1336906","to":"pt-s69e79f3b51","fromRef":{"scheme":"src-ksj-s10a-2016","value":"兵庫/神戸"},"toRef":{"scheme":"src-ksj-s10a-2016","value":"大分/大分"},"bidirectional":true,"scope":"domestic","serviceTypes":["ferry"],"status":"active","metrics":{"year":2016,"basis":"schedule","flights":364},"src":"src-ksj-s10a-2016","sourceRecordId":"SeaRoute-132","retrievedAt":"2026-10-18","id":"rt-00c35365a828"},
     {"mode":"sea","from":"pt-s55f83eee84","to":"pt-q116727569","fromRef":{"scheme":"src-ksj-s10a-2016","value":"岡山/日生"},"toRef":{"scheme":"src-ksj-s10a-2016","value":"香川/大部"},"bidirectional":true,"scope":"domestic","serviceTypes":["ferry"],"status":"active","metrics":{"year":2016,"basis":"schedule","flights":1820},"src":"src-ksj-s10a-2016","sourceRecordId":"SeaRoute-246","retrievedAt":"2026-10-18","id":"rt-01357434da34"},

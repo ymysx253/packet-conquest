@@ -10,7 +10,7 @@
 //      都外の駅は拠点ではないので、そこで線は途切れる(終点扱い)
 //   2. 名所(駅以外でハック可): 近い駅をレベルと同じ数だけ結ぶ(Lv1 は最寄り 1 駅、Lv5 は近い 5 駅。上限 8)
 //   3. 分断があれば、いちばん近い拠点どうしを橋として結ぶ(地図が必ずつながるように)
-//   4. 寺社・重要インフラ(hackable: false)は結ばない
+//   4. 寺社・重要インフラ(hackable: false)と非公開の拠点(status: hidden)は結ばない
 // import-stations.js を再実行したら、このツールももう一度実行する(adj が消えるため)。
 const fs = require('fs');
 const path = require('path');
@@ -126,7 +126,7 @@ const sCell = (p) => `${Math.floor(p.lat * 20)}:${Math.floor(p.lon * 20)}`; // �
 for (const s of hackableStations) { const k = sCell(s); if (!sGrid.has(k)) sGrid.set(k, []); sGrid.get(k).push(s); }
 let landmarkEdges = 0, landmarkAlone = 0;
 for (const n of nodes) {
-  if (n.genre === 'station' || n.hackable === false) continue;
+  if (n.genre === 'station' || n.hackable === false || n.status === 'hidden') continue;
   const cy = Math.floor(n.lat * 20), cx = Math.floor(n.lon * 20);
   const cands = [];
   for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) for (const s of sGrid.get(`${cy + dy}:${cx + dx}`) || []) { const d = distKm(n, s); if (d <= LANDMARK_MAX_KM) cands.push({ s, d }); }
@@ -136,7 +136,7 @@ for (const n of nodes) {
 }
 
 // ---------- 分断の橋渡し ----------
-const hackable = nodes.filter((n) => n.hackable !== false);
+const hackable = nodes.filter((n) => n.hackable !== false && n.status !== 'hidden'); // 非公開の拠点(自衛隊・米軍の飛行場など)は線の対象外
 const parent = new Map(hackable.map((n) => [n.id, n.id]));
 const find = (x) => (parent.get(x) === x ? x : (parent.set(x, find(parent.get(x))), parent.get(x)));
 const union = (a, b) => { parent.set(find(a), find(b)); };
@@ -162,7 +162,7 @@ for (;;) {
 
 // ---------- 書き戻し(ファイルごと) ----------
 for (const n of nodes) {
-  if (n.hackable === false) { delete n.adj; continue; }
+  if (n.hackable === false || n.status === 'hidden') { delete n.adj; continue; } // ハック不可・非公開の拠点には線を張らない
   n.adj = [...adj.get(n.id)].sort();
 }
 const oneLine = (o) => '    ' + JSON.stringify(o).replace(/,"/g, ', "').replace(/":/g, '": ').replace(/^\{/, '{ ').replace(/\}$/, ' }');

@@ -12,9 +12,11 @@
 //   - 基礎レベルは知名度(言語版の数)で Lv1〜5。各都道府県の庁舎は Lv15、代表的な城(知名度 1 位)は Lv10、主要空港(同)は Lv8
 //   - 既存の拠点から 25 m 以内のものは同じ場所の二重登録になるので入れない(一覧に出す)
 //   - 同じ都道府県に同じ名前があれば「(市区町村名)」を付ける
+//   - 自衛隊・米軍が設置・管理する飛行場(三沢・徳島など。tools/military.js)は非公開(status: hidden)で入れる。DB には残すがゲームでは使わない(2026-10-18 決定)
 const fs = require('fs');
 const path = require('path');
 const { gatewayLevel, HUB_AIRPORTS } = require('./gateway');
+const { isMilitaryAirfield } = require('./military');
 
 const ROOT = path.join(__dirname, '..');
 const DATA = path.join(ROOT, 'server/map/data');
@@ -68,7 +70,7 @@ const nearExisting = (p) => {
 const KIND = { airport: 'GW', port: 'GW', bus_terminal: 'HUB', government: 'GOV', university: 'EDU', observatory: 'EDU', library: 'EDU' };
 const levelOf = (sl) => (sl >= 40 ? 5 : sl >= 25 ? 4 : sl >= 15 ? 3 : sl >= 8 ? 2 : 1);
 const picked = [];
-const skipped = { decided: 0, notTaken: 0, dup: 0, noRegion: 0, near: [] };
+const skipped = { decided: 0, notTaken: 0, dup: 0, noRegion: 0, military: [], near: [] };
 for (const r of rows) {
   if (!r[C.name]) continue;
   const decide = (r[C.decide] || '').trim();
@@ -86,7 +88,9 @@ for (const r of rows) {
   if (near) { skipped.near.push(`${r[C.name]}(${near.name} から ${Math.round(distKm(near, p) * 1000)} m)`); continue; }
   // 新しく入れる名所どうしも比べる(一覧は都道府県ごとに知名度の高い順なので、先に入れた方 = 知名度の高い方が残る)
   { const k = cell(p); if (!grid.has(k)) grid.set(k, []); grid.get(k).push({ name: r[C.name], lat: p.lat, lon: p.lon }); }
-  picked.push({ qid: r[C.qid], name: r[C.name], genre, sub: r[C.sub], company: r[C.company] || null, sl: Number(r[C.sl]) || 0, pref, city, lat: p.lat, lon: p.lon, hackable: !nonHack });
+  const military = isMilitaryAirfield({ name: r[C.name], qid: r[C.qid] });
+  if (military) skipped.military.push(r[C.name]);
+  picked.push({ qid: r[C.qid], name: r[C.name], genre, sub: r[C.sub], company: r[C.company] || null, sl: Number(r[C.sl]) || 0, pref, city, lat: p.lat, lon: p.lon, hackable: !nonHack, hidden: military ? 'military' : null });
 }
 
 // 象徴的な拠点: 各都道府県の庁舎 15、知名度 1 位の城 10、知名度 1 位の空港 8(ハック可のものだけ)
@@ -97,7 +101,7 @@ for (const list of byPref.values()) {
   for (const c of list) c.level = levelOf(c.sl);
   for (const c of list.filter((x) => x.hackable && x.genre === 'government' && x.sub === '都道府県庁舎')) c.level = 15;
   const castle = top(list, (x) => x.hackable && x.genre === 'heritage' && x.sub === '城'); if (castle) castle.level = Math.max(castle.level, 10);
-  const airport = top(list, (x) => x.hackable && x.genre === 'airport'); if (airport) airport.level = Math.max(airport.level, 8);
+  const airport = top(list, (x) => x.hackable && !x.hidden && x.genre === 'airport'); if (airport) airport.level = Math.max(airport.level, 8);
   // 空港・港(玄関口)は最低レベルを上げる(空港 5・国際線の拠点 10、港 3。tools/gateway.js)
   for (const c of list) if (c.hackable) c.level = gatewayLevel(c.genre, c.name, c.level);
 }
@@ -115,6 +119,7 @@ for (const c of picked) {
     lat: Number(c.lat.toFixed(5)), lon: Number(c.lon.toFixed(5)), level: c.level, value: c.level,
   };
   if (!c.hackable) node.hackable = false;
+  if (c.hidden) { node.status = 'hidden'; node.hiddenReason = c.hidden; }
   if (c.company) node.company = c.company;
   node.codes = { wikidata: c.qid }; // 形式は docs/DATA-FORMAT.md 第 4 章(空港・港の IATA などは tools/fetch-codes.js が足す)
   node.src = 'src-wikidata';
@@ -144,6 +149,7 @@ for (const { file, T } of files.values()) {
 }
 const nonHack = picked.filter((c) => !c.hackable).length;
 console.log(`名所 ${added} 件を入れた(ハック可 ${added - nonHack}、ハック不可 ${nonHack})。象徴: 庁舎 Lv15 / 城 Lv10 / 空港 Lv8`);
+console.log(`非公開で入れた自衛隊・米軍の飛行場: ${skipped.military.length}(${skipped.military.join('、')})`);
 console.log(`入れなかった: 採否 × ${skipped.decided}、取り込みの印なし ${skipped.notTaken}、既存と重複 ${skipped.dup}、地域が引けない ${skipped.noRegion}、既存の拠点から 25 m 以内 ${skipped.near.length}`);
 if (skipped.near.length) console.log('  25 m 以内:', skipped.near.slice(0, 20).join(' / ') + (skipped.near.length > 20 ? ' …' : ''));
 if (renamed.length) console.log(`同じ県に同じ名前があり市区町村名を付けた: ${renamed.length} 件(例: ${renamed.slice(0, 5).join('、')})`);

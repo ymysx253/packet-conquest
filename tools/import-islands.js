@@ -20,6 +20,7 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const { gatewayLevel, HUB_AIRPORTS } = require('./gateway');
+const { isMilitaryAirfield } = require('./military');
 
 const [, , n03Dir, workDir = path.join(require('os').tmpdir(), 'pc-landmarks')] = process.argv;
 if (!n03Dir) { console.error('使い方: node tools/import-islands.js <N03 フォルダ> [作業フォルダ]'); process.exit(1); }
@@ -81,7 +82,7 @@ async function fetchAll() {
     }
     console.log(`Wikidata ${genre} ${cls}: ${rows.length} 件`);
     for (const r of rows) {
-      if (r.types.some((t) => EXCLUDE_TYPES.has(t)) || EXCLUDE_NAME.test(r.name)) continue;
+      if (r.types.some((t) => EXCLUDE_TYPES.has(t)) || EXCLUDE_NAME.test(r.name) || isMilitaryAirfield({ name: r.name, qid: r.qid })) continue; // 自衛隊・米軍の飛行場は扱わない(tools/military.js)
       if (!out.has(r.qid)) out.set(r.qid, { ...r, genre });
     }
   }

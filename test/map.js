@@ -21,8 +21,8 @@ for (const n of NODES) {
   assert.ok(Number.isInteger(n.level) && n.level >= 1 && (n.level <= 5 || (n.genre !== 'station' && n.level <= 30)), `${n.name}: 駅は Lv1〜5(象徴的な名所は 30 まで)`);
   assert.ok(Number.isInteger(n.value) && n.value >= 1 && n.value <= 999, `${n.name}: 点数は 1〜999`);
   assert.ok(n.value >= n.level - 1, `${n.name}: Lv に対して点数が低すぎる`);
-  if (n.hackable) assert.ok(ADJ[n.id].length >= 1, `${n.name}: つながりがない`);
-  else assert.strictEqual(ADJ[n.id].length, 0, `${n.name}: ハック不可の拠点に線がある`);
+  if (n.hackable && n.status === 'public') assert.ok(ADJ[n.id].length >= 1, `${n.name}: つながりがない`);
+  else assert.strictEqual(ADJ[n.id].length, 0, `${n.name}: ハック不可・非公開の拠点に線がある`);
   assert.strictEqual(n.hits, Math.max(1, n.adj.length), `${n.name}: 突破回数 = つながりの本数`);
   for (const m of n.adj) assert.ok(ADJ[m].includes(n.id), `${n.name}: つながりが片向き`);
   assert.ok(typeof n.area === 'string' && n.area, `${n.name}: area がない`);
@@ -41,8 +41,8 @@ for (const n of NODES) {
     assert.ok(d >= 0.025, `${n.name} と ${m.name} が同じ場所です (${(d * 1000).toFixed(0)} m)`);
   }
 }
-// 連結: ハック可能な拠点どうしは、どこからでも全部へ到達できる
-const HACKABLE = NODES.filter((n) => n.hackable);
+// 連結: ハック可能な公開の拠点どうしは、どこからでも全部へ到達できる
+const HACKABLE = NODES.filter((n) => n.hackable && n.status === 'public'); // 非公開の拠点(自衛隊・米軍の飛行場)はゲームの地図に入らない
 assert.ok(HACKABLE.length >= 100 && HACKABLE.length < NODES.length, 'ハック不可の拠点(寺社)がいくつかある');
 const seen = new Set([HACKABLE[0].id]); const stack = [HACKABLE[0].id];
 while (stack.length) for (const m of ADJ[stack.pop()]) if (!seen.has(m)) { seen.add(m); stack.push(m); }
@@ -79,7 +79,7 @@ assert.deepStrictEqual(tokyoDoc.path, ['universe', 'earth', 'asia', 'japan', 'ka
 assert.strictEqual(tokyoDoc.code, 'JP-13');
 assert.strictEqual(tokyoDoc.country, 'japan');
 assert.ok(tokyoDoc.center && Math.abs(tokyoDoc.center.lat - 35.68) < 0.1, '中心は都内');
-assert.strictEqual(docs.find((d) => d.id === 'universe').nodeCount, NODES.length, '宇宙まで集計が伝わる');
+assert.strictEqual(docs.find((d) => d.id === 'universe').nodeCount, NODES.filter((n) => n.status === 'public').length, '宇宙まで集計が伝わる(非公開の拠点は数えない)');
 assert.strictEqual(docs.filter((d) => d.parent === 'tokyo' && d.localKind === '区').length, 23, '東京 23 区');
 const rawR = JSON.parse(fs.readFileSync(path.join(__dirname, '../server/map/data/regions.json'), 'utf8'));
 const brokenR = (mut) => { const d = JSON.parse(JSON.stringify(rawR)); mut(d); return () => validateRegions(d); };
@@ -151,16 +151,33 @@ assert.throws(broken((d) => { d.nodes[0].wikidata = 'Q1'; }), /codes[.]wikidata/
 assert.throws(broken((d) => { d.nodes.find((n) => n.gateway).gateway = { type: 'airport', scope: 'world' }; }), /gateway は/);
 assert.throws(broken((d) => { const n = d.nodes.find((x) => x.hackable === false); n.gateway = { type: 'port', scope: 'domestic' }; }), /玄関口/);
 assert.throws(broken((d) => { d.nodes[0].names = { en: 1 }; }), /names は/);
+// 公開状態: 非公開には理由が要り、線を持てない
+assert.throws(broken((d) => { d.nodes[0].status = 'secret'; }), /status は/);
+assert.throws(broken((d) => { d.nodes[0].status = 'hidden'; }), /hiddenReason/);
+assert.throws(broken((d) => { d.nodes[0].hiddenReason = 'military'; }), /非公開の拠点だけ/);
+assert.throws(broken((d) => { const n = d.nodes.find((x) => x.adj && x.adj.length); n.status = 'hidden'; n.hiddenReason = 'military'; }), /非公開の拠点に adj/);
 assert.doesNotThrow(broken((d) => { d.nodes[0].codes = { iata: 'HND', icao: 'RJTT', unlocode: 'JPHND', wikidata: 'Q1', ext: [{ scheme: 'src-internal', value: 'A-1' }] }; d.nodes[0].names = { en: 'Haneda' }; }));
 {
   const { loadSources } = require('../server/map/sources');
   const S = loadSources();
+  const byIdAll = Object.fromEntries(NODES.map((n) => [n.id, n]));
   // 外部コードは拠点ごとに一意(協力企業のデータを結びつける鍵になる)
   for (const k of ['iata', 'icao', 'unlocode', 'wikidata', 'ksj']) {
     const seen = new Map();
     for (const n of NODES) { const v = n.codes[k]; if (!v) continue; assert.ok(!seen.has(v), `codes.${k} ${v} が ${seen.get(v)} と ${n.id} で重複`); seen.set(v, n.id); }
   }
   assert.strictEqual(NODES.find((n) => n.id === 'haneda').codes.iata, 'HND', '羽田は IATA コードを持つ');
+  // 自衛隊・米軍が設置・管理する飛行場(空港法の共用空港 8 か所)は DB に入れるが非公開(2026-10-18 決定。tools/military.js)
+  const { isMilitaryAirfield } = require('../tools/military');
+  const mil = NODES.filter((n) => isMilitaryAirfield(n));
+  assert.strictEqual(mil.length, 8, '自衛隊・米軍の飛行場 8 か所(丘珠・千歳・三沢・百里・小松・美保・徳島・岩国)がマスターにある');
+  for (const n of mil) {
+    assert.ok(n.status === 'hidden' && n.hiddenReason === 'military', `${n.name}: 非公開`);
+    assert.ok(!n.adj.length && !n.routes.length, `${n.name}: 線も航路も無い`);
+  }
+  for (const n of NODES) if (n.status === 'public') for (const m of n.adj) assert.strictEqual(byIdAll[m].status, 'public', `${n.name}: 非公開の拠点への線`);
+  for (const n of NODES) for (const r of n.routes) assert.strictEqual(byIdAll[r.to].status, 'public', `${n.name}: 非公開の拠点への航路`);
+  assert.ok(NODES.find((n) => n.name === '那覇空港').status === 'public' && NODES.find((n) => n.name === '名古屋飛行場').status === 'public', '国・自治体が管理する空港(那覇・名古屋)は民間として公開');
   for (const n of NODES) {
     assert.ok(S.usable(n.src).ok, `${n.name}: 出典 ${n.src} はゲームに使える`);
     if (n.genre === 'airport' || n.genre === 'port') if (n.hackable !== false) assert.ok(n.gateway && n.gateway.type === n.genre, `${n.name}: ハック可の空港・港は玄関口(gateway)`);

@@ -10,7 +10,7 @@
 const fs = require('fs');
 const path = require('path');
 const { routeId } = require('../server/map/routes');
-const { readAir, readSea, AIRPORT_CODES, HELIPORTS, JOINT_USE, SEA_SOURCE, AIR_SOURCE } = require('./route-sources');
+const { readAir, readSea, AIRPORT_CODES, HELIPORTS, SEA_SOURCE, AIR_SOURCE } = require('./route-sources');
 const { NODES } = require('../server/map/all');
 
 const args = process.argv.slice(2);
@@ -48,7 +48,6 @@ if (airDir) {
   const routes = [];
   const nodeOf = (name) => {
     if (HELIPORTS.has(name)) return { why: 'ヘリポート(空港の拠点が無い)' };
-    if (JOINT_USE[name]) return { why: `自衛隊・米軍と共用の${JOINT_USE[name]}(拠点にするか判断待ち)` };
     const c = AIRPORT_CODES[name];
     if (!c) return { why: '空港名がコードの表に無い' };
     const n = c.iata ? byCode.iata.get(c.iata) : byCode.icao.get(c.icao);

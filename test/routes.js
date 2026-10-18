@@ -41,6 +41,7 @@ const byId = {
   c: node('c', { gateway: { type: 'port', scope: 'domestic' } }),
   st: node('st'), // 玄関口でない
   ng: node('ng', { hackable: false, gateway: { type: 'port', scope: 'domestic' } }),
+  mil: node('mil', { status: 'hidden', hiddenReason: 'military', gateway: { type: 'airport', scope: 'domestic' } }), // 自衛隊・米軍の飛行場(非公開)
 };
 const ref = (v) => ({ scheme: 'internal', value: v });
 const rec = (source, mode, from, to, more = {}) => {
@@ -64,6 +65,7 @@ const files = [
     rec('src-ok', 'sea', 'b', 'c', { status: 'seasonal', periods: [{ from: '2026-07-01', to: '2026-08-31' }] }), // 季節外
     rec('src-ok', 'sea', 'a', 'st'),                      // 玄関口でない
     rec('src-ok', 'sea', 'a', 'ng'),                      // ハック不可
+    rec('src-ok', 'air', 'a', 'mil'),                     // 非公開の端点(記録は残すがゲームでは使わない)
     rec('src-ok', 'sea', 'a', 'zz'),                      // 拠点に無い
     rec('src-ok', 'rail', 'a', 'b'),                      // 予約の種類
     rec('src-ok', 'sea', 'c', 'b', { bidirectional: false }), // 片道(ゲームでは接続として往復)
@@ -86,7 +88,8 @@ assert.ok(!JSON.stringify([...byNode.values()]).includes('テスト航空'), '�
 // 設定 directed を true にしたときだけ片道を区別する
 assert.deepStrictEqual(deriveRoutes(byId, files, sources, TODAY, { directed: true }).byNode.get('b').map((r) => `${r.mode}:${r.to}`), ['air:a'], '設定で片道を区別できる');
 assert.strictEqual(ROUTE_RULES.directed, false, 'ゲームの既定は向きを区別しない');
-for (const why of ['状態 ended', '状態 seasonal', '端点が玄関口(gateway)でない', '端点がハック不可', '端点が拠点に無い', '予約の種類 rail', '出典: 使用許諾が非商用', '出典: 契約の期限切れ(2026-01-31)']) assert.ok(skipped[why] >= 1, `使わなかった理由: ${why}`);
+assert.deepStrictEqual(to('mil'), [], '非公開の拠点は航路を持たない');
+for (const why of ['端点が非公開', '状態 ended', '状態 seasonal', '端点が玄関口(gateway)でない', '端点がハック不可', '端点が拠点に無い', '予約の種類 rail', '出典: 使用許諾が非商用', '出典: 契約の期限切れ(2026-01-31)']) assert.ok(skipped[why] >= 1, `使わなかった理由: ${why}`);
 // 季節の期間中は使う
 assert.deepStrictEqual(deriveRoutes(byId, files, sources, '2026-08-01').byNode.get('b').map((r) => `${r.mode}:${r.to}`), ['air:a', 'sea:c']);
 

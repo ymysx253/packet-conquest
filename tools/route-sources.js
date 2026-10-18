@@ -26,8 +26,6 @@ const AIRPORT_CODES = {
   喜界島: { iata: 'KKX' }, 沖永良部: { iata: 'OKE' }, 与論: { iata: 'RNJ' }, 北大東島: { iata: 'KTD' }, 南大東島: { iata: 'MMD' }, 与那国: { iata: 'OGN' }, 多良間: { iata: 'TRA' },
 };
 const HELIPORTS = new Set(['利島', '御蔵島', '青ヶ島']);
-// 自衛隊・米軍と共用の飛行場(拠点にするかはユーザーの判断待ち。PLACES.md「軍・自衛隊は扱わない」との関係。DESIGN.md 第 6 章)
-const JOINT_USE = { 金沢: '小松飛行場', 米子: '美保飛行場', 岩国: '岩国飛行場', 茨城: '百里飛行場', 丘珠: '札幌飛行場', 名古屋: '名古屋飛行場' };
 
 const clean = (s) => String(s || '').replace(/[\s　]+/g, '');
 const num = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
@@ -84,4 +82,4 @@ function readSea(dir) {
   return { ports, legs };
 }
 
-module.exports = { readAir, readSea, AIRPORT_CODES, HELIPORTS, JOINT_USE, SEA_SOURCE, AIR_SOURCE, clean };
+module.exports = { readAir, readSea, AIRPORT_CODES, HELIPORTS, SEA_SOURCE, AIR_SOURCE, clean };

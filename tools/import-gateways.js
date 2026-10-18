@@ -8,8 +8,9 @@
 // (前の道具は自分の拠点を入れ直すので、この道具が付けた codes.ext はそのあとに付け直す必要がある)
 //
 // 決まり:
-//   - 空港: 定期便があり拠点の無い民間の空港だけを足す(id は ap-<Wikidata の id>)。自衛隊・米軍と共用の飛行場(小松・美保・岩国・百里・丘珠・名古屋)は
-//     PLACES.md の「軍・自衛隊は扱わない」に当たるかの判断が要るので足さない(DESIGN.md 第 6 章で未決)
+//   - 空港: 定期便があり拠点の無い空港を足す(id は ap-<Wikidata の id>)。自衛隊・米軍が設置・管理する飛行場(空港法の共用空港 8 か所。
+//     tools/military.js)は非公開(status: hidden)で足す。DB には残すがゲームでは使わない(2026-10-18 決定: 軍事施設は外し、民間に限定)。
+//     愛知県が管理する名古屋飛行場は民間の空港として公開で足す
 //   - 港: S10a の定期便海上経路に出てくる港。既にある港の拠点(5 km 以内で名前が合う)には出典のコード(codes.ext)だけを付ける。
 //     無ければ Wikidata の港の項目(名前が合い 5 km 以内)から pt-<Wikidata の id>、それも無ければ S10a の位置から pt-s<ハッシュ> を作る
 //   - 既存の拠点から 25 m 以内には作らない(同じ場所の二重登録)
@@ -19,7 +20,8 @@ const path = require('path');
 const https = require('https');
 const crypto = require('crypto');
 const { gatewayLevel } = require('./gateway');
-const { readSea, SEA_SOURCE, JOINT_USE } = require('./route-sources');
+const { readSea, SEA_SOURCE } = require('./route-sources');
+const { isMilitaryAirfield } = require('./military');
 
 const [, , s10aDir, n03Dir] = process.argv;
 if (!s10aDir || !n03Dir) { console.error('使い方: node tools/import-gateways.js <S10a フォルダ> <N03 フォルダ>'); process.exit(1); }
@@ -30,7 +32,9 @@ const UA = 'PacketConquest/0.1 (gateway import; https://github.com/ymysx253/pack
 const TODAY = new Date().toISOString().slice(0, 10);
 
 // 定期便があり拠点の無い民間の空港(統計表の名前 → Wikidata)。route-sources.js の AIRPORT_CODES と同じ空港
-const ADD_AIRPORTS = { 石垣: 'Q11434817', 但馬: 'Q1931194', 利尻: 'Q1049856', 調布: 'Q970339', 天草: 'Q1073798' };
+const ADD_AIRPORTS = { 石垣: 'Q11434817', 但馬: 'Q1931194', 利尻: 'Q1049856', 調布: 'Q970339', 天草: 'Q1073798', 名古屋: 'Q1322497' };
+// 自衛隊・米軍の飛行場(非公開で足す。三沢・徳島は名所の取り込みで入っている): 丘珠、千歳、百里、小松、美保、岩国
+const ADD_MILITARY = { 丘珠: 'Q2902013', 千歳: 'Q3275012', 茨城: 'Q1156420', 金沢: 'Q1141511', 米子: 'Q1141913', 岩国: 'Q1030389' };
 const PORT_CLASSES = ['Q44782', 'Q1478783', 'Q4303352', 'Q1420027', 'Q15310171'];
 const RESTRICTED = [[24.72, 24.82, 141.26, 141.37], [24.27, 24.31, 153.96, 154.0], [20.4, 20.45, 136.04, 136.1], [25.6, 26.1, 123.3, 124.7]];
 const NORTHERN_BOX = [43.0, 46.0, 145.4, 149.0]; // 北方領土のおおよその範囲(根室半島の先より東)
@@ -118,7 +122,7 @@ function regionAt(p) {
   const prefOfNode = new Map();
   for (const [pid, { T }] of files) for (const n of T.nodes) prefOfNode.set(n.id, pid);
   const near25 = (p) => all.find((n) => Math.abs(n.lat - p.lat) < 0.001 && Math.abs(n.lon - p.lon) < 0.0012 && distKm(n, p) < 0.025);
-  const added = { airport: [], portWd: [], portSrc: [], attached: [], skipped: [] };
+  const added = { airport: [], hidden: [], portWd: [], portSrc: [], attached: [], skipped: [] };
 
   const addNode = (node) => {
     const region = regionAt(node);
@@ -133,7 +137,7 @@ function regionAt(p) {
   };
 
   // ---------- 空港 ----------
-  const qids = Object.values(ADD_AIRPORTS);
+  const qids = [...Object.values(ADD_AIRPORTS), ...Object.values(ADD_MILITARY)];
   const ab = await sparql(`SELECT ?item ?ja ?c ?sl ?iata ?icao WHERE { VALUES ?item { ${qids.map((q) => `wd:${q}`).join(' ')} } ?item wdt:P625 ?c; wikibase:sitelinks ?sl. ?item rdfs:label ?ja. FILTER(LANG(?ja) = "ja") OPTIONAL { ?item wdt:P238 ?iata } OPTIONAL { ?item wdt:P239 ?icao } }`);
   const haveCode = new Set(all.flatMap((n) => [n.codes && n.codes.iata, n.codes && n.codes.icao].filter(Boolean)));
   const seenQ = new Set();
@@ -141,12 +145,14 @@ function regionAt(p) {
     const q = r.item.value.split('/').pop(); if (seenQ.has(q)) continue; seenQ.add(q);
     const p = point(r.c.value); const iata = r.iata && r.iata.value; const icao = r.icao && r.icao.value;
     if (!p || restricted(p)) continue;
+    const military = isMilitaryAirfield({ name: r.ja.value, qid: q, codes: { iata, icao } });
     if ((iata && haveCode.has(iata)) || (icao && haveCode.has(icao))) { added.skipped.push(`${r.ja.value}: 同じコードの拠点がある`); continue; }
     if (near25(p)) { added.skipped.push(`${r.ja.value}: 25 m 以内に拠点がある`); continue; }
     const level = gatewayLevel('airport', r.ja.value, levelOf(Number(r.sl.value)));
     const n = addNode({ id: `ap-${q.toLowerCase()}`, name: r.ja.value, genre: 'airport', kind: 'GW', lat: Number(p.lat.toFixed(5)), lon: Number(p.lon.toFixed(5)), level, value: level,
-      codes: { ...(iata ? { iata } : {}), ...(icao ? { icao } : {}), wikidata: q }, src: 'src-wikidata', gateway: { type: 'airport', scope: 'domestic' } });
-    if (n) added.airport.push(`${n.name}(${iata || icao})`);
+      codes: { ...(iata ? { iata } : {}), ...(icao ? { icao } : {}), wikidata: q }, src: 'src-wikidata', gateway: { type: 'airport', scope: 'domestic' },
+      ...(military ? { status: 'hidden', hiddenReason: 'military' } : {}) });
+    if (n) (military ? added.hidden : added.airport).push(`${n.name}(${iata || icao})`);
   }
 
   // ---------- 港 ----------
@@ -212,6 +218,6 @@ function regionAt(p) {
   console.log(`空港を足した: ${added.airport.length} 件 ${added.airport.join('、')}`);
   console.log(`港を足した: Wikidata から ${added.portWd.length} 件、S10a の位置から ${added.portSrc.length} 件`);
   console.log(`既にある港に S10a のコードを付けた: ${added.attached.length} 件`);
-  console.log(`足さなかった共用の飛行場(判断待ち): ${Object.values(JOINT_USE).join('、')}`);
+  console.log(`非公開で足した自衛隊・米軍の飛行場: ${added.hidden.length} 件 ${added.hidden.join('、')}`);
   if (added.skipped.length) console.log(`足さなかったもの ${added.skipped.length} 件:\n  ` + added.skipped.join('\n  '));
 })().catch((e) => { console.error('失敗:', e.message); process.exit(1); });

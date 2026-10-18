@@ -12,6 +12,9 @@ const { readRouteFiles, deriveRoutes } = require('./routes');
 const CODE_FORMATS = { iata: /^[A-Z0-9]{3}$/, icao: /^[A-Z0-9]{4}$/, unlocode: /^[A-Z]{2}[A-Z2-9]{3}$/, wikidata: /^Q[0-9]+$/, ksj: /^[0-9]+$/ };
 const GATEWAY_TYPES = new Set(['airport', 'port', 'heliport', 'station']);
 const GATEWAY_SCOPES = new Set(['international', 'domestic']);
+const NODE_STATUSES = new Set(['public', 'hidden']);
+// 非公開の理由: military = 自衛隊・米軍が設置・管理する飛行場(2026-10-18 決定。tools/military.js)
+const HIDDEN_REASONS = new Set(['military']);
 
 const DATA_DIR = path.join(__dirname, 'data');
 const LEVEL_MIN = 1, LEVEL_MAX = 999; // 1〜10 が基本(国は 10)。11〜999 は拡張用。形は public/shapes.js
@@ -80,7 +83,7 @@ function regionDocs(nodes = []) {
   const { REGIONS, byId, ancestors } = loadRegions();
   const stats = {};
   for (const n of nodes) {
-    if (!n.region) continue;
+    if (!n.region || (n.status && n.status !== 'public')) continue; // 非公開の拠点は地域の拠点数・範囲に入れない
     for (const rid of [n.region, ...ancestors(n.region)]) {
       const s = (stats[rid] ||= { count: 0, lat: 0, lon: 0, minLat: 90, maxLat: -90, minLon: 180, maxLon: -180, levels: {} });
       s.count++; s.lat += n.lat; s.lon += n.lon;
@@ -158,6 +161,11 @@ function validate(region, data) {
     if (n.names !== undefined && (!n.names || typeof n.names !== 'object' || Object.values(n.names).some((v) => typeof v !== 'string'))) fail(region, `${n.id}: names は { 言語: 名前 }`);
     if (n.replacedBy !== undefined && (typeof n.replacedBy !== 'string' || !/^[a-z0-9-]+$/.test(n.replacedBy))) fail(region, `${n.id}: replacedBy は拠点 id`);
     if (n.routes !== undefined) fail(region, `${n.id}: 航路は拠点に書かず server/map/data/routes/ に置く(DATA-FORMAT.md 第 5 章)`);
+    // 公開状態(DATA-FORMAT.md 第 4 章): hidden は DB には入れるがゲームでは使わない(線・航路・地域の集計・配信の対象外)。理由が要る
+    if (n.status !== undefined && !NODE_STATUSES.has(n.status)) fail(region, `${n.id}: status は public か hidden`);
+    if (n.status === 'hidden' && !HIDDEN_REASONS.has(n.hiddenReason)) fail(region, `${n.id}: 非公開の拠点は hiddenReason(${[...HIDDEN_REASONS].join('/')})が要る`);
+    if (n.hiddenReason !== undefined && n.status !== 'hidden') fail(region, `${n.id}: hiddenReason は非公開の拠点だけ`);
+    if (n.status === 'hidden' && Array.isArray(n.adj) && n.adj.length) fail(region, `${n.id}: 非公開の拠点に adj がある`);
     // 名所のジャンル(docs/PLACES.md 第2章)。地名ではなく名所であることの担保
     if (typeof n.genre !== 'string' || !GENRES.has(n.genre)) fail(region, `${n.id}: genre が不正 ${n.genre}(PLACES.md のジャンルから選ぶ)`);
     if (n.genre !== 'station' && /[0-9０-９一二三四五六七八九十]+丁目/.test(n.name)) fail(region, `${n.id}: 丁目を含む名前は使わない(名所の名前にする。駅名は除く)`);
@@ -198,6 +206,7 @@ function loadRegion(region) {
     src: n.src || data.defaultSource,
     gateway: n.gateway || null,
     names: n.names || null,
+    status: n.status || 'public', hiddenReason: n.hiddenReason || null, // 公開状態(hidden は DB に入れるがゲームでは使わない)
     // 問題生成に使う架空のネットワーク 10.(i+1).0.0/16(順番で決まる。DB 化したら項目として持つ)
     // 問題生成に使う架空のネットワーク。拠点 id から決定的に決める(上限なし。DESIGN.md 第 13 章)
     ...addrOf(n.id),
@@ -211,9 +220,9 @@ function loadRegion(region) {
   const hasAdj = NODES.some((n) => n.adj.length);
   const ADJ = Object.fromEntries(NODES.map((n) => [n.id, new Set()]));
   if (hasAdj) {
-    for (const n of NODES) for (const m of n.adj) if (byId[m] && n.hackable && byId[m].hackable) { ADJ[n.id].add(m); ADJ[m].add(n.id); }
+    for (const n of NODES) for (const m of n.adj) if (byId[m] && n.hackable && byId[m].hackable && n.status === 'public' && byId[m].status === 'public') { ADJ[n.id].add(m); ADJ[m].add(n.id); }
   } else {
-    for (const { a, b } of buildLinks(NODES.filter((n) => n.hackable), 3)) { ADJ[a].add(b); ADJ[b].add(a); }
+    for (const { a, b } of buildLinks(NODES.filter((n) => n.hackable && n.status === 'public'), 3)) { ADJ[a].add(b); ADJ[b].add(a); }
   }
   for (const n of NODES) { n.adj = [...ADJ[n.id]].sort(); ADJ[n.id] = n.adj; n.hits = Math.max(1, n.adj.length); }
   const EDGES = [];
@@ -242,7 +251,7 @@ function loadAll() {
   if (dupId.length) throw new Error(`拠点マスター: id が複数のファイルで重複: ${dupId.slice(0, 5).join(', ')}`);
   // 全体で adj をそろえる(存在しない相手は落とす。両向きに)
   const ADJ = Object.fromEntries(NODES.map((n) => [n.id, new Set()]));
-  for (const n of NODES) for (const m of n.adjMaster || n.adj || []) if (byId[m] && n.hackable && byId[m].hackable) { ADJ[n.id].add(m); ADJ[m].add(n.id); }
+  for (const n of NODES) for (const m of n.adjMaster || n.adj || []) if (byId[m] && n.hackable && byId[m].hackable && n.status === 'public' && byId[m].status === 'public') { ADJ[n.id].add(m); ADJ[m].add(n.id); }
   for (const n of NODES) { n.adj = [...ADJ[n.id]].sort(); ADJ[n.id] = n.adj; n.hits = Math.max(1, n.adj.length); delete n.adjMaster; }
   // 航路(DATA-FORMAT.md 第 5 章): 拠点から独立した記録から、ゲームで使える航路だけを拠点ごとの要約にする。突破回数には数えない
   const ROUTE_FILES = readRouteFiles();
@@ -273,9 +282,9 @@ function nodeDocs(nodes, now = Date.now()) {
     adj: m.adj || [], hits: m.hits || Math.max(1, (m.adj || []).length), // つながりと、突破に必要な正解の回数(第 14 章)
     routes: m.routes || [], // 航路(空路・海路)。行き先 { to, mode, name, lat, lon }。占領した空港・港から行き先を攻撃できる
     subnet: m.subnet, base: m.base, span: m.span,
-    status: 'public', isPlayerNode: false, registeredBy: null, sponsorId: null,
+    status: m.status || 'public', ...(m.hiddenReason ? { hiddenReason: m.hiddenReason } : {}), isPlayerNode: false, registeredBy: null, sponsorId: null,
     owner: null, defense: 0, fortifiedAt: null, progress: {}, protectedUntil: 0, createdAt: now, updatedAt: now,
   }));
 }
 
-module.exports = { loadRegion, loadAll, readRegionFile, validate, loadRegions, validateRegions, regionDocs, nodeDocs, GENRES };
+module.exports = { loadRegion, loadAll, readRegionFile, validate, loadRegions, validateRegions, regionDocs, nodeDocs, GENRES, NODE_STATUSES, HIDDEN_REASONS };
