@@ -126,6 +126,19 @@ body {
 .qtext { font-size: 17px; font-weight: 700; margin: 10px 0 12px; word-break: auto-phrase; text-wrap: pretty; }
 .qtext .ip { font-family: var(--font-mono); font-weight: 600; }
 .options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.fields { display: grid; gap: 8px; margin: 6px 0 10px; }
+.field { display: grid; gap: 4px; }
+.field label { font-size: 13px; font-weight: 700; }
+.field input, .field textarea { font: 16px var(--font-mono); padding: 8px 10px; border-radius: 8px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); }
+.field input:disabled, .field textarea:disabled { opacity: 0.7; }
+.field.ok input, .field.ok textarea { border-color: var(--good); }
+.field.ng input, .field.ng textarea { border-color: var(--bad); }
+.fields-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.fields-foot .hint { margin: 0; }
+.answers { font-family: var(--font-mono); font-size: 14px; margin: 6px 0 0; }
+.defense { font-size: 13px; color: var(--muted); margin: 6px 0 0; padding-left: 10px; border-left: 3px solid var(--line); }
+.qtable + .qtable { margin-top: 8px; }
+.qtable caption { text-align: left; font-size: 12px; color: var(--muted); padding: 2px 0; }
 .opt {
   font: 600 15px var(--font-mono); text-align: left;
   padding: 10px 12px; border-radius: 8px; border: 2px solid var(--line);

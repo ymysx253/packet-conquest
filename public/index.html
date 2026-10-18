@@ -133,11 +133,20 @@
           <span class="diff" id="qDiff"></span>
         </div>
         <p class="qtext" id="qText"></p>
-        <div class="qtable-wrap"><table class="qtable" id="qTable" hidden></table></div>
+        <div class="qtable-wrap" id="qTables"><table class="qtable" id="qTable" hidden></table></div>
         <div class="options" id="qOptions"></div>
+        <form class="fields" id="qFields" hidden autocomplete="off">
+          <div id="qFieldList"></div>
+          <div class="fields-foot">
+            <button type="submit" class="btn primary" id="qSubmit">答える</button>
+            <span class="hint">半角で入力。IPv6 の省略形、先頭の 0、大文字小文字は自動でそろえます。Enter でも送れます</span>
+          </div>
+        </form>
         <div class="result" id="qResult" hidden>
           <p class="verdict" id="qVerdict"></p>
+          <p class="answers" id="qAnswers" hidden></p>
           <p class="explain" id="qExplain"></p>
+          <p class="defense" id="qDefense" hidden></p>
           <p class="outcome" id="qOutcome"></p>
         </div>
       </div>

@@ -5,6 +5,7 @@
 // 全件をまとめて読まず、country + タイル id で画面の範囲だけ読む。
 const { CosmosClient } = require('@azure/cosmos');
 const { tilesAround, tileOf, parseTile, distanceKm } = require('./map/geo');
+const { dayOf } = require('./events');
 
 const CONTAINERS = [
   { id: 'nodes', partitionKey: { paths: ['/country', '/region'], kind: 'MultiHash', version: 2 } },
@@ -13,6 +14,20 @@ const CONTAINERS = [
   { id: 'questions', partitionKey: { paths: ['/nodeId'] } },
   { id: 'meta', partitionKey: { paths: ['/id'] } }, // 小さな設定・状態(稼働時計 clock)。無ければ起動時に作る(共有スループット)
   { id: 'teams', partitionKey: { paths: ['/id'] } }, // チーム(第 3.11 節)。無ければ起動時に作る
+  // 出来事の記録(docs/LOGS.md 第 3・7.7 節)。既定 TTL 90 日(ドキュメントの ttl で種類ごとに上書き)、インデックスは絞り込みに使う項目だけ。
+  // createIfNotExists は既にあるコンテナーの設定を変えないので、本番(作成済み)の TTL とインデックスはポータルから合わせる(LOGS.md 7.7)
+  {
+    id: 'events', partitionKey: { paths: ['/day'] }, defaultTtl: 7776000,
+    indexingPolicy: {
+      indexingMode: 'consistent', automatic: true,
+      includedPaths: ['/day/?', '/kind/?', '/at/?', '/playerId/?', '/teamId/?', '/nodeId/?', '/regionId/?', '/level/?', '/ok/?', '/sec/?', '/src/?'].map((path) => ({ path })),
+      excludedPaths: [{ path: '/*' }],
+      compositeIndexes: [
+        [{ path: '/day', order: 'ascending' }, { path: '/kind', order: 'ascending' }, { path: '/at', order: 'descending' }],
+        [{ path: '/playerId', order: 'ascending' }, { path: '/at', order: 'descending' }],
+      ],
+    },
+  },
 ];
 const SHARED_RU = 1000;
 const CHUNK = 60; // IN 句に並べるタイル数の上限
@@ -32,7 +47,7 @@ class CosmosStore {
         this.db = database;
         this.c = {};
         for (const def of CONTAINERS) {
-          const { container } = await database.containers.createIfNotExists({ id: def.id, partitionKey: def.partitionKey });
+          const { container } = await database.containers.createIfNotExists({ ...def }); // id / partitionKey / defaultTtl / indexingPolicy
           this.c[def.id] = container;
         }
       })();
@@ -200,6 +215,35 @@ class CosmosStore {
       parameters: [{ name: '@n', value: nodeId }, { name: '@l', value: level }],
     }, { partitionKey: nodeId });
     return rows.length ? this.strip(rows[0]) : null;
+  }
+
+  // ---------- 出来事の記録(docs/LOGS.md) ----------
+  async appendEvent(doc) { await this.appendEvents([doc]); }
+  // 10 件ずつ並列に upsert(seedNodes と同じ形。件数が増えたら SDK の bulk に替える)
+  async appendEvents(docs) {
+    await this.ensure();
+    for (let i = 0; i < docs.length; i += 10) await Promise.all(docs.slice(i, i + 10).map((d) => this.c.events.items.upsert(d)));
+  }
+  // ある日の出来事(単一パーティション)。条件は指定されたものだけ付ける
+  async eventsByDay(day, { kind, playerId, nodeId, regionId, since, limit = 200 } = {}) {
+    const where = ['c.day = @day']; const params = [{ name: '@day', value: day }, { name: '@limit', value: limit }];
+    for (const [k, v] of Object.entries({ kind, playerId, nodeId, regionId })) if (v) { where.push(`c.${k} = @${k}`); params.push({ name: `@${k}`, value: v }); }
+    if (since) { where.push('c.at >= @since'); params.push({ name: '@since', value: since }); }
+    const rows = await this.query('events', { query: `SELECT * FROM c WHERE ${where.join(' AND ')} ORDER BY c.at DESC OFFSET 0 LIMIT @limit`, parameters: params }, { partitionKey: day });
+    return rows.map((r) => this.strip(r));
+  }
+  // ある人の出来事。days は日付の配列か今日からの日数(該当する日のパーティションだけに問い合わせが送られる)
+  async eventsOfPlayer(playerId, days = 7, limit = 200) {
+    const list = Array.isArray(days) ? days : Array.from({ length: Math.max(1, Number(days) || 7) }, (_, i) => dayOf(Date.now() - i * 24 * 3600 * 1000));
+    const rows = await this.query('events', {
+      query: 'SELECT * FROM c WHERE ARRAY_CONTAINS(@days, c.day) AND c.playerId = @p ORDER BY c.at DESC OFFSET 0 LIMIT @limit',
+      parameters: [{ name: '@days', value: list }, { name: '@p', value: playerId }, { name: '@limit', value: limit }],
+    });
+    return rows.map((r) => this.strip(r));
+  }
+  async countEventsByKind(day) {
+    const rows = await this.query('events', { query: 'SELECT c.kind, COUNT(1) AS n FROM c WHERE c.day = @day GROUP BY c.kind', parameters: [{ name: '@day', value: day }] }, { partitionKey: day });
+    const out = {}; for (const r of rows) out[r.kind] = r.n; return out;
   }
 }
 

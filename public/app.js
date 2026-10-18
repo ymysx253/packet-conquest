@@ -519,17 +519,25 @@
     const textNodes = [];
     q.text.split('\n').forEach((line, i) => { if (i) textNodes.push(document.createElement('br')); textNodes.push(...highlightIps(line)); });
     $('qText').replaceChildren(...textNodes);
-    const tbl = $('qTable'); tbl.replaceChildren(); tbl.hidden = !q.table;
-    if (q.table) {
+    // 表: 1 つ(table)でも複数(tables)でも描く
+    const wrap = $('qTables');
+    const makeTable = (t) => {
+      const tbl = document.createElement('table'); tbl.className = 'qtable';
+      if (t.title) { const cap = document.createElement('caption'); cap.textContent = t.title; tbl.append(cap); }
       const thead = document.createElement('thead'); const hr = document.createElement('tr');
-      q.table.headers.forEach((h) => { const th = document.createElement('th'); th.textContent = h; hr.append(th); });
+      (t.headers || []).forEach((h) => { const th = document.createElement('th'); th.textContent = h; hr.append(th); });
       thead.append(hr);
       const tbody = document.createElement('tbody');
-      q.table.rows.forEach((row) => { const tr = document.createElement('tr'); row.forEach((c) => { const td = document.createElement('td'); td.textContent = c; tr.append(td); }); tbody.append(tr); });
-      tbl.append(thead, tbody);
-    }
+      (t.rows || []).forEach((row) => { const tr = document.createElement('tr'); row.forEach((c) => { const td = document.createElement('td'); td.textContent = c; tr.append(td); }); tbody.append(tr); });
+      tbl.append(thead, tbody); return tbl;
+    };
+    const tables = Array.isArray(q.tables) && q.tables.length ? q.tables : (q.table ? [q.table] : []);
+    wrap.replaceChildren(...tables.map(makeTable));
     const r = S.result && S.result.qid === q.qid ? S.result : null;
-    $('qOptions').replaceChildren(...q.options.map((o, i) => {
+    const isText = q.answerKind === 'text' && Array.isArray(q.fields);
+    $('qOptions').hidden = isText; $('qFields').hidden = !isText;
+    if (isText) renderFields(q, r);
+    $('qOptions').replaceChildren(...(isText ? [] : (q.options || [])).map((o, i) => {
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'opt'; b.id = `opt${i}`;
       const k = document.createElement('span'); k.className = 'k'; k.textContent = i + 1;
@@ -543,11 +551,52 @@
       $('qVerdict').textContent = r.correct ? '正解' : '不正解';
       $('qVerdict').className = `verdict ${r.correct ? 'ok' : 'ng'}`;
       $('qExplain').textContent = r.explanation; $('qOutcome').textContent = r.outcome;
+      const showAnswers = isText && Array.isArray(r.answers) && !r.correct;
+      $('qAnswers').hidden = !showAnswers;
+      if (showAnswers) $('qAnswers').textContent = '正解: ' + q.fields.map((f, i) => `${f.label}: ${r.answers[i]}`).join(' / ');
+      $('qDefense').hidden = !r.defenseNote;
+      if (r.defenseNote) $('qDefense').textContent = `守る側なら: ${r.defenseNote}`;
     }
   }
+  // 入力式の欄(COMMON.md 第 2 章): 欄ごとにラベルと例示。Enter か「答える」で送る。送信後は無効化
+  function renderFields(q, r) {
+    const list = $('qFieldList');
+    const sent = !!r || (Array.isArray(S.chosen) && S.chosen.qid === q.qid);
+    if (list.dataset.qid !== q.qid) {
+      list.dataset.qid = q.qid;
+      list.replaceChildren(...q.fields.map((f, i) => {
+        const box = document.createElement('div'); box.className = 'field';
+        const lab = document.createElement('label'); lab.textContent = f.label || f.name; lab.htmlFor = `fld${i}`;
+        const inp = document.createElement(f.format === 'prefixplan' ? 'textarea' : 'input');
+        inp.id = `fld${i}`; inp.name = f.name; inp.placeholder = f.hint || ''; inp.maxLength = f.format === 'prefixplan' ? 1000 : 200;
+        if (inp.tagName === 'INPUT') { inp.type = 'text'; inp.inputMode = ['number', 'prefixlen'].includes(f.format) ? 'numeric' : 'text'; inp.autocapitalize = 'off'; inp.spellcheck = false; }
+        else inp.rows = 4;
+        inp.addEventListener('input', updateSubmit);
+        box.append(lab, inp); return box;
+      }));
+      setTimeout(() => { const first = list.querySelector('input,textarea'); if (first) first.focus(); }, 0);
+    }
+    for (const el of list.querySelectorAll('input,textarea')) el.disabled = sent;
+    $('qSubmit').disabled = sent || !allFilled();
+    if (r && Array.isArray(r.answers)) {
+      list.querySelectorAll('.field').forEach((box, i) => { box.classList.remove('ok', 'ng'); box.classList.add(r.correct ? 'ok' : 'ng'); });
+    }
+  }
+  function allFilled() { return [...$('qFieldList').querySelectorAll('input,textarea')].every((el) => el.value.trim()); }
+  function updateSubmit() { $('qSubmit').disabled = !allFilled(); }
+  $('qFields').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const q = S.question;
+    if (!q || q.answerKind !== 'text' || (S.result && S.result.qid === q.qid) || (S.chosen && S.chosen.qid === q.qid)) return;
+    if (!allFilled()) { toast('すべての欄を入れてください'); return; }
+    const inputs = [...$('qFieldList').querySelectorAll('input,textarea')].map((el) => el.value);
+    S.chosen = { qid: q.qid, inputs };
+    send({ t: 'answer', qid: q.qid, inputs });
+    renderQuestion();
+  });
   function choose(i) {
     const q = S.question;
-    if (!q || (S.result && S.result.qid === q.qid) || S.chosen != null) return;
+    if (!q || q.answerKind === 'text' || (S.result && S.result.qid === q.qid) || S.chosen != null) return;
     S.chosen = i; send({ t: 'answer', qid: q.qid, choice: i });
   }
   function highlightIps(text) {
@@ -557,7 +606,7 @@
     });
   }
   document.addEventListener('keydown', (e) => {
-    if (e.target.tagName === 'INPUT') return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
     const n = Number(e.key); if (n >= 1 && n <= 4) choose(n - 1);
   });
 

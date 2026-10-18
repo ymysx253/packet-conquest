@@ -1,0 +1,48 @@
+{
+  "note": "語彙表(docs/questions/COMMON.md 第 3 章 token / yesno / aclverdict)。語彙 id → { 正規形 token → 別名の配列 }。別名は正規化(小文字、空白・全角半角の統一、『アドレス』の有無を無視)したあとで照合する。",
+  "yesno": {
+    "yes": ["yes", "y", "はい", "○", "◯", "〇", "する", "転送する", "使える", "収まる", "通る", "届く", "できる", "許可", "true", "ok"],
+    "no": ["no", "n", "いいえ", "×", "✕", "✗", "しない", "転送しない", "使えない", "収まらない", "通らない", "届かない", "できない", "拒否", "false", "ng"]
+  },
+  "aclverdict": {
+    "permit": ["permit", "許可", "allow", "accept"],
+    "deny": ["deny", "拒否", "drop", "block"],
+    "implicit": ["implicit", "暗黙", "暗黙の拒否", "implicit deny", "暗黙deny"]
+  },
+  "v4-kind": {
+    "v4-private": ["private", "プライベート", "プライベートアドレス", "私的", "rfc1918", "内部"],
+    "v4-global": ["global", "グローバル", "グローバルアドレス", "パブリック", "public", "公開"],
+    "v4-loopback": ["loopback", "ループバック", "ループバックアドレス", "localhost", "ローカルホスト"],
+    "v4-linklocal": ["link-local", "linklocal", "リンクローカル", "リンクローカルアドレス", "apipa", "自動プライベート", "169.254"],
+    "v4-multicast": ["multicast", "マルチキャスト", "マルチキャストアドレス", "クラスd", "class d"],
+    "v4-broadcast": ["broadcast", "ブロードキャスト", "ブロードキャストアドレス", "リミテッドブロードキャスト", "limited broadcast"],
+    "v4-unspecified": ["unspecified", "未指定", "未指定アドレス", "0.0.0.0", "任意", "any", "ゼロ"],
+    "v4-documentation": ["documentation", "文書用", "文書用アドレス", "ドキュメント用", "test-net", "testnet"],
+    "v4-reserved": ["reserved", "予約", "予約済み", "クラスe", "class e", "将来用"]
+  },
+  "v6-kind": {
+    "v6-gua": ["gua", "グローバルユニキャスト", "グローバル", "global unicast", "global", "2000::/3"],
+    "v6-ula": ["ula", "ユニークローカル", "ユニークローカルアドレス", "unique local", "fd00", "fc00", "プライベート"],
+    "v6-linklocal": ["link-local", "linklocal", "リンクローカル", "リンクローカルアドレス", "fe80"],
+    "v6-multicast": ["multicast", "マルチキャスト", "マルチキャストアドレス", "ff00", "ff02"],
+    "v6-loopback": ["loopback", "ループバック", "ループバックアドレス", "::1", "localhost"],
+    "v6-unspecified": ["unspecified", "未指定", "未指定アドレス", "::", "any"],
+    "v6-documentation": ["documentation", "文書用", "文書用アドレス", "2001:db8", "ドキュメント用"],
+    "v6-v4mapped": ["v4mapped", "ipv4射影", "ipv4射影アドレス", "ipv4-mapped", "::ffff:0:0"]
+  },
+  "diag-cause": {
+    "mask": ["mask", "マスク", "サブネットマスク", "サブネットマスクの誤り", "プレフィックス長", "prefix", "サブネット"],
+    "gateway": ["gateway", "ゲートウェイ", "デフォルトゲートウェイ", "default gateway", "gw", "既定のゲートウェイ"],
+    "duplicate": ["duplicate", "重複", "アドレス重複", "ip重複", "ipアドレスの重複", "dup"],
+    "route": ["route", "経路", "経路表", "ルーティング", "routing", "ルート", "経路の欠落", "経路なし"],
+    "ttl": ["ttl", "ホップ", "ホップ数", "ttl切れ", "ループ", "hop", "hop limit"],
+    "acl": ["acl", "アクセスリスト", "アクセス制御", "フィルタ", "filter", "firewall", "ファイアウォール", "拒否"],
+    "nat": ["nat", "napt", "アドレス変換", "変換", "ポート変換", "pat"],
+    "dns": ["dns", "名前解決", "逆引き", "ptr", "正引き", "レコード", "名前", "ホスト名"]
+  },
+  "switch-action": {
+    "flood": ["flood", "flooding", "フラッディング", "全ポート", "全ポートに転送", "学習していないので全ポート", "ブロードキャスト転送", "すべてのポート"],
+    "forward": ["forward", "転送", "該当ポートに転送", "そのポート", "ユニキャスト転送", "学習済みのポート"],
+    "drop": ["drop", "破棄", "廃棄", "転送しない", "フィルタ", "同じポート", "送信元と同じポート"]
+  }
+}

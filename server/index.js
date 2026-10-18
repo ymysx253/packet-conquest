@@ -142,7 +142,13 @@ async function handle(ws, msg) {
     case 'view': await world.setView(player, Array.isArray(msg.tiles) ? msg.tiles.slice(0, 120).filter((x) => typeof x === 'string' && x.length <= 24) : [], msg.z); break;
     case 'ask': if (typeof msg.nodeId !== 'string' || msg.nodeId.length > 40) return; send(ws, await world.ask(player, msg.nodeId)); break;
     case 'answer': {
-      if (typeof msg.qid !== 'string' || msg.qid.length > 40 || !Number.isInteger(msg.choice) || msg.choice < 0 || msg.choice > 3) return;
+      if (typeof msg.qid !== 'string' || msg.qid.length > 40) return;
+      // 4 択は choice(0〜3)、入力式は inputs(文字列 12 個まで、各 1,000 文字まで。欄ごとの上限は world.answer で)
+      if (Array.isArray(msg.inputs)) {
+        if (msg.inputs.length > 12 || msg.inputs.some((x) => typeof x !== 'string' || x.length > 1000)) return;
+        send(ws, await world.answer(player, msg.qid, msg.inputs)); break;
+      }
+      if (!Number.isInteger(msg.choice) || msg.choice < 0 || msg.choice > 3) return;
       send(ws, await world.answer(player, msg.qid, msg.choice)); break;
     }
     default: break;

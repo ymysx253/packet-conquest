@@ -15,8 +15,23 @@
 //   loadMeta(id) / saveMeta(doc)          小さな設定・状態(稼働時計 clock など)
 //   topPlayers(n, field, filter)          ランキング(score / points / nodesOwned / weekPoints。filter は { weekKey })
 //   topTeams(n) / loadTeam(id) / saveTeam(doc) / deleteTeam(id)  チーム(合計点・累計・拠点数・人数)
+//   appendEvent(doc) / appendEvents(docs)  出来事の記録(docs/LOGS.md)。upsert(同じ day と id なら上書き)
+//   eventsByDay(day, { kind, playerId, nodeId, regionId, since, limit })  ある日の出来事を新しい順に
+//   eventsOfPlayer(playerId, days)         ある人の出来事(days は日付の配列か、今日からの日数)
+//   countEventsByKind(day)                 ある日の種類ごとの件数 { kind: n }
 
 const { parseTile, distanceKm, tilesAround, tileOf } = require('./map/geo');
+const { dayOf } = require('./events');
+
+const EVENTS_MAX = 10000; // メモリ版が持つ出来事の上限(古いものから捨てる)
+// eventsOfPlayer の days: 配列ならそのまま、数なら今日から n 日ぶんの日付
+function daysOf(days) {
+  if (Array.isArray(days)) return days;
+  const n = Math.max(1, Number(days) || 7);
+  const out = []; const t = Date.now();
+  for (let i = 0; i < n; i++) out.push(dayOf(t - i * 24 * 3600 * 1000));
+  return out;
+}
 
 class MemoryStore {
   constructor() {
@@ -27,6 +42,7 @@ class MemoryStore {
     this.regions = new Map();
     this.meta = new Map();
     this.teams = new Map();
+    this.events = new Map(); // `${day}|${id}` → 出来事(追加順)
   }
   _index(n) {
     for (let z = 0; z <= 4; z++) {
@@ -111,6 +127,27 @@ class MemoryStore {
       total++; if (n.owner) byOwner[n.owner] = (byOwner[n.owner] || 0) + 1;
     }
     return { total, byOwner };
+  }
+  // ---------- 出来事の記録(docs/LOGS.md) ----------
+  async appendEvent(doc) { await this.appendEvents([doc]); }
+  async appendEvents(docs) {
+    for (const d of docs) this.events.set(`${d.day}|${d.id}`, { ...d });
+    while (this.events.size > EVENTS_MAX) this.events.delete(this.events.keys().next().value);
+  }
+  async eventsByDay(day, { kind, playerId, nodeId, regionId, since, limit = 200 } = {}) {
+    return [...this.events.values()]
+      .filter((e) => e.day === day && (!kind || e.kind === kind) && (!playerId || e.playerId === playerId) && (!nodeId || e.nodeId === nodeId)
+        && (!regionId || e.regionId === regionId) && (!since || e.at >= since))
+      .sort((a, b) => b.at - a.at).slice(0, limit).map((e) => ({ ...e }));
+  }
+  async eventsOfPlayer(playerId, days = 7, limit = 200) {
+    const set = new Set(daysOf(days));
+    return [...this.events.values()].filter((e) => set.has(e.day) && e.playerId === playerId).sort((a, b) => b.at - a.at).slice(0, limit).map((e) => ({ ...e }));
+  }
+  async countEventsByKind(day) {
+    const out = {};
+    for (const e of this.events.values()) if (e.day === day) out[e.kind] = (out[e.kind] || 0) + 1;
+    return out;
   }
 }
 

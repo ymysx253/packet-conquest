@@ -12,6 +12,7 @@ const tokyo = require('./map/tokyo');
 const { nodeDocs, regionDocs } = require('./map/load');
 const { distanceKm, tilesAround, tileOf, tileFields, parseTile, tileSize, addrOf, MIN_LEVEL_BY_Z } = require('./map/geo');
 const { getQuestion } = require('./questions');
+const { judge } = require('./questions/normalize');
 
 const COOLDOWN_MS = 4000;               // 不正解のあと操作できない時間(連続不正解で倍増。SECURITY.md F4)
 const COOLDOWN_MAX_MS = 60000;          // 待ち時間の上限
@@ -641,17 +642,34 @@ class World {
     if (p.pending && p.pending.nodeId === nodeId && p.pending.mode === mode && p.pending.level === level) return p.pending.payload;
     const q = getQuestion({ level, node: n });
     const qid = newId();
-    const payload = { t: 'question', qid, nodeId, mode, level, provisional: !!q.provisional, text: q.text, options: q.options, table: q.table || null };
-    p.pending = { qid, nodeId, mode, level, answerIndex: q.answerIndex, explanation: q.explanation, payload, askedAt: now() };
+    // 入力式(COMMON.md 第 1 章): fields は name / label / format / hint / digits / vocab だけ配信し、accept は送らない
+    const fields = Array.isArray(q.fields) ? q.fields.map((f) => ({ name: f.name, label: f.label, format: f.format, hint: f.hint || null, digits: f.digits || null, vocab: f.vocab || null })) : null;
+    const payload = {
+      t: 'question', qid, nodeId, mode, level, provisional: !!q.provisional, text: q.text, answerKind: q.answerKind || 'choice',
+      options: q.options || null, table: q.table || null, tables: q.tables || null, fields, compare: q.compare || null,
+    };
+    p.pending = {
+      qid, nodeId, mode, level, askedAt: now(), payload,
+      answerKind: q.answerKind || 'choice', answerIndex: q.answerIndex, fields: q.fields || null, compare: q.compare || null, verifier: q.verifier || null,
+      explanation: q.explanation, defenseNote: q.defenseNote || null,
+    };
     return payload;
   }
 
-  async answer(p, qid, choice) {
+  // 解答。4 択は choice(0〜3)、入力式は inputs(文字列の配列。欄の数だけ)。判定は questions/normalize.js の judge
+  async answer(p, qid, answer) {
     const pend = p.pending;
     if (!pend || pend.qid !== qid) throw new Error('この問題はもう終わっています');
     if (now() - (pend.askedAt || 0) < this.minAnswerMs) throw new Error('解答が速すぎます。問題を読んでからもう一度答えてください');
+    if (pend.answerKind === 'text') {
+      if (!Array.isArray(answer) || answer.length !== (pend.fields || []).length) throw new Error('入力欄の数が合いません');
+      for (let i = 0; i < answer.length; i++) {
+        const max = pend.fields[i].format === 'prefixplan' ? 1000 : 200;
+        if (typeof answer[i] !== 'string' || answer[i].length > max) throw new Error('入力が長すぎます');
+      }
+    } else if (!Number.isInteger(answer)) throw new Error('選択肢を選んでください');
     p.pending = null; this.touch(p);
-    const correct = choice === pend.answerIndex;
+    const correct = judge({ answerKind: pend.answerKind, answerIndex: pend.answerIndex, fields: pend.fields, compare: pend.compare, verifier: pend.verifier }, answer);
     let outcome, cooldownMs = 0;
     if (correct) { p.wrongStreak = 0; outcome = await this.apply(p, pend.nodeId, pend.mode); }
     else {
@@ -662,7 +680,8 @@ class World {
       outcome = `不正解。通信が ${Math.round(cooldownMs / 1000)} 秒止まります${p.wrongStreak > 1 ? `(連続 ${p.wrongStreak} 回目。正解すると戻ります)` : ''}`;
       await this.persistPlayer(p);
     }
-    return { t: 'result', qid, correct, answerIndex: pend.answerIndex, explanation: pend.explanation, outcome, cooldownUntil: p.cooldownUntil, cooldownMs };
+    const answers = pend.answerKind === 'text' ? (pend.fields || []).map((f) => (f.accept && f.accept[0]) || '') : null;
+    return { t: 'result', qid, correct, answerIndex: pend.answerKind === 'text' ? null : pend.answerIndex, answers, explanation: pend.explanation, defenseNote: pend.defenseNote, outcome, cooldownUntil: p.cooldownUntil, cooldownMs };
   }
 
   // 正解したときの効果。状況が変わっていたら反映しない

@@ -349,6 +349,24 @@ async function solve(world, p, nodeId) {
   await w.move(mover, tokyoSt.id);
   assert.ok(distanceKm(w.nodes.get(mover.homeNodeId), tokyoSt) <= 1.05, '1 日たてばまた引っ越せる');
 
+  // 入力式の問題(COMMON.md): 欄の配信に accept は含まれない。inputs で答え、正規化して判定。結果に正解(正規形)と defenseNote
+  const tq = { answerKind: 'text', fields: [{ name: 'net', label: 'ネットワーク', format: 'ipv4cidr', hint: '例: 10.0.0.0/24', accept: ['10.1.2.0/23'] }, { name: 'n', label: '台数', format: 'number', accept: ['510'] }], explanation: 'テスト', defenseNote: '守る側の一文' };
+  const tp = await w.join(fakeWs(), 'にゅうりょく', null, tokyoSt.id);
+  let tTarget = [...w.adj.get(tp.homeNodeId)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false);
+  if (!tTarget) { tTarget = [...w.nodes.values()].find((n) => !n.isPlayerNode && !n.owner && n.hackable !== false); w.addEdge(tp.homeNodeId, tTarget.id, w.nodes.get(tp.homeNodeId).t0); tp.reach = null; }
+  tp.pending = { qid: 'tq1', nodeId: tTarget.id, mode: 'attack', level: 20, askedAt: 0, payload: { t: 'question', qid: 'tq1', answerKind: 'text', fields: tq.fields.map((f) => ({ name: f.name, label: f.label, format: f.format, hint: f.hint })) }, answerKind: 'text', answerIndex: undefined, fields: tq.fields, compare: null, verifier: null, explanation: tq.explanation, defenseNote: tq.defenseNote };
+  assert.ok(!JSON.stringify(tp.pending.payload).includes('accept'), '配信に accept が無い');
+  const pend1 = { ...tp.pending };
+  await assert.rejects(() => w.answer(tp, 'tq1', 2), /選択肢|欄の数/, '入力式に choice は使えない');
+  await assert.rejects(() => w.answer(tp, 'tq1', ['10.1.2.0/23']), /欄の数/);
+  const r1 = await w.answer(tp, 'tq1', ['１０.1.2.0／23', '510台']);
+  assert.ok(r1.correct && r1.answers[0] === '10.1.2.0/23' && r1.defenseNote === '守る側の一文' && r1.answerIndex === null, '正規化して正解。正解の表示と defenseNote');
+  assert.strictEqual(tTarget.progress[tp.id], 1, '正解として扱われ進捗が進む');
+  tp.pending = { ...pend1, qid: 'tq2' };
+  const r2 = await w.answer(tp, 'tq2', ['10.1.2.5/23', '510']);
+  assert.ok(!r2.correct && r2.answers[1] === '510', '切り詰めないので不正解。正解は返す');
+  tp.cooldownUntil = 0;
+
   // 参加前の人も地図を読める(開始地点を地図から選ぶため)。配信先にはならない
   const gws = fakeWs();
   await w.setView(w.guest(gws), tilesAround(tokyoSt.t0, 1), 0);
