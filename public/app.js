@@ -745,7 +745,26 @@
     const pulse = 0.5 + 0.5 * Math.sin(t / 260);
     const rank = (n) => (n.id === S.selected ? 2 : n.isPlayerNode ? 0 : 1);
     const sorted = [...S.nodes.values()].sort((a, b) => rank(a) - rank(b));
-    for (const n of sorted) {
+    // 重要さ(間引きと名前の優先順位): 選択中 > 自分の拠点 > 誰かの拠点 > レベル > 空港・港
+    const prio = (n) => (n.id === S.selected ? 1e6 : 0) + (n.owner && n.owner === S.me ? 1e5 : 0) + (n.owner ? 1e4 : 0) + n.level * 10 + (n.kind === 'GW' ? 5 : 0);
+    // 縮小表示: 画面の小さなます目(約 34 px)ごとに、いちばん重要な拠点だけを描く(倍率に対して印が多すぎないように)
+    let drawList = sorted;
+    if (S.overview) {
+      const cell = 34 * grow, best = new Map();
+      for (const n of sorted) {
+        const p = toScreen(posOf(n));
+        if (p.x < -60 || p.y < -60 || p.x > V.w + 60 || p.y > V.h + 60) continue;
+        const k = `${Math.floor(p.x / cell)}:${Math.floor(p.y / cell)}`;
+        const b = best.get(k);
+        if (!b || prio(n) > prio(b)) best.set(k, n);
+      }
+      const keep = new Set(best.values());
+      drawList = sorted.filter((n) => keep.has(n));
+    }
+    S.drawn = new Set(drawList.map((n) => n.id));
+    // 名前は最後にまとめて、重要なものから重ならないように置く
+    const labels = [];
+    for (const n of drawList) {
       const p = toScreen(posOf(n));
       if (p.x < -60 || p.y < -60 || p.x > V.w + 60 || p.y > V.h + 60) continue;
       const r = radiusOf(n) * grow;
@@ -794,41 +813,62 @@
         : (ratio >= 7 || (ratio >= 3.5 && n.level >= 2) || (ratio >= 1.5 && n.level >= 3) || n.level >= 4 || n.kind === 'IX' || n.kind === 'GW' || n.owner === S.me);
       if (showLabel) {
         const isSel = S.selected === n.id, dim = S.selected && !isSel;
-        ctx.textAlign = 'center';
         const fs = n.kind === 'IX' ? 14 : n.isPlayerNode ? 10 : 11.5;
-        ctx.font = `${n.isPlayerNode ? 500 : 700} ${fs * grow}px "BIZ UDPGothic", sans-serif`;
-        const ty = p.y + top + 12 * grow;
-        if (isSel) {
-          const w = ctx.measureText(n.name).width + 10, h = fs * grow + 6;
-          ctx.fillStyle = C.surface; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; ctx.beginPath();
-          if (ctx.roundRect) ctx.roundRect(p.x - w / 2, ty - h + 4, w, h, 4); else ctx.rect(p.x - w / 2, ty - h + 4, w, h);
-          ctx.fill(); ctx.stroke();
-        }
-        ctx.globalAlpha = dim ? 0.3 : 1;
-        ctx.fillStyle = n.isPlayerNode && !isSel ? C.muted : C.ink;
-        ctx.fillText(n.name, p.x, ty);
+        const font = `${n.isPlayerNode ? 500 : 700} ${fs * grow}px "BIZ UDPGothic", sans-serif`;
+        ctx.font = font;
+        const ty = p.y + top + 12 * grow, tw = ctx.measureText(n.name).width, th = fs * grow;
+        // 名前の優先: 選択中・自分の拠点は必ず。ほかはレベルが高いほど先に置く(縮小時の区・市の名前は Lv8 前後と同じ扱い)
+        const lp = isSel ? 1e6 : (n.owner && n.owner === S.me) ? 9e5 : 150 + n.level * 20 + (n.kind === 'GW' ? 15 : 0);
+        labels.push({ prio: lp, must: isSel || (n.owner && n.owner === S.me), box: [p.x - tw / 2 - 3, ty - th, tw + 6, th + 5], draw: () => {
+          ctx.textAlign = 'center'; ctx.font = font;
+          if (isSel) {
+            const w = tw + 10, h = th + 6;
+            ctx.fillStyle = C.surface; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; ctx.beginPath();
+            if (ctx.roundRect) ctx.roundRect(p.x - w / 2, ty - h + 4, w, h, 4); else ctx.rect(p.x - w / 2, ty - h + 4, w, h);
+            ctx.fill(); ctx.stroke();
+          }
+          ctx.globalAlpha = dim ? 0.3 : 1;
+          ctx.fillStyle = n.isPlayerNode && !isSel ? C.muted : C.ink;
+          ctx.fillText(n.name, p.x, ty);
+          ctx.globalAlpha = 1;
+        } });
       }
       ctx.globalAlpha = 1;
     }
     if (S.overview) {
       // 地域の支配(第 14.2 節): 中心に地域名。支配者がいれば、その色の帯と名前
-      ctx.textAlign = 'center';
       for (const g of S.regions) {
         const q = toScreen(worldOf(g.lat, g.lon));
         if (q.x < -80 || q.y < -40 || q.x > V.w + 80 || q.y > V.h + 40) continue;
         const st = g.controller && g.controller.style ? g.controller.style : null;
         const col = g.controller ? (st ? st.fill : g.controller.color) : null;
-        ctx.font = `700 ${g.tier <= 3 ? 16 : g.tier === 5 ? 14 : 12}px "BIZ UDPGothic", sans-serif`;
+        const font = `700 ${g.tier <= 3 ? 16 : g.tier === 5 ? 14 : 12}px "BIZ UDPGothic", sans-serif`;
+        ctx.font = font;
         const label = (g.controller && g.controller.icon ? g.controller.icon + ' ' : '') + g.name, sub = g.controller ? `${g.controller.name} が支配` : '';
         const w = Math.max(ctx.measureText(label).width, sub ? ctx.measureText(sub).width * 0.85 : 0) + 14;
         const h = sub ? 34 : 20;
-        ctx.fillStyle = col || C.surface; ctx.globalAlpha = col ? 0.85 : 0.75;
-        ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(q.x - w / 2, q.y - 10, w, h, 5); else ctx.rect(q.x - w / 2, q.y - 10, w, h); ctx.fill();
-        ctx.globalAlpha = 1;
-        ctx.strokeStyle = st ? st.frame : (col || C.line); ctx.lineWidth = st ? 2 : 1.5; ctx.stroke();
-        ctx.fillStyle = st ? st.text : (col ? '#fff' : C.ink); ctx.fillText(label, q.x, q.y + 5);
-        if (sub) { ctx.font = '600 10.5px "BIZ UDPGothic", sans-serif'; ctx.fillText(sub, q.x, q.y + 19); }
+        // 地域名の優先: 支配者のいる地域 > 国・地方 > 都道府県 > 区・市
+        const lp = (g.controller ? 8e5 : 0) + (g.tier <= 3 ? 750 : g.tier === 5 ? 700 : 300);
+        labels.push({ prio: lp, box: [q.x - w / 2, q.y - 10, w, h], draw: () => {
+          ctx.textAlign = 'center'; ctx.font = font;
+          ctx.fillStyle = col || C.surface; ctx.globalAlpha = col ? 0.85 : 0.75;
+          ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(q.x - w / 2, q.y - 10, w, h, 5); else ctx.rect(q.x - w / 2, q.y - 10, w, h); ctx.fill();
+          ctx.globalAlpha = 1;
+          ctx.strokeStyle = st ? st.frame : (col || C.line); ctx.lineWidth = st ? 2 : 1.5; ctx.stroke();
+          ctx.fillStyle = st ? st.text : (col ? '#fff' : C.ink); ctx.fillText(label, q.x, q.y + 5);
+          if (sub) { ctx.font = '600 10.5px "BIZ UDPGothic", sans-serif'; ctx.fillText(sub, q.x, q.y + 19); }
+        } });
       }
+    }
+    // 名前を重要な順に置く。既に置いた名前と重なるものは出さない(選択中と自分の拠点は必ず出す)
+    const placed = S.overview ? [[8, 8, 520, 20]] : []; // 左上の「広域表示」の説明の場所
+    const hit = (a, b) => a[0] < b[0] + b[2] && b[0] < a[0] + a[2] && a[1] < b[1] + b[3] && b[1] < a[1] + a[3];
+    labels.sort((a, b) => b.prio - a.prio);
+    for (const l of labels) {
+      if (!l.must && placed.some((b) => hit(l.box, b))) continue;
+      placed.push(l.box); l.draw();
+    }
+    if (S.overview) {
       ctx.fillStyle = C.muted; ctx.font = '600 12px "BIZ UDPGothic", sans-serif'; ctx.textAlign = 'left';
       ctx.fillText(`広域表示: Lv${{ 1: 2, 2: 4, 3: 50, 4: 400 }[S.viewZ] || ''} 以上の拠点と、地域の支配。拡大すると全部出ます`, 12, 22);
     }
@@ -836,6 +876,7 @@
   function nodeAt(pt) {
     let best = null, bd = Infinity;
     for (const n of S.nodes.values()) {
+      if (S.overview && S.drawn && !S.drawn.has(n.id)) continue; // 縮小表示で間引いた拠点は押せない
       const p = toScreen(posOf(n));
       const d = Math.hypot(p.x - pt.x, p.y - pt.y);
       if (d < radiusOf(n) + 10 && d < bd) { best = n; bd = d; }
