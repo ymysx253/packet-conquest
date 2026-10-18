@@ -92,6 +92,11 @@ async function handle(ws, msg) {
   if (!player) throw new Error('先に参加してください');
   switch (msg.t) {
     case 'rekey': send(ws, { t: 'rekey', token: await world.rekey(player) }); break;
+    case 'move': {
+      const home = await world.move(player, typeof msg.startNodeId === 'string' ? msg.startNodeId.slice(0, 40) : null);
+      send(ws, { t: 'moved', home: { id: home.id, lat: home.lat, lon: home.lon }, startNodeId: player.startNodeId, movedAt: player.movedAt });
+      break;
+    }
     case 'view': await world.setView(player, Array.isArray(msg.tiles) ? msg.tiles : [], msg.z); break;
     case 'ask': send(ws, await world.ask(player, String(msg.nodeId))); break;
     case 'answer': send(ws, await world.answer(player, String(msg.qid), Number(msg.choice))); break;

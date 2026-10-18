@@ -8,7 +8,7 @@
 // つながりの決め方(突破に必要な正解の回数 = つながりの本数):
 //   1. 駅: 同じ路線の前後の駅と結ぶ。路線の線形(鉄道区間)をたどり、次の駅に着いたところで止める。
 //      都外の駅は拠点ではないので、そこで線は途切れる(終点扱い)
-//   2. 名所(駅以外でハック可): 近い駅をレベルと同じ数だけ結ぶ(Lv1 は最寄り 1 駅、Lv5 は近い 5 駅)
+//   2. 名所(駅以外でハック可): 近い駅をレベルと同じ数だけ結ぶ(Lv1 は最寄り 1 駅、Lv5 は近い 5 駅。上限 8)
 //   3. 分断があれば、いちばん近い拠点どうしを橋として結ぶ(地図が必ずつながるように)
 //   4. 寺社・重要インフラ(hackable: false)は結ばない
 // import-stations.js を再実行したら、このツールももう一度実行する(adj が消えるため)。
@@ -23,6 +23,7 @@ if (!sectionFile || !stationFile) {
 const ROOT = path.join(__dirname, '..');
 const NODE_FILE = path.join(ROOT, 'server/map/data/tokyo.json');
 const TODAY = '2026-10-18';
+const LANDMARK_MAX_LINKS = 8; // 名所のつながりの上限(レベルが 8 を超える象徴拠点でも 8 本まで)
 
 const distKm = (a, b) => { const R = 6371, toRad = (d) => (d * Math.PI) / 180; const dLat = toRad(b.lat - a.lat), dLon = toRad(b.lon - a.lon); const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLon / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
 const vkey = (c) => `${c[0].toFixed(6)},${c[1].toFixed(6)}`;
@@ -108,7 +109,7 @@ const hackableStations = stations.filter((s) => s.hackable !== false);
 let landmarkEdges = 0;
 for (const n of nodes) {
   if (n.genre === 'station' || n.hackable === false) continue;
-  const near = hackableStations.map((s) => ({ s, d: distKm(n, s) })).sort((a, b) => a.d - b.d).slice(0, Math.max(1, n.level));
+  const near = hackableStations.map((s) => ({ s, d: distKm(n, s) })).sort((a, b) => a.d - b.d).slice(0, Math.min(LANDMARK_MAX_LINKS, Math.max(1, n.level)));
   for (const { s } of near) { link(n.id, s.id); landmarkEdges++; }
 }
 

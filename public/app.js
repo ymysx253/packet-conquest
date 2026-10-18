@@ -17,6 +17,7 @@
     question: null, result: null, chosen: null, cooldownUntil: 0,
     selected: null, centerPending: false,
     start: null, picking: false, searchTimer: null, // 開始地点(選んだ駅・名所)と、地図から選ぶモード
+    moving: false, movedAt: null, reach: new Set(), // 引っ越しの選択中 / 最後の引っ越し / 自分の拠点から線でつながっている所有拠点
   };
   const TOKYO = { lat: 35.68124, lon: 139.76712 }; // 参加前に地図から選ぶときの初期位置(東京駅)
   const store = {
@@ -64,7 +65,7 @@
   function onMessage(m) {
     switch (m.t) {
       case 'welcome':
-        S.me = m.id; S.token = m.token; S.joined = true; S.home = m.home; S.spawn = m.spawn;
+        S.me = m.id; S.token = m.token; S.joined = true; S.home = m.home; S.spawn = m.spawn; S.movedAt = m.movedAt || null;
         store.set('pc-token', m.token); store.set('pc-name', m.name);
         $('codeInput').value = m.token;
         $('lobby').hidden = true; $('mePanel').hidden = false; $('onlineChip').hidden = false;
@@ -75,6 +76,12 @@
         break;
       case 'tiles': onTiles(m); break;
       case 'search': renderSearch(m); break;
+      case 'moved':
+        S.home = m.home; S.movedAt = m.movedAt; S.moving = false; $('pickBar').hidden = true; S.selected = null; S.question = null; S.result = null;
+        S.nodes.clear(); S.edges.clear(); S.tiles.clear(); lastViewKey = '';
+        centerOn(worldOf(m.home.lat, m.home.lon), 9); requestView(true); renderQuestion();
+        toast('引っ越しました。新しい拠点から広げ直してください');
+        break;
       case 'rekey':
         S.token = m.token; store.set('pc-token', m.token); $('codeInput').value = m.token; $('meCode').textContent = m.token;
         toast('復帰コードを新しくしました。控え直してください');
@@ -84,6 +91,7 @@
           if (n.status === 'gone') { S.nodes.delete(n.id); if (S.selected === n.id) S.selected = null; continue; }
           if (S.nodes.has(n.id) || S.tiles.has(n.t0)) S.nodes.set(n.id, n);
         }
+        computeReach();
         renderSelected();
         break;
       case 'players':
@@ -117,6 +125,7 @@
     for (const n of m.nodes) S.nodes.set(n.id, n);
     for (const e of m.edges) S.edges.set(e.a < e.b ? `${e.a}|${e.b}` : `${e.b}|${e.a}`, e);
     for (const [k, e] of S.edges) if (!S.nodes.has(e.a) && !S.nodes.has(e.b)) S.edges.delete(k);
+    computeReach();
     renderSelected();
   }
 
@@ -157,7 +166,13 @@
     requestView(true);
   };
   function endPick() { S.picking = false; $('pickBar').hidden = true; $('lobby').hidden = false; }
-  $('pickCancelBtn').onclick = endPick;
+  $('pickCancelBtn').onclick = () => { if (S.moving) { S.moving = false; $('pickBar').hidden = true; } else endPick(); };
+  // 引っ越し: 地図で新しい開始地点を選ぶ(1 日 1 回)
+  $('moveBtn').onclick = () => {
+    if (!S.joined) return;
+    if (S.movedAt && now() - S.movedAt < 24 * 3600 * 1000) { toast(`引っ越しは 1 日に 1 回までです(あと ${Math.ceil((24 * 3600 * 1000 - (now() - S.movedAt)) / 3600000)} 時間)`); return; }
+    S.moving = true; $('pickBarText').textContent = '引っ越し先の駅か名所をタップしてください(所有拠点は残りますが、線がつながるまで広げられません)'; $('pickBar').hidden = false;
+  };
 
   // ---------- 参加 ----------
   $('joinForm').addEventListener('submit', (e) => {
@@ -320,6 +335,12 @@
   // 拠点を選ぶ: どの拠点でも情報パネルに出す。攻撃・強化できる拠点なら出題も求める
   function tapAt(pt) {
     const n = nodeAt(pt);
+    if (S.moving) {
+      if (!n) return;
+      if (n.isPlayerNode || n.hackable === false) { toast('そこは開始地点にできません。駅か名所を選んでください'); return; }
+      if (window.confirm(`${n.name} のそばへ引っ越しますか?\n今の自分の拠点は消え、所有している拠点は新しい拠点と線がつながるまで広げられません。1 日 1 回までです。`)) send({ t: 'move', startNodeId: n.id });
+      return;
+    }
     if (S.picking) {
       // 開始地点を地図から選ぶ: ハック可の固定拠点だけ
       if (!n) return;
@@ -342,6 +363,17 @@
     for (const e of S.edges.values()) { if (e.a === id) out.push(e.b); else if (e.b === id) out.push(e.a); }
     return out;
   }
+  // 自分の拠点から、見えている所有拠点を線でたどって届く拠点(表示用。判定はサーバー)
+  function computeReach() {
+    const set = new Set();
+    if (!S.home || !S.nodes.has(S.home.id)) { S.reach = set; return; }
+    const stack = [S.home.id]; set.add(S.home.id);
+    while (stack.length) {
+      const cur = stack.pop();
+      for (const m of adjacent(cur)) if (!set.has(m) && ownerOf(m) === S.me) { set.add(m); stack.push(m); }
+    }
+    S.reach = set;
+  }
   // サーバーの canAttack と同じ条件(表示用。判定はサーバーが行う)
   function canAttack(id) {
     const n = nodeById(id);
@@ -350,7 +382,7 @@
     if (n.isPlayerNode) return false; // プレイヤー自身の拠点は占領禁止
     if (n.protectedUntil > now()) return false;
     if (n.owner) { const o = playerById(n.owner); if (o && o.nodes <= 3 && o.newbie) return false; }
-    return adjacent(id).some((a) => ownerOf(a) === S.me);
+    return adjacent(id).some((a) => ownerOf(a) === S.me && S.reach.has(a));
   }
 
   // ---------- 描画: パネル ----------
@@ -412,6 +444,7 @@
     else if (n.protectedUntil > now()) status = `生まれたばかりで守られています(あと ${Math.ceil((n.protectedUntil - now()) / 3600000)} 時間)`;
     else if (n.owner && (playerById(n.owner) || {}).nodes <= 3 && (playerById(n.owner) || {}).newbie) status = '始めたばかりで拠点が少ないプレイヤーは守られています';
     else if (canAttack(n.id)) status = `タップすると攻撃の問題が出ます(突破まで あと ${Math.max(1, hits - mine)} 回)`;
+    else if (adjacent(n.id).some((a) => ownerOf(a) === S.me)) status = '隣の所有拠点は自分の拠点から線がつながっていないため、ここからは広げられません(つなぎ直すと攻撃できます)';
     else status = '自分の拠点とつながっていないため、まだ攻撃できません';
     $('npStatus').textContent = status;
   }
@@ -552,6 +585,7 @@
       const filled = !n.isPlayerNode && SH.isFilled(n.level);
       const col = owner || (filled ? C.ink : C.strong);
       if (n.hackable === false) ctx.globalAlpha = 0.45;
+      else if (owner && n.owner === S.me && !n.isPlayerNode && !S.reach.has(n.id)) ctx.globalAlpha = 0.55; // 自分の拠点から線が切れている所有拠点
       ctx.fillStyle = filled ? col : C.surface; ctx.strokeStyle = col;
       ctx.lineWidth = owner ? (n.isPlayerNode ? 5 : 7) : (n.isPlayerNode ? 3 : 4);
       shape(n, p, r); ctx.fill(); ctx.stroke();

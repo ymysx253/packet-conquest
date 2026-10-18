@@ -2,7 +2,7 @@
 // 永続ワールドの検証(タイル方式): シード、範囲の読み込み、参加で拠点が生まれる、隣だけ攻撃できる、初心者保護、
 // 回数制の奪取(回数 = つながりの本数)、強化とその減衰、地域の支配(3/4)、集計値、復帰コード、再起動後の復元、配信に答えが含まれないこと
 const assert = require('assert');
-const { World, PROTECT_MS, DECAY_MS, NEWBIE_MS } = require('../server/world');
+const { World, PROTECT_MS, DECAY_MS, NEWBIE_MS, MOVE_INTERVAL_MS } = require('../server/world');
 const { MemoryStore } = require('../server/store');
 const { tilesAround, tileOf, distanceKm } = require('../server/map/geo');
 const { NODES } = require('../server/map/tokyo');
@@ -251,6 +251,28 @@ async function solve(world, p, nodeId) {
   // 稼働時計は保存され、再起動後に続きから数える
   const w3 = await new World({ store }).init();
   assert.ok(w3.uptime >= upBefore, '稼働時計が保存から復元される');
+
+  // 引っ越し(1 日 1 回): 自分の拠点が新しい場所に移り、所有拠点は残るが線が切れた所有拠点からは広げられない
+  const mover = await w.join(fakeWs(), 'ひっこし', null, tokyoSt.id);
+  const mHome0 = w.nodes.get(mover.homeNodeId);
+  const mTarget = [...w.adj.get(mHome0.id)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false);
+  for (let i = 0; i < mTarget.hits; i++) await solve(w, mover, mTarget.id);
+  assert.strictEqual(mTarget.owner, mover.id); assert.strictEqual(mover.nodesOwned, 2);
+  const beyond = [...w.adj.get(mTarget.id)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false);
+  assert.ok(await w.canAttack(mover.id, beyond.id), '線がつながっている所有拠点からは広げられる');
+  await assert.rejects(() => w.move(mover, tokyoSt.id), /違う開始地点/);
+  const newHome = await w.move(mover, takao.id);
+  assert.ok(!w.nodes.has(mHome0.id) && !(await store.loadNode(mHome0.id)), '古い自分の拠点は消える');
+  assert.ok(distanceKm(newHome, takao) <= 1.05 && mover.homeNodeId === newHome.id, '新しい拠点は引っ越し先のそば');
+  assert.strictEqual(mover.nodesOwned, 2, '所有拠点は残る(自分の拠点 1 + 固定 1)');
+  assert.strictEqual((await store.loadNode(mTarget.id)).owner, mover.id);
+  await w.ensureTiles(tilesAround(mTarget.t0, 1));
+  assert.ok(!(await w.canAttack(mover.id, beyond.id)), '線が切れた所有拠点からは広げられない');
+  await assert.rejects(() => w.ask(mover, beyond.id), /つなぎ直して/);
+  await assert.rejects(() => w.move(mover, tokyoSt.id), /1 日に 1 回/);
+  mover.movedAt = Date.now() - MOVE_INTERVAL_MS - 1000;
+  await w.move(mover, tokyoSt.id);
+  assert.ok(distanceKm(w.nodes.get(mover.homeNodeId), tokyoSt) <= 1.05, '1 日たてばまた引っ越せる');
 
   // 参加前の人も地図を読める(開始地点を地図から選ぶため)。配信先にはならない
   const gws = fakeWs();

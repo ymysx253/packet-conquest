@@ -19,6 +19,8 @@ const PROTECT_MS = 24 * 60 * 60 * 1000; // 初心者保護: 生まれた拠点�
 const PROTECT_MAX_NODES = 3;            // 初心者保護: 所持拠点がこの数以下の人は攻撃されない(作成から NEWBIE_MS の間だけ)
 const NEWBIE_MS = 7 * 24 * 60 * 60 * 1000;  // 初心者保護の期限: 作成から 7 日(2026-10-18 決定。別アカウントで要衝を永久に守る穴をふさぐ)
 const IDLE_MS = 7 * 24 * 60 * 60 * 1000;    // 休眠: 稼働時間で 7 日接続が無い無料アカウントは、拠点をすべて中立に戻して削除(サブスク会員は除外)
+const MOVE_INTERVAL_MS = 24 * 60 * 60 * 1000; // 引っ越し(開始地点の変更)は 1 日 1 回(2026-10-18 決定)
+const REACH_TTL_MS = 30 * 1000;             // 「自分の拠点から線でつながっている所有拠点」の計算結果を持つ時間
 const TICK_CAP_MS = 5 * 60 * 1000;          // 稼働時計: 1 回の刻みで進めてよい上限。止まっていた時間(メンテナンス)は数えない
 const HOME_LINKS = 2;                   // プレイヤーの拠点がつながる近隣拠点の数(開始地点 + 近い 1 つ)
 const SPAWN_RINGS_KM = [0.3, 0.6, 1.0];  // 開始地点のまわりに置く半径。空きがなければ広げ、1 km でも無ければ満員(第 3.1 節)
@@ -258,6 +260,7 @@ class World {
       id: newId(), token: newId(), name, color: await this.pickColor(),
       country: this.country, startNodeId: startNodeId || DEFAULT_START_ID, // 登録国と開始地点(第 3.1 節)
       plan: null, // サブスク(予約)。入っていれば休眠でも消えない
+      movedAt: null, // 最後に引っ越した時刻(1 日 1 回)
       registered: false, accountId: null, registeredAt: null, // 本登録(予約)。復帰コードはお試しで、本登録しても残る(第 3.1 節)
       points: 0, score: 0, nodesOwned: 0, homeNodeId: null, team: null, sponsorId: null, createdAt: now(), lastSeen: now(), lastSeenUp: this.uptime,
     });
@@ -268,7 +271,7 @@ class World {
     return p;
   }
   attach(doc) {
-    const p = { ...doc, ws: null, online: false, pending: null, cooldownUntil: 0, view: new Set(), viewZ: 0 };
+    const p = { ...doc, ws: null, online: false, pending: null, cooldownUntil: 0, view: new Set(), viewZ: 0, reach: null, reachAt: 0 };
     this.players.set(p.id, p);
     return p;
   }
@@ -282,6 +285,31 @@ class World {
     p.token = newId();
     await this.persistPlayer(p);
     return p.token;
+  }
+  // 引っ越し(開始地点の変更。2026-10-18 決定): 今の自分の拠点を消して新しい場所に作る。所有している固定拠点は残るが、
+  // 新しい拠点から線がつながるまでは「ただ存在しているだけ」になる。1 日 1 回まで
+  async move(p, startNodeId) {
+    if (p.movedAt && now() - p.movedAt < MOVE_INTERVAL_MS) {
+      const h = Math.ceil((MOVE_INTERVAL_MS - (now() - p.movedAt)) / 3600000);
+      throw new Error(`引っ越しは 1 日に 1 回までです(あと ${h} 時間)`);
+    }
+    if (!startNodeId || startNodeId === p.startNodeId) throw new Error('いまと違う開始地点を選んでください');
+    const old = p.homeNodeId ? (this.nodes.get(p.homeNodeId) || await this.store.loadNode(p.homeNodeId)) : null;
+    const prevStart = p.startNodeId;
+    p.startNodeId = startNodeId;
+    try { await this.startNode(p); } catch (e) { p.startNodeId = prevStart; throw e; }
+    if (old) {
+      await this.store.deleteNode(old.id);
+      this.dropNode(old);
+      p.nodesOwned = Math.max(0, (p.nodesOwned || 0) - 1);
+      p.score = Math.max(0, (p.score || 0) - this.valueOf(old));
+    }
+    p.pending = null; p.movedAt = now(); this.invalidateReach(p.id);
+    const home = await this.spawnHome(p);
+    this.addLog(`${p.name} が ${home.area} へ引っ越しました`);
+    await this.persistPlayer(p);
+    await this.emitPlayers();
+    return home;
   }
   // 休眠アカウントの回収(2026-10-18 決定): 稼働時計で 7 日接続が無い無料アカウントは、奪った拠点も自分の拠点も含めて全部中立に戻し、アカウントを削除する。
   // サブスク(plan あり)は対象外。いま接続中の人も対象外。古いドキュメント(lastSeenUp 無し)は次に接続したときから数え始める
@@ -335,7 +363,7 @@ class World {
     return COLORS.reduce((best, c) => ((used.get(c) || 0) < (used.get(best) || 0) ? c : best), COLORS[0]);
   }
   async persistPlayer(p) {
-    const { ws, online, pending, cooldownUntil, view, viewZ, ...doc } = p;
+    const { ws, online, pending, cooldownUntil, view, viewZ, reach, reachAt, ...doc } = p;
     doc.type = 'player';
     try { await this.store.savePlayer(doc); } catch (e) { console.error('プレイヤーの保存に失敗:', e.message); }
   }
@@ -409,7 +437,29 @@ class World {
   score(pid) { const p = this.players.get(pid); return p ? p.score || 0 : 0; }
   ownedCount(pid) { const p = this.players.get(pid); return p ? p.nodesOwned || 0 : 0; }
 
-  // 攻撃できる条件は「自分の拠点とつながっていること」。チームの拠点とつながっているだけでは攻撃できない(2026-10-18 決定)。
+  // 自分の拠点(本拠地)から、自分の所有拠点を線でたどって届く拠点の集合(2026-10-18 決定)。
+  // 引っ越しなどで線が切れた所有拠点は「ただ存在しているだけ」で、そこからは広げられない。つなぎ直せばまた使える
+  async reach(p) {
+    if (p.reach && now() - p.reachAt < REACH_TTL_MS) return p.reach;
+    const owned = await this.store.nodesOwnedBy(p.id);
+    const byId = new Map(owned.map((n) => [n.id, n]));
+    for (const n of this.nodes.values()) if (n.owner === p.id) byId.set(n.id, n); // キャッシュの方が新しいことがある
+    for (const [id, n] of byId) if (n.owner !== p.id) byId.delete(id);
+    const set = new Set();
+    const home = p.homeNodeId && byId.get(p.homeNodeId);
+    if (home) {
+      const stack = [home.id]; set.add(home.id);
+      while (stack.length) {
+        const cur = byId.get(stack.pop());
+        const nb = new Set([...(cur.adj || []), ...(this.adj.get(cur.id) || [])]);
+        for (const m of nb) if (byId.has(m) && !set.has(m)) { set.add(m); stack.push(m); }
+      }
+    }
+    p.reach = set; p.reachAt = now();
+    return set;
+  }
+  invalidateReach(pid) { const p = this.players.get(pid); if (p) p.reach = null; }
+  // 攻撃できる条件は「自分の拠点から線でつながっている所有拠点に隣接していること」。チームの拠点とつながっているだけでは攻撃できない(2026-10-18 決定)。
   // チームの陣地の近くから始めれば、そこまで自力で進む部分を省略できる
   async canAttack(pid, nodeId) {
     const n = this.nodes.get(nodeId);
@@ -419,8 +469,12 @@ class World {
     if (n.protectedUntil > now()) return false;
     if (n.owner) { const o = await this.getPlayer(n.owner); if (o && (o.nodesOwned || 0) <= PROTECT_MAX_NODES && this.isNewbie(o)) return false; }
     const nb = this.adj.get(nodeId) || new Set();
-    for (const id of nb) { const m = this.nodes.get(id); if (m && m.owner === pid) return true; }
-    return false;
+    const mine = [...nb].filter((id) => { const m = this.nodes.get(id); return m && m.owner === pid; });
+    if (!mine.length) return false;
+    const p = await this.getPlayer(pid);
+    if (!p) return false;
+    const reach = await this.reach(p);
+    return mine.some((id) => reach.has(id));
   }
 
   // 出題レベル。難しさはレベルだけで決める(設計書 3.2)。突破に必要な回数は hits(つながりの本数)で別に決まる
@@ -449,7 +503,11 @@ class World {
     } else if (n.owner && await (async () => { const o = await this.getPlayer(n.owner); return o && o.nodesOwned <= PROTECT_MAX_NODES && this.isNewbie(o); })()) {
       throw new Error('始めたばかりで拠点が少ないプレイヤーは守られています');
     } else {
-      throw new Error('自分の拠点とつながっている拠点だけ攻撃できます');
+      const nb = this.adj.get(nodeId) || new Set();
+      const viaOrphan = [...nb].some((id) => { const m = this.nodes.get(id); return m && m.owner === p.id; });
+      throw new Error(viaOrphan
+        ? 'その所有拠点は自分の拠点から線がつながっていないため、そこからは広げられません。つなぎ直してください'
+        : '自分の拠点とつながっている拠点だけ攻撃できます');
     }
     const level = this.levelFor(n, mode);
     if (p.pending && p.pending.nodeId === nodeId && p.pending.mode === mode && p.pending.level === level) return p.pending.payload;
@@ -501,6 +559,7 @@ class World {
     const gained = this.valueOf(n);
     if (prev) { prev.nodesOwned = Math.max(0, (prev.nodesOwned || 0) - 1); prev.score = Math.max(0, (prev.score || 0) - gained); }
     n.owner = p.id; n.defense = 0; n.fortifiedAt = now(); n.progress = {};
+    this.invalidateReach(p.id); if (prev) this.invalidateReach(prev.id);
     p.points = (p.points || 0) + gained;
     p.nodesOwned = (p.nodesOwned || 0) + 1;
     p.score = (p.score || 0) + this.valueOf(n);
@@ -592,8 +651,8 @@ class World {
   // 参加直後に送る自分の情報
   welcome(p) {
     const home = p.homeNodeId ? this.nodes.get(p.homeNodeId) : null;
-    return { t: 'welcome', id: p.id, token: p.token, name: p.name, country: p.country || this.country, startNodeId: p.startNodeId || null, home: home ? { id: home.id, lat: home.lat, lon: home.lon } : null, spawn: tokyo.SPAWN_CENTER };
+    return { t: 'welcome', id: p.id, token: p.token, name: p.name, country: p.country || this.country, startNodeId: p.startNodeId || null, movedAt: p.movedAt || null, home: home ? { id: home.id, lat: home.lat, lon: home.lon } : null, spawn: tokyo.SPAWN_CENTER };
   }
 }
 
-module.exports = { World, PROTECT_MS, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS };
+module.exports = { World, PROTECT_MS, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS, MOVE_INTERVAL_MS };

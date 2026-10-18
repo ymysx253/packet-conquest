@@ -16,7 +16,7 @@ for (const n of NODES) { assert.strictEqual(n.country, 'japan'); for (let z = 0;
 for (const n of NODES) {
   assert.ok(KINDS[n.kind], `${n.name}: kind が不正 ${n.kind}`);
   assert.ok(n.lat > 35.4 && n.lat < 35.9 && n.lon > 139.0 && n.lon < 140.0, `${n.name}: 東京の範囲外`);
-  assert.ok(Number.isInteger(n.level) && n.level >= 1 && n.level <= 5, `${n.name}: 東京の拠点は Lv1〜5`);
+  assert.ok(Number.isInteger(n.level) && n.level >= 1 && (n.level <= 5 || (n.genre !== 'station' && n.level <= 30)), `${n.name}: 東京の拠点は Lv1〜5(象徴的な名所は 30 まで)`);
   assert.ok(Number.isInteger(n.value) && n.value >= 1 && n.value <= 999, `${n.name}: 点数は 1〜999`);
   assert.ok(n.value >= n.level - 1, `${n.name}: Lv に対して点数が低すぎる`);
   if (n.hackable) assert.ok(ADJ[n.id].length >= 1, `${n.name}: つながりがない`);
@@ -43,7 +43,8 @@ const byName = Object.fromEntries(NODES.map((n) => [n.name, n]));
 assert.ok(byName['新宿駅'].hits >= 10 && byName['新宿駅'].hits === Math.max(...NODES.map((n) => n.hits)), '新宿駅のつながりが最多');
 assert.ok(byName['東京駅'].adj.includes(byName['神田駅'].id) && byName['東京駅'].adj.includes(byName['有楽町駅'].id), '東京駅は山手線の前後とつながる');
 assert.strictEqual(byName['奥多摩駅'].hits, 1, '終点は 1 本');
-assert.strictEqual(byName['東京タワー'].adj.length, 5, '名所は近い駅をレベル(5)の数だけ');
+assert.strictEqual(byName['東京タワー'].adj.length, 8, '名所は近い駅をレベルの数だけ(上限 8)');
+assert.strictEqual(byName['国会議事堂'].level, 30); assert.strictEqual(byName['東京都庁'].level, 15); assert.strictEqual(byName['国会議事堂'].adj.length, 8, '象徴拠点も 8 本まで');
 assert.ok(byName['東京タワー'].adj.every((id) => NODES.find((n) => n.id === id).genre === 'station'), '名所は駅とだけつながる');
 // 開始地点の近くに拠点がある
 assert.ok(NODES.some((n) => distanceKm(n, SPAWN_CENTER) < SPAWN_CENTER.radiusKm), '開始地点の近くに拠点がない');
