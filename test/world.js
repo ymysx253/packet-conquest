@@ -162,7 +162,7 @@ async function solve(world, p, nodeId) {
 
   // 地域の支配: 配下(ハック可の固定拠点)の 3/4 以上で支配。上の段(東京都)は配下の区・市の 3/4 が要る
   const regionId = target.region;
-  const inRegion = [...store.nodes.values()].filter((n) => n.region === regionId && !n.isPlayerNode && n.hackable !== false);
+  const inRegion = [...store.nodes.values()].filter((n) => n.region === regionId && !n.isPlayerNode && n.hackable !== false && n.status === 'public'); // 非公開の拠点(皇居など)は支配の数に入らない
   const need = Math.ceil((inRegion.length * 3) / 4);
   for (const n of inRegion) n.owner = null;
   const picked = [inRegion.find((n) => n.id === nb), ...inRegion.filter((n) => n.id !== nb)].slice(0, need - 1);

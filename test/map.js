@@ -17,7 +17,9 @@ assert.strictEqual(new Set(NODES.map((n) => prefOf(n) + '|' + n.name)).size, NOD
 for (const n of NODES) { assert.strictEqual(n.country, 'japan'); for (let z = 0; z <= 4; z++) assert.match(n['t' + z], new RegExp('^t' + z + ':-?\\d+:-?\\d+$')); assert.match(n.subnet, /^10\.\d+\.\d+\.0\/20$/); assert.strictEqual(n.span, 4094); }
 for (const n of NODES) {
   assert.ok(KINDS[n.kind], `${n.name}: kind が不正 ${n.kind}`);
-  assert.ok(n.lat > 24 && n.lat < 45.6 && n.lon > 122.9 && n.lon < 146, `${n.name}: 日本の範囲外`);
+  // 遊べる範囲(公開の拠点)。非公開の沖ノ鳥島・南鳥島などは範囲の外にある
+  if (n.status === 'public') assert.ok(n.lat > 24 && n.lat < 45.6 && n.lon > 122.9 && n.lon < 146, `${n.name}: 日本の範囲外`);
+  else assert.ok(n.lat > 20 && n.lat < 45.6 && n.lon > 122.9 && n.lon < 154, `${n.name}: 日本の範囲外`);
   assert.ok(Number.isInteger(n.level) && n.level >= 1 && (n.level <= 5 || (n.genre !== 'station' && n.level <= 30)), `${n.name}: 駅は Lv1〜5(象徴的な名所は 30 まで)`);
   assert.ok(Number.isInteger(n.value) && n.value >= 1 && n.value <= 999, `${n.name}: 点数は 1〜999`);
   assert.ok(n.value >= n.level - 1, `${n.name}: Lv に対して点数が低すぎる`);
@@ -54,9 +56,10 @@ const railLinks = (n) => n.adj.filter((id) => id.startsWith('st-')).length; // �
 assert.ok(railLinks(byName['新宿駅']) >= 10 && railLinks(byName['新宿駅']) === Math.max(...NODES.filter((n) => n.genre === 'station').map(railLinks)), '路線のつながりは新宿駅が最多(名所が集まる駅は名所の線ぶん本数が増える)');
 assert.ok(byName['東京駅'].adj.includes(byName['神田駅'].id) && byName['東京駅'].adj.includes(byName['有楽町駅'].id), '東京駅は山手線の前後とつながる');
 assert.strictEqual(railLinks(byName['奥多摩駅']), 1, '終点は路線のつながりが 1 本');
-assert.strictEqual(byName['東京タワー'].adj.length, 8, '名所は近い駅をレベルの数だけ(上限 8)');
-assert.strictEqual(byName['国会議事堂'].level, 30); assert.strictEqual(byName['東京都庁'].level, 15); assert.strictEqual(byName['国会議事堂'].adj.length, 8, '象徴拠点も 8 本まで');
-assert.ok(byName['東京タワー'].adj.every((id) => NODES.find((n) => n.id === id).genre === 'station'), '名所は駅とだけつながる');
+assert.strictEqual(railLinks(byName['東京タワー']), 8, '名所は近い駅をレベルの数だけ(上限 8)');
+assert.ok(byName['東京タワー'].adj.some((id) => id.startsWith('tw-')), '名所は自分がある町・字ともつながる');
+assert.strictEqual(byName['国会議事堂'].level, 30); assert.strictEqual(byName['東京都庁'].level, 15); assert.strictEqual(railLinks(byName['国会議事堂']), 8, '象徴拠点も駅とは 8 本まで(町・字との線は別)');
+assert.ok(byName['東京タワー'].adj.every((id) => NODES.find((n) => n.id === id).genre === 'station' || NODES.find((n) => n.id === id).genre === 'town'), '名所は駅と町・字とだけつながる');
 // 開始地点の近くに拠点がある
 assert.ok(NODES.some((n) => distanceKm(n, SPAWN_CENTER) < SPAWN_CENTER.radiusKm), '開始地点の近くに拠点がない');
 assert.ok(AREAS.length >= 20, '区・市が少なすぎます');
@@ -71,7 +74,7 @@ assert.strictEqual(R.countryOf('tokyo-chiyoda'), 'japan');
 assert.strictEqual(R.tierOf('tokyo'), 5);
 const docs = regionDocs(NODES);
 const tokyoDoc = docs.find((d) => d.id === 'tokyo');
-assert.strictEqual(tokyoDoc.nodeCount, NODES.filter((n) => prefOf(n) === 'tokyo').length, '東京都の拠点数 = 東京のファイルの拠点');
+assert.strictEqual(tokyoDoc.nodeCount, NODES.filter((n) => prefOf(n) === 'tokyo' && n.status === 'public').length, '東京都の拠点数 = 東京のファイルの公開の拠点');
 assert.strictEqual(docs.find((d) => d.id === 'kanagawa').state, 'kanagawa'); assert.strictEqual(docs.find((d) => d.id === 'kanagawa-14101').state, 'kanagawa', '区・市は所属する都道府県を持つ');
 assert.strictEqual(docs.find((d) => d.id === 'kanagawa-14101').name, '横浜市鶴見区', '政令市の区は市名つき');
 assert.ok(docs.filter((d) => d.kind === 'state').length === 47 && docs.filter((d) => d.kind === 'city').length >= 1800, '全国の都道府県と市区町村');
@@ -177,6 +180,23 @@ assert.doesNotThrow(broken((d) => { d.nodes[0].codes = { iata: 'HND', icao: 'RJT
   }
   for (const n of NODES) if (n.status === 'public') for (const m of n.adj) assert.strictEqual(byIdAll[m].status, 'public', `${n.name}: 非公開の拠点への線`);
   for (const n of NODES) for (const r of n.routes) assert.strictEqual(byIdAll[r.to].status, 'public', `${n.name}: 非公開の拠点への航路`);
+  // 町・字(2026-10-18): 関東 7 都県。丁目はまとめ、占領でき、隣の町・字と中の駅・名所につながる
+  const TOWNS = NODES.filter((n) => n.genre === 'town');
+  const townPrefs = new Set(TOWNS.map((n) => n.region.split('-')[0]));
+  for (const p of ['tokyo', 'kanagawa', 'chiba', 'saitama', 'ibaraki', 'tochigi', 'gunma']) assert.ok(townPrefs.has(p), `${p} に町・字がある`);
+  assert.ok(TOWNS.length >= 10000, '関東の町・字は 1 万件以上');
+  for (const n of TOWNS) {
+    assert.match(n.id, /^tw-[0-9]{5}-[0-9]{6}$/, `${n.name}: 町・字の id`);
+    assert.ok(n.level === 1 && n.kind === 'TOWN' && n.hackable && n.src === 'src-estat-boundary-2020', `${n.name}: Lv1・占領できる・出典`);
+    assert.ok(!/^(大字|字)/.test(n.name) && !/[一二三四五六七八九十]丁目./.test(n.name), `${n.name}: 大字・丁目を含まない`);
+    if (n.status === 'public') assert.ok(n.adj.length >= 1, `${n.name}: 町・字もどこかとつながる`);
+  }
+  const ginza = TOWNS.filter((n) => n.name === '銀座' && n.area === '中央区');
+  assert.strictEqual(ginza.length, 1, '銀座一丁目〜八丁目は「銀座」1 つ');
+  assert.ok(ginza[0].adj.some((id) => byIdAll[id].name === '銀座駅'), '銀座は中にある銀座駅とつながる');
+  assert.ok(ginza[0].adj.some((id) => byIdAll[id].genre === 'town'), '銀座は隣の町とつながる');
+  for (const [area, name] of [['千代田区', '千代田'], ['瑞穂町', '横田基地'], ['小笠原村', '硫黄島'], ['朝霞市', '陸上自衛隊朝霞駐屯地']]) { const t = TOWNS.find((n) => n.area === area && n.name === name); assert.ok(t && t.status === 'hidden', `${area} ${name}: 非公開(皇居・基地・立ち入り制限)`); }
+  assert.ok(TOWNS.some((n) => n.region.startsWith('kanagawa') && n.adj.some((id) => byIdAll[id].genre === 'town' && byIdAll[id].region.startsWith('tokyo'))), '都県境をまたいで隣の町とつながる');
   assert.ok(NODES.find((n) => n.name === '那覇空港').status === 'public' && NODES.find((n) => n.name === '名古屋飛行場').status === 'public', '国・自治体が管理する空港(那覇・名古屋)は民間として公開');
   for (const n of NODES) {
     assert.ok(S.usable(n.src).ok, `${n.name}: 出典 ${n.src} はゲームに使える`);

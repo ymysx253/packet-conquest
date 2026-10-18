@@ -42,11 +42,13 @@
 | `st-` | 鉄道駅(国土数値情報 N02 のグループコード。他国は各国の駅データ) | `st-003766` |
 | `lm-` | 名所(Wikidata の QID を小文字) | `lm-q193499` |
 | `isl-` | 離島の玄関口(Wikidata の QID を小文字) | `isl-q2512004` |
+| `ap-` / `pt-` | 航路の端点として足した空港・港(Wikidata の QID、無ければ `pt-s` + 出典の港の名前のハッシュ) | `ap-q1322497`、`pt-q11489704` |
+| `tw-` | 町・字(市区町村コード 5 桁 + まとめた区画のうち最小の小地域コード 6 桁。国勢調査のコードから決まる) | `tw-13102-002000` |
 | (接頭辞なし) | 手で入れた拠点(東京の名所 64 件) | `haneda`、`kokkai` |
 | `home-` | プレイヤーの拠点(ゲームが作る) | |
 | `rt-` | 航路(第 5 章) | |
 | `src-` | 出典(第 2 章) | `src-ksj-n02-2025` |
-| 予約 | `ap-`(空港を空港データから直接作るとき)、`pt-`(港を港データから直接作るとき)、`sp-`(スポンサー拠点)、`usr-`(利用者の登録) | |
+| 予約 | `sp-`(スポンサー拠点)、`usr-`(利用者の登録) | |
 
 ---
 
@@ -99,7 +101,9 @@
 | `gateway` | 空港・港などの玄関口の情報。`{ type: "airport" \| "port" \| "heliport" \| "station", scope: "international" \| "domestic", hub: true }`。航路を受けられるのは `gateway` を持つ拠点だけ |
 | `replacedBy` | 統合で使わなくなった拠点の行き先 id(ゲーム状態の引き継ぎに使う) |
 | `status` | 公開状態。`public`(既定)/ `hidden`(非公開)。非公開の拠点は DB には入れるが、ゲームでは使わない(線・航路・地域の集計・検索・配信の対象外)。後で公開に戻せるよう、コードや玄関口の情報は残す |
-| `hiddenReason` | 非公開の理由(`status: hidden` のとき必須)。`military` = 自衛隊・米軍が設置・管理する飛行場(空港法の共用空港 8 か所。`tools/military.js`) |
+| `hiddenReason` | 非公開の理由(`status: hidden` のとき必須)。`military` = 自衛隊・米軍が設置・管理する飛行場や基地・駐屯地(`tools/military.js`)、`restricted` = 立ち入りが制限された場所(皇居、硫黄島・南鳥島・沖ノ鳥島) |
+| `borders` | 町・字(`town`)だけ。境界が接している町・字の id(国勢調査の境界から求めた事実)。線はここから作る |
+| `contains` | 町・字(`town`)だけ。その町・字の中にある駅・名所の id。線はここから作る |
 
 **照合の順番**(外部データの拠点を、どの内部の拠点に当てるか):
 
@@ -254,6 +258,7 @@ port,unlocode,JPOSM,元町港,Motomachi Port,元町港,34.75114,139.35147,JP,dom
 | `src-wikidata` | Wikidata | CC0 | 可 | なし | 名所、離島の空港・港・島、識別コード |
 | `src-internal` | 手で入れた拠点 | 自作 | 可 | なし | 東京の名所 64 件 |
 | `src-ksj-s10a-2016` | 国土数値情報 港湾間流通量・海上経路(S10a) | 商用可(国土数値情報の規約) | 可 | なし | 海路(取り込み予定) |
+| `src-estat-boundary-2020` | 国勢調査 2020 年 小地域(町丁・字等)境界データ(e-Stat) | e-Stat の利用規約(CC BY 4.0 と互換) | 可 | なし | 町・字 |
 | `src-mlit-air-stats` | 国土交通省 航空輸送統計調査(路線別) | 政府統計(出典表示) | 可(見込み) | なし | 空路(取り込み予定) |
 | (使わない)`src-ksj-c02` `src-ksj-c09` `src-ksj-n09` `src-ksj-s10b` | 港湾・漁港・旅客航路・空港間流通量 | 非商用 | 不可 | — | 記録として台帳に残す(`status: retired`) |
 | (使わない)OpenStreetMap、OpenFlights、GADM | | ODbL / 非商用 | — | あり | 台帳に入れない |
@@ -282,13 +287,14 @@ port,unlocode,JPOSM,元町港,Motomachi Port,元町港,34.75114,139.35147,JP,dom
 - `tools/fetch-codes.js`: 空港・港に IATA・ICAO・UN/LOCODE を Wikidata から付ける。値が割れているものは書かずに一覧に出す
 - `tools/import-stations.js`、`import-landmarks.js`、`import-islands.js`: 取り込みの時点で `codes`・`src`・`gateway` を書く
 - `tools/import-gateways.js`: 航路の端点になる空港・港を拠点にする(id は `ap-` / `pt-`)。既にある港には出典のコード(`codes.ext`)を付ける
+- `tools/import-towns.js`: 町・字を拠点にする(id は `tw-`)。境界が接している町・字(`borders`)と中の駅・名所(`contains`)も書く
 - `tools/import-routes.js`: 航路の記録を出典ごとに書き直す(`server/map/data/routes/<出典 id>.json`)。照合できなかった端点は `docs/routes/README.md` に出す
 - `tools/route-sources.js`(出典の読み取りと、統計表の空港名 → IATA / ICAO の表)、`tools/xlsx.js`(依存なしの xlsx 読み取り)
 
 **取り込みの順番**(前の道具は自分の拠点を入れ直すので、この順に流す):
 
 ```
-import-stations → import-landmarks → import-islands → import-gateways → fetch-codes → import-links → import-routes → db-setup --force
+import-stations → import-landmarks → import-islands → import-gateways → import-towns → fetch-codes → import-links → import-routes → db-setup --force
 ```
 
 **今のデータ**

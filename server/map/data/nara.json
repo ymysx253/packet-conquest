@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "nara",
   "name": "奈良県",
-  "version": 23,
+  "version": 29,
   "updatedAt": "2026-10-19",
   "note": "奈良県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {

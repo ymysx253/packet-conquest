@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "shizuoka",
   "name": "静岡県",
-  "version": 23,
+  "version": 29,
   "updatedAt": "2026-10-19",
   "note": "静岡県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -329,7 +329,7 @@
     { "id": "st-005591", "name": "下土狩駅", "genre": "station", "kind": "HUB", "area": "長泉町", "region": "shizuoka-22342", "lat": 35.1287, "lon": 138.89512, "level": 1, "value": 1, "lines": ["東海旅客鉄道 御殿場線"], "adj": ["lm-q85875400", "st-005538", "st-005644"] },
 
     { "id": "st-004949", "name": "駿河小山駅", "genre": "station", "kind": "HUB", "area": "小山町", "region": "shizuoka-22344", "lat": 35.35913, "lon": 138.99799, "level": 1, "value": 1, "lines": ["東海旅客鉄道 御殿場線"], "adj": ["st-004929", "st-005018"] },
-    { "id": "st-005018", "name": "足柄駅", "genre": "station", "kind": "HUB", "area": "小山町", "region": "shizuoka-22344", "lat": 35.33207, "lon": 138.98175, "level": 1, "value": 1, "lines": ["東海旅客鉄道 御殿場線"], "adj": ["lm-q2072706", "st-004949", "st-005115"] },
+    { "id": "st-005018", "name": "足柄駅", "genre": "station", "kind": "HUB", "area": "小山町", "region": "shizuoka-22344", "lat": 35.33207, "lon": 138.98175, "level": 1, "value": 1, "lines": ["東海旅客鉄道 御殿場線"], "adj": ["st-004949", "st-005115"] },
 
     { "id": "lm-q3695441", "name": "光岳", "genre": "nature", "kind": "LM", "area": "川根本町", "region": "shizuoka-22429", "lat": 35.33806, "lon": 138.08389, "level": 2, "value": 2, "codes": {"wikidata": "Q3695441"}, "src": "src-wikidata", "adj": ["lm-q3595684"] },
     { "id": "st-005384", "name": "尾盛駅", "genre": "station", "kind": "HUB", "area": "川根本町", "region": "shizuoka-22429", "lat": 35.19242, "lon": 138.17435, "level": 1, "value": 1, "lines": ["大井川鐵道 井川線"], "adj": ["st-005386", "st-005418"] },

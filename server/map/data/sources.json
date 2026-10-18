@@ -38,6 +38,12 @@
       "attribution": true, "attributionText": { "ja": "出典: 「航空輸送統計調査」(国土交通省)(政府統計の総合窓口 e-Stat)を加工して作成", "en": "Source: Air Transport Statistics (MLIT Japan), e-Stat; processed by Packet Conquest" },
       "retrievedAt": "2026-10-18", "version": "2025 年(暦年)年報 第 3 表", "status": "active", "notes": "国内定期航空の路線別・区間別の運航回数と旅客・貨物(暦年の計)。e-Stat の利用規約は商用可・出典の記載と加工の明記が要る・CC BY 4.0 と互換(2026-10-18 確認)"
     },
+    {
+      "id": "src-estat-boundary-2020", "title": "国勢調査 2020 年 小地域(町丁・字等)境界データ", "publisher": "総務省統計局(政府統計の総合窓口 e-Stat)", "kind": "government",
+      "url": "https://www.e-stat.go.jp/gis/statmap-search?type=2&aggregateUnitForBoundary=A&toukeiCode=00200521&toukeiYear=2020", "license": "LicenseRef-estat-terms (CC-BY-4.0 compatible)", "commercialUse": true, "shareAlike": false,
+      "attribution": true, "attributionText": { "ja": "出典: 政府統計の総合窓口(e-Stat)「国勢調査 2020 年 小地域(町丁・字等)境界データ」を加工して作成", "en": "Source: e-Stat, 2020 Population Census small area boundaries; processed by Packet Conquest" },
+      "retrievedAt": "2026-10-18", "version": "2020", "status": "active", "notes": "町・字(ジャンル town)の代表点・名前・隣り合う町・字。丁目はまとめる。tools/import-towns.js"
+    },
     { "id": "src-ksj-c02", "title": "国土数値情報 港湾データ(C02)", "publisher": "国土交通省", "kind": "government", "license": "LicenseRef-ksj-noncommercial", "commercialUse": false, "shareAlike": false, "attribution": true, "retrievedAt": null, "version": null, "status": "retired", "notes": "使用許諾が非商用のため使わない(2026-10-19 確認)" },
     { "id": "src-ksj-c09", "title": "国土数値情報 漁港データ(C09)", "publisher": "国土交通省", "kind": "government", "license": "LicenseRef-ksj-noncommercial", "commercialUse": false, "shareAlike": false, "attribution": true, "retrievedAt": null, "version": null, "status": "retired", "notes": "使用許諾が非商用のため使わない(2026-10-19 確認)" },
     { "id": "src-ksj-n09", "title": "国土数値情報 定期旅客航路(N09)", "publisher": "国土交通省", "kind": "government", "license": "LicenseRef-ksj-noncommercial", "commercialUse": false, "shareAlike": false, "attribution": true, "retrievedAt": null, "version": null, "status": "retired", "notes": "使用許諾が非商用のため使わない(2026-10-19 確認)" },

@@ -273,7 +273,10 @@
   const zoomRatio = () => V.k / BASE_K;
   const shrink = () => Math.min(1, Math.max(0.35, zoomRatio() / 6));
   const radiusOf = (n) => shrink() * (n.isPlayerNode ? 8
-    : 11 + Math.min(10, n.level) * 0.6 + Math.min(9, Math.floor((n.level - 1) / 10)) * 0.4 + Math.min(9, Math.floor((n.level - 1) / 100)) * 0.8);
+    : (11 + Math.min(10, n.level) * 0.6 + Math.min(9, Math.floor((n.level - 1) / 10)) * 0.4 + Math.min(9, Math.floor((n.level - 1) / 100)) * 0.8) * (n.genre === 'town' ? 0.7 : 1)); // 町・字は小さめ
+  // 町・字(2026-10-18)は数が多いので、ある程度拡大したときだけ描く。自分の拠点・選択中・攻撃できるものは縮小していても描く
+  const TOWN_MIN_RATIO = 10, TOWN_LABEL_RATIO = 14; // 町・字の印は拡大率 10 から、名前は 14 から(参加直後の 9 では駅と名所が主役)
+  const visibleNode = (n) => n.genre !== 'town' || zoomRatio() >= TOWN_MIN_RATIO || n.id === S.selected || (n.owner && n.owner === S.me) || canAttack(n.id);
 
   function resize() {
     const box = $('mapWrap');
@@ -460,7 +463,7 @@
     park: '公園・庭園', nature: '自然の名所', zoo_aquarium: '動物園・水族館・植物園', museum: '博物館・美術館', library: '図書館',
     theater: '劇場・ホール', stadium: 'スタジアム・競技場', heritage: '歴史的建造物', monument: '記念碑・広場', shrine_temple: '寺社',
     government: '官公庁', university: '大学・研究', market: '市場・商店街', convention: '展示場・会議場', complex: '複合施設',
-    observatory: '天文台', ix: '相互接続点',
+    observatory: '天文台', ix: '相互接続点', town: '町・字',
   };
   $('rankKind').onchange = renderPlayers;
   function renderPlayers() {
@@ -732,19 +735,22 @@
     ctx.lineCap = 'round';
     for (const e of S.edges.values()) {
       const na = nodeById(e.a), nb = nodeById(e.b);
-      if (!na || !nb) continue;
+      if (!na || !nb || !visibleNode(na) || !visibleNode(nb)) continue; // 描かない町・字への線も描かない
       const a = toScreen(posOf(na)), b = toScreen(posOf(nb));
       const own = na.owner && na.owner === nb.owner ? colorOf(na.owner) : null;
       const thin = na.isPlayerNode || nb.isPlayerNode;
+      const town = na.genre === 'town' || nb.genre === 'town'; // 町・字の線は細く薄く(路線の線を主役にする)
       ctx.strokeStyle = own || C.line;
-      ctx.lineWidth = (own ? (thin ? 5 : 7) : (thin ? 2.5 : 4)) * Math.min(1, Math.max(0.4, ratio / 4));
+      ctx.lineWidth = (own ? (thin || town ? 4 : 7) : (thin ? 2.5 : town ? 1.5 : 4)) * Math.min(1, Math.max(0.4, ratio / 4));
+      if (town && !own) ctx.globalAlpha = 0.55;
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      ctx.globalAlpha = 1;
     }
 
     // 拠点: プレイヤーの拠点 → 固定拠点 → 選択中(最前面)
     const pulse = 0.5 + 0.5 * Math.sin(t / 260);
     const rank = (n) => (n.id === S.selected ? 2 : n.isPlayerNode ? 0 : 1);
-    const sorted = [...S.nodes.values()].sort((a, b) => rank(a) - rank(b));
+    const sorted = [...S.nodes.values()].filter(visibleNode).sort((a, b) => rank(a) - rank(b));
     // 重要さ(間引きと名前の優先順位): 選択中 > 自分の拠点 > 誰かの拠点 > レベル > 空港・港
     const prio = (n) => (n.id === S.selected ? 1e6 : 0) + (n.owner && n.owner === S.me ? 1e5 : 0) + (n.owner ? 1e4 : 0) + n.level * 10 + (n.kind === 'GW' ? 5 : 0);
     // 縮小表示: 画面の小さなます目(約 34 px)ごとに、いちばん重要な拠点だけを描く(倍率に対して印が多すぎないように)
@@ -810,6 +816,7 @@
       // 名前: 寄ったときだけ全部。縮小時はレベルの高いものと自分の拠点
       const showLabel = S.overview ? true : n.isPlayerNode
         ? (ratio >= 7 || n.owner === S.me)
+        : n.genre === 'town' ? (ratio >= TOWN_LABEL_RATIO || n.owner === S.me || n.id === S.selected)
         : (ratio >= 7 || (ratio >= 3.5 && n.level >= 2) || (ratio >= 1.5 && n.level >= 3) || n.level >= 4 || n.kind === 'IX' || n.kind === 'GW' || n.owner === S.me);
       if (showLabel) {
         const isSel = S.selected === n.id, dim = S.selected && !isSel;
@@ -876,7 +883,7 @@
   function nodeAt(pt) {
     let best = null, bd = Infinity;
     for (const n of S.nodes.values()) {
-      if (S.overview && S.drawn && !S.drawn.has(n.id)) continue; // 縮小表示で間引いた拠点は押せない
+      if (S.drawn && !S.drawn.has(n.id)) continue; // 描いていない拠点(縮小表示で間引いたもの、拡大前の町・字)は押せない
       const p = toScreen(posOf(n));
       const d = Math.hypot(p.x - pt.x, p.y - pt.y);
       if (d < radiusOf(n) + 10 && d < bd) { best = n; bd = d; }

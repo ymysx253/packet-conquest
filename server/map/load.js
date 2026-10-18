@@ -14,12 +14,13 @@ const GATEWAY_TYPES = new Set(['airport', 'port', 'heliport', 'station']);
 const GATEWAY_SCOPES = new Set(['international', 'domestic']);
 const NODE_STATUSES = new Set(['public', 'hidden']);
 // 非公開の理由: military = 自衛隊・米軍が設置・管理する飛行場(2026-10-18 決定。tools/military.js)
-const HIDDEN_REASONS = new Set(['military']);
+// restricted = 立ち入りが制限された場所(皇居、硫黄島・南鳥島・沖ノ鳥島など)
+const HIDDEN_REASONS = new Set(['military', 'restricted']);
 
 const DATA_DIR = path.join(__dirname, 'data');
 const LEVEL_MIN = 1, LEVEL_MAX = 999; // 1〜10 が基本(国は 10)。11〜999 は拡張用。形は public/shapes.js
 // 拠点に使ってよい名所のジャンル(docs/PLACES.md 第2章と同じ)
-const GENRES = new Set(['station', 'bus_terminal', 'airport', 'port', 'bridge', 'tower', 'park', 'nature', 'zoo_aquarium', 'museum', 'library', 'theater', 'stadium', 'heritage', 'monument', 'shrine_temple', 'government', 'university', 'market', 'convention', 'complex', 'observatory', 'ix']);
+const GENRES = new Set(['station', 'bus_terminal', 'airport', 'port', 'bridge', 'tower', 'park', 'nature', 'zoo_aquarium', 'museum', 'library', 'theater', 'stadium', 'heritage', 'monument', 'shrine_temple', 'government', 'university', 'market', 'convention', 'complex', 'observatory', 'ix', 'town']); // town = 町・字(2026-10-18。tools/import-towns.js)
 const VALUE_MIN = 1, VALUE_MAX = 999;
 
 function fail(region, msg) { throw new Error(`拠点マスター ${region}: ${msg}`); }
@@ -166,9 +167,18 @@ function validate(region, data) {
     if (n.status === 'hidden' && !HIDDEN_REASONS.has(n.hiddenReason)) fail(region, `${n.id}: 非公開の拠点は hiddenReason(${[...HIDDEN_REASONS].join('/')})が要る`);
     if (n.hiddenReason !== undefined && n.status !== 'hidden') fail(region, `${n.id}: hiddenReason は非公開の拠点だけ`);
     if (n.status === 'hidden' && Array.isArray(n.adj) && n.adj.length) fail(region, `${n.id}: 非公開の拠点に adj がある`);
+    // 町・字(town): 境界が接している町・字(borders)と、中にある駅・名所(contains)。線は tools/import-links.js がこれから作る
+    for (const k of ['borders', 'contains']) {
+      if (n[k] === undefined) continue;
+      if (n.genre !== 'town') fail(region, `${n.id}: ${k} は町・字(town)だけが持つ`);
+      if (!Array.isArray(n[k]) || n[k].some((x) => typeof x !== 'string' || !/^[a-z0-9-]+$/.test(x))) fail(region, `${n.id}: ${k} は拠点 id の配列`);
+    }
+    if (n.genre === 'town' && !/^tw-[0-9]{5}-[0-9]{6}$/.test(n.id)) fail(region, `${n.id}: 町・字の id は tw-<市区町村コード>-<小地域コード>`);
     // 名所のジャンル(docs/PLACES.md 第2章)。地名ではなく名所であることの担保
     if (typeof n.genre !== 'string' || !GENRES.has(n.genre)) fail(region, `${n.id}: genre が不正 ${n.genre}(PLACES.md のジャンルから選ぶ)`);
-    if (n.genre !== 'station' && /[0-9０-９一二三四五六七八九十]+丁目/.test(n.name)) fail(region, `${n.id}: 丁目を含む名前は使わない(名所の名前にする。駅名は除く)`);
+    // 町・字は丁目をまとめて入れる(tools/import-towns.js)。名前そのものが「八丁目」の大字(春日部市 など)だけは例外
+    const townWhole = n.genre === 'town' && /^[0-9０-９一二三四五六七八九十壱弐参]+丁目(\(.*\))?$/.test(n.name);
+    if (n.genre !== 'station' && !townWhole && /[0-9０-９一二三四五六七八九十]+丁目/.test(n.name)) fail(region, `${n.id}: 丁目を含む名前は使わない(名所の名前にする。駅名は除く)`);
     // つながり(設計書 第 14 章): 突破に必要な正解の回数 = つながりの本数。tools/import-links.js が書く
     if (n.adj !== undefined) {
       if (!Array.isArray(n.adj) || n.adj.some((x) => typeof x !== 'string')) fail(region, `${n.id}: adj は拠点 id の配列`);

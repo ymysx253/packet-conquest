@@ -126,13 +126,22 @@ const sCell = (p) => `${Math.floor(p.lat * 20)}:${Math.floor(p.lon * 20)}`; // �
 for (const s of hackableStations) { const k = sCell(s); if (!sGrid.has(k)) sGrid.set(k, []); sGrid.get(k).push(s); }
 let landmarkEdges = 0, landmarkAlone = 0;
 for (const n of nodes) {
-  if (n.genre === 'station' || n.hackable === false || n.status === 'hidden') continue;
+  if (n.genre === 'station' || n.genre === 'town' || n.hackable === false || n.status === 'hidden') continue; // 町・字は下で境界から結ぶ
   const cy = Math.floor(n.lat * 20), cx = Math.floor(n.lon * 20);
   const cands = [];
   for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) for (const s of sGrid.get(`${cy + dy}:${cx + dx}`) || []) { const d = distKm(n, s); if (d <= LANDMARK_MAX_KM) cands.push({ s, d }); }
   const near = cands.sort((a, b) => a.d - b.d).slice(0, Math.min(LANDMARK_MAX_LINKS, Math.max(1, n.level)));
   if (!near.length) landmarkAlone++;
   for (const { s } of near) { link(n.id, s.id); landmarkEdges++; }
+}
+
+// ---------- 町・字(2026-10-18): 境界が接している町・字どうし(borders)と、町・字の中にある駅・名所(contains) ----------
+// どちらも tools/import-towns.js が国勢調査の小地域境界から求めて拠点マスターに書いたもの。町から町へは一歩ずつ進む
+let townEdges = 0;
+const usableNode = (n) => n && n.hackable !== false && n.status !== 'hidden';
+for (const n of nodes) {
+  if (n.genre !== 'town' || !usableNode(n)) continue;
+  for (const m of [...(n.borders || []), ...(n.contains || [])]) if (usableNode(byId.get(m)) && !adj.get(n.id).has(m)) { link(n.id, m); townEdges++; }
 }
 
 // ---------- 分断の橋渡し ----------
@@ -181,7 +190,7 @@ for (const { file, T } of FILES) {
 
 const deg = {}; for (const n of hackable) { const d = adj.get(n.id).size; deg[d] = (deg[d] || 0) + 1; }
 const top = hackable.map((n) => ({ name: n.name, d: adj.get(n.id).size })).sort((a, b) => b.d - a.d).slice(0, 8);
-console.log(`対象 ${FILES.length} ファイル ${nodes.length} 拠点。路線のつながり ${lineEdges / 2} 本、名所のつながり ${landmarkEdges} 本(5 km 以内に駅が無い名所 ${landmarkAlone})、橋 ${bridges.length} 本。拠点に結びつかなかった N02 の駅 ${unmapped} 件(対象外の都道府県など)`);
+console.log(`対象 ${FILES.length} ファイル ${nodes.length} 拠点。路線のつながり ${lineEdges / 2} 本、名所のつながり ${landmarkEdges} 本(5 km 以内に駅が無い名所 ${landmarkAlone})、町・字のつながり ${townEdges} 本、橋 ${bridges.length} 本。拠点に結びつかなかった N02 の駅 ${unmapped} 件(対象外の都道府県など)`);
 console.log('つながりの本数 → 拠点数', JSON.stringify(deg));
 console.log('多い順', top.map((t) => `${t.name} ${t.d}`).join(' / '));
 if (bridges.length) console.log('橋:', bridges.join(' / '));

@@ -557,8 +557,9 @@ class World {
       for (let tries = 0; tries < SPAWN_TRIES && lat === null; tries++) {
         const ang = Math.random() * Math.PI * 2;
         const r = radius * Math.sqrt(Math.random());
-        const la = c.lat + (r / 111) * Math.cos(ang);
-        const lo = c.lon + (r / (111 * Math.cos((c.lat * Math.PI) / 180))) * Math.sin(ang);
+        // 保存する桁(小数 5 桁)に丸めてから間隔を確かめる(丸めで 1 m ほどずれて 150 m を割らないように)
+        const la = Number((c.lat + (r / 111) * Math.cos(ang)).toFixed(5));
+        const lo = Number((c.lon + (r / (111 * Math.cos((c.lat * Math.PI) / 180))) * Math.sin(ang)).toFixed(5));
         const near = [...this.nodes.values()].filter((n) => Math.abs(n.lat - la) < 0.01 && Math.abs(n.lon - lo) < 0.012);
         if (near.every((n) => distanceKm(n, { lat: la, lon: lo }) >= MIN_GAP_KM)) { lat = la; lon = lo; }
       }

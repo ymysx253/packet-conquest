@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "nagano",
   "name": "長野県",
-  "version": 23,
+  "version": 29,
   "updatedAt": "2026-10-19",
   "note": "長野県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -224,7 +224,7 @@
     { "id": "st-002789", "name": "木曽平沢駅", "genre": "station", "kind": "HUB", "area": "塩尻市", "region": "nagano-20215", "lat": 35.97885, "lon": 137.83215, "level": 1, "value": 1, "lines": ["東海旅客鉄道 中央線"], "adj": ["st-002741", "st-002805"] },
     { "id": "st-002805", "name": "奈良井駅", "genre": "station", "kind": "HUB", "area": "塩尻市", "region": "nagano-20215", "lat": 35.96891, "lon": 137.8157, "level": 1, "value": 1, "lines": ["東海旅客鉄道 中央線"], "adj": ["st-002789", "st-002865"] },
 
-    { "id": "lm-q10856353", "name": "龍岡城", "genre": "heritage", "kind": "LM", "area": "佐久市", "region": "nagano-20217", "lat": 36.19606, "lon": 138.50155, "level": 1, "value": 1, "codes": {"wikidata": "Q10856353"}, "src": "src-wikidata", "adj": ["lm-q3826863", "st-002548"] },
+    { "id": "lm-q10856353", "name": "龍岡城", "genre": "heritage", "kind": "LM", "area": "佐久市", "region": "nagano-20217", "lat": 36.19606, "lon": 138.50155, "level": 1, "value": 1, "codes": {"wikidata": "Q10856353"}, "src": "src-wikidata", "adj": ["st-002548"] },
     { "id": "st-002448", "name": "中佐都駅", "genre": "station", "kind": "HUB", "area": "佐久市", "region": "nagano-20217", "lat": 36.28101, "lon": 138.45323, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 小海線"], "adj": ["st-002440", "st-002451"] },
     { "id": "st-002451", "name": "佐久平駅", "genre": "station", "kind": "HUB", "area": "佐久市", "region": "nagano-20217", "lat": 36.27802, "lon": 138.4639, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 北陸新幹線", "東日本旅客鉄道 小海線"], "adj": ["st-002275", "st-002361", "st-002448", "st-002455"] },
     { "id": "st-002455", "name": "岩村田駅", "genre": "station", "kind": "HUB", "area": "佐久市", "region": "nagano-20217", "lat": 36.27459, "lon": 138.47207, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 小海線"], "adj": ["st-002451", "st-002483"] },
@@ -389,7 +389,7 @@
     { "id": "st-001915", "name": "都住駅", "genre": "station", "kind": "HUB", "area": "小布施町", "region": "nagano-20541", "lat": 36.70421, "lon": 138.32258, "level": 1, "value": 1, "lines": ["長野電鉄 長野線"], "adj": ["st-001905", "st-001933"] },
     { "id": "st-001933", "name": "小布施駅", "genre": "station", "kind": "HUB", "area": "小布施町", "region": "nagano-20541", "lat": 36.69924, "lon": 138.31324, "level": 1, "value": 1, "lines": ["長野電鉄 長野線"], "adj": ["st-001915", "st-001979"] },
 
-    { "id": "lm-q5302436", "name": "地獄谷野猿公苑", "genre": "zoo_aquarium", "kind": "LM", "area": "山ノ内町", "region": "nagano-20561", "lat": 36.7328, "lon": 138.4627, "level": 3, "value": 3, "codes": {"wikidata": "Q5302436"}, "src": "src-wikidata", "adj": ["lm-q4902598", "st-001869"] },
+    { "id": "lm-q5302436", "name": "地獄谷野猿公苑", "genre": "zoo_aquarium", "kind": "LM", "area": "山ノ内町", "region": "nagano-20561", "lat": 36.7328, "lon": 138.4627, "level": 3, "value": 3, "codes": {"wikidata": "Q5302436"}, "src": "src-wikidata", "adj": ["st-001869"] },
     { "id": "st-001841", "name": "夜間瀬駅", "genre": "station", "kind": "HUB", "area": "山ノ内町", "region": "nagano-20561", "lat": 36.75965, "lon": 138.4033, "level": 1, "value": 1, "lines": ["長野電鉄 長野線"], "adj": ["st-001839", "st-001856"] },
     { "id": "st-001856", "name": "上条駅", "genre": "station", "kind": "HUB", "area": "山ノ内町", "region": "nagano-20561", "lat": 36.7499, "lon": 138.4077, "level": 1, "value": 1, "lines": ["長野電鉄 長野線"], "adj": ["st-001841", "st-001869"] },
     { "id": "st-001869", "name": "湯田中駅", "genre": "station", "kind": "HUB", "area": "山ノ内町", "region": "nagano-20561", "lat": 36.74195, "lon": 138.41479, "level": 1, "value": 1, "lines": ["長野電鉄 長野線"], "adj": ["lm-q5302436", "st-001856"] },
