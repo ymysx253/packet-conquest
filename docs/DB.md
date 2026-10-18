@@ -140,6 +140,9 @@
   "points": 12,
   "country": "japan",
   "startNodeId": "st-003766",
+  "registered": false,
+  "accountId": null,
+  "registeredAt": null,
   "homeNodeId": "home-7f8e9d0c1b2a",
   "team": null,
   "sponsorId": null,
@@ -150,6 +153,7 @@
 
 - `token` は復帰コード(持っていれば本人)。将来ログインを入れたら `login: { provider, subject }` を足し、token は補助にする
 - `team` は陣営の予約。`sponsorId` はスポンサー拠点への所属(8.16)
+- `registered` は本登録フラグ(2026-10-18 決定)。復帰コードは「お試し」で、本登録しても残る。`accountId` は本登録のアカウント(別テナントのユーザーフローが返す識別子)、`registeredAt` は登録日時。本登録の仕組みはまだ無いので、いまは全員 false
 - `plan` はサブスク(null = 無料。入っていれば休眠でも消えない。中身は収益化のときに決める)。`lastSeen`(実時刻)と `lastSeenUp`(稼働時計の値)は参加・解答・切断で更新し、稼働時計で 7 日より古い無料アカウントは `world.reclaimIdle` が回収する。メンテナンスで止まっていた時間は稼働時計が進まないので数えない
 - `country` は登録国、`startNodeId` は開始地点(選んだ駅・名所の id。指定が無ければ東京駅)。検索結果の「ここから始めた人数」は `startNodeId` で GROUP BY して数える(DESIGN.md 3.1、2026-10-18)
 - 累計点 `points` は奪取時点の点(強化込み)の合計。現在の点数は nodes から集計する(保存しない)

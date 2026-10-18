@@ -258,6 +258,7 @@ class World {
       id: newId(), token: newId(), name, color: await this.pickColor(),
       country: this.country, startNodeId: startNodeId || DEFAULT_START_ID, // 登録国と開始地点(第 3.1 節)
       plan: null, // サブスク(予約)。入っていれば休眠でも消えない
+      registered: false, accountId: null, registeredAt: null, // 本登録(予約)。復帰コードはお試しで、本登録しても残る(第 3.1 節)
       points: 0, score: 0, nodesOwned: 0, homeNodeId: null, team: null, sponsorId: null, createdAt: now(), lastSeen: now(), lastSeenUp: this.uptime,
     });
     p.ws = ws; p.online = true;
