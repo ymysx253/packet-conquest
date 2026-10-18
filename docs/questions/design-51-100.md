@@ -2,84 +2,38 @@
 
 作成: 2026-10-18 / 対象: `docs/LEVELS.md` 第 4 章「1〜99 アドレッシングと基礎」の 51〜99 と、「100〜199 L2・L3 の動作」の最初の段(100〜109)の先頭 Lv100
 
-この文書は **何を・どう生成し・どう検証するか** の設計書で、コードは含まない。題材の階段(LEVELS.md 第 4 章の段)は決定済みなので変えない。レベル 11〜50 は別の担当が同時に設計しており、本書は 51 以降だけを扱う。11〜50 と共通にすべき部品(入力欄・正規化・seed 付き乱数)は第 1 章にまとめ、11〜50 の設計書と突き合わせて 1 つに揃える前提で書く。
+この文書は **何を・どう生成し・どう検証するか** の設計書で、コードは含まない。題材の階段(LEVELS.md 第 4 章の段)は決定済みなので変えない。レベル 11〜50 は別の担当が同時に設計しており、本書は 51 以降だけを扱う。11〜50 と共通にすべき部品(入力欄・正規化・seed 付き乱数)は、11〜50 の設計書と突き合わせて **`COMMON.md`** に統合した(本書の旧第 1 章)。3 つの文書の読む順と統合した実装順・迷った点の一覧は `README.md`。
 
 守ること(`CLAUDE.md`、LEVELS.md 第 1 章):
 - 難しさは「問われる知識の難しさ」だけ。制限時間・2 問連続・情報の伏せ方は使わない
 - 答えは正確でなければならない。計算で決まるものはプログラムで生成し、**別実装で解き直す検証テスト**を付ける
 - 答えはサーバーだけが持つ(`q.meta`・`accept` はクライアントに送らない)
-- アドレスは内側 `10/8`・`172.16/12`・`192.168/16`・`fd00::/8`・`fe80::/10`、外側は文書用 `192.0.2.0/24`・`198.51.100.0/24`・`203.0.113.0/24`・`2001:db8::/32` のみ。MAC は `02:` で始まるローカル管理アドレス。機器は架空メーカー「PC ネットワークス」(`devices.json`)の命名(R1、SW1、FW1、PC1)。ドメインは RFC 2606 の予約 TLD `.example` を使う(第 8 章の迷った点 9)
+- 使えるアドレス範囲・MAC・機器名・ドメイン(`.example`)などの安全規則は `COMMON.md` 第 7 章。本書の例題はすべてその範囲内で書いてある(ドメインの接尾辞の採否は第 8 章の迷った点 9 = COMMON 第 10 章 5)
 - ベンダー固有の名称には標準名を併記する(`terms.json`)。本書で出るのは AD 値(Cisco 社の用語「管理距離」。一般名は「経路の優先度」)だけ
 
 ---
 
-## 1. 共通の仕様(51〜100 で初めて必要になるもの)
+## 1. 共通の仕様(→ `COMMON.md`)
 
-### 1.1 問題オブジェクトの拡張
+問題オブジェクトの拡張、入力欄の仕様、正規化の規則、seed 付き乱数と保存の形、検証テストの流儀、用語(生成器 / 固定テンプレート)は、11〜50 の設計書の共通部分と突き合わせて **`COMMON.md`** に統合した。本書の旧 1.1〜1.6 の内容はすべてそこへ移した。ここには要点と、本書の表で使っている旧名の読み替えだけ残す。
 
-現状(`basics.js`)は `{ text, options(4), answerIndex, explanation, table?, meta }` で、`world.answer` は `choice === pend.answerIndex` だけを判定する。51 以降は入力式が大半なので、`DB.md` 3.4 の `answerKind` に合わせて次を足す(LEVELS.md 第 6 章 #1・#2)。
+- 入力式は `answerKind: 'text'` と `fields` 配列(1 欄でも長さ 1)。クライアントには `fields` の `name・label・format・hint` だけ送り、`accept` / `verifier` / `meta` は送らない(COMMON 第 1 章)
+- 入力欄は 1 行テキスト + Enter 送信 + 送信ボタン。Tab 補完なし、候補ボタンなし。1 問 1 回送信。形式が違う入力もそのまま不正解(再入力の可否は COMMON 第 10 章 3)(COMMON 第 2 章)
+- 正規化 `normalize(format, s)` は判定前に正解側にも通す。`test/normalize.js` で既知例の全数と冪等性を見る(COMMON 第 3 章・第 8 章)
+- 生成器は `make(level, node, rng)`。問題 = (`templateId`, `seed`, `generatorVersion`)。保存は `rendered` + `answer` + `explanation` + `defenseNote`(COMMON 第 5 章。保存の範囲は第 10 章 1)
+- 検証は別実装で解き直し、計算生成は固定 seed 列で 1 万件、FactBank は全数(COMMON 第 8 章)
 
-| 項目 | 配信 | 内容 |
-|---|---|---|
-| `answerKind` | する | `choice`(4 択)/ `text`(入力) |
-| `format` | する | 入力の種類。`number` / `ipv4` / `ipv4cidr` / `ipv6` / `ipv6cidr` / `addrport` / `ifname` / `devname` / `dnsname` / `aclverdict` / `token` / `prefixplan`。画面は placeholder と IME の初期状態(半角)を決めるのに使うだけ |
-| `inputHint` | する | 入力欄の例示(「例: 10.0.1.0/24」)。答えそのものを示唆しない定型文に限る |
-| `accept` | **しない** | 正規化済みの正解の配列。複数正解(Lv99 の計画問題)はここに並べるか、`verifier` を使う |
-| `verifier` | **しない** | 正解との一致ではなく制約で判定する問題(Lv99)の判定器名と引数 |
-| `defenseNote` | する(結果と一緒に) | 「守る側ならどうするか」の一文(第 6 章 #8。空は安全リンタで弾く) |
-| `meta` | **しない** | 検証テストが使う真の値 |
+**本書の表・例題で使う名前の読み替え**(表と例題は書いた当時の名前のまま。実装は COMMON の名前を使う):
 
-`world.ask` の payload には `answerKind` / `format` / `inputHint` を足し、`world.answer` は `answerKind === 'text'` なら `normalize(format, 入力)` を `accept` と比較する(または `verifier` を呼ぶ)。不正解時の待ち時間倍増(F4)はそのまま。
+| 本書の表記 | COMMON の名前 |
+|---|---|
+| 問題直下の `format` / `inputHint` / `accept` | `fields[0].format` / `fields[0].hint` / `fields[0].accept`(1 欄の `fields`) |
+| `facts.json`(1 ファイル) | `server/questions/data/facts/<表名>.json`(表ごと) |
+| `vocab.json` | `server/questions/data/vocab.json`(語彙 id: `diag-cause`、`switch-action` …。同じ) |
+| `number` の単位付き入力は不正解 | 末尾の単位語は除いて数として比べる(COMMON 第 0 章の推奨) |
+| MAC は `02:` 始まりのみ | ローカル管理が既定。文書用 `00:00:5e:00:53:xx` も許す(推奨。COMMON 第 10 章 4) |
 
-### 1.2 入力欄の仕様(本書の範囲で入力式が初めて出るのは Lv52)
-
-- 画面: 1 行のテキスト入力 1 つ。**Enter で送信**、送信ボタンも置く(スマートフォン用)。**Tab 補完なし、候補ボタンなし**(コマンド式ではないが「選ばせない」方針を揃える)。送信後は欄を無効化し、結果(正誤・正解・解説・defenseNote)を 4 択と同じ枠に出す。正解の表示は `accept[0]`(正規形)
-- 空文字・空白のみは送らない。1 問につき送信は 1 回(`qid` で束ねる。再送は「この問題はもう終わっています」)
-- 入力の長さは 200 文字まで。Lv99 の複数行は改行区切りで 1 つの文字列として送る(1,000 文字まで)
-- 文字種の案内文を欄の下に固定で出す: 「半角で入力。IPv6 の省略形、先頭の 0、大文字小文字は自動でそろえます」
-
-### 1.3 正規化の規則(サーバー側 `normalize(format, s)`。判定前に正解側にも同じ関数を通す)
-
-共通: 前後の空白を除く → 全角英数字・全角記号(`．：／－`)を半角に → 連続する空白を 1 つに → 小文字化(機器名・IF 名・16 進)。
-
-| format | 規則 | 受け付けない例(不正解扱いではなく「形式が違います」で再入力させず、そのまま不正解にする。理由: 再入力を許すと総当たりができる) |
-|---|---|---|
-| `number` | 桁区切り `,` と全角数字を除去して整数に。先頭 `+` は無視 | 小数、単位付き(「秒」「個」) |
-| `ipv4` | 4 オクテット、各 0〜255、**各オクテットの先頭 0 は除く**(`010.000.001.001` → `10.0.1.1`) | 3 オクテット、256 以上 |
-| `ipv4cidr` | `ipv4` + `/` + 0〜32。`10.0.1.0 255.255.255.0` の形も受け付けてプレフィックス長に変換。アドレス部はネットワークアドレスに切り詰めない(入力と正解を同じ規則で比べるので、`10.0.1.5/24` は不正解) | `/` のみ、マスクが連続 1 でない |
-| `ipv6` | `::` を展開して 8 グループに → RFC 5952 の正規形(最長ゼロ連続 1 か所を `::`、同長なら先頭、先頭ゼロ省略、小文字)。既存 `basics.v6Canonical` を使う | `::` が 2 か所、グループ 9 個以上、`[]` 付き |
-| `ipv6cidr` | `ipv6` + `/` + 0〜128 | |
-| `addrport` | `ipv4` + `:` + 1〜65535(IPv4 のみ。本書の範囲で IPv6 の addr:port は出ない) | ポート 0、`:` なし |
-| `ifname` | `GigabitEthernet0/1` / `Gi0/1` / `gi 0/1` / `g0/1` を `gi0/1` に。`Null0` / `null 0` → `null0`。比較は小文字 | |
-| `devname` | 表に書いた機器名(R1、SW1、PC2…)を小文字化し、ハイフン・空白を除いて比較(`pc-2` ≡ `pc2`) | |
-| `dnsname` | 小文字化、末尾の `.` を除く。`in-addr.arpa` / `ip6.arpa` のラベルは全角 `.` も半角に | |
-| `aclverdict` | 2 トークン `動作 行番号`。順不同(`10 permit` ≡ `permit 10`)。暗黙の拒否は `deny implicit`(`暗黙`・`暗黙の拒否`・`implicit` を `implicit` に、`許可`→`permit`、`拒否`→`deny`)。`deny` だけで行番号なしは不正解(行番号を問う知識なので) | |
-| `token` | 語彙表 `vocab.json` で正規化(日本語の別名 → 英字トークン)。例: `全ポート`・`フラッディング`・`flood` → `flood`、`破棄`・`drop` → `drop`、`マスク`・`サブネットマスク` → `mask` | 語彙表に無い語 |
-| `prefixplan` | 改行・`,`・`;` で分けた各行を `名前 ipv4cidr [ipv6cidr]` として読む。名前は `devname` 規則、順序は無視して**集合**として比較 | 行数が要件の拠点数と違う |
-
-正規化そのものを `test/normalize.js` で網羅する(全角・先頭 0・`::` の展開・IF 名の別表記・aclverdict の順不同・token の別名。既知の入出力 50 組以上と、`normalize(normalize(x)) === normalize(x)` の冪等性をランダム 1 万件)。
-
-### 1.4 seed 付き乱数と保存の形
-
-- 既存 Lv1〜10 は `Math.random` だが、Lv11 以降は固定問題(DESIGN.md 3.5、DB.md 3.4)なので **`makeRng(seed)`**(mulberry32 など 32 ビットの決定的 PRNG)が返す `rand / pick / shuffle` を生成器に渡す。問題 = (`templateId`, `seed`, `generatorVersion`)
-- 各生成器は `make(level, node, rng)` の形で、`templateId` を `q.templateId` に入れる(例: `napt-add-v1`)。版は生成器ファイルの定数 `VERSION = '2026.10'`
-- 保存するスナップショットは `rendered`(text・table・options・answerKind・format・inputHint)と `answer`(index または accept / verifier)と `explanation` / `defenseNote`。クリアで seed を変えて差し替え
-- 計算生成の問題はその場生成でも正確さは保てるが、8.13(拠点に紐づき、クリアまで同じ問題)に従うなら保存する。どこまで保存するかは迷った点 13
-
-### 1.5 検証テストの流儀(`test/check.js` / `test/basics.js` と同じ)
-
-- 生成器とは**別の実装**(素朴な総当たり・逐次シミュレーション・列挙)で答えを解き直し、`assert` で一致を確認する
-- 4 択: 選択肢 4 つが重複しない、`answerIndex` が範囲内、誤答が正解と**値として**同じでない(表記違いの同値を含めて `normalize` 後に比較)
-- 入力: `accept` の全要素が `normalize` の不動点(正規形)である。誤入力の代表(ありがちな間違い)が `accept` に**入らない**ことも確認する
-- 件数: 計算生成は固定 seed 列で **1 万件/生成器**(CI の再現性のため seed は `i` から決める)。FactBank 由来のテンプレートは**全数**(表の全行 × 問いの型)。境界値は各段に明記する
-- `text`・`explanation`・`defenseNote`・`table` の全文を**安全リンタ**(第 6 章 #7)に通す: 使えるアドレス範囲・`.example` 以外のドメイン禁止・`banned.json` の禁止語
-- 全種類(`q.type`)が出ることを `seenTypes` で確認(既存と同じ)
-
-### 1.6 用語
-
-- **生成器**: パラメータと seed から**計算**で答えが決まる。別実装で再計算して検証
-- **固定テンプレート**: 文章の型は固定で、差し込む値(サービス名・番号・メッセージ名)を FactBank(`facts.json`)から seed で選ぶ。答えは表の値。表は人が一度確認し、テストは表照合と誤答の非重複
-- どちらも (templateId, seed, 版) で保存する点は同じ
+本書に固有の約束(ゲーム内の規則として固定するもの)は各章の冒頭にある: NAPT の付け替え(第 2 章)、DHCP のアドレスとリレー(第 3 章)、AD 値(第 4 章)、ACL の文法と処理順(第 5 章)、逆引き不一致の規則(第 6 章)。
 
 ---
 
@@ -442,8 +396,7 @@ shitenC 10.40.2.192/27   2001:db8:40:3::/64
 
 | ファイル(案) | 関数 / templateId | レベル | 別実装の検証 |
 |---|---|---|---|
-| `server/questions/rng.js` | `makeRng(seed)` → `{ rand, pick, shuffle }` | 共通 | `test/rng.js`: 同じ seed で同じ列 |
-| `server/questions/normalize.js` | `normalize(format, s)`、`VOCAB` | 共通(判定) | `test/normalize.js`: 既知 50 組 + 冪等性 1 万件 |
+| 共通部品(`rng.js`、`normalize.js`、`data/vocab.json`、`lint.js`、`index.js` の拡張) | `COMMON.md` 第 9 章 | 共通 | `test/rng.js`、`test/normalize.js`(COMMON 第 8 章) |
 | `server/questions/transport.js` | `portRange`(53)、`ephemeralPick`(54)、`handshakeSeq`(55)、`dataAck`(56)、`fiveTuple`(57)、`naptAdd`(58)、`naptCollide`(59)、`naptMulti`(60) | 51〜60 | `test/transport.js`: 区分の別実装、seq/ack の再計算、5 タプルの集合化、NAPT の独立再生成 |
 | `server/questions/dhcpdns.js` | `dhcpRelay`(63)、`dhcpScopeCount`(64)、`dnsZoneRead`(65)、`rdnsV4`(67)、`rdnsV6`(68)、`dnsTtlLeft`(69)、`dhcpLeaseRead`(70) | 61〜70 | `test/dhcpdns.js`: 全アドレス列挙、独立の読取器、ニブル反転の再計算 |
 | `server/questions/routing.js` | `routeEgress`(71)、`routeNexthop`(72)、`routeMiss`(73)、`routeAdPick`(75)、`routeMetricPick`(76)、`routeLpmVsAd`(77)、`routeSummaryHole`(78)、`routeNull0`(79)、`routeFull`(80) | 71〜80 | `test/routing.js`: 全行線形走査(最長一致 → AD → メトリック)、2 台の逐次転送 |
@@ -454,7 +407,7 @@ shitenC 10.40.2.192/27   2001:db8:40:3::/64
 | `server/questions/l2switch.js` | `macLearn`(100。101〜109 へ拡張) | 100 | `test/l2switch.js`: 素朴な逐次シミュレーション |
 | `server/questions/index.js` | `BY_LEVEL` を 51〜100 に拡張(レベル → 生成器の対応はここ 1 か所)。`getQuestion({ level, node, seed })` | 取得口 | 既存テストの `MAX_IMPLEMENTED` を更新 |
 
-### (b) 固定テンプレートの一覧(FactBank `server/questions/data/facts.json`。人が一度確認する)
+### (b) 固定テンプレートの一覧(FactBank `server/questions/data/facts/<表名>.json`。人が一度確認する。行の形は COMMON 5.3)
 
 | templateId | レベル | FactBank の表 | 行数(目安) |
 |---|---|---|---|
@@ -474,12 +427,12 @@ FactBank の各行には `id`・`ja`・`attrs`(属性)・`levelHint`・`checkedB
 
 依存関係(LEVELS.md 第 6 章)に従い、土台 → 計算生成 → FactBank → シナリオ生成の順。各段は「生成器 + 検証テスト + `index.js` への登録」を 1 単位とし、`npm.cmd test` に追加してから次へ進む。
 
-1. **土台**(#1 #2 #3): `rng.js`、`normalize.js` + `test/normalize.js`、問題形式に `answerKind/format/inputHint/accept` を足す、`world.answer` の入力判定、画面の入力欄(1.2)。既存 Lv1〜10 は変更しない(4 択のまま動く)
+1. **土台**(#1 #2 #3): `COMMON.md` 第 9 章の共通部品(`rng.js`、`normalize.js` + `test/normalize.js`、`fields` 付きの問題形式、`world.answer` の入力判定、画面の入力欄(COMMON 第 2 章))。既存 Lv1〜10 は変更しない(4 択のまま動く)。両設計書を合わせた実装順は `README.md`
 2. **51〜60 の計算生成**(55〜60)→ `transport.js`。既存の `buildOptions` と `toIp` を再利用。NAPT 行追加の規則(迷った点 1)はここで固定
 3. **71〜80 の計算生成**(71・72・75〜80)→ `routing.js`。Lv7 `routeTable` の拡張。表に種別・AD・IF 列を足す
 4. **81〜90 の計算生成**(81〜84・86〜90)→ `aclnat.js`。Lv9 `aclEval` を参照しつつ、検証は別実装
 5. **61〜70 の計算生成**(63・64・65 の読み・67〜70)→ `dhcpdns.js`
-6. **FactBank**(`facts.json`)の下書きと人確認 → 51〜54・61・62・65 の役割・66・73・74・85 の固定テンプレート。ここまでで 51〜90 の全レベルに少なくとも 1 生成器が揃う
+6. **FactBank**(`data/facts/*.json`)の下書きと人確認 → 51〜54・61・62・65 の役割・66・73・74・85 の固定テンプレート。ここまでで 51〜90 の全レベルに少なくとも 1 生成器が揃う
 7. **95・99・100**(計算で決まるが題材は総合)→ `diagnose.js` の `diagTtl`・`addrPlan`・`planVerifier`、`l2switch.js`
 8. **最小 NetGen + 最小シミュレータ**(#9 #10 の最小版)→ `server/sim/`。既知の構成でテスト
 9. **91〜94・96〜98 のシナリオ生成器**(#12)→ 独立検証器(8 種総当たり)を先に書き、生成器を後に書く(plant-then-perturb)
@@ -488,6 +441,8 @@ FactBank の各行には `id`・`ja`・`attrs`(属性)・`levelHint`・`checkedB
 各ステップの終了条件: 該当レベルの検証テストが 1 万件(FactBank は全数)通り、`index.js` の `MAX_IMPLEMENTED` がそのレベルまで上がり、画面で入力式が解けること。
 
 ### (d) 判断に迷った点(ユーザーに決めてもらうこと)
+
+両設計書の迷った点を重複をまとめて 1 つにした一覧は `README.md` にある。共通仕様に関わるもの(4・7・9・11・13・14・16)は `COMMON.md` 第 10 章に推奨付きで載せた。
 
 1. **NAPT のポート付け替え規則**(Lv59・60・89): 本書は「衝突した番号から 1 ずつ上げて最初の空き」に固定した。実機では実装依存(乱数、最小空き、範囲内の順送り)。ゲーム内規則としてこれでよいか。別案は「1024 以上の最小の空き」
 2. **DHCP Offer/Ack の宛先**(Lv62): ブロードキャストフラグを立てた前提で `255.255.255.255` に固定した。実機ではユニキャストの実装もある。問題文に「ブロードキャストフラグを立てている」と毎回書く方針でよいか
