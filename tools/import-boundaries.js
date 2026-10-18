@@ -1,28 +1,29 @@
 'use strict';
-// 区・市の境界を画面用に軽くして書き出す(地域の支配の色分けに使う。設計書 第 14.2 節)。
+// 市区町村の境界を画面用に軽くして、都道府県ごとのファイルに書き出す(地域の支配の色分けに使う。設計書 第 13 章・第 14.2 節)。
 //
 // 使い方:
-//   node tools/import-boundaries.js <N03 東京都 行政区域 GeoJSON>
+//   node tools/import-boundaries.js <N03 の GeoJSON が入ったフォルダ>   # 全都道府県
+//   node tools/import-boundaries.js <N03 の GeoJSON 1 ファイル>          # 1 都道府県だけ
 // 出どころ: 国土交通省「国土数値情報」行政区域データ(N03)。「国土数値情報(行政区域データ)」(国土交通省)を加工して作成。
 //
-// やること:
-//   1. 行政区域コード(N03_007)で地域マスター(regions.json の code "JP-13-xxxxx")に結びつける
-//   2. 同じ区・市の多角形をまとめ、頂点を間引く(Douglas-Peucker、約 60 m)。小さすぎる島は落とす
-//   3. public/data/tokyo-regions.json に { regions: { <regionId>: { name, polys: [[[lon, lat], ...], ...] } } } で書く
+// 出力(public/data/bounds/):
+//   <都道府県 id>.json  詳細(約 60 m に間引き)。拡大時(z0〜2)に見えている都道府県のぶんだけ画面が取りに行く
+//   japan.json          粗い版(約 1 km に間引き、小さな島は落とす)。縮小時(z3〜4)に全国を一度に描く
+//   index.json          都道府県 id → { name, file, bbox }
 const fs = require('fs');
 const path = require('path');
 
-const [, , boundaryFile] = process.argv;
-if (!boundaryFile) { console.error('使い方: node tools/import-boundaries.js <N03_13.geojson>'); process.exit(1); }
+const [, , src] = process.argv;
+if (!src) { console.error('使い方: node tools/import-boundaries.js <N03 の GeoJSON フォルダ か ファイル>'); process.exit(1); }
 const ROOT = path.join(__dirname, '..');
-const OUT = path.join(ROOT, 'public/data/tokyo-regions.json');
-const TOLERANCE = 0.0006; // 度。約 60 m
-const MIN_RING_AREA = 1e-6; // 度²。これより小さい輪は落とす(約 0.01 km²)
+const OUT_DIR = path.join(ROOT, 'public/data/bounds');
+const FINE = { tol: 0.0006, minArea: 1e-6 };   // 約 60 m / 約 0.01 km²
+const COARSE = { tol: 0.01, minArea: 2e-4 };   // 約 1 km / 約 2 km²
 
 const R = JSON.parse(fs.readFileSync(path.join(ROOT, 'server/map/data/regions.json'), 'utf8'));
-const byCode = new Map(R.regions.filter((r) => r.code && r.code.startsWith('JP-13-')).map((r) => [r.code.slice(6), r]));
+const prefByCode = new Map(R.regions.filter((r) => r.kind === 'state' && r.code && /^JP-\d\d$/.test(r.code)).map((r) => [r.code.slice(3), r]));
+const cityByCode = new Map(R.regions.filter((r) => r.kind === 'city' && r.code && /^JP-\d\d-\d+$/.test(r.code)).map((r) => [r.code.slice(6), r]));
 
-// Douglas-Peucker
 function simplify(points, tol) {
   if (points.length <= 4) return points;
   const sq = tol * tol;
@@ -45,33 +46,52 @@ function simplify(points, tol) {
   return points.filter((_, i) => keep[i]);
 }
 const ringArea = (ring) => { let s = 0; for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) s += (ring[j][0] + ring[i][0]) * (ring[j][1] - ring[i][1]); return Math.abs(s / 2); };
-const round = (c) => [Number(c[0].toFixed(5)), Number(c[1].toFixed(5))];
+const round = (c, d) => [Number(c[0].toFixed(d)), Number(c[1].toFixed(d))];
 
-const data = JSON.parse(fs.readFileSync(boundaryFile, 'utf8'));
-const out = {};
-let skipped = 0, rings = 0;
-for (const f of data.features) {
-  const p = f.properties;
-  if (p.N03_001 !== '東京都') continue;
-  const region = byCode.get(p.N03_007);
-  if (!region) { skipped++; continue; }
-  const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
-  const o = (out[region.id] ||= { name: region.name, polys: [] });
-  for (const poly of polys) {
-    const outer = poly[0];
-    if (ringArea(outer) < MIN_RING_AREA) continue; // 小さな島
-    const s = simplify(outer, TOLERANCE).map(round);
-    if (s.length >= 4) { o.polys.push(s); rings++; }
+function build(features, { tol, minArea }, digits) {
+  const out = {}; let rings = 0;
+  for (const f of features) {
+    const region = cityByCode.get(f.properties.N03_007);
+    if (!region) continue;
+    const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
+    const o = (out[region.id] ||= { name: region.name, polys: [] });
+    for (const poly of polys) {
+      const outer = poly[0];
+      if (ringArea(outer) < minArea) continue;
+      const s = simplify(outer, tol).map((c) => round(c, digits));
+      if (s.length >= 4) { o.polys.push(s); rings++; }
+    }
   }
+  for (const [id, o] of Object.entries(out)) if (!o.polys.length) delete out[id];
+  return { out, rings };
 }
-// 最低 1 つの輪は残す(全部小さい地域の保険)
-for (const [id, o] of Object.entries(out)) if (!o.polys.length) { delete out[id]; skipped++; }
+const bboxOf = (out) => { let b = [180, 90, -180, -90]; for (const o of Object.values(out)) for (const r of o.polys) for (const [x, y] of r) { b = [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)]; } return b; };
 
-fs.mkdirSync(path.dirname(OUT), { recursive: true });
-const doc = {
-  source: '「国土数値情報(行政区域データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-2026.html)を加工して作成',
-  updatedAt: '2026-10-18', tolerance: TOLERANCE, regions: out,
-};
-fs.writeFileSync(OUT, JSON.stringify(doc));
-const size = fs.statSync(OUT).size;
-console.log(`地域 ${Object.keys(out).length} 件、輪 ${rings} 本、頂点 ${Object.values(out).reduce((s, o) => s + o.polys.reduce((a, r) => a + r.length, 0), 0)} 点、${(size / 1024).toFixed(0)} KB。結びつかなかった地物 ${skipped} 件`);
+const files = fs.statSync(src).isDirectory() ? fs.readdirSync(src).filter((f) => /^N03-\d{8}_\d{2}\.geojson$/.test(f)).sort().map((f) => path.join(src, f)) : [src];
+fs.mkdirSync(OUT_DIR, { recursive: true });
+const indexFile = path.join(OUT_DIR, 'index.json');
+const index = fs.existsSync(indexFile) ? JSON.parse(fs.readFileSync(indexFile, 'utf8')) : { source: '', updatedAt: '', prefs: {} };
+const coarseFile = path.join(OUT_DIR, 'japan.json');
+const coarse = fs.existsSync(coarseFile) ? JSON.parse(fs.readFileSync(coarseFile, 'utf8')) : { regions: {} };
+let total = 0;
+for (const file of files) {
+  const pp = path.basename(file).slice(-10, -8);
+  const pref = prefByCode.get(pp);
+  if (!pref) { console.log(`skip ${path.basename(file)}: 地域マスターに都道府県 JP-${pp} が無い`); continue; }
+  const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+  const feats = data.features.filter((f) => f.properties.N03_001 === pref.name);
+  const fine = build(feats, FINE, 5);
+  const co = build(feats, COARSE, 4);
+  const outFile = path.join(OUT_DIR, `${pref.id}.json`);
+  fs.writeFileSync(outFile, JSON.stringify({ pref: pref.id, name: pref.name, updatedAt: '2026-10-19', regions: fine.out }));
+  for (const [id, o] of Object.entries(co.out)) coarse.regions[id] = { ...o, pref: pref.id };
+  index.prefs[pref.id] = { name: pref.name, file: `${pref.id}.json`, bbox: bboxOf(fine.out), regions: Object.keys(fine.out).length };
+  total++;
+  console.log(`${pref.name}: 地域 ${Object.keys(fine.out).length} 件、詳細 ${fine.rings} 輪 ${(fs.statSync(outFile).size / 1024).toFixed(0)} KB、粗い ${co.rings} 輪`);
+}
+index.source = '「国土数値情報(行政区域データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-2026.html)を加工して作成';
+index.updatedAt = '2026-10-19';
+fs.writeFileSync(indexFile, JSON.stringify(index));
+coarse.source = index.source; coarse.updatedAt = index.updatedAt;
+fs.writeFileSync(coarseFile, JSON.stringify(coarse));
+console.log(`書き出し ${total} 都道府県。index.json、japan.json(粗い版 ${(fs.statSync(coarseFile).size / 1024).toFixed(0)} KB、地域 ${Object.keys(coarse.regions).length} 件)`);

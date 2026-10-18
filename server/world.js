@@ -13,6 +13,7 @@ const { nodeDocs, regionDocs } = require('./map/load');
 const { distanceKm, tilesAround, tileOf, tileFields, parseTile, tileSize, addrOf, MIN_LEVEL_BY_Z } = require('./map/geo');
 const { getQuestion } = require('./questions');
 const { judge } = require('./questions/normalize');
+const { dayOf, noopEvents } = require('./events');
 
 const COOLDOWN_MS = 4000;               // 不正解のあと操作できない時間(連続不正解で倍増。SECURITY.md F4)
 const COOLDOWN_MAX_MS = 60000;          // 待ち時間の上限
@@ -60,10 +61,12 @@ const now = () => Date.now();
 const edgeKey = (a, b) => (a < b ? `${a}|${b}` : `${b}|${a}`);
 
 class World {
-  constructor({ store, country = 'japan', minAnswerMs = MIN_ANSWER_MS }) {
+  constructor({ store, country = 'japan', minAnswerMs = MIN_ANSWER_MS, events = null }) {
     this.store = store;
+    this.events = events || noopEvents(); // 出来事の記録(docs/LOGS.md)。省略時は何もしない
     this.country = country;
     this.minAnswerMs = minAnswerMs; // テストでは 0 にする
+    this.lastDay = null;      // 稼働時計が最後に見た日本時間の日付。変わったら支配の断面(control.daily)を 1 回書く
     this.tiles = new Map();   // tile id(z0) → { nodes: Map<id, node>, edges: Map<key, {a,b}>, linked: boolean, lastUsed }
     this.nodes = new Map();   // 読み込み済みの拠点 id → node(タイルのキャッシュと同じオブジェクト)
     this.adj = new Map();     // id → Set<id>(読み込み済みのリンクから)
@@ -95,6 +98,7 @@ class World {
     this.teamNames.set(team.id, team.name); this.teamLooks.set(team.id, { style: { ...team.style }, icon: team.icon });
     p.team = team.id; p.reach = null;
     await this.persistPlayer(p);
+    this.events.add('team.create', { playerId: p.id, teamId: team.id, detail: { name: team.name, maxMembers: max } });
     this.addLog(`${p.name} がチーム「${team.name}」を作りました`);
     await this.emitPlayers();
     return team;
@@ -108,6 +112,7 @@ class World {
     await this.store.saveTeam(team);
     p.team = team.id;
     await this.persistPlayer(p);
+    this.events.add('team.join', { playerId: p.id, teamId: team.id, detail: { memberCount: team.memberCount } });
     this.addLog(`${p.name} がチーム「${team.name}」に参加しました`);
     await this.emitPlayers();
     return team;
@@ -131,6 +136,7 @@ class World {
     team.style = style;
     await this.store.saveTeam(team);
     this.teamLooks.set(team.id, { style: { ...style }, icon: team.icon });
+    this.events.add('team.style', { playerId: p.id, teamId: team.id, detail: { style: { ...style }, icon: team.icon } });
     this.rankCache = null;
     await this.emitPlayers();
     return team;
@@ -139,18 +145,21 @@ class World {
   async leaveTeam(p) {
     if (!p.team) throw new Error('チームに所属していません');
     const team = await this.teamInfo(p.team);
+    let newOwnerId = null, deleted = false;
     if (team) {
       team.memberCount = Math.max(0, (team.memberCount || 1) - 1);
-      if (team.memberCount === 0) await this.store.deleteTeam(team.id);
+      if (team.memberCount === 0) { deleted = true; await this.store.deleteTeam(team.id); }
       else {
         // リーダーが抜けたら、いちばん古くからいる人にリーダーを渡す
-        if (team.ownerId === p.id) { const next = (await this.store.teamMembers(team.id, 2)).find((m) => m.id !== p.id); team.ownerId = next ? next.id : null; }
+        if (team.ownerId === p.id) { const next = (await this.store.teamMembers(team.id, 2)).find((m) => m.id !== p.id); team.ownerId = next ? next.id : null; newOwnerId = team.ownerId; }
         await this.store.saveTeam(team);
       }
     }
     const name = team ? team.name : p.team;
+    const teamId = p.team;
     p.team = null;
     await this.persistPlayer(p);
+    this.events.add('team.leave', { playerId: p.id, teamId, detail: { memberCount: team ? team.memberCount : null, newOwnerId, deleted } });
     this.addLog(`${p.name} がチーム「${name}」を脱退しました`);
     await this.emitPlayers();
     return name;
@@ -166,16 +175,34 @@ class World {
     }
     const clock = await this.store.loadMeta('clock');
     this.uptime = clock && Number.isFinite(clock.uptimeMs) ? clock.uptimeMs : 0;
+    this.lastDay = (clock && typeof clock.day === 'string') ? clock.day : dayOf(now()); // 保存してあるので、0 時をまたいだ再起動でも断面を落とさない
     this.lastTick = now();
     return this;
   }
-  // 稼働時計を進める(1 分ごと)。前回から TICK_CAP_MS を超えて経っていれば、その分は止まっていたとみなして数えない
+  // 稼働時計を進める(1 分ごと)。前回から TICK_CAP_MS を超えて経っていれば、その分は止まっていたとみなして数えない。
+  // 日本時間の日付が変わっていたら、全地域の支配の断面(control.daily)を 1 回だけ書く(LOGS.md 5.2)
   async tick() {
     const t = now();
     this.uptime += Math.min(TICK_CAP_MS, Math.max(0, t - this.lastTick));
     this.lastTick = t;
-    try { await this.store.saveMeta({ id: 'clock', type: 'meta', uptimeMs: this.uptime, savedAt: t }); } catch (e) { console.error('稼働時計の保存に失敗:', e.message); }
+    const day = dayOf(t);
+    if (this.lastDay && day !== this.lastDay) { try { await this.snapshotControl(t); } catch (e) { console.error('支配の断面の記録に失敗:', e.message); } }
+    this.lastDay = day;
+    try { await this.store.saveMeta({ id: 'clock', type: 'meta', uptimeMs: this.uptime, savedAt: t, day }); } catch (e) { console.error('稼働時計の保存に失敗:', e.message); }
     return this.uptime;
+  }
+  // 支配の断面: 区・市(tier 6)・都道府県(5)・国(3)の control を events に写す。id は ctl-日付-地域 なので同じ日に 2 回走っても上書き
+  async snapshotControl(at = now()) {
+    const day = dayOf(at);
+    let count = 0;
+    for (const r of await this.store.loadRegions()) {
+      if (![3, 5, 6].includes(r.tier)) continue;
+      const c = r.control || {};
+      const counts = Object.fromEntries(Object.entries(c.counts || {}).sort((a, b) => b[1] - a[1]).slice(0, 3));
+      this.events.add('control.daily', { id: `ctl-${day}-${r.id}`, at, regionId: r.id, detail: { tier: r.tier, controller: c.controller || null, total: c.total || 0, counts } });
+      count++;
+    }
+    return count;
   }
   // 最終接続を記録する(実時刻と稼働時計の両方)
   touch(p) { p.lastSeen = now(); p.lastSeenUp = this.uptime; }
@@ -376,10 +403,12 @@ class World {
       if (p) {
         if (p.team && !this.teamNames.has(p.team)) await this.teamInfo(p.team);
         if (p.ws && p.ws !== ws) { try { p.ws.close(); } catch { /* 古い接続は閉じるだけ */ } }
-        p.ws = ws; p.online = true; this.touch(p); p.view = new Set();
+        p.ws = ws; p.online = true; this.touch(p); p.view = new Set(); p.connectedAt = now();
+        const renamed = !!name && name !== p.name;
         if (name) p.name = name;
         this.addLog(`${p.name} が戻ってきました`);
         await this.persistPlayer(p);
+        this.events.add('resume', { playerId: p.id, teamId: p.team || undefined, ip: ws.ip, detail: { renamed } });
         return p;
       }
     }
@@ -393,10 +422,12 @@ class World {
       registered: false, accountId: null, registeredAt: null, // 本登録(予約)。復帰コードはお試しで、本登録しても残る(第 3.1 節)
       points: 0, score: 0, nodesOwned: 0, homeNodeId: null, team: null, sponsorId: null, createdAt: now(), lastSeen: now(), lastSeenUp: this.uptime,
     });
-    p.ws = ws; p.online = true;
-    try { await this.spawnHome(p); } catch (e) { this.players.delete(p.id); throw e; }
+    p.ws = ws; p.online = true; p.connectedAt = now();
+    let home;
+    try { home = await this.spawnHome(p); } catch (e) { this.players.delete(p.id); throw e; }
     this.addLog(`${p.name} が東京に参加しました`);
     await this.persistPlayer(p);
+    this.events.add('join', { playerId: p.id, nodeId: home.id, regionId: home.region, ip: ws.ip, detail: { startNodeId: p.startNodeId, name: p.name } });
     return p;
   }
   attach(doc) {
@@ -413,6 +444,7 @@ class World {
   async rekey(p) {
     p.token = newId();
     await this.persistPlayer(p);
+    this.events.add('rekey', { playerId: p.id, teamId: p.team || undefined }); // 新旧のコードは書かない
     return p.token;
   }
   // 引っ越し(開始地点の変更。2026-10-18 決定): 今の自分の拠点を消して新しい場所に作る。所有している固定拠点は残るが、
@@ -437,6 +469,7 @@ class World {
     const home = await this.spawnHome(p);
     this.addLog(`${p.name} が ${home.area} へ引っ越しました`);
     await this.persistPlayer(p);
+    this.events.add('move', { playerId: p.id, teamId: p.team || undefined, nodeId: home.id, regionId: home.region, detail: { from: prevStart, to: startNodeId, oldHomeId: old ? old.id : null } });
     await this.emitPlayers();
     return home;
   }
@@ -451,20 +484,24 @@ class World {
       const live = this.players.get(doc.id);
       if ((live && live.online) || doc.plan) continue;
       const owned = await this.store.nodesOwnedBy(doc.id);
+      let nodesFreed = 0, homeDeleted = false;
       for (const d of owned) {
         const n = this.nodes.get(d.id) || d;
         if (n.isPlayerNode) {
           await this.store.deleteNode(n.id);
           this.dropNode(n);
+          homeDeleted = true;
           continue;
         }
         n.owner = null; n.defense = 0; n.fortifiedAt = null; n.progress = {}; n.protectedUntil = 0;
         await this.persistNode(n);
+        nodesFreed++;
         if (this.nodes.has(n.id)) this.emitNode(n);
         if (n.region) touched.set(n.region, n);
       }
       await this.store.deletePlayer(doc.id);
       this.players.delete(doc.id);
+      this.events.add('reclaim', { playerId: doc.id, teamId: doc.team || undefined, detail: { name: doc.name, nodesFreed, homeDeleted, lastSeen: doc.lastSeen, lastSeenUp: doc.lastSeenUp } });
       this.addLog(`${doc.name} は 7 日間接続が無かったため、拠点が中立に戻りました`);
       count++;
     }
@@ -483,8 +520,10 @@ class World {
     for (const p of this.players.values()) if (p.online && p.view.has(t)) this.send(p, msg);
   }
   async disconnect(p) {
-    p.online = false; p.ws = null; p.pending = null; this.touch(p); p.view = new Set();
+    const sec = p.connectedAt ? Math.round((now() - p.connectedAt) / 1000) : null;
+    p.online = false; p.ws = null; p.pending = null; this.touch(p); p.view = new Set(); p.connectedAt = null;
     await this.persistPlayer(p);
+    this.events.add('leave', { playerId: p.id, teamId: p.team || undefined, detail: { sec } });
   }
   async pickColor() {
     const used = new Map();
@@ -492,7 +531,7 @@ class World {
     return COLORS.reduce((best, c) => ((used.get(c) || 0) < (used.get(best) || 0) ? c : best), COLORS[0]);
   }
   async persistPlayer(p) {
-    const { ws, online, pending, view, viewZ, reach, reachAt, ...doc } = p;
+    const { ws, online, pending, view, viewZ, reach, reachAt, connectedAt, ...doc } = p;
     doc.type = 'player';
     try { await this.store.savePlayer(doc); } catch (e) { console.error('プレイヤーの保存に失敗:', e.message); }
   }
@@ -649,7 +688,7 @@ class World {
       options: q.options || null, table: q.table || null, tables: q.tables || null, fields, compare: q.compare || null,
     };
     p.pending = {
-      qid, nodeId, mode, level, askedAt: now(), payload,
+      qid, nodeId, mode, level, askedAt: now(), payload, regionId: n.region, qkind: q.kind, // regionId / qkind は出来事の記録(answer)用
       answerKind: q.answerKind || 'choice', answerIndex: q.answerIndex, fields: q.fields || null, compare: q.compare || null, verifier: q.verifier || null,
       explanation: q.explanation, defenseNote: q.defenseNote || null,
     };
@@ -660,7 +699,10 @@ class World {
   async answer(p, qid, answer) {
     const pend = p.pending;
     if (!pend || pend.qid !== qid) throw new Error('この問題はもう終わっています');
-    if (now() - (pend.askedAt || 0) < this.minAnswerMs) throw new Error('解答が速すぎます。問題を読んでからもう一度答えてください');
+    if (now() - (pend.askedAt || 0) < this.minAnswerMs) {
+      this.events.add('limit', { playerId: p.id, teamId: p.team || undefined, ip: p.ws && p.ws.ip, detail: { rule: 'fast', ms: now() - (pend.askedAt || 0) } });
+      throw new Error('解答が速すぎます。問題を読んでからもう一度答えてください');
+    }
     if (pend.answerKind === 'text') {
       if (!Array.isArray(answer) || answer.length !== (pend.fields || []).length) throw new Error('入力欄の数が合いません');
       for (let i = 0; i < answer.length; i++) {
@@ -670,8 +712,10 @@ class World {
     } else if (!Number.isInteger(answer)) throw new Error('選択肢を選んでください');
     p.pending = null; this.touch(p);
     const correct = judge({ answerKind: pend.answerKind, answerIndex: pend.answerIndex, fields: pend.fields, compare: pend.compare, verifier: pend.verifier }, answer);
+    const answeredAt = now(), sec = Math.round((answeredAt - (pend.askedAt || answeredAt)) / 100) / 10; // 出題から解答までの秒(小数 1 桁)
+    this.bumpStats(p, pend.level, correct, sec); // 学習記録の集計値。保存は下の persistPlayer(不正解)か apply の中の保存に乗せる
     let outcome, cooldownMs = 0;
-    if (correct) { p.wrongStreak = 0; outcome = await this.apply(p, pend.nodeId, pend.mode); }
+    if (correct) { p.wrongStreak = 0; outcome = await this.apply(p, pend.nodeId, pend.mode, pend.level); }
     else {
       // 連続不正解で待ち時間を倍増(4 → 8 → 16 → 32 → 60 秒)。保存するので再接続しても消えない(SECURITY.md F4)
       p.wrongStreak = (p.wrongStreak || 0) + 1;
@@ -680,14 +724,34 @@ class World {
       outcome = `不正解。通信が ${Math.round(cooldownMs / 1000)} 秒止まります${p.wrongStreak > 1 ? `(連続 ${p.wrongStreak} 回目。正解すると戻ります)` : ''}`;
       await this.persistPlayer(p);
     }
+    // 出来事の記録(問題の本文・選択肢・答え・qid は書かない)。at は解答の時刻なので、apply が積んだ intrude / capture より前に並ぶ
+    this.events.add('answer', {
+      at: answeredAt, playerId: p.id, teamId: p.team || undefined, nodeId: pend.nodeId, regionId: pend.regionId, level: pend.level, ok: correct, sec, ip: p.ws && p.ws.ip,
+      detail: { mode: pend.mode, qkind: pend.qkind, answerKind: pend.answerKind, wrongStreak: p.wrongStreak, cooldownMs, provisional: !!(pend.payload && pend.payload.provisional) },
+    });
     const answers = pend.answerKind === 'text' ? (pend.fields || []).map((f) => (f.accept && f.accept[0]) || '') : null;
     return { t: 'result', qid, correct, answerIndex: pend.answerKind === 'text' ? null : pend.answerIndex, answers, explanation: pend.explanation, defenseNote: pend.defenseNote, outcome, cooldownUntil: p.cooldownUntil, cooldownMs };
   }
 
-  // 正解したときの効果。状況が変わっていたら反映しない
-  async apply(p, nodeId, mode) {
+  // 学習記録の集計値(players.stats。LOGS.md 3.2、2026-10-18 決定): 出題レベルごと(byLevel)と 100 ごとの領域(byBand。鍵は 100 の位、0 = Lv1〜99)。
+  // minSec は正解した解答の最短秒。保存は既存の persistPlayer に乗せる(追加の書き込みはしない)
+  bumpStats(p, level, ok, sec) {
+    const s = p.stats && typeof p.stats === 'object' ? p.stats : (p.stats = { answers: 0, correct: 0, minSec: null, byLevel: {}, byBand: {}, updatedAt: 0 });
+    s.byLevel = s.byLevel || {}; s.byBand = s.byBand || {};
+    s.answers = (s.answers || 0) + 1;
+    if (ok) { s.correct = (s.correct || 0) + 1; if (s.minSec === null || s.minSec === undefined || sec < s.minSec) s.minSec = sec; }
+    for (const [m, k] of [[s.byLevel, String(level)], [s.byBand, String(Math.floor(level / 100))]]) {
+      const e = m[k] || (m[k] = { n: 0, ok: 0, secSum: 0 });
+      e.n++; if (ok) e.ok++; e.secSum = Math.round((e.secSum + sec) * 10) / 10;
+    }
+    s.updatedAt = now();
+  }
+
+  // 正解したときの効果。状況が変わっていたら反映しない。level は出題レベル(出来事の記録用)
+  async apply(p, nodeId, mode, level = null) {
     const n = this.nodes.get(nodeId);
     if (!n) return '状況が変わったため反映されませんでした';
+    const ev = { playerId: p.id, teamId: p.team || undefined, nodeId: n.id, regionId: n.region };
     if (mode === 'fortify') {
       if (n.owner !== p.id) return `${n.name} はもう自分の拠点ではありません`;
       this.settle(n);
@@ -695,6 +759,7 @@ class World {
       p.score = (p.score || 0) + 1;
       this.addLog(`${p.name} が ${n.name} を強化(出題 Lv${this.levelFor(n, 'attack')})`);
       await this.persistNode(n); await this.persistPlayer(p);
+      this.events.add('fortify', { ...ev, level: this.levelFor(n, 'attack'), detail: { defense: n.defense } });
       this.emitNode(n); this.emitPlayers();
       return `${n.name} を強化しました。攻める側の出題は Lv${this.levelFor(n, 'attack')} になります`;
     }
@@ -707,12 +772,15 @@ class World {
     if (n.progress[key] < hits) {
       this.addLog(`${p.name} が ${n.name} に侵入(${n.progress[key]}/${hits})`);
       await this.persistNode(n);
+      this.events.add('intrude', { ...ev, level: level === null ? undefined : level, detail: { progress: n.progress[key], hits, key } });
       this.emitNode(n);
       return `${n.name} に侵入しました(突破まで あと ${hits - n.progress[key]} 回)`;
     }
     const prev = n.owner ? await this.getPlayer(n.owner) : null;
     const gained = this.valueOf(n);
+    const defenseBefore = n.defense || 0;
     if (prev) { prev.nodesOwned = Math.max(0, (prev.nodesOwned || 0) - 1); prev.score = Math.max(0, (prev.score || 0) - gained); }
+    this.events.add('capture', { ...ev, level: level === null ? undefined : level, ip: p.ws && p.ws.ip, detail: { prevOwner: prev ? prev.id : null, prevTeam: prev ? prev.team || null : null, gained, hits, defenseBefore } });
     n.owner = p.id; n.defense = 0; n.fortifiedAt = now(); n.progress = {};
     this.invalidateReach(p.id); if (prev) this.invalidateReach(prev.id);
     p.points = (p.points || 0) + gained;
@@ -765,6 +833,7 @@ class World {
     region.control = { total, counts, controller: controller || null, updatedAt: now() };
     try { await this.store.saveRegion(region); } catch (e) { console.error('地域の保存に失敗:', e.message); }
     if (before === (controller || null)) return false;
+    this.events.add('control', { regionId: region.id, detail: { tier: region.tier, before, after: controller || null, total, count: counts[controller || before] || 0 } });
     if (controller) { const who = await this.controllerInfo(controller); this.addLog(`${who ? (who.kind === 'team' ? 'チーム「' + who.name + '」' : who.name) : controller} が ${region.name} を支配しました`); }
     else { const b = await this.controllerInfo(before); this.addLog(`${b ? (b.kind === 'team' ? 'チーム「' + b.name + '」' : b.name) : before} の ${region.name} の支配が崩れました`); }
     return true;

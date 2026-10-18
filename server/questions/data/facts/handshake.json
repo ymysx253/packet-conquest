@@ -1,0 +1,8 @@
+{
+  "note": "FactBank: TCP 3 ウェイハンドシェイクの段(docs/questions/design-51-100.md 第 2 章 Lv54 handshake-fact-v1)。attrs.step は段(1 始まり)、attrs.flags はフラグ、attrs.sender は送信者(client / server)。checkedBy が空の行は本番の生成に使わない。",
+  "rows": [
+    { "id": "syn", "ja": "接続の要求", "attrs": { "step": 1, "flags": "SYN", "sender": "client" }, "levelHint": 54, "checkedBy": "Claude 2026-10-18" },
+    { "id": "syn-ack", "ja": "要求の受理と、サーバー側からの接続の要求", "attrs": { "step": 2, "flags": "SYN+ACK", "sender": "server" }, "levelHint": 54, "checkedBy": "Claude 2026-10-18" },
+    { "id": "ack", "ja": "受理の確認(ここで接続が確立する)", "attrs": { "step": 3, "flags": "ACK", "sender": "client" }, "levelHint": 54, "checkedBy": "Claude 2026-10-18" }
+  ]
+}

@@ -11,6 +11,7 @@ loadEnv();
 const { World } = require('./world');
 const { createStore } = require('./store');
 const { RateLimiter, clientIp } = require('./limits');
+const { EventLog } = require('./events');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC = path.join(__dirname, '..', 'public');
@@ -23,8 +24,13 @@ const TYPES = {
   '.ico': 'image/x-icon',
 };
 
-const world = new World({ store: createStore() });
+const store = createStore();
+const events = new EventLog(store); // 出来事の記録(docs/LOGS.md)。まとめ書き、失敗してもゲームを止めない
+const world = new World({ store, events });
 const limiter = new RateLimiter(); // 接続元ごとの新規作成・復帰の回数制限(SECURITY.md F2)
+// 想定外の例外だけ error として記録する。world.js の規則による拒否は素の Error(message だけ)なので、
+// それ以外(TypeError などの別のクラス、code を持つ SDK やネットワークの例外、expected: false と明示したもの)を「想定外」とみなす
+const isUnexpected = (e) => !e || e.expected === false || (e.expected !== true && (e.constructor !== Error || e.code !== undefined));
 // F1: WebSocket の Origin 検査。ブラウザからの接続は Origin が自サイト(同じ Host)か ALLOWED_ORIGINS(カンマ区切り)のものだけ通す。
 // Origin が無い接続(ブラウザ以外)は通す(なりすましは防げないが、別サイトのページから被害者のブラウザ経由でつながる経路は塞げる)
 const ALLOWED_ORIGINS = new Set(String(process.env.ALLOWED_ORIGINS || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean));
@@ -70,7 +76,11 @@ const server = http.createServer((req, res) => {
 // ---------- WebSocket ----------
 const wss = new WebSocketServer({
   server, path: '/ws', maxPayload: 16384,
-  verifyClient: ({ req }, done) => (originAllowed(req) ? done(true) : done(false, 403, 'Forbidden origin')),
+  verifyClient: ({ req }, done) => {
+    if (originAllowed(req)) return done(true);
+    events.add('limit', { ip: clientIp(req), detail: { rule: 'origin', origin: String(req.headers.origin || '').slice(0, 100) } });
+    done(false, 403, 'Forbidden origin');
+  },
 });
 const send = (ws, msg) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify(msg)); };
 const cleanName = (s) => String(s || '').replace(/[\u0000-\u001f\u007f<>]/g, '').trim().slice(0, 12) || 'プレイヤー';
@@ -86,12 +96,20 @@ wss.on('connection', (ws, req) => {
   ws.on('message', (raw) => {
     const t = Date.now();
     tokens = Math.min(MSG_PER_SEC, tokens + ((t - lastRefill) / 1000) * MSG_PER_SEC); lastRefill = t;
-    if (tokens < 1) { try { ws.close(1008, 'too many messages'); } catch { /* 閉じるだけ */ } return; }
+    if (tokens < 1) {
+      // 連打で切断。同じ接続では 1 件だけ記録する(events が膨らまないように)
+      if (!ws.flooded) { ws.flooded = true; events.add('limit', { playerId: ws.player ? ws.player.id : undefined, ip: ws.ip, detail: { rule: 'flood' } }); }
+      try { ws.close(1008, 'too many messages'); } catch { /* 閉じるだけ */ }
+      return;
+    }
     tokens -= 1;
     let msg;
     try { msg = JSON.parse(raw); } catch { return; }
     if (!msg || typeof msg !== 'object' || typeof msg.t !== 'string' || !MSG_TYPES.has(msg.t)) return;
-    chain = chain.then(() => handle(ws, msg)).catch((e) => send(ws, { t: 'error', message: e.message || 'エラーが発生しました' }));
+    chain = chain.then(() => handle(ws, msg)).catch((e) => {
+      if (isUnexpected(e)) events.add('error', { playerId: ws.player ? ws.player.id : undefined, detail: { op: msg.t, message: String((e && e.message) || e).slice(0, 200) } });
+      send(ws, { t: 'error', message: (e && e.message) || 'エラーが発生しました' });
+    });
   });
   ws.on('close', () => {
     if (ws.player && ws.player.ws === ws) world.disconnect(ws.player).then(() => world.emitPlayers()).catch(() => {});
@@ -114,7 +132,7 @@ async function handle(ws, msg) {
     const token = typeof msg.token === 'string' && msg.token.trim() ? msg.token.trim() : null;
     // 接続元ごとの回数制限: 復帰の試行は 1 分 5 回、新規作成は 1 時間 3 回・1 日 10 回
     const over = limiter.take(token ? 'resume' : 'create', ws.ip);
-    if (over) throw new Error(over);
+    if (over) { events.add('limit', { ip: ws.ip, detail: { rule: token ? 'resume' : 'create', label: over } }); throw new Error(over); }
     const player = await world.join(ws, cleanName(msg.name), token,
       typeof msg.startNodeId === 'string' && msg.startNodeId ? msg.startNodeId.slice(0, 40) : null);
     ws.player = player;
@@ -167,6 +185,14 @@ setInterval(() => {
 // 稼働時計は 1 分ごとに進める(止まっていた時間は数えない)。休眠アカウントの回収は 1 時間ごと(起動時にも 1 回)
 setInterval(() => { world.tick().catch(() => {}); }, 60 * 1000);
 setInterval(() => { limiter.sweep(); world.reclaimIdle().catch((e) => console.error('休眠の回収に失敗:', e.message)); }, 60 * 60 * 1000);
+
+// 終了シグナル: たまっている出来事の記録を 1 回だけ書き出してから終わる(App Service の再起動で直前の数秒を失わないため。2 秒で諦める)
+for (const sig of ['SIGTERM', 'SIGINT']) {
+  process.on(sig, () => {
+    const timer = setTimeout(() => process.exit(0), 2000);
+    events.stop().catch(() => {}).finally(() => { clearTimeout(timer); process.exit(0); });
+  });
+}
 
 world.init().then(async () => {
   const n = await world.reclaimIdle().catch((e) => { console.error('休眠の回収に失敗:', e.message); return 0; });

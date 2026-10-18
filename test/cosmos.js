@@ -16,6 +16,7 @@ const { World } = require('../server/world');
 const { nodeDocs, regionDocs } = require('../server/map/load');
 const tokyo = require('../server/map/tokyo');
 const { tilesAround } = require('../server/map/geo');
+const { makeEvent, dayOf } = require('../server/events');
 
 const fakeWs = () => ({ readyState: 1, sent: [], send(s) { this.sent.push(JSON.parse(s)); }, close() {} });
 const dbName = process.env.COSMOS_TEST_DATABASE || 'pc-test';
@@ -71,6 +72,20 @@ const dbName = process.env.COSMOS_TEST_DATABASE || 'pc-test';
     assert.ok((await store.countStarters([a.startNodeId]))[a.startNodeId] >= 1, 'ここから始めた人数');
     const top = await store.topPlayers(3);
     assert.ok(top.some((p) => p.id === a.id), 'ランキングに出る');
+    // 出来事の記録(docs/LOGS.md): appendEvents → eventsByDay / eventsOfPlayer / countEventsByKind の往復。ttl が入る(実際の削除は待たない)
+    const day = dayOf(Date.now()), at = Date.now();
+    await store.appendEvents([
+      makeEvent('capture', { at, playerId: a.id, nodeId: nb, regionId: saved.region, level: 4, ip: '203.0.113.5', detail: { prevOwner: null, gained: 4, hits, defenseBefore: 0 } }),
+      makeEvent('answer', { at: at + 1, playerId: a.id, nodeId: nb, level: 4, ok: true, sec: 3.2, detail: { mode: 'attack' } }),
+      makeEvent('control.daily', { id: `ctl-${day}-tokyo`, at: at + 2, regionId: 'tokyo', detail: { tier: 5, controller: null, total: 0, counts: {} } }),
+    ]);
+    const caps = await store.eventsByDay(day, { kind: 'capture', playerId: a.id });
+    assert.ok(caps.length >= 1 && caps[0].detail.gained === 4 && caps[0].ttl === 365 * 86400 && caps[0].day === day && !('ip' in caps[0]), 'ある日の capture が読め、ttl が入る');
+    const mine = await store.eventsOfPlayer(a.id, [day]);
+    assert.ok(mine.length >= 2 && mine[0].at >= mine[1].at, 'プレイヤー別の履歴(新しい順)');
+    const byKind = await store.countEventsByKind(day);
+    assert.ok(byKind.capture >= 1 && byKind.answer >= 1 && byKind['control.daily'] === 1, '種類ごとの件数(GROUP BY)');
+    assert.ok(!JSON.stringify(mine).includes('203.0.113.5'), '生の IP は保存されない');
     // 別のワールド(再起動相当)で復元
     const w2 = await new World({ store, minAnswerMs: 0 }).init();
     const b = await w2.join(fakeWs(), 'テスト', a.token);

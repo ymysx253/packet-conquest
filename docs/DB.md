@@ -35,7 +35,7 @@
 | `players` | `/id` | プレイヤー(復帰コード、累計点、所属) | 手順 5 | プレイヤー数 |
 | `questions` | `/nodeId` | 固定問題(Lv11 以上の一部)。拠点 × レベルで active を 1 つ | フェーズ 2 | 拠点数 × 数件 |
 | `sessions` | `/playerId` | 長丁場シナリオの途中経過(再開用)。TTL あり | フェーズ 2〜3 | 同時プレイ数 |
-| `events` | `/day` | 通知・逆探知・ログ・週間集計の元データ。TTL あり | フェーズ 2 | 多い(TTL で回収) |
+| `events` | `/day` | 出来事の記録(`docs/LOGS.md`)。既定 TTL 90 日、種類ごとに 30 日〜無期限。1 日に DAU × 100 件 | フェーズ 1 手順 9〜10(作成済み。設定は LOGS.md 7.7) | 多い(TTL で回収) |
 | `sponsors` | `/id` | スポンサー(店・施設)と掲載条件 | 段階 C | 少ない |
 | `teams` | `/id` | チーム(`{ id, type: "team", name, ownerId, maxMembers, memberCount, createdAt, style: { frame, fill, text }, icon }`)。style は #RRGGBB、icon は用意した記号。リーダー(ownerId)だけ変更可。合計点は players を team で GROUP BY | 手順 8(2026-10-18) | 少ない |
 | `meta` | `/id` | 小さな設定・状態。いまは稼働時計 `clock`(`{ id: "clock", uptimeMs, savedAt }`)。無ければ起動時に SDK が作る(共有スループット) | 手順 5(2026-10-18) | 数件 |
@@ -162,7 +162,9 @@
 - `team`: 所属チームの id(null なら個人)。突破回数の合算と地域の支配は team があればそれを鍵にする
 - `country` は登録国、`startNodeId` は開始地点(選んだ駅・名所の id。指定が無ければ東京駅)。検索結果の「ここから始めた人数」は `startNodeId` で GROUP BY して数える(DESIGN.md 3.1、2026-10-18)
 - 累計点 `points` は奪取時点の点(強化込み)の合計。現在の点数は nodes から集計する(保存しない)
-- 将来: `stats`(題材ごとの正答率。学習記録)、`flags`(異常検知の印)
+- `stats`(学習記録の集計値。2026-10-18 決定、`LOGS.md` 3.2): `{ answers, correct, minSec, byLevel: { "<出題レベル>": { n, ok, secSum } }, byBand: { "<100 の位>": { n, ok, secSum } }, updatedAt }`。`answer()` のたびにメモリ上で加算し、保存は既存の `persistPlayer` に乗せる(追加の書き込みはしない)。`byLevel` の鍵は出題レベル(Lv1〜10 はそのまま題材別)、`byBand` の鍵は 100 ごとの領域(`LEVELS.md`。`"0"` = Lv1〜99、`"1"` = Lv100〜199 …)。`minSec` は正解した解答の最短秒。本人に見せる成績はここから読み、`events` は読まない
+- `flags`(異常検知の印。`LOGS.md` 5.4): `[{ kind, at, note, by }]` の配列。付いている人はランキング(`topPlayers`)から外す。自動で付けるのはフェーズ 2、それまでは管理者が手で付ける(まだ無い)
+- 保存しない項目: `ws` / `online` / `pending` / `view` / `viewZ` / `reach` / `reachAt` / `connectedAt`(接続した時刻。切断の記録 `leave.detail.sec` に使う)は `persistPlayer` の分割代入で除く
 
 ### 3.4 `questions`(固定問題。`LEVELS.md` 第 5 章の seed 方式)
 
@@ -200,9 +202,16 @@
 
 `{ id, type: "session", playerId, questionId, nodeId, state: {...シナリオの進行}, startedAt, updatedAt, ttl }`。`ttl` で自動削除(例: 7 日)。
 
-### 3.6 `events`(通知・ログ・集計の元。フェーズ 2)
+### 3.6 `events`(出来事の記録。設計は `docs/LOGS.md`、実装 2026-10-18)
 
-`{ id, type: "event", day: "2026-10-17", kind: "capture" | "fortify" | "traceback" | "notice" | "abuse", playerId, nodeId, detail, at, ttl }`。週間ランキングと支配率はここから集計して結果を `players` か別の小さなドキュメントに書く。
+集計と調査に使う構造化した出来事の記録。画面に流す活動ログ(`world.addLog`)とは別。詳細(目的、量の見積もり、読み方の SQL、管理画面)は `LOGS.md`。
+
+- 共通項目(`LOGS.md` 3.1): `id`(`${at}-${乱数 4 桁 hex}`。`control.daily` だけ `ctl-${day}-${regionId}` で上書き)、`type: "event"`、`day`(**日本時間の日付** `"YYYY-MM-DD"`。パーティションキー)、`at`(Unix ミリ秒)、`kind`、`playerId`、`teamId`(その時点の所属)、`nodeId` / `regionId`、`level`、`ok` / `sec`(`answer` だけ。正誤と出題から解答までの秒)、`src`(接続元のハッシュ)、`detail`(種類ごとの追加項目。インデックス外)、`ttl`(秒。種類ごと)
+- `kind` の一覧(`LOGS.md` 2.2): `join` / `resume` / `leave` / `answer` / `intrude` / `capture` / `fortify` / `move` / `team.create` / `team.join` / `team.leave` / `team.style` / `control` / `control.daily` / `reclaim` / `rekey` / `limit` / `error`。予約(フェーズ 2): `notice` / `traceback` / `abuse`
+- `ttl`(2026-10-18 決定): answer・error 30 日 / resume・leave・intrude・fortify・team.style・limit 90 日 / join・capture・move・team.create・team.join・team.leave・control・reclaim・rekey 365 日 / control.daily 無期限(`-1`)。コンテナーの `defaultTtl` は 90 日(`ttl` を書き忘れたドキュメントの安全弁)
+- `src` = `SHA-256(LOG_SALT + day + ip)` の先頭 16 桁。塩に `day` を混ぜるので日をまたいだ追跡はできない。**生の IP は保存しない**。`LOG_SALT` 未設定なら起動時の乱数
+- 残さないもの: 問題の本文・選択肢・正解・qid、名前などの自由入力(`join` / `reclaim` の `detail.name` だけ例外)、復帰コード、生の IP
+- 役割: `players.weekPoints` と `regions.control` は操作のたびにサーバーが更新する集計値で、`events` はその**裏付けと推移**(`LOGS.md` 5.1・5.2)。ゲームの 1 操作ごとに `events` を読まない。書き込みは `server/events.js` の `EventLog` が 1 秒または 50 件でまとめて `appendEvents` する(失敗は `console.error` だけ。ゲームを止めない)
 
 ### 3.7 `sponsors`(段階 C)
 
@@ -218,8 +227,9 @@
 
 - 既定のインデックス(全項目)で始める。書き込みが増えたら `nodes` の `lines`、`questions` の `rendered` を除外して RU を節約する
 - 地理空間クエリを使う `nodes` は、インデックス ポリシーで `/location/?` に `Point` の空間インデックスを追加する(`regions` の `center` も同様)
-- TTL: `sessions`(7 日)、`events`(90 日)。それ以外は無期限
-- 複合インデックス(集計用、必要になったら): `nodes` の `(region, owner)`、`events` の `(day, kind)`
+- TTL: `sessions`(7 日)、`events`(既定 90 日、ドキュメントの `ttl` で種類ごとに 30 日〜無期限に上書き。3.6)。それ以外は無期限。コンテナー側の既定(`defaultTtl`)が未設定だとドキュメントの `ttl` も無視されるので、`events` は必ず「On」で 7776000 を入れる
+- `events` のインデックス ポリシー(`LOGS.md` 7.7。`server/store-cosmos.js` の `CONTAINERS` にも同じものがあり、新しい環境ではこれで作られる): 含める `/day`、`/kind`、`/at`、`/playerId`、`/teamId`、`/nodeId`、`/regionId`、`/level`、`/ok`、`/sec`、`/src`、除外 `/*`(`detail` 以下は絞り込みに使わない)。複合インデックス `(day asc, kind asc, at desc)` と `(playerId asc, at desc)`。書き込み 1 件 7〜10 RU → 約 5 RU。**`createIfNotExists` は既にあるコンテナーの設定を変えない**ので、本番の `events`(作成済み)はポータルから設定する
+- 複合インデックス(集計用、必要になったら): `nodes` の `(region, owner)`
 
 ---
 
@@ -240,6 +250,7 @@
 | `COSMOS_CONNECTION_STRING` | 接続文字列 | メモリ版で動く(保存しない) |
 | `COSMOS_DATABASE` | データベース名(`packet-conquest` / `pc-dev`) | `packet-conquest` |
 | `COSMOS_SEED` | `1` なら起動時に `nodes` が空のとき拠点マスターを流し込む | `1` |
+| `LOG_SALT` | 出来事の記録で接続元を日替わりのハッシュにする塩(`LOGS.md` 3.4。`server/events.js` が読む) | 起動時の乱数(再起動すると同じ日でも値が揃わなくなる。手元はそれでよい) |
 
 ---
 
@@ -247,7 +258,7 @@
 
 1. (決定 2026-10-17)`nodes` は階層パーティションキー `[/country, /region]`。国ごとにコンテナーは分けない
 2. `questions` の有効期限の長さ、拠点 × レベルの本数(`DESIGN.md` 3.5)
-3. 学習記録(`players.stats`)の粒度と保存の頻度
+3. (決定 2026-10-18)学習記録(`players.stats`)の粒度と保存の頻度 → `LOGS.md` 第 8 章 #4(出題レベルごと + 100 ごとの領域、保存は既存の `persistPlayer` に乗せる)
 4. Managed Identity への切り替え時期
 
 **パーティションキーについて(2026-10-17 補足)**: `/region` は区・市ごとに分かれる(東京だけで 50 の値)ので 1 つの箱にはならない。ただしパーティションキーはコンテナー作成後に変えられないため、`nodes` は最初から階層パーティションキー `[/country, /region]` で作る。拠点ドキュメントには `country` を持たせる(地域マスターの `country` を保存時に写す)。`regions` は `/parent` のままでよい(件数が少ない)。
@@ -260,10 +271,11 @@
 - `tools/db-setup.js`(`npm.cmd run db:setup -- --db pc-dev`): regions を上書き、nodes は空なら全部、`--force` でマスター項目だけ更新(owner / defense などのゲーム状態は保つ)
 - `server/env.js`: `.env` を読む(Git 管理外)。`.env.example` が雛形
 - `test/cosmos.js`: 接続文字列があるときだけ、一時データベース `pc-test` で読み書きと復元を検証して削除する
+- 出来事の記録(2026-10-18、`LOGS.md` 第 7 章): `server/events.js`(`dayOf` / `hashSrc` / `makeEvent` / `EventLog`)。保存口のメソッドは `appendEvent(doc)` / `appendEvents(docs)`(upsert。Cosmos は 10 件ずつ並列)/ `eventsByDay(day, { kind, playerId, nodeId, regionId, since, limit })` / `eventsOfPlayer(playerId, days)` / `countEventsByKind(day)`。メモリ版は 10,000 件を上限に持つ。`world.tick()` が日本時間の日付の変化を見て `snapshotControl()`(`control.daily`)を 1 回呼ぶ。検証は `test/events.js`、`test/world.js`、`test/cosmos.js`
 
 ## 9. ポータルだけで作る(カスタム テンプレートのデプロイ)
 
-ポータルのデータ エクスプローラーでは共有スループットのデータベースが作れないことがある。その場合は `infra/cosmos-database.json`(ARM テンプレート)を「カスタム テンプレートのデプロイ」に貼り付ける。データベース(共有 1000 RU/s)と 4 つのコンテナー(nodes は階層キー `/country`,`/region`)が一度にできる。既に同名のデータベースが共有スループットなしで存在するときは、先に削除する。
+ポータルのデータ エクスプローラーでは共有スループットのデータベースが作れないことがある。その場合は `infra/cosmos-database.json`(ARM テンプレート)を「カスタム テンプレートのデプロイ」に貼り付ける。データベース(共有 1000 RU/s)と 5 つのコンテナー(nodes は階層キー `/country`,`/region`、regions、players、questions、meta)が一度にできる。`events`(`/day`、`defaultTtl` 7776000、インデックス ポリシーは第 4 章)と `teams` / `sessions` はテンプレートにまだ無い(追加案は `LOGS.md` 7.7。足したら数を直す)。既に同名のデータベースが共有スループットなしで存在するときは、先に削除する。
 データの投入は、データ エクスプローラーの各コンテナーの Items → Upload Item で `data/export/regions.json`、`nodes-01.json`〜`nodes-04.json` を選ぶ(ファイルは `tools/db-setup.js` と同じ内容を JSON にしたもの。`data/` は Git 管理外)。
 
 ## 10. 作成の記録(2026-10-17)
@@ -272,3 +284,4 @@
 - データベース `packet-conquest` は **カスタム テンプレートのデプロイ**(`infra/cosmos-database.json`)で作成(共有 1000 RU/s)。データ エクスプローラーの New Container / New Database には共有スループットの選択肢が出なかったため(Free や上限が原因ではなく、ポータルの画面の仕様)
 - コンテナー: `nodes`(階層 /country, /region)、`regions`(/parent)、`players`(/id)、`questions`(/nodeId)はテンプレートで、`sessions`(/playerId)、`events`(/day)、`sponsors`(/id)はデータ エクスプローラーから「専用スループットをプロビジョニングする」のチェックを外して追加。合計 7 つ、スループットは共有 1000 のまま
 - データ投入は Upload Item(`data/export/regions.json` 56 件、`nodes-01〜04.json` 715 件)。重複時は「already exists」で弾かれるだけで害はない
+- `events` の TTL(既定 90 日)とインデックス ポリシーのポータル設定(`LOGS.md` 7.7): **まだ**。コードは 2026-10-18 に入ったので、次に配置するときに設定し、ここに日付を記録する(設定するまでは `ttl` が効かず、既定のインデックスで 1 件 7〜10 RU)

@@ -1,0 +1,17 @@
+{
+  "note": "FactBank: TCP / UDP の性質の有無(docs/questions/design-51-100.md 第 2 章 Lv51 tcp-udp-fact-v1)。attrs.tcp / attrs.udp はその性質を持つか。checkedBy が空の行は本番の生成に使わない。",
+  "rows": [
+    { "id": "connection", "ja": "通信の前に接続を確立する(3 ウェイハンドシェイク)", "attrs": { "tcp": true, "udp": false }, "levelHint": 51, "checkedBy": "Claude 2026-10-18" },
+    { "id": "ack-retransmit", "ja": "届いたことの確認(ACK)と、届かなかったときの再送を行う", "attrs": { "tcp": true, "udp": false }, "levelHint": 51, "checkedBy": "Claude 2026-10-18" },
+    { "id": "ordering", "ja": "シーケンス番号で受け取ったデータを送った順に並べ直す", "attrs": { "tcp": true, "udp": false }, "levelHint": 51, "checkedBy": "Claude 2026-10-18" },
+    { "id": "flow-control", "ja": "ウィンドウで相手の受信能力に合わせて送る量を調節する(フロー制御)", "attrs": { "tcp": true, "udp": false }, "levelHint": 51, "checkedBy": "Claude 2026-10-18" },
+    { "id": "congestion", "ja": "網の混雑に応じて送る速さを抑える(輻輳制御)", "attrs": { "tcp": true, "udp": false }, "levelHint": 51, "checkedBy": "Claude 2026-10-18" },
+    { "id": "header-20", "ja": "ヘッダ長が最小 20 バイト(オプションで伸びる)", "attrs": { "tcp": true, "udp": false }, "levelHint": 51, "checkedBy": "Claude 2026-10-18" },
+    { "id": "connectionless", "ja": "接続を確立せず、いきなりデータを送れる(コネクションレス)", "attrs": { "tcp": false, "udp": true }, "levelHint": 51, "checkedBy": "Claude 2026-10-18" },
+    { "id": "broadcast", "ja": "ブロードキャスト宛に送れる", "attrs": { "tcp": false, "udp": true }, "levelHint": 51, "checkedBy": "Claude 2026-10-18" },
+    { "id": "multicast", "ja": "マルチキャスト宛に送れる", "attrs": { "tcp": false, "udp": true }, "levelHint": 51, "checkedBy": "Claude 2026-10-18" },
+    { "id": "header-8", "ja": "ヘッダ長が 8 バイト固定", "attrs": { "tcp": false, "udp": true }, "levelHint": 51, "checkedBy": "Claude 2026-10-18" },
+    { "id": "ports", "ja": "ポート番号で宛先のアプリケーションを区別する", "attrs": { "tcp": true, "udp": true }, "levelHint": 51, "checkedBy": "Claude 2026-10-18" },
+    { "id": "checksum", "ja": "チェックサムで誤りを検出する", "attrs": { "tcp": true, "udp": true }, "levelHint": 51, "checkedBy": "Claude 2026-10-18" }
+  ]
+}

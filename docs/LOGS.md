@@ -250,7 +250,17 @@ GROUP BY c.playerId
 
 ## 7. 実装の手順
 
-コードはまだ変えない。入れるときの順番と場所。
+**実装状況(2026-10-18): 済。** 7.1〜7.5 と 7.8 の 1〜5 はコードに入った(`server/events.js`、`server/store.js` / `store-cosmos.js`、`server/world.js`、`server/index.js`)。テストは 7.6 の 1〜8 が `test/events.js`・`test/world.js`・`test/cosmos.js` にある(9 の `test/abuse.js` への追加は未)。7.7 のポータル設定(本番 `events` の TTL とインデックス)は次の配置時に行う(`DB.md` 第 10 章)。残りは 6(管理画面、フェーズ 2)。
+
+設計からずらした点:
+- `makeEvent` は `ip` を受け取って `src` に変え、`ip` 自体は捨てる(呼び出し側が生の IP を書いてしまう事故を防ぐ)。関数名は `srcOf` ではなく `hashSrc(ip, day)`
+- `World` は `new World({ store, events })` で `EventLog` を受け取る(省略時は何もしない `noopEvents()`)。`world.js` 自身は `EventLog` を作らない
+- 7.4 の `expected` ヘルパーは入れていない(`world.js` の大きな書き換えになるため)。代わりに `index.js` の `isUnexpected(e)` が「素の `Error`(規則による拒否)」以外 — `TypeError` などの別クラス、`code` を持つ SDK やネットワークの例外、`expected: false` と明示したもの — だけを `error` として記録する。将来 `expected: true` を付ければそのまま除外される
+- `control.daily` の走らせ方: `world.tick()` が日本時間の日付を前回(`meta` の `clock.day` に保存)と比べ、変わっていれば `snapshotControl()` を 1 回呼ぶ。`clock.day` を保存するので 0 時をまたいだ再起動でも断面を落とさない
+- `answer` の `detail` に `answerKind`(choice / text)を足した(入力式が同日に入ったため)。`sec` は小数 1 桁
+- `players.stats` に `byBand`(100 ごとの領域。鍵は 100 の位、`"0"` = Lv1〜99)を最初から持つ。`minSec` は正解した解答の最短秒
+
+以下は実装前の計画(入れた順番と場所の記録として残す)。
 
 ### 7.1 `server/events.js`(新しいファイル)
 
@@ -376,20 +386,22 @@ GROUP BY c.playerId
 
 ---
 
-## 8. 決めてもらうこと(未決)
+## 8. 決めたこと(2026-10-18 推奨どおりに決定)
 
-1. **保持期間の数字**: 案は answer 30 日 / resume・leave・fortify・intrude・team.style・limit 90 日 / join・capture・move・team.create・team.join・team.leave・control・reclaim・rekey 365 日 / control.daily 無期限。コンテナー既定は 90 日。短くするほど保存量が減り、長くするほど問い合わせ対応と不正の遡りがしやすい。利用規約・プライバシーポリシー(段階 B)に「ログの保存期間」として書く数字でもある
-2. **`answer` を全件残すか**: (a) 全件(1,000 人まではこれでよい。1 万人で 60 万件/日・ピーク 200 RU/s)(b) 不正解・速すぎる解答・待ち時間中は全件、正解は 1/10(c) 時間ごとの集計だけ。推奨は **(a) で始め、DAU 3,000 を目安に (b) へ**。学習記録は `players.stats` に全件ぶん残るので、(b)(c) でも本人向けの成績は欠けない
-3. **IP の扱い**: (a) 保存しない(b) **日替わりの塩でハッシュ(推奨)**(c) 週単位の塩(週をまたぐ受け渡しも追える。追跡性が上がるぶん、プライバシーポリシーに書く内容が重くなる)。あわせて `LOG_SALT` を App Service のアプリ設定に入れるか(入れないと再起動で同じ日の値が揃わない)
-4. **学習記録の粒度**(`players.stats`): (a) 出題レベルごと(Lv1〜10 はそのまま題材別。鍵は最大 999 個だが実際に出るのは数十)(b) 10 レベルごと(c) 100 ごとの領域だけ。推奨は **(a) + 領域の集計 `byBand`** を Lv11 以上が増えたときに足す。保存の頻度は「既存の `persistPlayer` に乗せる」(追加の書き込みなし)でよいか
-5. **パーティションキー**: `/day` のまま(推奨。作成済み、1 日 20 GB まで届かない)か、階層キー `[/day, /kind]` に作り直すか(kind ごとの問い合わせがさらに安くなるが、`nodes` と同じく前半だけを `options.partitionKey` に渡せない制約があり、いまのやり方なら利点は小さい)。パーティションキーはあとで変えられないので、データが入る前に決める
-6. **`intrude` / `capture` / `fortify` を `answer` と別の kind にするか**: いまの案は別(正解 1 回で 2 件書く。answer を間引いても奪取の記録は全件・長期で残る)。1 件にまとめる(`answer.detail.result` に入れる)と書き込みが 2 割減るが、answer の TTL と間引きに巻き込まれる
-7. **`error` の記録の前提になる「規則による拒否」と「想定外の例外」の区別**(第 7.4 節の `expected`)を入れるか。入れないなら `error` は記録しない
-8. **`control.daily` の範囲**: 東京だけ(60 件/日)で始め、日本全体(1,800 件/日)になったら tier 5・3 だけに絞るか、そのまま残すか
+すべて推奨どおりに決まり、同日に実装した(第 7 章)。
+
+1. **保持期間**: answer・error 30 日 / resume・leave・fortify・intrude・team.style・limit 90 日 / join・capture・move・team.create・team.join・team.leave・control・reclaim・rekey 365 日 / control.daily 無期限。コンテナー既定は 90 日(`server/events.js` の `TTL_BY_KIND`、`store-cosmos.js` の `defaultTtl`)。利用規約・プライバシーポリシー(段階 B)に「ログの保存期間」として書く数字でもある
+2. **`answer` は全件残す**(a)。DAU 3,000 を目安に (b)(不正解・速すぎる解答・待ち時間中は全件、正解は 1/10)へ。学習記録は `players.stats` に全件ぶん残るので、間引いても本人向けの成績は欠けない
+3. **IP は日替わりの塩でハッシュ**(b)。`src = SHA-256(LOG_SALT + day + ip)` の先頭 16 桁。`LOG_SALT` は App Service のアプリ設定に入れる(`DEPLOY.md` 第 2 章)。未設定なら起動時の乱数(手元用)
+4. **学習記録はレベルごと + 領域**: `players.stats.byLevel`(鍵は出題レベル)と `byBand`(鍵は 100 の位。`"0"` = Lv1〜99)を最初から持つ。保存は既存の `persistPlayer` に乗せる(追加の書き込みなし)
+5. **パーティションキーは `/day` のまま**(作成済み、1 日 20 GB まで届かない)
+6. **`intrude` / `capture` / `fortify` は `answer` と別の kind**(正解 1 回で 2 件。answer を間引いても奪取の記録は全件・長期で残る)
+7. **`error` は「規則による拒否」と区別できる範囲だけ記録する**: `world.js` の規則による拒否は素の `Error` なので記録せず、別クラスの例外・`code` を持つ例外・`expected: false` の例外だけを `error` にする(`index.js` の `isUnexpected`)。`reject()` ヘルパーによる全面的な区別は入れない
+8. **`control.daily` は東京だけで開始**(tier 6 の区・市 + tier 5 の東京都 + tier 3 の日本 = 52 件/日)。日本全体(約 1,800 件/日)になったときに tier 5・3 だけに絞るかを改めて決める
 
 ---
 
-## 9. DB.md への反映案(この文書が確定したら書き写す)
+## 9. DB.md への反映案(2026-10-18 に書き写し済み。10 はポータル設定のあとに記録する)
 
 1. **3.6 `events`**: 「仮の形」を本文書への参照に置き換える。`kind` の一覧(第 2.2 節)、共通項目(第 3.1 節)、`ttl` は種類ごと、`src` は日替わりハッシュ。予約の `notice` / `traceback` / `abuse` はそのまま残す
 2. **3.6 の「週間ランキングと支配率はここから集計して結果を players か別の小さなドキュメントに書く」**: 実装は逆で、`players.weekPoints` と `regions.control` は操作のたびにサーバーが更新する集計値、`events` は**裏付けと推移**(第 5.1・5.2 節)。この文に直す

@@ -4,6 +4,7 @@
 const assert = require('assert');
 const { World, PROTECT_MS, DECAY_MS, NEWBIE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, weekKeyOf } = require('../server/world');
 const { MemoryStore } = require('../server/store');
+const { EventLog, dayOf } = require('../server/events');
 const { tilesAround, tileOf, distanceKm } = require('../server/map/geo');
 const { NODES } = require('../server/map/tokyo');
 
@@ -20,12 +21,13 @@ async function solve(world, p, nodeId) {
 
 (async () => {
   const store = new MemoryStore();
-  const w = await new World({ store, minAnswerMs: 0 }).init();
+  const events = new EventLog(store, { flushMs: 100000 }); // 出来事の記録(docs/LOGS.md)。最後にまとめて flush して検査する
+  const w = await new World({ store, minAnswerMs: 0, events }).init();
   assert.strictEqual(await store.countNodes(), NODES.length, 'シードで全拠点が保存される');
   assert.strictEqual(w.nodes.size, 0, '起動時にはまとめて読まない');
 
   // 参加: 自分の拠点が東京駅の近くに生まれ、近い 2 拠点とつながる。周辺のタイルだけ読まれる
-  const wsA = fakeWs();
+  const wsA = fakeWs(); wsA.ip = '203.0.113.5'; // 接続元(出来事の記録ではハッシュになる)
   const a = await w.join(wsA, 'あき', null);
   const home = w.nodes.get(a.homeNodeId);
   assert.ok(home && home.owner === a.id && home.isPlayerNode, '自分の拠点が生まれる');
@@ -373,5 +375,53 @@ async function solve(world, p, nodeId) {
   assert.ok(last(gws, 'tiles').nodes.some((n) => n.id === tokyoSt.id), '参加前でも範囲を読める');
   assert.ok(!JSON.stringify(gws.sent).includes('answerIndex'));
 
-  console.log(`world ok: ${w.nodes.size} nodes loaded of ${await store.countNodes()}, ${w.players.size} players, ${w.tiles.size} tiles`);
+  // 出来事の記録(docs/LOGS.md): 参加・復帰・切断・解答・侵入・奪取・強化・チーム・支配・引っ越し・再発行・回収が積まれ、答えや復帰コード・生の IP を含まない。
+  // players.stats は解答のたびに増え、persistPlayer で保存される。control.daily は同じ日に 2 回書いても地域ごとに 1 件
+  await events.flush();
+  const today = dayOf(Date.now());
+  const kinds = await store.countEventsByKind(today);
+  for (const k of ['join', 'resume', 'leave', 'answer', 'intrude', 'capture', 'fortify', 'team.create', 'team.join', 'team.leave', 'team.style', 'control', 'move', 'rekey', 'reclaim', 'limit']) assert.ok(kinds[k] >= 1, `出来事 ${k} が記録される(${JSON.stringify(kinds)})`);
+  const allEvents = [...store.events.values()];
+  const dump = JSON.stringify(allEvents);
+  assert.ok(!dump.includes('answerIndex') && !dump.includes('"options"') && !dump.includes('explanation') && !dump.includes('"accept"') && !dump.includes('203.0.113.5') && !dump.includes(a.token) && !dump.includes(oldToken) && !dump.includes(newToken), '答え・復帰コード・生の IP を含まない');
+  assert.ok(allEvents.every((e) => e.type === 'event' && e.day === today && typeof e.at === 'number' && (e.kind === 'control.daily' || e.ttl > 0)), '共通項目と ttl');
+  const joinA = allEvents.find((e) => e.kind === 'join' && e.playerId === a.id);
+  assert.ok(joinA && joinA.nodeId === home.id && joinA.regionId === home.region && joinA.detail.startNodeId === tokyoSt.id && joinA.detail.name === 'あき', 'join に自分の拠点と開始地点');
+  assert.match(joinA.src, /^[0-9a-f]{16}$/, '接続元は 16 桁のハッシュ');
+  assert.ok(allEvents.some((e) => e.kind === 'resume' && e.playerId === a.id && e.detail.renamed === false), '復帰');
+  assert.ok(allEvents.some((e) => e.kind === 'leave' && e.playerId === a.id && typeof e.detail.sec === 'number'), '切断に接続秒数');
+  const wrongEv = allEvents.filter((e) => e.kind === 'answer' && e.playerId === a.id && e.ok === false);
+  assert.ok(wrongEv.length >= 3 && wrongEv[0].detail.cooldownMs === COOLDOWN_MS && wrongEv[1].detail.cooldownMs === COOLDOWN_MS * 2 && wrongEv.every((e) => e.level >= 1 && typeof e.sec === 'number' && e.detail.mode === 'attack' && !('qid' in e)), '不正解の answer(待ち時間の倍増。qid は書かない)');
+  assert.ok(allEvents.some((e) => e.kind === 'limit' && e.playerId === a.id && e.detail.rule === 'fast' && e.detail.ms >= 0), '速すぎる解答は limit(fast)');
+  const cap = allEvents.find((e) => e.kind === 'capture' && e.playerId === a.id && e.nodeId === nb);
+  assert.ok(cap && cap.detail.gained === target.value && cap.detail.prevOwner === null && cap.detail.hits === target.hits && cap.level >= 1 && cap.regionId === target.region, 'capture に得点と前の所有者');
+  assert.strictEqual(allEvents.filter((e) => e.kind === 'intrude' && e.nodeId === nb && e.playerId === a.id).length, target.hits - 1, '回数未達は intrude');
+  assert.ok(allEvents.some((e) => e.kind === 'capture' && e.nodeId === bNode.id && e.detail.prevOwner === b.id), '奪取は前の所有者つき');
+  assert.ok(allEvents.some((e) => e.kind === 'fortify' && e.nodeId === home.id && e.detail.defense === 1 && e.level === Math.max(4, home.level + 1)), '強化は強化後の攻め手の出題レベル(所有拠点は Lv4 以上)');
+  assert.ok(allEvents.some((e) => e.kind === 'control' && e.regionId === regionId && e.detail.after === a.id && e.detail.before === null), '支配の変化');
+  assert.ok(allEvents.some((e) => e.kind === 'team.create' && e.teamId === team1.id && e.detail.name === 'あかチーム') && allEvents.some((e) => e.kind === 'team.leave' && e.detail.deleted === true), 'チームの作成と消滅');
+  assert.ok(allEvents.some((e) => e.kind === 'team.style' && e.detail.icon === '⚡') && allEvents.some((e) => e.kind === 'reclaim' && e.detail.name === 'きゅうみん' && e.detail.homeDeleted === true && e.detail.nodesFreed === 1), '見た目の変更と休眠の回収');
+  assert.ok(allEvents.some((e) => e.kind === 'move' && e.playerId === mover.id && e.detail.to === takao.id) && allEvents.some((e) => e.kind === 'rekey' && e.playerId === a.id), '引っ越しと再発行');
+  // 学習記録の集計値
+  assert.ok(a.stats && a.stats.answers >= 5 && a.stats.correct >= 3 && a.stats.answers > a.stats.correct && typeof a.stats.minSec === 'number', 'stats が増える');
+  const lvKey = String(target.level);
+  assert.ok(a.stats.byLevel[lvKey] && a.stats.byLevel[lvKey].n >= target.hits && a.stats.byLevel[lvKey].ok >= target.hits - 1 && a.stats.byLevel['0'] === undefined, 'レベルごとの n / ok');
+  assert.ok(a.stats.byBand['0'] && a.stats.byBand['0'].n === a.stats.answers, '領域(100 ごと)の集計');
+  const savedA = await store.loadPlayer(a.id);
+  assert.deepStrictEqual(savedA.stats, a.stats, 'stats は persistPlayer で保存される');
+  assert.ok(!('connectedAt' in savedA), 'connectedAt は保存しない');
+  // 支配の断面: 同じ日に 2 回呼んでも地域ごとに 1 件。tick で日付が変わったときだけ走る
+  const n1 = await w.snapshotControl(); const n2 = await w.snapshotControl(); await events.flush();
+  assert.ok(n1 >= 50 && n1 === n2, '区・市 + 東京都 + 日本');
+  const daily = await store.eventsByDay(today, { kind: 'control.daily' });
+  assert.strictEqual(daily.length, n1, '上書きなので地域ごとに 1 件');
+  assert.ok(daily.every((e) => e.id === `ctl-${today}-${e.regionId}` && e.ttl === -1 && [3, 5, 6].includes(e.detail.tier) && !('playerId' in e)), 'id は ctl-日付-地域、無期限');
+  const ctlCount = daily.length;
+  w.lastDay = today; await w.tick(); await events.flush();
+  assert.strictEqual((await store.eventsByDay(today, { kind: 'control.daily' })).length, ctlCount, '日付が変わらなければ書かない');
+  w.lastDay = '2000-01-01'; await w.tick(); await events.flush();
+  assert.strictEqual(w.lastDay, today); assert.strictEqual((await store.loadMeta('clock')).day, today, '日付は稼働時計と一緒に保存される');
+  assert.strictEqual((await store.eventsByDay(today, { kind: 'control.daily' })).length, ctlCount, '日付が変わっていれば断面を書く(同じ id で上書き)');
+
+  console.log(`world ok: ${w.nodes.size} nodes loaded of ${await store.countNodes()}, ${w.players.size} players, ${w.tiles.size} tiles, ${allEvents.length} events`);
 })().catch((e) => { console.error(e); process.exit(1); });

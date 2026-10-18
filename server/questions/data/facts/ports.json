@@ -1,0 +1,15 @@
+{
+  "note": "FactBank: 主要サービスの既定ポート(docs/questions/design-51-100.md 第 2 章 Lv52 port-of-service-v1 / Lv53 service-of-port-v1)。ja は一言の役割。attrs.label は選択肢に出す名前(DHCP・SNMP は側を併記)。attrs.ask は Lv52 の本文で「どちら側のポートか」を指定する語(無ければ null)。attrs.transport は問題文で指定するトランスポート。note は解説に添える補足。checkedBy が空の行は本番の生成に使わない。",
+  "rows": [
+    { "id": "http", "ja": "暗号化なしの Web ページの取得", "attrs": { "service": "HTTP", "label": "HTTP", "port": 80, "transport": "tcp", "ask": null }, "note": "", "levelHint": 52, "checkedBy": "Claude 2026-10-18" },
+    { "id": "https", "ja": "TLS で暗号化した Web ページの取得", "attrs": { "service": "HTTPS", "label": "HTTPS", "port": 443, "transport": "tcp", "ask": null }, "note": "", "levelHint": 52, "checkedBy": "Claude 2026-10-18" },
+    { "id": "dns", "ja": "名前解決", "attrs": { "service": "DNS", "label": "DNS", "port": 53, "transport": "udp", "ask": null }, "note": "長い応答やゾーン転送では TCP 53 も使う", "levelHint": 52, "checkedBy": "Claude 2026-10-18" },
+    { "id": "dhcp-server", "ja": "アドレスの自動配布", "attrs": { "service": "DHCP", "label": "DHCP(サーバー側)", "port": 67, "transport": "udp", "ask": "サーバー側が待ち受ける" }, "note": "クライアント側は 68", "levelHint": 52, "checkedBy": "Claude 2026-10-18" },
+    { "id": "dhcp-client", "ja": "アドレスの自動配布", "attrs": { "service": "DHCP", "label": "DHCP(クライアント側)", "port": 68, "transport": "udp", "ask": "クライアント側が受け取る" }, "note": "サーバー側は 67", "levelHint": 52, "checkedBy": "Claude 2026-10-18" },
+    { "id": "ssh", "ja": "暗号化された遠隔ログイン", "attrs": { "service": "SSH", "label": "SSH", "port": 22, "transport": "tcp", "ask": null }, "note": "", "levelHint": 52, "checkedBy": "Claude 2026-10-18" },
+    { "id": "smtp", "ja": "メールの転送", "attrs": { "service": "SMTP", "label": "SMTP", "port": 25, "transport": "tcp", "ask": null }, "note": "", "levelHint": 52, "checkedBy": "Claude 2026-10-18" },
+    { "id": "ntp", "ja": "時刻同期", "attrs": { "service": "NTP", "label": "NTP", "port": 123, "transport": "udp", "ask": null }, "note": "", "levelHint": 52, "checkedBy": "Claude 2026-10-18" },
+    { "id": "snmp", "ja": "機器の監視", "attrs": { "service": "SNMP", "label": "SNMP(問い合わせ)", "port": 161, "transport": "udp", "ask": "管理対象の機器が問い合わせを待ち受ける" }, "note": "トラップは 162", "levelHint": 52, "checkedBy": "Claude 2026-10-18" },
+    { "id": "snmp-trap", "ja": "機器の監視", "attrs": { "service": "SNMP", "label": "SNMP(トラップ)", "port": 162, "transport": "udp", "ask": "管理側がトラップ(機器からの通知)を受け取る" }, "note": "問い合わせは 161", "levelHint": 52, "checkedBy": "Claude 2026-10-18" }
+  ]
+}
