@@ -251,12 +251,12 @@ async function solve(world, p, nodeId) {
   assert.strictEqual(w.pubPlayer(a).teamIcon, '⚡');
   // 地域をチームが支配したら、支配者の表示にチームの見た目が付く
   const regionDoc = await store.loadRegion(regionId);
-  regionDoc.control = { total: 10, counts: { [team1.id]: 9 }, controller: team1.id, updatedAt: Date.now() }; await store.saveRegion(regionDoc);
+  regionDoc.control = { total: 10, counts: { [team1.id]: 9 }, controller: team1.id, updatedAt: Date.now() }; await store.saveRegion(regionDoc); w.invalidateRegions();
   await w.setView(a, [tileOf(home.lat, home.lon, 2)], 2);
   const ov3 = last(a.ws, 'tiles');
   const g3 = ov3.regions.find((g) => g.id === regionId);
   assert.ok(g3 && g3.controller && g3.controller.kind === 'team' && g3.controller.style.fill === '#FFCC00' && g3.controller.icon === '⚡', '地域の支配者がチームなら見た目つき');
-  regionDoc.control = null; await store.saveRegion(regionDoc);
+  regionDoc.control = null; await store.saveRegion(regionDoc); w.invalidateRegions();
   await w.setView(a, view, 0);
   // リーダーが抜けたら、いちばん古い人にリーダーが移る
   await w.leaveTeam(a);
@@ -275,12 +275,12 @@ async function solve(world, p, nodeId) {
   const found = await w.search('japan', '高尾');
   assert.ok(found.some((r) => r.name === '高尾駅') && found.every((r) => typeof r.starters === 'number'), '名前の一部で検索できる');
   assert.strictEqual((await w.search('japan', '浅草寺')).length, 0, 'ハック不可の寺社は開始地点にできない');
-  const takao = NODES.find((n) => n.name === '高尾駅');
+  const takao = NODES.find((n) => n.name === '高尾駅' && n.region.startsWith('tokyo-'));
   const t1 = await w.join(fakeWs(), 'たかお', null, takao.id);
   const tHome = w.nodes.get(t1.homeNodeId);
   assert.ok(distanceKm(tHome, takao) <= 1.05, '選んだ駅のまわりに生まれる');
   assert.ok(w.adj.get(tHome.id).has(takao.id), '選んだ駅とつながる');
-  assert.strictEqual((await w.search('japan', '高尾駅')).find((r) => r.name === '高尾駅').starters, 1, 'ここから始めた人数が付く');
+  assert.strictEqual((await w.search('japan', '高尾駅')).find((r) => r.id === takao.id).starters, 1, 'ここから始めた人数が付く(全国に同名の駅があるので id で引く)');
   const temple = NODES.find((n) => n.hackable === false);
   await assert.rejects(() => w.join(fakeWs(), 'だめ', null, temple.id), /選べません/);
   await assert.rejects(() => w.join(fakeWs(), 'だめ', null, 'st-nope'), /選べません/);

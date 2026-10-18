@@ -49,8 +49,17 @@ function nodeIdOf(feature) {
   const cs = feature.geometry.coordinates;
   const m = cs[Math.floor(cs.length / 2)];
   const pt = { lat: m[1], lon: m[0] };
-  const cands = (stationsByBase.get(p.N02_005) || []).filter((s) => distKm(s, pt) <= 1.2 && s.lines.includes(lineKey(p)));
-  if (!cands.length) return null;
+  // 停留場の名前は「富山駅」のように末尾に「駅」を含むことがある(取り込みで「富山」と統合済み)ので、末尾の「駅」を除いた名前でも引く
+  // 「◯◯駅前」など駅に統合した停留場は、駅の名前でも引く
+  const keys = [p.N02_005, p.N02_005.replace(/駅$/, ''), p.N02_005.replace(/駅(前|東口|西口|南口|北口)$/, '')];
+  const cands = [...new Set(keys)].flatMap((k) => stationsByBase.get(k) || []).filter((s) => distKm(s, pt) <= 1.2 && s.lines.includes(lineKey(p)));
+  if (!cands.length) {
+    // 別名で統合された駅(30 m 以内): 名前ではなく、近くにあって同じ路線を持つ拠点で引く
+    const near = stations.filter((s) => distKm(s, pt) <= 0.3 && s.lines.includes(lineKey(p)));
+    if (!near.length) return null;
+    near.sort((a, b) => distKm(a, pt) - distKm(b, pt));
+    return near[0].id;
+  }
   cands.sort((a, b) => distKm(a, pt) - distKm(b, pt));
   return cands[0].id;
 }
@@ -122,18 +131,23 @@ const parent = new Map(hackable.map((n) => [n.id, n.id]));
 const find = (x) => (parent.get(x) === x ? x : (parent.set(x, find(parent.get(x))), parent.get(x)));
 const union = (a, b) => { parent.set(find(a), find(b)); };
 for (const n of hackable) for (const m of adj.get(n.id)) union(n.id, m);
+// いちばん小さいまとまりから、外側でいちばん近い拠点へ橋を 1 本かける、を 1 つになるまで繰り返す。
+// 小さいまとまり × 全拠点で済むので、全国(約 9,000 駅)でも速い(以前は全拠点 × 全拠点を毎回)
 const bridges = [];
 for (;;) {
-  const roots = new Set(hackable.map((n) => find(n.id)));
-  if (roots.size <= 1) break;
+  const comps = new Map();
+  for (const n of hackable) { const k = find(n.id); if (!comps.has(k)) comps.set(k, []); comps.get(k).push(n); }
+  if (comps.size <= 1) break;
+  const small = [...comps.values()].reduce((x, y) => (y.length < x.length ? y : x));
+  const key = find(small[0].id);
   let best = null;
-  for (const a of hackable) for (const b of hackable) {
-    if (find(a.id) === find(b.id)) continue;
+  for (const a of small) for (const b of hackable) {
+    if (find(b.id) === key) continue;
     const d = distKm(a, b);
     if (!best || d < best.d) best = { a, b, d };
   }
   link(best.a.id, best.b.id); union(best.a.id, best.b.id);
-  bridges.push(`${best.a.name}–${best.b.name} (${(best.d * 1000).toFixed(0)} m)`);
+  bridges.push(`${best.a.name}–${best.b.name} (${best.d >= 10 ? best.d.toFixed(0) + ' km' : (best.d * 1000).toFixed(0) + ' m'})`);
 }
 
 // ---------- 書き戻し(ファイルごと) ----------

@@ -1,7 +1,7 @@
 {
   "region": "gunma",
   "name": "群馬県",
-  "version": 2,
+  "version": 10,
   "updatedAt": "2026-10-19",
   "note": "群馬県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -142,7 +142,7 @@
     { "id": "st-002500", "name": "南蛇井駅", "genre": "station", "kind": "HUB", "area": "富岡市", "region": "gunma-10210", "lat": 36.23845, "lon": 138.81432, "level": 1, "value": 1, "lines": ["上信電鉄 上信線"], "adj": ["st-002497", "st-002508"] },
     { "id": "st-002508", "name": "千平駅", "genre": "station", "kind": "HUB", "area": "富岡市", "region": "gunma-10210", "lat": 36.23005, "lon": 138.79854, "level": 1, "value": 1, "lines": ["上信電鉄 上信線"], "adj": ["st-002500", "st-002536"] },
 
-    { "id": "st-002328", "name": "安中榛名駅", "genre": "station", "kind": "HUB", "area": "安中市", "region": "gunma-10211", "lat": 36.36253, "lon": 138.8496, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 北陸新幹線"], "adj": ["st-002389"] },
+    { "id": "st-002328", "name": "安中榛名駅", "genre": "station", "kind": "HUB", "area": "安中市", "region": "gunma-10211", "lat": 36.36253, "lon": 138.8496, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 北陸新幹線"], "adj": ["st-002361", "st-002389"] },
     { "id": "st-002370", "name": "横川駅", "genre": "station", "kind": "HUB", "area": "安中市", "region": "gunma-10211", "lat": 36.33581, "lon": 138.7393, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 信越線"], "adj": ["st-002402"] },
     { "id": "st-002374", "name": "安中駅", "genre": "station", "kind": "HUB", "area": "安中市", "region": "gunma-10211", "lat": 36.33168, "lon": 138.91558, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 信越線"], "adj": ["st-002369", "st-002431"] },
     { "id": "st-002402", "name": "西松井田駅", "genre": "station", "kind": "HUB", "area": "安中市", "region": "gunma-10211", "lat": 36.31631, "lon": 138.78628, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 信越線"], "adj": ["st-002370", "st-002413"] },
@@ -182,11 +182,11 @@
     { "id": "st-002126", "name": "矢倉駅", "genre": "station", "kind": "HUB", "area": "東吾妻町", "region": "gunma-10429", "lat": 36.55265, "lon": 138.78454, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 吾妻線"], "adj": ["st-002110", "st-002131"] },
     { "id": "st-002131", "name": "郷原駅", "genre": "station", "kind": "HUB", "area": "東吾妻町", "region": "gunma-10429", "lat": 36.54864, "lon": 138.80042, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 吾妻線"], "adj": ["st-002103", "st-002126"] },
 
-    { "id": "st-001775", "name": "土合駅", "genre": "station", "kind": "HUB", "area": "みなかみ町", "region": "gunma-10449", "lat": 36.83011, "lon": 138.96531, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["st-001794"] },
+    { "id": "st-001775", "name": "土合駅", "genre": "station", "kind": "HUB", "area": "みなかみ町", "region": "gunma-10449", "lat": 36.83011, "lon": 138.96531, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["st-001739", "st-001794"] },
     { "id": "st-001794", "name": "湯檜曽駅", "genre": "station", "kind": "HUB", "area": "みなかみ町", "region": "gunma-10449", "lat": 36.8032, "lon": 138.98588, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["st-001775", "st-001813"] },
     { "id": "st-001813", "name": "水上駅", "genre": "station", "kind": "HUB", "area": "みなかみ町", "region": "gunma-10449", "lat": 36.77907, "lon": 138.96919, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["st-001794", "st-001877"] },
     { "id": "st-001877", "name": "上牧駅", "genre": "station", "kind": "HUB", "area": "みなかみ町", "region": "gunma-10449", "lat": 36.7366, "lon": 138.98474, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["st-001813", "st-001977"] },
-    { "id": "st-001952", "name": "上毛高原駅", "genre": "station", "kind": "HUB", "area": "みなかみ町", "region": "gunma-10449", "lat": 36.69354, "lon": 138.97749, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越新幹線"], "adj": ["st-002389"] },
+    { "id": "st-001952", "name": "上毛高原駅", "genre": "station", "kind": "HUB", "area": "みなかみ町", "region": "gunma-10449", "lat": 36.69354, "lon": 138.97749, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越新幹線"], "adj": ["st-001717", "st-002389"] },
     { "id": "st-001977", "name": "後閑駅", "genre": "station", "kind": "HUB", "area": "みなかみ町", "region": "gunma-10449", "lat": 36.67998, "lon": 138.99952, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越線"], "adj": ["st-001877", "st-002035"] },
 
     { "id": "st-002520", "name": "板倉東洋大前駅", "genre": "station", "kind": "HUB", "area": "板倉町", "region": "gunma-10521", "lat": 36.22275, "lon": 139.64852, "level": 1, "value": 1, "lines": ["東武鉄道 日光線"], "adj": ["st-002482", "st-002539"] },

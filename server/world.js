@@ -43,6 +43,7 @@ const MAX_VIEW_TILES = 80;              // 1 人が一度に見られるタイ�
 const TILE_TTL_MS = 10 * 60 * 1000;     // 誰も見ていないタイルをキャッシュから落とすまで
 const DECAY_MS = 24 * 60 * 60 * 1000;   // 強化の減衰: この時間ごとに強化段数が 1 下がる(第 14.3 節)
 const CONTROL_NUM = 3, CONTROL_DEN = 4; // 地域の支配: 配下の 3/4 以上(第 14.2 節)
+const REGION_TTL_MS = 10 * 60 * 1000;   // 地域マスターをメモリに持つ時間(全国 約 2,000 件。縮小表示のたびに DB を読まない)
 const REGION_TIER_BY_Z = { 1: 6, 2: 6, 3: 5, 4: 3 }; // 縮小の段 → 支配を見せる地域の段(6 市・区 / 5 都道府県 / 3 国。regions.json の kinds)
 const COLORS = [
   '#E60012', '#0068B7', '#00A040', '#F08300', '#8F5BA6', '#00A0DE',
@@ -195,7 +196,7 @@ class World {
   async snapshotControl(at = now()) {
     const day = dayOf(at);
     let count = 0;
-    for (const r of await this.store.loadRegions()) {
+    for (const r of (await this.regionIndex()).list) {
       if (![3, 5, 6].includes(r.tier)) continue;
       if (!(r.nodeCount > 0) && !(r.control && r.control.controller)) continue; // 拠点の無い地域(全国の形だけ入れたもの)は残さない
       const c = r.control || {};
@@ -802,9 +803,21 @@ class World {
     for (const [k, v] of Object.entries(counts)) if (v * CONTROL_DEN >= total * CONTROL_NUM) return k;
     return null;
   }
+  // 地域マスターの索引(メモリ)。支配の集計はこの中のオブジェクトを書き換えて保存するので、1 台のサーバーでは常に新しい
+  async regionIndex() {
+    if (this.regionCache && now() - this.regionCache.at < REGION_TTL_MS) return this.regionCache;
+    const list = await this.store.loadRegions();
+    const byId = new Map(list.map((r) => [r.id, r]));
+    const children = new Map();
+    for (const r of list) if (r.parent) { if (!children.has(r.parent)) children.set(r.parent, []); children.get(r.parent).push(r); }
+    this.regionCache = { at: now(), list, byId, children };
+    return this.regionCache;
+  }
+  invalidateRegions() { this.regionCache = null; }
   async updateControl(n) {
     if (n.isPlayerNode || !n.region) return false;
-    const region = await this.store.loadRegion(n.region);
+    const idx = await this.regionIndex();
+    const region = idx.byId.get(n.region) || await this.store.loadRegion(n.region);
     if (!region) return false;
     // 区・市: 配下のハック可の固定拠点を所有者(チーム)ごとに数える
     const { total, byOwner } = await this.store.countOwners(this.country, n.region);
@@ -818,9 +831,10 @@ class World {
     // 上の段: 配下の地域のうち、同じ支配者が 3/4 以上
     let cur = region;
     while (cur.parent) {
-      const parent = await this.store.loadRegion(cur.parent);
+      const parent = idx.byId.get(cur.parent) || await this.store.loadRegion(cur.parent);
       if (!parent) break;
-      const children = await this.store.loadRegionChildren(parent.id);
+      // 分母は拠点のある配下だけ(全国の区・市を入れたので、駅の無い町村まで数えると支配が成り立たない。2026-10-19)
+      const children = (idx.children.get(parent.id) || await this.store.loadRegionChildren(parent.id)).filter((ch) => (ch.nodeCount || 0) > 0 || (ch.control && ch.control.total > 0));
       const c2 = {};
       for (const ch of children) { const k = ch.control && ch.control.controller; if (k) c2[k] = (c2[k] || 0) + 1; }
       if (await this.saveControl(parent, children.length, c2)) changed = true;
@@ -859,7 +873,7 @@ class World {
       minLat = Math.min(minLat, q.y * s.lat); maxLat = Math.max(maxLat, (q.y + 1) * s.lat);
       minLon = Math.min(minLon, q.x * s.lon); maxLon = Math.max(maxLon, (q.x + 1) * s.lon);
     }
-    const all = await this.store.loadRegions();
+    const all = (await this.regionIndex()).list;
     const out = [];
     for (const r of all) {
       if (r.tier !== tier || !r.center) continue;
@@ -883,9 +897,18 @@ class World {
   }
 
   // 参加直後に送る自分の情報
+  // 自分の拠点がある都道府県の名前(画面右上の表示用)。地域の索引がメモリにあるときだけ(参加の処理で読み込み済み)
+  areaNameOf(p) {
+    const home = p.homeNodeId ? this.nodes.get(p.homeNodeId) : null;
+    const idx = this.regionCache;
+    if (!home || !idx) return null;
+    const r = idx.byId.get(home.region);
+    const pref = r && r.state ? idx.byId.get(r.state) : null;
+    return pref ? pref.name : (r ? r.name : null);
+  }
   welcome(p) {
     const home = p.homeNodeId ? this.nodes.get(p.homeNodeId) : null;
-    return { t: 'welcome', id: p.id, token: p.token, name: p.name, country: p.country || this.country, startNodeId: p.startNodeId || null, movedAt: p.movedAt || null,
+    return { t: 'welcome', id: p.id, token: p.token, name: p.name, country: p.country || this.country, startNodeId: p.startNodeId || null, movedAt: p.movedAt || null, area: this.areaNameOf(p),
       team: p.team || null, teamName: p.team ? (this.teamNames.get(p.team) || null) : null, cooldownUntil: p.cooldownUntil || 0,
       home: home ? { id: home.id, lat: home.lat, lon: home.lon } : null, spawn: tokyo.SPAWN_CENTER };
   }

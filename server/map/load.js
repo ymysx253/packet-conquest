@@ -92,8 +92,9 @@ function regionDocs(nodes = []) {
       id: r.id, type: 'region', name: r.name, nameEn: r.nameEn || null, kind: r.kind, tier: KINDS[r.kind].tier,
       kindLabel: KINDS[r.kind].label, localKind: r.localKind || null, code: r.code || null, country: countryOf(r.id),
       parent: r.parent, path, depth: path.length - 1, status: r.status || 'public', nodeFile: r.nodeFile || null,
-      center: s ? { lat: Number((s.lat / s.count).toFixed(5)), lon: Number((s.lon / s.count).toFixed(5)) } : null,
-      bbox: s ? { minLat: s.minLat, maxLat: s.maxLat, minLon: s.minLon, maxLon: s.maxLon } : null,
+      // 中心と範囲: 地域マスターにあれば(境界から求めた値)それを使い、無ければ拠点から求める
+      center: r.center ? { lat: r.center.lat, lon: r.center.lon } : (s ? { lat: Number((s.lat / s.count).toFixed(5)), lon: Number((s.lon / s.count).toFixed(5)) } : null),
+      bbox: Array.isArray(r.bbox) ? { minLat: r.bbox[1], maxLat: r.bbox[3], minLon: r.bbox[0], maxLon: r.bbox[2] } : (s ? { minLat: s.minLat, maxLat: s.maxLat, minLon: s.minLon, maxLon: s.maxLon } : null),
       nodeCount: s ? s.count : 0, levels: s ? s.levels : {},
       control: null, // 支配の集計(World が更新。{ total, counts, controller, updatedAt }。第 14 章)
     };

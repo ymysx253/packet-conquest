@@ -1,0 +1,142 @@
+{
+  "region": "saga",
+  "name": "佐賀県",
+  "version": 9,
+  "updatedAt": "2026-10-19",
+  "note": "佐賀県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
+  "sources": [
+    "「国土数値情報(鉄道データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N02-2025.html)を加工して作成",
+    "「国土数値情報(行政区域データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-2026.html)を加工して作成"
+  ],
+  "kinds": {
+    "IX": "相互接続点",
+    "DC": "データセンター",
+    "GOV": "官公庁",
+    "LM": "ランドマーク",
+    "HUB": "駅・交通",
+    "GW": "玄関口",
+    "EDU": "大学・研究"
+  },
+  "genres": [
+    "station",
+    "bus_terminal",
+    "airport",
+    "port",
+    "bridge",
+    "tower",
+    "park",
+    "nature",
+    "zoo_aquarium",
+    "museum",
+    "library",
+    "theater",
+    "stadium",
+    "heritage",
+    "monument",
+    "shrine_temple",
+    "government",
+    "university",
+    "market",
+    "convention",
+    "complex",
+    "observatory",
+    "ix"
+  ],
+  "nodes": [
+    { "id": "st-009413", "name": "伊賀屋駅", "genre": "station", "kind": "HUB", "area": "佐賀市", "region": "saga-41201", "lat": 33.28963, "lon": 130.33606, "level": 1, "value": 1, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009393", "st-009446"] },
+    { "id": "st-009446", "name": "佐賀駅", "genre": "station", "kind": "HUB", "area": "佐賀市", "region": "saga-41201", "lat": 33.26382, "lon": 130.2956, "level": 3, "value": 3, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009413", "st-009450"] },
+    { "id": "st-009450", "name": "鍋島駅", "genre": "station", "kind": "HUB", "area": "佐賀市", "region": "saga-41201", "lat": 33.25893, "lon": 130.26416, "level": 1, "value": 1, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009446", "st-009453"] },
+    { "id": "st-009453", "name": "久保田駅", "genre": "station", "kind": "HUB", "area": "佐賀市", "region": "saga-41201", "lat": 33.25544, "lon": 130.22751, "level": 2, "value": 2, "lines": ["九州旅客鉄道 唐津線", "九州旅客鉄道 長崎線"], "adj": ["st-009418", "st-009450", "st-009460"] },
+
+    { "id": "st-009270", "name": "西唐津駅", "genre": "station", "kind": "HUB", "area": "唐津市", "region": "saga-41202", "lat": 33.46099, "lon": 129.95823, "level": 1, "value": 1, "lines": ["九州旅客鉄道 唐津線"], "adj": ["st-009278"] },
+    { "id": "st-009276", "name": "浜崎駅", "genre": "station", "kind": "HUB", "area": "唐津市", "region": "saga-41202", "lat": 33.44676, "lon": 130.0367, "level": 1, "value": 1, "lines": ["九州旅客鉄道 筑肥線"], "adj": ["st-009260", "st-009282"] },
+    { "id": "st-009278", "name": "唐津駅", "genre": "station", "kind": "HUB", "area": "唐津市", "region": "saga-41202", "lat": 33.44579, "lon": 129.96917, "level": 2, "value": 2, "lines": ["九州旅客鉄道 唐津線", "九州旅客鉄道 筑肥線"], "adj": ["st-009270", "st-009284", "st-009295"] },
+    { "id": "st-009282", "name": "虹ノ松原駅", "genre": "station", "kind": "HUB", "area": "唐津市", "region": "saga-41202", "lat": 33.44093, "lon": 130.01581, "level": 1, "value": 1, "lines": ["九州旅客鉄道 筑肥線"], "adj": ["st-009276", "st-009283"] },
+    { "id": "st-009283", "name": "東唐津駅", "genre": "station", "kind": "HUB", "area": "唐津市", "region": "saga-41202", "lat": 33.43963, "lon": 129.99753, "level": 1, "value": 1, "lines": ["九州旅客鉄道 筑肥線"], "adj": ["st-009282", "st-009284"] },
+    { "id": "st-009284", "name": "和多田駅", "genre": "station", "kind": "HUB", "area": "唐津市", "region": "saga-41202", "lat": 33.43695, "lon": 129.98113, "level": 1, "value": 1, "lines": ["九州旅客鉄道 筑肥線"], "adj": ["st-009278", "st-009283"] },
+    { "id": "st-009295", "name": "鬼塚駅", "genre": "station", "kind": "HUB", "area": "唐津市", "region": "saga-41202", "lat": 33.42054, "lon": 129.98701, "level": 1, "value": 1, "lines": ["九州旅客鉄道 唐津線"], "adj": ["st-009278", "st-009316"] },
+    { "id": "st-009316", "name": "山本駅", "genre": "station", "kind": "HUB", "area": "唐津市", "region": "saga-41202", "lat": 33.39251, "lon": 129.98168, "level": 2, "value": 2, "lines": ["九州旅客鉄道 唐津線", "九州旅客鉄道 筑肥線"], "adj": ["st-009295", "st-009330", "st-009346"] },
+    { "id": "st-009330", "name": "本牟田部駅", "genre": "station", "kind": "HUB", "area": "唐津市", "region": "saga-41202", "lat": 33.37183, "lon": 129.99695, "level": 1, "value": 1, "lines": ["九州旅客鉄道 唐津線"], "adj": ["st-009316", "st-009358"] },
+    { "id": "st-009346", "name": "肥前久保駅", "genre": "station", "kind": "HUB", "area": "唐津市", "region": "saga-41202", "lat": 33.35591, "lon": 130.00046, "level": 1, "value": 1, "lines": ["九州旅客鉄道 筑肥線"], "adj": ["st-009316", "st-009355"] },
+    { "id": "st-009355", "name": "西相知駅", "genre": "station", "kind": "HUB", "area": "唐津市", "region": "saga-41202", "lat": 33.34713, "lon": 129.99035, "level": 1, "value": 1, "lines": ["九州旅客鉄道 筑肥線"], "adj": ["st-009346", "st-009368"] },
+    { "id": "st-009358", "name": "相知駅", "genre": "station", "kind": "HUB", "area": "唐津市", "region": "saga-41202", "lat": 33.34707, "lon": 130.01868, "level": 1, "value": 1, "lines": ["九州旅客鉄道 唐津線"], "adj": ["st-009330", "st-009372"] },
+    { "id": "st-009368", "name": "佐里駅", "genre": "station", "kind": "HUB", "area": "唐津市", "region": "saga-41202", "lat": 33.3374, "lon": 129.9784, "level": 1, "value": 1, "lines": ["九州旅客鉄道 筑肥線"], "adj": ["st-009355", "st-009390"] },
+    { "id": "st-009372", "name": "岩屋駅", "genre": "station", "kind": "HUB", "area": "唐津市", "region": "saga-41202", "lat": 33.33115, "lon": 130.03853, "level": 1, "value": 1, "lines": ["九州旅客鉄道 唐津線"], "adj": ["st-009358", "st-009380"] },
+    { "id": "st-009380", "name": "厳木駅", "genre": "station", "kind": "HUB", "area": "唐津市", "region": "saga-41202", "lat": 33.32342, "lon": 130.05993, "level": 1, "value": 1, "lines": ["九州旅客鉄道 唐津線"], "adj": ["st-009372", "st-009415"] },
+
+    { "id": "st-009309", "name": "弥生が丘駅", "genre": "station", "kind": "HUB", "area": "鳥栖市", "region": "saga-41203", "lat": 33.40294, "lon": 130.52869, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["st-009293", "st-009322"] },
+    { "id": "st-009322", "name": "田代駅", "genre": "station", "kind": "HUB", "area": "鳥栖市", "region": "saga-41203", "lat": 33.38373, "lon": 130.52448, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["st-009309", "st-009327"] },
+    { "id": "st-009327", "name": "鳥栖駅", "genre": "station", "kind": "HUB", "area": "鳥栖市", "region": "saga-41203", "lat": 33.3741, "lon": 130.51982, "level": 2, "value": 2, "lines": ["九州旅客鉄道 長崎線", "九州旅客鉄道 鹿児島線"], "adj": ["st-009322", "st-009331", "st-009353"] },
+    { "id": "st-009331", "name": "新鳥栖駅", "genre": "station", "kind": "HUB", "area": "鳥栖市", "region": "saga-41203", "lat": 33.37021, "lon": 130.49093, "level": 2, "value": 2, "lines": ["九州旅客鉄道 九州新幹線", "九州旅客鉄道 長崎線"], "adj": ["st-009033", "st-009327", "st-009338", "st-009383"] },
+    { "id": "st-009338", "name": "肥前麓駅", "genre": "station", "kind": "HUB", "area": "鳥栖市", "region": "saga-41203", "lat": 33.36593, "lon": 130.47891, "level": 1, "value": 1, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009331", "st-009359"] },
+    { "id": "st-009353", "name": "肥前旭駅", "genre": "station", "kind": "HUB", "area": "鳥栖市", "region": "saga-41203", "lat": 33.34901, "lon": 130.49612, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["st-009327", "st-009383"] },
+
+    { "id": "st-009415", "name": "多久駅", "genre": "station", "kind": "HUB", "area": "多久市", "region": "saga-41204", "lat": 33.28845, "lon": 130.09588, "level": 1, "value": 1, "lines": ["九州旅客鉄道 唐津線"], "adj": ["st-009380", "st-009422"] },
+    { "id": "st-009419", "name": "東多久駅", "genre": "station", "kind": "HUB", "area": "多久市", "region": "saga-41204", "lat": 33.28535, "lon": 130.14387, "level": 1, "value": 1, "lines": ["九州旅客鉄道 唐津線"], "adj": ["st-009418", "st-009422"] },
+    { "id": "st-009422", "name": "中多久駅", "genre": "station", "kind": "HUB", "area": "多久市", "region": "saga-41204", "lat": 33.28339, "lon": 130.11192, "level": 1, "value": 1, "lines": ["九州旅客鉄道 唐津線"], "adj": ["st-009415", "st-009419"] },
+
+    { "id": "st-009367", "name": "福島口駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.33843, "lon": 129.79009, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009354", "st-009370"] },
+    { "id": "st-009370", "name": "浦ノ崎駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.33519, "lon": 129.79261, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009367", "st-009381"] },
+    { "id": "st-009381", "name": "波瀬駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.32236, "lon": 129.80719, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009370", "st-009394"] },
+    { "id": "st-009390", "name": "駒鳴駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.31977, "lon": 129.9724, "level": 1, "value": 1, "lines": ["九州旅客鉄道 筑肥線"], "adj": ["st-009368", "st-009399"] },
+    { "id": "st-009394", "name": "久原駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.31367, "lon": 129.81202, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009381", "st-009405"] },
+    { "id": "st-009399", "name": "大川野駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.30779, "lon": 129.977, "level": 1, "value": 1, "lines": ["九州旅客鉄道 筑肥線"], "adj": ["st-009390", "st-009410"] },
+    { "id": "st-009405", "name": "鳴石駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.29928, "lon": 129.81689, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009394", "st-009412"] },
+    { "id": "st-009410", "name": "肥前長野駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.29594, "lon": 129.97105, "level": 1, "value": 1, "lines": ["九州旅客鉄道 筑肥線"], "adj": ["st-009399", "st-009437"] },
+    { "id": "st-009412", "name": "楠久駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.29128, "lon": 129.82726, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009405", "st-009420"] },
+    { "id": "st-009420", "name": "里駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.2844, "lon": 129.83606, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009412", "st-009429"] },
+    { "id": "st-009429", "name": "東山代駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.27777, "lon": 129.8463, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009420", "st-009435", "st-009442"] },
+    { "id": "st-009435", "name": "伊万里駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.27183, "lon": 129.87733, "level": 2, "value": 2, "lines": ["九州旅客鉄道 筑肥線", "松浦鉄道 西九州線"], "adj": ["st-009429", "st-009439", "st-009442"] },
+    { "id": "st-009437", "name": "桃川駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.27192, "lon": 129.95709, "level": 1, "value": 1, "lines": ["九州旅客鉄道 筑肥線"], "adj": ["st-009410", "st-009444"] },
+    { "id": "st-009439", "name": "上伊万里駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.26991, "lon": 129.89295, "level": 1, "value": 1, "lines": ["九州旅客鉄道 筑肥線"], "adj": ["st-009435", "st-009444"] },
+    { "id": "st-009442", "name": "川東駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.26711, "lon": 129.86363, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009429", "st-009435", "st-009458"] },
+    { "id": "st-009444", "name": "金石原駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.26561, "lon": 129.93533, "level": 1, "value": 1, "lines": ["九州旅客鉄道 筑肥線"], "adj": ["st-009437", "st-009439"] },
+    { "id": "st-009458", "name": "金武駅", "genre": "station", "kind": "HUB", "area": "伊万里市", "region": "saga-41205", "lat": 33.25218, "lon": 129.85455, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009442", "st-009474"] },
+
+    { "id": "st-009496", "name": "北方駅", "genre": "station", "kind": "HUB", "area": "武雄市", "region": "saga-41206", "lat": 33.21631, "lon": 130.08259, "level": 1, "value": 1, "lines": ["九州旅客鉄道 佐世保線"], "adj": ["st-009502", "st-009510"] },
+    { "id": "st-009510", "name": "高橋駅", "genre": "station", "kind": "HUB", "area": "武雄市", "region": "saga-41206", "lat": 33.20771, "lon": 130.04173, "level": 1, "value": 1, "lines": ["九州旅客鉄道 佐世保線"], "adj": ["st-009496", "st-009518"] },
+    { "id": "st-009518", "name": "武雄温泉駅", "genre": "station", "kind": "HUB", "area": "武雄市", "region": "saga-41206", "lat": 33.19642, "lon": 130.02323, "level": 2, "value": 2, "lines": ["九州旅客鉄道 佐世保線", "九州旅客鉄道 西九州新幹線"], "adj": ["st-009510", "st-009528", "st-009578"] },
+    { "id": "st-009527", "name": "三間坂駅", "genre": "station", "kind": "HUB", "area": "武雄市", "region": "saga-41206", "lat": 33.19462, "lon": 129.9466, "level": 1, "value": 1, "lines": ["九州旅客鉄道 佐世保線"], "adj": ["st-009528", "st-009530"] },
+    { "id": "st-009528", "name": "永尾駅", "genre": "station", "kind": "HUB", "area": "武雄市", "region": "saga-41206", "lat": 33.19367, "lon": 129.98019, "level": 1, "value": 1, "lines": ["九州旅客鉄道 佐世保線"], "adj": ["st-009518", "st-009527"] },
+
+    { "id": "st-009575", "name": "肥前鹿島駅", "genre": "station", "kind": "HUB", "area": "鹿島市", "region": "saga-41207", "lat": 33.11249, "lon": 130.09812, "level": 1, "value": 1, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009565", "st-009582"] },
+    { "id": "st-009582", "name": "肥前浜駅", "genre": "station", "kind": "HUB", "area": "鹿島市", "region": "saga-41207", "lat": 33.09487, "lon": 130.1174, "level": 1, "value": 1, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009575", "st-009592"] },
+    { "id": "st-009592", "name": "肥前七浦駅", "genre": "station", "kind": "HUB", "area": "鹿島市", "region": "saga-41207", "lat": 33.07139, "lon": 130.14496, "level": 1, "value": 1, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009582", "st-009599"] },
+    { "id": "st-009599", "name": "肥前飯田駅", "genre": "station", "kind": "HUB", "area": "鹿島市", "region": "saga-41207", "lat": 33.05599, "lon": 130.15837, "level": 1, "value": 1, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009592", "st-009611"] },
+
+    { "id": "st-009418", "name": "小城駅", "genre": "station", "kind": "HUB", "area": "小城市", "region": "saga-41208", "lat": 33.28528, "lon": 130.19998, "level": 1, "value": 1, "lines": ["九州旅客鉄道 唐津線"], "adj": ["st-009419", "st-009453"] },
+    { "id": "st-009460", "name": "牛津駅", "genre": "station", "kind": "HUB", "area": "小城市", "region": "saga-41208", "lat": 33.2473, "lon": 130.20011, "level": 1, "value": 1, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009453", "st-009494"] },
+
+    { "id": "st-009578", "name": "嬉野温泉駅", "genre": "station", "kind": "HUB", "area": "嬉野市", "region": "saga-41209", "lat": 33.10743, "lon": 129.99895, "level": 1, "value": 1, "lines": ["九州旅客鉄道 西九州新幹線"], "adj": ["st-009518", "st-009648"] },
+
+    { "id": "st-009393", "name": "神埼駅", "genre": "station", "kind": "HUB", "area": "神埼市", "region": "saga-41210", "lat": 33.3154, "lon": 130.37367, "level": 1, "value": 1, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009379", "st-009413"] },
+
+    { "id": "st-009379", "name": "吉野ヶ里公園駅", "genre": "station", "kind": "HUB", "area": "吉野ヶ里町", "region": "saga-41327", "lat": 33.32397, "lon": 130.3976, "level": 1, "value": 1, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009359", "st-009393"] },
+
+    { "id": "st-009286", "name": "けやき台駅", "genre": "station", "kind": "HUB", "area": "基山町", "region": "saga-41341", "lat": 33.43339, "lon": 130.5334, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["st-009273", "st-009293"] },
+    { "id": "st-009293", "name": "基山駅", "genre": "station", "kind": "HUB", "area": "基山町", "region": "saga-41341", "lat": 33.42137, "lon": 130.53232, "level": 2, "value": 2, "lines": ["九州旅客鉄道 鹿児島線", "甘木鉄道 甘木線"], "adj": ["st-009286", "st-009301", "st-009309"] },
+    { "id": "st-009301", "name": "立野駅", "genre": "station", "kind": "HUB", "area": "基山町", "region": "saga-41341", "lat": 33.41255, "lon": 130.53929, "level": 1, "value": 1, "lines": ["甘木鉄道 甘木線"], "adj": ["st-009293", "st-009313"] },
+
+    { "id": "st-009359", "name": "中原駅", "genre": "station", "kind": "HUB", "area": "みやき町", "region": "saga-41346", "lat": 33.34676, "lon": 130.44135, "level": 1, "value": 1, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009338", "st-009379"] },
+
+    { "id": "st-009474", "name": "夫婦石駅", "genre": "station", "kind": "HUB", "area": "有田町", "region": "saga-41401", "lat": 33.23736, "lon": 129.85057, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009458", "st-009482"] },
+    { "id": "st-009482", "name": "山谷駅", "genre": "station", "kind": "HUB", "area": "有田町", "region": "saga-41401", "lat": 33.22944, "lon": 129.84933, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009474", "st-009491"] },
+    { "id": "st-009491", "name": "大木駅", "genre": "station", "kind": "HUB", "area": "有田町", "region": "saga-41401", "lat": 33.22185, "lon": 129.84989, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009482", "st-009504"] },
+    { "id": "st-009504", "name": "西有田駅", "genre": "station", "kind": "HUB", "area": "有田町", "region": "saga-41401", "lat": 33.21025, "lon": 129.84995, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009491", "st-009514"] },
+    { "id": "st-009514", "name": "蔵宿駅", "genre": "station", "kind": "HUB", "area": "有田町", "region": "saga-41401", "lat": 33.20246, "lon": 129.85059, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009504", "st-009525"] },
+    { "id": "st-009525", "name": "黒川駅", "genre": "station", "kind": "HUB", "area": "有田町", "region": "saga-41401", "lat": 33.19529, "lon": 129.85501, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009514", "st-009533"] },
+    { "id": "st-009530", "name": "上有田駅", "genre": "station", "kind": "HUB", "area": "有田町", "region": "saga-41401", "lat": 33.19018, "lon": 129.90485, "level": 1, "value": 1, "lines": ["九州旅客鉄道 佐世保線"], "adj": ["st-009527", "st-009543"] },
+    { "id": "st-009533", "name": "三代橋駅", "genre": "station", "kind": "HUB", "area": "有田町", "region": "saga-41401", "lat": 33.18921, "lon": 129.86555, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009525", "st-009543"] },
+    { "id": "st-009543", "name": "有田駅", "genre": "station", "kind": "HUB", "area": "有田町", "region": "saga-41401", "lat": 33.18425, "lon": 129.88085, "level": 2, "value": 2, "lines": ["九州旅客鉄道 佐世保線", "松浦鉄道 西九州線"], "adj": ["st-009530", "st-009533", "st-009563"] },
+
+    { "id": "st-009502", "name": "大町駅", "genre": "station", "kind": "HUB", "area": "大町町", "region": "saga-41423", "lat": 33.21245, "lon": 130.10558, "level": 1, "value": 1, "lines": ["九州旅客鉄道 佐世保線"], "adj": ["st-009494", "st-009496"] },
+
+    { "id": "st-009494", "name": "江北駅", "genre": "station", "kind": "HUB", "area": "江北町", "region": "saga-41424", "lat": 33.21921, "lon": 130.1595, "level": 2, "value": 2, "lines": ["九州旅客鉄道 佐世保線", "九州旅客鉄道 長崎線"], "adj": ["st-009460", "st-009502", "st-009540"] },
+
+    { "id": "st-009540", "name": "肥前白石駅", "genre": "station", "kind": "HUB", "area": "白石町", "region": "saga-41425", "lat": 33.18756, "lon": 130.13582, "level": 1, "value": 1, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009494", "st-009565"] },
+    { "id": "st-009565", "name": "肥前竜王駅", "genre": "station", "kind": "HUB", "area": "白石町", "region": "saga-41425", "lat": 33.14647, "lon": 130.12033, "level": 1, "value": 1, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009540", "st-009575"] },
+
+    { "id": "st-009611", "name": "多良駅", "genre": "station", "kind": "HUB", "area": "太良町", "region": "saga-41441", "lat": 33.02554, "lon": 130.17597, "level": 1, "value": 1, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009599", "st-009627"] },
+    { "id": "st-009627", "name": "肥前大浦駅", "genre": "station", "kind": "HUB", "area": "太良町", "region": "saga-41441", "lat": 32.97542, "lon": 130.20757, "level": 1, "value": 1, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009611", "st-009655"] }
+  ]
+}

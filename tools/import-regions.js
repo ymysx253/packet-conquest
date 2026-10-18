@@ -10,6 +10,9 @@
 //   2. 市区町村(kind: city、id は <都道府県 id>-<行政区域コード>、名前は N03_004(+ 政令市の区は N03_005 を付けて「横浜市鶴見区」))を足す
 //      既存の東京の区・市(id が tokyo-chiyoda など)は名前と code で一致させて残す
 //   3. 拠点の無い地域も入れる(形だけ先に出すため)。nodeFile は拠点ファイルがある都道府県にだけ付ける
+//   4. 境界の多角形から中心(center: ラベルを置く位置)と範囲(bbox: [西, 南, 東, 北])を求めて持たせる(2026-10-19)。
+//      市区町村は最も大きい輪の重心、都道府県は陸続きの最大のまとまりの重心(離島に引っぱられない)、地方・国は全体の重心。
+//      拠点が無くても縮小表示に名前が出る
 const fs = require('fs');
 const path = require('path');
 
@@ -36,6 +39,68 @@ const AREAS = [
   ['hokkaido-region', '北海道地方', 'Hokkaido'], ['tohoku', '東北', 'Tohoku'], ['kanto', '関東', 'Kanto'], ['chubu', '中部', 'Chubu'],
   ['kinki', '近畿', 'Kinki'], ['chugoku', '中国', 'Chugoku'], ['shikoku', '四国', 'Shikoku'], ['kyushu', '九州・沖縄', 'Kyushu & Okinawa'],
 ];
+// ---------- 図形の計算(経度・緯度の平面で近似。ラベル位置と範囲だけなので十分) ----------
+function ringStats(ring) {
+  let a = 0, cx = 0, cy = 0;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [x0, y0] = ring[j], [x1, y1] = ring[i];
+    const k = x0 * y1 - x1 * y0;
+    a += k; cx += (x0 + x1) * k; cy += (y0 + y1) * k;
+  }
+  a /= 2;
+  const bb = [180, 90, -180, -90];
+  for (const [x, y] of ring) { bb[0] = Math.min(bb[0], x); bb[1] = Math.min(bb[1], y); bb[2] = Math.max(bb[2], x); bb[3] = Math.max(bb[3], y); }
+  if (Math.abs(a) < 1e-12) { const m = ring[0]; return { area: 0, cx: m[0], cy: m[1], bb }; }
+  return { area: Math.abs(a), cx: cx / (6 * a), cy: cy / (6 * a), bb };
+}
+// 陸続きのまとまり: 範囲(bbox)どうしの隙間が GAP 以下の輪をつなぐ。島は離れているので別のまとまりになる
+const GAP = 0.05; // 度(約 5 km)
+function mainCluster(rings) {
+  const n = rings.length, parent = Array.from({ length: n }, (_, i) => i);
+  const find = (x) => (parent[x] === x ? x : (parent[x] = find(parent[x])));
+  const order = rings.map((_, i) => i).sort((i, j) => rings[i].bb[0] - rings[j].bb[0]);
+  for (let a = 0; a < n; a++) {
+    const i = order[a], bi = rings[i].bb;
+    for (let b = a + 1; b < n; b++) {
+      const j = order[b], bj = rings[j].bb;
+      if (bj[0] - bi[2] > GAP) break; // 経度方向に離れたら以降は届かない
+      if (bj[1] - bi[3] > GAP || bi[1] - bj[3] > GAP) continue;
+      parent[find(i)] = find(j);
+    }
+  }
+  const area = new Map();
+  for (let i = 0; i < n; i++) { const k = find(i); area.set(k, (area.get(k) || 0) + rings[i].area); }
+  let best = null, bestA = -1;
+  for (const [k, v] of area) if (v > bestA) { best = k; bestA = v; }
+  return rings.filter((_, i) => find(i) === best);
+}
+const geo = new Map(); // 地域 id → { rings: [{ area, cx, cy }], bbox }
+function addGeom(id, geometry) {
+  const g = geo.get(id) || { rings: [], bbox: [180, 90, -180, -90] };
+  const polys = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+  for (const poly of polys) {
+    const outer = poly[0];
+    g.rings.push(ringStats(outer));
+    for (const [x, y] of outer) { g.bbox[0] = Math.min(g.bbox[0], x); g.bbox[1] = Math.min(g.bbox[1], y); g.bbox[2] = Math.max(g.bbox[2], x); g.bbox[3] = Math.max(g.bbox[3], y); }
+  }
+  geo.set(id, g);
+}
+function mergeGeom(intoId, fromId) {
+  const src = geo.get(fromId); if (!src) return;
+  const g = geo.get(intoId) || { rings: [], bbox: [180, 90, -180, -90] };
+  g.rings.push(...src.rings);
+  g.bbox = [Math.min(g.bbox[0], src.bbox[0]), Math.min(g.bbox[1], src.bbox[1]), Math.max(g.bbox[2], src.bbox[2]), Math.max(g.bbox[3], src.bbox[3])];
+  geo.set(intoId, g);
+}
+const r5 = (x) => Number(x.toFixed(5));
+function centerOf(g, mode) {
+  if (!g || !g.rings.length) return null;
+  if (mode === 'largest') { const big = g.rings.reduce((a, b) => (b.area > a.area ? b : a)); return { lat: r5(big.cy), lon: r5(big.cx) }; }
+  const rings = mode === 'cluster' ? mainCluster(g.rings) : g.rings;
+  const tot = rings.reduce((s, x) => s + x.area, 0) || 1;
+  return { lat: r5(rings.reduce((s, x) => s + x.cy * x.area, 0) / tot), lon: r5(rings.reduce((s, x) => s + x.cx * x.area, 0) / tot) };
+}
+
 const localKindOf = (name) => (/区$/.test(name) ? '区' : /市$/.test(name) ? '市' : /町$/.test(name) ? '町' : /村$/.test(name) ? '村' : '');
 
 const R = JSON.parse(fs.readFileSync(REGION_FILE, 'utf8'));
@@ -66,7 +131,10 @@ for (const f of files) {
   const seen = new Set();
   for (const ft of data.features) {
     const p = ft.properties;
-    const code = p.N03_007; if (!code || seen.has(code)) continue;
+    const code = p.N03_007; if (!code) continue;
+    const known = byCode.get(`JP-${pp}-${code}`);
+    if (known) addGeom(known.id, ft.geometry); else if (p.N03_004) addGeom(`${prefId}-${code}`, ft.geometry);
+    if (seen.has(code)) continue;
     seen.add(code);
     // N03 の項目: N03_003 郡名、N03_004 市区町村名、N03_005 政令市の区名(2024 年版以降の形)
     const gun = p.N03_003 || '', city = p.N03_004 || '', ward = p.N03_005 || '';
@@ -86,12 +154,27 @@ for (const f of files) {
     R.regions.push(r); byId.set(r.id, r); byCode.set(fullCode, r); added.city++;
   }
 }
+// 中心と範囲: 市区町村 → 都道府県 → 地方 → 日本 の順に集める
+for (const c of R.regions.filter((x) => x.kind === 'city' && geo.has(x.id))) { mergeGeom(c.parent, c.id); }
+for (const p of R.regions.filter((x) => x.kind === 'state' && geo.has(x.id))) { mergeGeom(p.parent, p.id); }
+for (const a of R.regions.filter((x) => x.kind === 'region' && x.parent === 'japan' && geo.has(x.id))) { mergeGeom('japan', a.id); }
+let withCenter = 0;
+for (const x of R.regions) {
+  const g = geo.get(x.id); if (!g) continue;
+  // 市区町村: 最も大きい輪 / 都道府県: 陸続きの最大のまとまり(離島に引っぱられない)/ 地方・国: 全体の重心
+  x.center = centerOf(g, x.kind === 'city' ? 'largest' : x.kind === 'state' ? 'cluster' : 'weighted');
+  x.bbox = g.bbox.map(r5);
+  withCenter++;
+}
+
 // 並び: 段 → 親 → code
 const tier = (r) => R.kinds[r.kind].tier;
 R.regions.sort((a, b) => tier(a) - tier(b) || String(a.parent).localeCompare(String(b.parent)) || String(a.code || a.id).localeCompare(String(b.code || b.id)));
 R.version = (R.version || 0) + 1;
 R.updatedAt = TODAY;
-R.note = (R.note ? R.note + ' ' : '') + '2026-10-19: 日本全体の都道府県・市区町村を N03 から追加(拠点の無い地域も形を出すため)。';
+const NOTE_ADD = '2026-10-19: 日本全体の都道府県・市区町村を N03 から追加(拠点の無い地域も形を出すため)。center と bbox は境界から求めたもの。';
+R.note = String(R.note || '').replace(/ ?2026-10-19: 日本全体の都道府県・市区町村を N03 から追加[^。]*。(center と bbox は境界から求めたもの。)?/g, '').trim();
+R.note = (R.note ? R.note + ' ' : '') + NOTE_ADD;
 
 const oneLine = (o) => '    ' + JSON.stringify(o).replace(/,"/g, ', "').replace(/":/g, '": ').replace(/^\{/, '{ ').replace(/\}$/, ' }');
 let out = JSON.stringify({ version: R.version, updatedAt: R.updatedAt, note: R.note, kinds: R.kinds, leafKinds: R.leafKinds }, null, 2).replace(/\n}$/, ',\n  "regions": [\n');
@@ -99,4 +182,4 @@ let prev = null;
 out += R.regions.map((it) => { const gap = prev && prev !== it.parent ? '\n' : ''; prev = it.parent; return gap + oneLine(it); }).join(',\n');
 out += '\n  ]\n}\n';
 fs.writeFileSync(REGION_FILE, out);
-console.log(`地方 +${added.area}、都道府県 +${added.pref}、市区町村 +${added.city}(既存を維持 ${kept})。合計 ${R.regions.length} 件。読んだファイル ${files.length}`);
+console.log(`地方 +${added.area}、都道府県 +${added.pref}、市区町村 +${added.city}(既存を維持 ${kept})。合計 ${R.regions.length} 件、中心と範囲あり ${withCenter} 件。読んだファイル ${files.length}`);

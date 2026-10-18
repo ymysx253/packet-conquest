@@ -17,7 +17,7 @@ assert.strictEqual(new Set(NODES.map((n) => prefOf(n) + '|' + n.name)).size, NOD
 for (const n of NODES) { assert.strictEqual(n.country, 'japan'); for (let z = 0; z <= 4; z++) assert.match(n['t' + z], new RegExp('^t' + z + ':-?\\d+:-?\\d+$')); assert.match(n.subnet, /^10\.\d+\.\d+\.0\/20$/); assert.strictEqual(n.span, 4094); }
 for (const n of NODES) {
   assert.ok(KINDS[n.kind], `${n.name}: kind が不正 ${n.kind}`);
-  assert.ok(n.lat > 34.8 && n.lat < 37.3 && n.lon > 138.3 && n.lon < 141.2, `${n.name}: 関東の範囲外`);
+  assert.ok(n.lat > 24 && n.lat < 45.6 && n.lon > 122.9 && n.lon < 146, `${n.name}: 日本の範囲外`);
   assert.ok(Number.isInteger(n.level) && n.level >= 1 && (n.level <= 5 || (n.genre !== 'station' && n.level <= 30)), `${n.name}: 駅は Lv1〜5(象徴的な名所は 30 まで)`);
   assert.ok(Number.isInteger(n.value) && n.value >= 1 && n.value <= 999, `${n.name}: 点数は 1〜999`);
   assert.ok(n.value >= n.level - 1, `${n.name}: Lv に対して点数が低すぎる`);
@@ -29,9 +29,17 @@ for (const n of NODES) {
   assert.match(n.subnet, /^10\.\d+\.\d+\.0\/20$/);
 }
 // 同じ場所の二重登録がない(25 m 未満)。隣り合う別の駅や、駅と名所が 100 m ほど離れているのは正常
-for (let i = 0; i < NODES.length; i++) for (let j = i + 1; j < NODES.length; j++) {
-  const d = distanceKm(NODES[i], NODES[j]);
-  assert.ok(d >= 0.025, `${NODES[i].name} と ${NODES[j].name} が同じ場所です (${(d * 1000).toFixed(0)} m)`);
+// 全国(約 9,000 拠点)でも速いよう、約 1 km の格子に分けて近所だけ比べる
+const cell = (n) => `${Math.floor(n.lat * 100)}:${Math.floor(n.lon * 100)}`;
+const grid = new Map();
+for (const n of NODES) { const k = cell(n); if (!grid.has(k)) grid.set(k, []); grid.get(k).push(n); }
+for (const n of NODES) {
+  const cy = Math.floor(n.lat * 100), cx = Math.floor(n.lon * 100);
+  for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) for (const m of grid.get(`${cy + dy}:${cx + dx}`) || []) {
+    if (m.id <= n.id) continue;
+    const d = distanceKm(n, m);
+    assert.ok(d >= 0.025, `${n.name} と ${m.name} が同じ場所です (${(d * 1000).toFixed(0)} m)`);
+  }
 }
 // 連結: ハック可能な拠点どうしは、どこからでも全部へ到達できる
 const HACKABLE = NODES.filter((n) => n.hackable);
@@ -41,7 +49,7 @@ while (stack.length) for (const m of ADJ[stack.pop()]) if (!seen.has(m)) { seen.
 assert.strictEqual(seen.size, HACKABLE.length, '地図が分断されています');
 for (const e of EDGES) assert.ok(ADJ[e.a] && ADJ[e.b] && e.a !== e.b, 'リンクの端点が不正');
 // つながりは路線に沿う(第 14 章): 新宿駅がいちばん多く、末端の駅は 1 本。名所は近い駅をレベルと同じ数だけ
-const byName = Object.fromEntries(NODES.map((n) => [n.name, n]));
+const byName = Object.fromEntries(NODES.filter((n) => n.region.startsWith('tokyo-')).map((n) => [n.name, n])); // 全国に同名の駅があるので東京に限る
 assert.ok(byName['新宿駅'].hits >= 10 && byName['新宿駅'].hits === Math.max(...NODES.map((n) => n.hits)), '新宿駅のつながりが最多');
 assert.ok(byName['東京駅'].adj.includes(byName['神田駅'].id) && byName['東京駅'].adj.includes(byName['有楽町駅'].id), '東京駅は山手線の前後とつながる');
 assert.strictEqual(byName['奥多摩駅'].hits, 1, '終点は 1 本');

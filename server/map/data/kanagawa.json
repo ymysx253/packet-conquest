@@ -1,7 +1,7 @@
 {
   "region": "kanagawa",
   "name": "神奈川県",
-  "version": 3,
+  "version": 11,
   "updatedAt": "2026-10-19",
   "note": "神奈川県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -259,7 +259,7 @@
     { "id": "st-004263", "name": "柿生駅", "genre": "station", "kind": "HUB", "area": "川崎市麻生区", "region": "kanagawa-14137", "lat": 35.59023, "lon": 139.49799, "level": 1, "value": 1, "lines": ["小田急電鉄 小田原線"], "adj": ["st-004227", "st-004278"] },
 
     { "id": "st-004148", "name": "相模湖駅", "genre": "station", "kind": "HUB", "area": "相模原市緑区", "region": "kanagawa-14151", "lat": 35.61702, "lon": 139.18962, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-004029", "st-004156"] },
-    { "id": "st-004156", "name": "藤野駅", "genre": "station", "kind": "HUB", "area": "相模原市緑区", "region": "kanagawa-14151", "lat": 35.61592, "lon": 139.15203, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-004148"] },
+    { "id": "st-004156", "name": "藤野駅", "genre": "station", "kind": "HUB", "area": "相模原市緑区", "region": "kanagawa-14151", "lat": 35.61592, "lon": 139.15203, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-004140", "st-004148"] },
     { "id": "st-004253", "name": "橋本駅", "genre": "station", "kind": "HUB", "area": "相模原市緑区", "region": "kanagawa-14151", "lat": 35.59512, "lon": 139.34432, "level": 2, "value": 2, "lines": ["京王電鉄 相模原線", "東日本旅客鉄道 横浜線", "東日本旅客鉄道 相模線"], "adj": ["st-004206", "st-004234", "st-004284", "st-004288"] },
 
     { "id": "st-004284", "name": "相模原駅", "genre": "station", "kind": "HUB", "area": "相模原市中央区", "region": "kanagawa-14152", "lat": 35.58159, "lon": 139.37041, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 横浜線"], "adj": ["st-004253", "st-004304"] },
@@ -348,7 +348,7 @@
     { "id": "st-005178", "name": "足柄駅", "genre": "station", "kind": "HUB", "area": "小田原市", "region": "kanagawa-14206", "lat": 35.27142, "lon": 139.15454, "level": 1, "value": 1, "lines": ["小田急電鉄 小田原線"], "adj": ["st-005146", "st-005215"] },
     { "id": "st-005183", "name": "井細田駅", "genre": "station", "kind": "HUB", "area": "小田原市", "region": "kanagawa-14206", "lat": 35.26929, "lon": 139.15737, "level": 1, "value": 1, "lines": ["伊豆箱根鉄道 大雄山線"], "adj": ["st-005172", "st-005208"] },
     { "id": "st-005208", "name": "緑町駅", "genre": "station", "kind": "HUB", "area": "小田原市", "region": "kanagawa-14206", "lat": 35.25954, "lon": 139.15878, "level": 1, "value": 1, "lines": ["伊豆箱根鉄道 大雄山線"], "adj": ["st-005183", "st-005215"] },
-    { "id": "st-005215", "name": "小田原駅", "genre": "station", "kind": "HUB", "area": "小田原市", "region": "kanagawa-14206", "lat": 35.25651, "lon": 139.15577, "level": 3, "value": 3, "lines": ["伊豆箱根鉄道 大雄山線", "小田急箱根 鉄道線", "小田急電鉄 小田原線", "東日本旅客鉄道 東海道線", "東海旅客鉄道 東海道新幹線"], "adj": ["st-004501", "st-005170", "st-005178", "st-005208", "st-005250", "st-005261"] },
+    { "id": "st-005215", "name": "小田原駅", "genre": "station", "kind": "HUB", "area": "小田原市", "region": "kanagawa-14206", "lat": 35.25651, "lon": 139.15577, "level": 3, "value": 3, "lines": ["伊豆箱根鉄道 大雄山線", "小田急箱根 鉄道線", "小田急電鉄 小田原線", "東日本旅客鉄道 東海道線", "東海旅客鉄道 東海道新幹線"], "adj": ["st-004501", "st-005170", "st-005178", "st-005208", "st-005250", "st-005261", "st-005685"] },
     { "id": "st-005248", "name": "風祭駅", "genre": "station", "kind": "HUB", "area": "小田原市", "region": "kanagawa-14206", "lat": 35.24631, "lon": 139.12956, "level": 1, "value": 1, "lines": ["小田急箱根 鉄道線"], "adj": ["st-005250", "st-005256"] },
     { "id": "st-005250", "name": "箱根板橋駅", "genre": "station", "kind": "HUB", "area": "小田原市", "region": "kanagawa-14206", "lat": 35.24506, "lon": 139.14558, "level": 1, "value": 1, "lines": ["小田急箱根 鉄道線"], "adj": ["st-005215", "st-005248"] },
     { "id": "st-005256", "name": "入生田駅", "genre": "station", "kind": "HUB", "area": "小田原市", "region": "kanagawa-14206", "lat": 35.24059, "lon": 139.12072, "level": 1, "value": 1, "lines": ["小田急箱根 鉄道線"], "adj": ["st-005248", "st-005271"] },
@@ -421,7 +421,7 @@
     { "id": "st-004977", "name": "松田駅", "genre": "station", "kind": "HUB", "area": "松田町", "region": "kanagawa-14363", "lat": 35.34579, "lon": 139.13975, "level": 1, "value": 1, "lines": ["東海旅客鉄道 御殿場線"], "adj": ["st-004952", "st-005013"] },
     { "id": "st-004981", "name": "新松田駅", "genre": "station", "kind": "HUB", "area": "松田町", "region": "kanagawa-14363", "lat": 35.3449, "lon": 139.14012, "level": 1, "value": 1, "lines": ["小田急電鉄 小田原線"], "adj": ["st-004906", "st-005037"] },
 
-    { "id": "st-004929", "name": "谷峨駅", "genre": "station", "kind": "HUB", "area": "山北町", "region": "kanagawa-14364", "lat": 35.36624, "lon": 139.03844, "level": 1, "value": 1, "lines": ["東海旅客鉄道 御殿場線"], "adj": ["st-004941"] },
+    { "id": "st-004929", "name": "谷峨駅", "genre": "station", "kind": "HUB", "area": "山北町", "region": "kanagawa-14364", "lat": 35.36624, "lon": 139.03844, "level": 1, "value": 1, "lines": ["東海旅客鉄道 御殿場線"], "adj": ["st-004941", "st-004949"] },
     { "id": "st-004941", "name": "山北駅", "genre": "station", "kind": "HUB", "area": "山北町", "region": "kanagawa-14364", "lat": 35.36094, "lon": 139.08164, "level": 1, "value": 1, "lines": ["東海旅客鉄道 御殿場線"], "adj": ["st-004929", "st-004952"] },
     { "id": "st-004952", "name": "東山北駅", "genre": "station", "kind": "HUB", "area": "山北町", "region": "kanagawa-14364", "lat": 35.35748, "lon": 139.1079, "level": 1, "value": 1, "lines": ["東海旅客鉄道 御殿場線"], "adj": ["st-004941", "st-004977"] },
 
@@ -442,6 +442,6 @@
 
     { "id": "st-005510", "name": "真鶴駅", "genre": "station", "kind": "HUB", "area": "真鶴町", "region": "kanagawa-14383", "lat": 35.15667, "lon": 139.13214, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東海道線"], "adj": ["st-005342", "st-005541"] },
 
-    { "id": "st-005541", "name": "湯河原駅", "genre": "station", "kind": "HUB", "area": "湯河原町", "region": "kanagawa-14384", "lat": 35.14535, "lon": 139.10054, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東海道線"], "adj": ["st-005510"] }
+    { "id": "st-005541", "name": "湯河原駅", "genre": "station", "kind": "HUB", "area": "湯河原町", "region": "kanagawa-14384", "lat": 35.14535, "lon": 139.10054, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東海道線"], "adj": ["st-005510", "st-005685"] }
   ]
 }

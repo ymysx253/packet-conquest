@@ -1,0 +1,136 @@
+{
+  "region": "yamanashi",
+  "name": "山梨県",
+  "version": 9,
+  "updatedAt": "2026-10-19",
+  "note": "山梨県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
+  "sources": [
+    "「国土数値情報(鉄道データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N02-2025.html)を加工して作成",
+    "「国土数値情報(行政区域データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-2026.html)を加工して作成"
+  ],
+  "kinds": {
+    "IX": "相互接続点",
+    "DC": "データセンター",
+    "GOV": "官公庁",
+    "LM": "ランドマーク",
+    "HUB": "駅・交通",
+    "GW": "玄関口",
+    "EDU": "大学・研究"
+  },
+  "genres": [
+    "station",
+    "bus_terminal",
+    "airport",
+    "port",
+    "bridge",
+    "tower",
+    "park",
+    "nature",
+    "zoo_aquarium",
+    "museum",
+    "library",
+    "theater",
+    "stadium",
+    "heritage",
+    "monument",
+    "shrine_temple",
+    "government",
+    "university",
+    "market",
+    "convention",
+    "complex",
+    "observatory",
+    "ix"
+  ],
+  "nodes": [
+    { "id": "st-003867", "name": "甲府駅", "genre": "station", "kind": "HUB", "area": "甲府市", "region": "yamanashi-19201", "lat": 35.66696, "lon": 138.56906, "level": 3, "value": 3, "lines": ["東日本旅客鉄道 中央線", "東海旅客鉄道 身延線"], "adj": ["st-003852", "st-003906", "st-003918"] },
+    { "id": "st-003906", "name": "金手駅", "genre": "station", "kind": "HUB", "area": "甲府市", "region": "yamanashi-19201", "lat": 35.66198, "lon": 138.57916, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-003867", "st-003917"] },
+    { "id": "st-003917", "name": "善光寺駅", "genre": "station", "kind": "HUB", "area": "甲府市", "region": "yamanashi-19201", "lat": 35.65957, "lon": 138.58949, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-003906", "st-004018"] },
+    { "id": "st-003918", "name": "酒折駅", "genre": "station", "kind": "HUB", "area": "甲府市", "region": "yamanashi-19201", "lat": 35.65957, "lon": 138.59961, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-003867", "st-003935"] },
+    { "id": "st-004018", "name": "南甲府駅", "genre": "station", "kind": "HUB", "area": "甲府市", "region": "yamanashi-19201", "lat": 35.64389, "lon": 138.57835, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-003917", "st-004052"] },
+    { "id": "st-004052", "name": "甲斐住吉駅", "genre": "station", "kind": "HUB", "area": "甲府市", "region": "yamanashi-19201", "lat": 35.63638, "lon": 138.56964, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004018", "st-004085"] },
+    { "id": "st-004085", "name": "国母駅", "genre": "station", "kind": "HUB", "area": "甲府市", "region": "yamanashi-19201", "lat": 35.63025, "lon": 138.5511, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004052", "st-004152"] },
+
+    { "id": "st-004497", "name": "寿駅", "genre": "station", "kind": "HUB", "area": "富士吉田市", "region": "yamanashi-19202", "lat": 35.50823, "lon": 138.82525, "level": 1, "value": 1, "lines": ["富士山麓電気鉄道 大月線"], "adj": ["st-004445", "st-004515"] },
+    { "id": "st-004515", "name": "葭池温泉前駅", "genre": "station", "kind": "HUB", "area": "富士吉田市", "region": "yamanashi-19202", "lat": 35.50203, "lon": 138.81183, "level": 1, "value": 1, "lines": ["富士山麓電気鉄道 大月線"], "adj": ["st-004497", "st-004530"] },
+    { "id": "st-004530", "name": "下吉田駅", "genre": "station", "kind": "HUB", "area": "富士吉田市", "region": "yamanashi-19202", "lat": 35.49787, "lon": 138.80316, "level": 1, "value": 1, "lines": ["富士山麓電気鉄道 大月線"], "adj": ["st-004515", "st-004543"] },
+    { "id": "st-004543", "name": "月江寺駅", "genre": "station", "kind": "HUB", "area": "富士吉田市", "region": "yamanashi-19202", "lat": 35.4931, "lon": 138.79784, "level": 1, "value": 1, "lines": ["富士山麓電気鉄道 大月線"], "adj": ["st-004530", "st-004570"] },
+    { "id": "st-004570", "name": "富士山駅", "genre": "station", "kind": "HUB", "area": "富士吉田市", "region": "yamanashi-19202", "lat": 35.48361, "lon": 138.79457, "level": 2, "value": 2, "lines": ["富士山麓電気鉄道 大月線", "富士山麓電気鉄道 河口湖線"], "adj": ["st-004543", "st-004553"] },
+
+    { "id": "st-004258", "name": "田野倉駅", "genre": "station", "kind": "HUB", "area": "都留市", "region": "yamanashi-19204", "lat": 35.59313, "lon": 138.93124, "level": 1, "value": 1, "lines": ["富士山麓電気鉄道 大月線"], "adj": ["st-004183", "st-004300"] },
+    { "id": "st-004300", "name": "禾生駅", "genre": "station", "kind": "HUB", "area": "都留市", "region": "yamanashi-19204", "lat": 35.57496, "lon": 138.92898, "level": 1, "value": 1, "lines": ["富士山麓電気鉄道 大月線"], "adj": ["st-004258", "st-004320"] },
+    { "id": "st-004320", "name": "赤坂駅", "genre": "station", "kind": "HUB", "area": "都留市", "region": "yamanashi-19204", "lat": 35.5658, "lon": 138.91578, "level": 1, "value": 1, "lines": ["富士山麓電気鉄道 大月線"], "adj": ["st-004300", "st-004344"] },
+    { "id": "st-004344", "name": "都留市駅", "genre": "station", "kind": "HUB", "area": "都留市", "region": "yamanashi-19204", "lat": 35.55673, "lon": 138.90752, "level": 1, "value": 1, "lines": ["富士山麓電気鉄道 大月線"], "adj": ["st-004320", "st-004362"] },
+    { "id": "st-004362", "name": "谷村町駅", "genre": "station", "kind": "HUB", "area": "都留市", "region": "yamanashi-19204", "lat": 35.55011, "lon": 138.90446, "level": 1, "value": 1, "lines": ["富士山麓電気鉄道 大月線"], "adj": ["st-004344", "st-004395"] },
+    { "id": "st-004395", "name": "都留文科大学前駅", "genre": "station", "kind": "HUB", "area": "都留市", "region": "yamanashi-19204", "lat": 35.54278, "lon": 138.89706, "level": 1, "value": 1, "lines": ["富士山麓電気鉄道 大月線"], "adj": ["st-004362", "st-004404"] },
+    { "id": "st-004404", "name": "十日市場駅", "genre": "station", "kind": "HUB", "area": "都留市", "region": "yamanashi-19204", "lat": 35.53881, "lon": 138.88708, "level": 1, "value": 1, "lines": ["富士山麓電気鉄道 大月線"], "adj": ["st-004395", "st-004410"] },
+    { "id": "st-004410", "name": "東桂駅", "genre": "station", "kind": "HUB", "area": "都留市", "region": "yamanashi-19204", "lat": 35.53604, "lon": 138.87005, "level": 1, "value": 1, "lines": ["富士山麓電気鉄道 大月線"], "adj": ["st-004404", "st-004445"] },
+
+    { "id": "st-003663", "name": "東山梨駅", "genre": "station", "kind": "HUB", "area": "山梨市", "region": "yamanashi-19205", "lat": 35.69416, "lon": 138.70272, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-003572", "st-003734"] },
+    { "id": "st-003734", "name": "山梨市駅", "genre": "station", "kind": "HUB", "area": "山梨市", "region": "yamanashi-19205", "lat": 35.68504, "lon": 138.68255, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-003663", "st-003808"] },
+
+    { "id": "st-004166", "name": "大月駅", "genre": "station", "kind": "HUB", "area": "大月市", "region": "yamanashi-19206", "lat": 35.61261, "lon": 138.94149, "level": 2, "value": 2, "lines": ["富士山麓電気鉄道 大月線", "東日本旅客鉄道 中央線"], "adj": ["st-004170", "st-004183", "st-004255"] },
+    { "id": "st-004170", "name": "猿橋駅", "genre": "station", "kind": "HUB", "area": "大月市", "region": "yamanashi-19206", "lat": 35.61239, "lon": 138.96701, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-004166", "st-004192"] },
+    { "id": "st-004183", "name": "上大月駅", "genre": "station", "kind": "HUB", "area": "大月市", "region": "yamanashi-19206", "lat": 35.60919, "lon": 138.93813, "level": 1, "value": 1, "lines": ["富士山麓電気鉄道 大月線"], "adj": ["st-004166", "st-004258"] },
+    { "id": "st-004192", "name": "鳥沢駅", "genre": "station", "kind": "HUB", "area": "大月市", "region": "yamanashi-19206", "lat": 35.60798, "lon": 139.00221, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-004170", "st-004213"] },
+    { "id": "st-004213", "name": "梁川駅", "genre": "station", "kind": "HUB", "area": "大月市", "region": "yamanashi-19206", "lat": 35.60711, "lon": 139.03632, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-004162", "st-004192"] },
+    { "id": "st-004224", "name": "笹子駅", "genre": "station", "kind": "HUB", "area": "大月市", "region": "yamanashi-19206", "lat": 35.60396, "lon": 138.8255, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-004040", "st-004255"] },
+    { "id": "st-004255", "name": "初狩駅", "genre": "station", "kind": "HUB", "area": "大月市", "region": "yamanashi-19206", "lat": 35.59429, "lon": 138.88367, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-004166", "st-004224"] },
+
+    { "id": "st-003247", "name": "穴山駅", "genre": "station", "kind": "HUB", "area": "韮崎市", "region": "yamanashi-19207", "lat": 35.75153, "lon": 138.41373, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-003108", "st-003344"] },
+    { "id": "st-003344", "name": "新府駅", "genre": "station", "kind": "HUB", "area": "韮崎市", "region": "yamanashi-19207", "lat": 35.73713, "lon": 138.4333, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-003247", "st-003533"] },
+    { "id": "st-003533", "name": "韮崎駅", "genre": "station", "kind": "HUB", "area": "韮崎市", "region": "yamanashi-19207", "lat": 35.70997, "lon": 138.45113, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-003344", "st-003714"] },
+
+    { "id": "st-002884", "name": "清里駅", "genre": "station", "kind": "HUB", "area": "北杜市", "region": "yamanashi-19209", "lat": 35.91893, "lon": 138.43621, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 小海線"], "adj": ["st-002825", "st-002929"] },
+    { "id": "st-002929", "name": "甲斐大泉駅", "genre": "station", "kind": "HUB", "area": "北杜市", "region": "yamanashi-19209", "lat": 35.89626, "lon": 138.4092, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 小海線"], "adj": ["st-002884", "st-002952"] },
+    { "id": "st-002952", "name": "甲斐小泉駅", "genre": "station", "kind": "HUB", "area": "北杜市", "region": "yamanashi-19209", "lat": 35.87966, "lon": 138.35984, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 小海線"], "adj": ["st-002929", "st-002981"] },
+    { "id": "st-002981", "name": "小淵沢駅", "genre": "station", "kind": "HUB", "area": "北杜市", "region": "yamanashi-19209", "lat": 35.86358, "lon": 138.31741, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 中央線", "東日本旅客鉄道 小海線"], "adj": ["st-002946", "st-002952", "st-003042"] },
+    { "id": "st-003042", "name": "長坂駅", "genre": "station", "kind": "HUB", "area": "北杜市", "region": "yamanashi-19209", "lat": 35.8278, "lon": 138.36685, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-002981", "st-003108"] },
+    { "id": "st-003108", "name": "日野春駅", "genre": "station", "kind": "HUB", "area": "北杜市", "region": "yamanashi-19209", "lat": 35.791, "lon": 138.39402, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-003042", "st-003247"] },
+
+    { "id": "st-003714", "name": "塩崎駅", "genre": "station", "kind": "HUB", "area": "甲斐市", "region": "yamanashi-19210", "lat": 35.68794, "lon": 138.4876, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-003533", "st-003852"] },
+    { "id": "st-003852", "name": "竜王駅", "genre": "station", "kind": "HUB", "area": "甲斐市", "region": "yamanashi-19210", "lat": 35.66863, "lon": 138.51794, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-003714", "st-003867"] },
+
+    { "id": "st-003808", "name": "春日居町駅", "genre": "station", "kind": "HUB", "area": "笛吹市", "region": "yamanashi-19211", "lat": 35.67321, "lon": 138.65866, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-003734", "st-003935"] },
+    { "id": "st-003935", "name": "石和温泉駅", "genre": "station", "kind": "HUB", "area": "笛吹市", "region": "yamanashi-19211", "lat": 35.65748, "lon": 138.63331, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-003808", "st-003918"] },
+
+    { "id": "st-004140", "name": "上野原駅", "genre": "station", "kind": "HUB", "area": "上野原市", "region": "yamanashi-19212", "lat": 35.6179, "lon": 139.11428, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-004156", "st-004162"] },
+    { "id": "st-004162", "name": "四方津駅", "genre": "station", "kind": "HUB", "area": "上野原市", "region": "yamanashi-19212", "lat": 35.61413, "lon": 139.07339, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-004140", "st-004213"] },
+
+    { "id": "st-003572", "name": "塩山駅", "genre": "station", "kind": "HUB", "area": "甲州市", "region": "yamanashi-19213", "lat": 35.70542, "lon": 138.73416, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-003663", "st-003816"] },
+    { "id": "st-003816", "name": "勝沼ぶどう郷駅", "genre": "station", "kind": "HUB", "area": "甲州市", "region": "yamanashi-19213", "lat": 35.67309, "lon": 138.74325, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-003572", "st-004040"] },
+    { "id": "st-004040", "name": "甲斐大和駅", "genre": "station", "kind": "HUB", "area": "甲州市", "region": "yamanashi-19213", "lat": 35.63948, "lon": 138.78138, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 中央線"], "adj": ["st-003816", "st-004224"] },
+
+    { "id": "st-004222", "name": "小井川駅", "genre": "station", "kind": "HUB", "area": "中央市", "region": "yamanashi-19214", "lat": 35.60418, "lon": 138.52849, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004152", "st-004252"] },
+    { "id": "st-004252", "name": "東花輪駅", "genre": "station", "kind": "HUB", "area": "中央市", "region": "yamanashi-19214", "lat": 35.59443, "lon": 138.52696, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004222", "st-004313"] },
+
+    { "id": "st-004313", "name": "甲斐上野駅", "genre": "station", "kind": "HUB", "area": "市川三郷町", "region": "yamanashi-19346", "lat": 35.56956, "lon": 138.52088, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004252", "st-004326"] },
+    { "id": "st-004326", "name": "芦川駅", "genre": "station", "kind": "HUB", "area": "市川三郷町", "region": "yamanashi-19346", "lat": 35.56277, "lon": 138.51107, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004313", "st-004335"] },
+    { "id": "st-004335", "name": "市川本町駅", "genre": "station", "kind": "HUB", "area": "市川三郷町", "region": "yamanashi-19346", "lat": 35.56063, "lon": 138.50163, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004326", "st-004337"] },
+    { "id": "st-004337", "name": "市川大門駅", "genre": "station", "kind": "HUB", "area": "市川三郷町", "region": "yamanashi-19346", "lat": 35.56045, "lon": 138.49239, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004335", "st-004397"] },
+    { "id": "st-004397", "name": "鰍沢口駅", "genre": "station", "kind": "HUB", "area": "市川三郷町", "region": "yamanashi-19346", "lat": 35.54094, "lon": 138.47083, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004337", "st-004512"] },
+    { "id": "st-004512", "name": "落居駅", "genre": "station", "kind": "HUB", "area": "市川三郷町", "region": "yamanashi-19346", "lat": 35.50335, "lon": 138.47096, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004397", "st-004545"] },
+    { "id": "st-004545", "name": "甲斐岩間駅", "genre": "station", "kind": "HUB", "area": "市川三郷町", "region": "yamanashi-19346", "lat": 35.49205, "lon": 138.46287, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004512", "st-004580"] },
+
+    { "id": "st-004580", "name": "久那土駅", "genre": "station", "kind": "HUB", "area": "身延町", "region": "yamanashi-19365", "lat": 35.48143, "lon": 138.4679, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004545", "st-004646"] },
+    { "id": "st-004646", "name": "市ノ瀬駅", "genre": "station", "kind": "HUB", "area": "身延町", "region": "yamanashi-19365", "lat": 35.46202, "lon": 138.48214, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004580", "st-004698"] },
+    { "id": "st-004698", "name": "甲斐常葉駅", "genre": "station", "kind": "HUB", "area": "身延町", "region": "yamanashi-19365", "lat": 35.44421, "lon": 138.47703, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004646", "st-004754"] },
+    { "id": "st-004754", "name": "下部温泉駅", "genre": "station", "kind": "HUB", "area": "身延町", "region": "yamanashi-19365", "lat": 35.42555, "lon": 138.47206, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004698", "st-004769"] },
+    { "id": "st-004769", "name": "波高島駅", "genre": "station", "kind": "HUB", "area": "身延町", "region": "yamanashi-19365", "lat": 35.4182, "lon": 138.45933, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004754", "st-004891"] },
+    { "id": "st-004891", "name": "塩之沢駅", "genre": "station", "kind": "HUB", "area": "身延町", "region": "yamanashi-19365", "lat": 35.37939, "lon": 138.45364, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004769", "st-004939"] },
+    { "id": "st-004939", "name": "身延駅", "genre": "station", "kind": "HUB", "area": "身延町", "region": "yamanashi-19365", "lat": 35.36097, "lon": 138.453, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004891", "st-005031"] },
+    { "id": "st-005031", "name": "甲斐大島駅", "genre": "station", "kind": "HUB", "area": "身延町", "region": "yamanashi-19365", "lat": 35.3285, "lon": 138.45215, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004939", "st-005155"] },
+
+    { "id": "st-005155", "name": "内船駅", "genre": "station", "kind": "HUB", "area": "南部町", "region": "yamanashi-19366", "lat": 35.28251, "lon": 138.46485, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-005031", "st-005193"] },
+    { "id": "st-005193", "name": "寄畑駅", "genre": "station", "kind": "HUB", "area": "南部町", "region": "yamanashi-19366", "lat": 35.265, "lon": 138.47463, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-005155", "st-005244"] },
+    { "id": "st-005244", "name": "井出駅", "genre": "station", "kind": "HUB", "area": "南部町", "region": "yamanashi-19366", "lat": 35.24761, "lon": 138.49064, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-005193", "st-005279"] },
+    { "id": "st-005279", "name": "十島駅", "genre": "station", "kind": "HUB", "area": "南部町", "region": "yamanashi-19366", "lat": 35.23042, "lon": 138.51489, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-005244", "st-005278"] },
+
+    { "id": "st-004152", "name": "常永駅", "genre": "station", "kind": "HUB", "area": "昭和町", "region": "yamanashi-19384", "lat": 35.61668, "lon": 138.53273, "level": 1, "value": 1, "lines": ["東海旅客鉄道 身延線"], "adj": ["st-004085", "st-004222"] },
+
+    { "id": "st-004445", "name": "三つ峠駅", "genre": "station", "kind": "HUB", "area": "西桂町", "region": "yamanashi-19423", "lat": 35.52414, "lon": 138.84507, "level": 1, "value": 1, "lines": ["富士山麓電気鉄道 大月線"], "adj": ["st-004410", "st-004497"] },
+
+    { "id": "st-004529", "name": "河口湖駅", "genre": "station", "kind": "HUB", "area": "富士河口湖町", "region": "yamanashi-19430", "lat": 35.49803, "lon": 138.76871, "level": 1, "value": 1, "lines": ["富士山麓電気鉄道 河口湖線"], "adj": ["st-004553"] },
+    { "id": "st-004553", "name": "富士急ハイランド駅", "genre": "station", "kind": "HUB", "area": "富士河口湖町", "region": "yamanashi-19430", "lat": 35.48949, "lon": 138.78191, "level": 1, "value": 1, "lines": ["富士山麓電気鉄道 河口湖線"], "adj": ["st-004529", "st-004570"] }
+  ]
+}

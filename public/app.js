@@ -60,7 +60,7 @@
   }
   function setJoining(on) {
     const btn = $('joinForm').querySelector('button[type="submit"]');
-    btn.disabled = on; btn.textContent = on ? '接続中…' : '東京に参加する';
+    btn.disabled = on; btn.textContent = on ? '接続中…' : '参加する';
   }
   function send(msg) { if (S.ws && S.ws.readyState === 1) S.ws.send(JSON.stringify(msg)); }
   function sendJoin() { send({ t: 'join', name: $('nameInput').value.trim(), token: S.token || undefined, startNodeId: S.start ? S.start.id : undefined, country: $('countrySelect').value }); }
@@ -70,6 +70,7 @@
     switch (m.t) {
       case 'welcome':
         S.me = m.id; S.token = m.token; S.joined = true; S.home = m.home; S.spawn = m.spawn; S.movedAt = m.movedAt || null;
+        $('areaChip').textContent = m.area || '日本';
         S.team = m.team ? { id: m.team, name: m.teamName } : null; S.cooldownUntil = m.cooldownUntil || 0; S.cooldownMs = Math.max(4000, S.cooldownUntil - Date.now());
         $('teamPanel').hidden = false; renderTeam();
         if (S.team) { S.infoOnly = true; send({ t: 'team', action: 'info' }); }
@@ -85,6 +86,7 @@
       case 'search': renderSearch(m); break;
       case 'moved':
         S.home = m.home; S.movedAt = m.movedAt; S.moving = false; $('pickBar').hidden = true; S.selected = null; S.question = null; S.result = null;
+        if (m.area) $('areaChip').textContent = m.area;
         S.nodes.clear(); S.edges.clear(); S.tiles.clear(); lastViewKey = '';
         centerOn(worldOf(m.home.lat, m.home.lon), 9); requestView(true); renderQuestion();
         toast('引っ越しました。新しい拠点から広げ直してください');

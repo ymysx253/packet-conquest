@@ -136,6 +136,7 @@ async function handle(ws, msg) {
     const player = await world.join(ws, cleanName(msg.name), token,
       typeof msg.startNodeId === 'string' && msg.startNodeId ? msg.startNodeId.slice(0, 40) : null);
     ws.player = player;
+    await world.regionIndex(); // 右上の都道府県名のため(メモリに無ければ 1 回だけ読む)
     send(ws, world.welcome(player));
     await world.emitPlayers();
     return;
@@ -154,7 +155,7 @@ async function handle(ws, msg) {
     }
     case 'move': {
       const home = await world.move(player, typeof msg.startNodeId === 'string' ? msg.startNodeId.slice(0, 40) : null);
-      send(ws, { t: 'moved', home: { id: home.id, lat: home.lat, lon: home.lon }, startNodeId: player.startNodeId, movedAt: player.movedAt });
+      send(ws, { t: 'moved', home: { id: home.id, lat: home.lat, lon: home.lon }, startNodeId: player.startNodeId, movedAt: player.movedAt, area: world.areaNameOf(player) });
       break;
     }
     case 'view': await world.setView(player, Array.isArray(msg.tiles) ? msg.tiles.slice(0, 120).filter((x) => typeof x === 'string' && x.length <= 24) : [], msg.z); break;

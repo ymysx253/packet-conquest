@@ -1,0 +1,278 @@
+{
+  "region": "fukushima",
+  "name": "福島県",
+  "version": 9,
+  "updatedAt": "2026-10-19",
+  "note": "福島県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
+  "sources": [
+    "「国土数値情報(鉄道データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N02-2025.html)を加工して作成",
+    "「国土数値情報(行政区域データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-2026.html)を加工して作成"
+  ],
+  "kinds": {
+    "IX": "相互接続点",
+    "DC": "データセンター",
+    "GOV": "官公庁",
+    "LM": "ランドマーク",
+    "HUB": "駅・交通",
+    "GW": "玄関口",
+    "EDU": "大学・研究"
+  },
+  "genres": [
+    "station",
+    "bus_terminal",
+    "airport",
+    "port",
+    "bridge",
+    "tower",
+    "park",
+    "nature",
+    "zoo_aquarium",
+    "museum",
+    "library",
+    "theater",
+    "stadium",
+    "heritage",
+    "monument",
+    "shrine_temple",
+    "government",
+    "university",
+    "market",
+    "convention",
+    "complex",
+    "observatory",
+    "ix"
+  ],
+  "nodes": [
+    { "id": "st-001331", "name": "飯坂温泉駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.82983, "lon": 140.45451, "level": 1, "value": 1, "lines": ["福島交通 飯坂線"], "adj": ["st-001333"] },
+    { "id": "st-001333", "name": "花水坂駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.82675, "lon": 140.4507, "level": 1, "value": 1, "lines": ["福島交通 飯坂線"], "adj": ["st-001331", "st-001337"] },
+    { "id": "st-001337", "name": "医王寺前駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.8159, "lon": 140.4463, "level": 1, "value": 1, "lines": ["福島交通 飯坂線"], "adj": ["st-001333", "st-001346"] },
+    { "id": "st-001345", "name": "向瀬上駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.80644, "lon": 140.50986, "level": 1, "value": 1, "lines": ["阿武隈急行 阿武隈急行線"], "adj": ["st-001344", "st-001348"] },
+    { "id": "st-001346", "name": "平野駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.80512, "lon": 140.44276, "level": 1, "value": 1, "lines": ["福島交通 飯坂線"], "adj": ["st-001337", "st-001354"] },
+    { "id": "st-001348", "name": "瀬上駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.80222, "lon": 140.49815, "level": 1, "value": 1, "lines": ["阿武隈急行 阿武隈急行線"], "adj": ["st-001345", "st-001353"] },
+    { "id": "st-001352", "name": "東福島駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.79998, "lon": 140.4775, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001334", "st-001373"] },
+    { "id": "st-001353", "name": "福島学院前駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.79877, "lon": 140.48863, "level": 1, "value": 1, "lines": ["阿武隈急行 阿武隈急行線"], "adj": ["st-001348", "st-001355"] },
+    { "id": "st-001354", "name": "桜水駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.79583, "lon": 140.4411, "level": 1, "value": 1, "lines": ["福島交通 飯坂線"], "adj": ["st-001346", "st-001358"] },
+    { "id": "st-001355", "name": "卸町駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.79559, "lon": 140.47984, "level": 1, "value": 1, "lines": ["阿武隈急行 阿武隈急行線"], "adj": ["st-001353", "st-001373"] },
+    { "id": "st-001358", "name": "笹谷駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.78743, "lon": 140.43974, "level": 1, "value": 1, "lines": ["福島交通 飯坂線"], "adj": ["st-001354", "st-001359"] },
+    { "id": "st-001359", "name": "上松川駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.78336, "lon": 140.44129, "level": 1, "value": 1, "lines": ["福島交通 飯坂線"], "adj": ["st-001358", "st-001360"] },
+    { "id": "st-001360", "name": "泉駅(福島交通)", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.7788, "lon": 140.44546, "level": 1, "value": 1, "lines": ["福島交通 飯坂線"], "adj": ["st-001359", "st-001361"] },
+    { "id": "st-001361", "name": "岩代清水駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.77639, "lon": 140.44757, "level": 1, "value": 1, "lines": ["福島交通 飯坂線"], "adj": ["st-001360", "st-001365"] },
+    { "id": "st-001363", "name": "庭坂駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.77177, "lon": 140.38838, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 奥羽線"], "adj": ["st-001342", "st-001366"] },
+    { "id": "st-001365", "name": "美術館図書館前駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.76683, "lon": 140.45556, "level": 1, "value": 1, "lines": ["福島交通 飯坂線"], "adj": ["st-001361", "st-001367"] },
+    { "id": "st-001366", "name": "笹木野駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.76602, "lon": 140.42507, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 奥羽線"], "adj": ["st-001363", "st-001373"] },
+    { "id": "st-001367", "name": "曽根田駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.76033, "lon": 140.45949, "level": 1, "value": 1, "lines": ["福島交通 飯坂線"], "adj": ["st-001365", "st-001373"] },
+    { "id": "st-001373", "name": "福島駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.75433, "lon": 140.45945, "level": 3, "value": 3, "lines": ["東日本旅客鉄道 奥羽線", "東日本旅客鉄道 東北新幹線", "東日本旅客鉄道 東北線", "福島交通 飯坂線", "阿武隈急行 阿武隈急行線"], "adj": ["st-001272", "st-001352", "st-001355", "st-001366", "st-001367", "st-001382", "st-001507"] },
+    { "id": "st-001382", "name": "南福島駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.72487, "lon": 140.45604, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001373", "st-001397"] },
+    { "id": "st-001397", "name": "金谷川駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.68007, "lon": 140.45249, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001382", "st-001405"] },
+    { "id": "st-001405", "name": "松川駅", "genre": "station", "kind": "HUB", "area": "福島市", "region": "fukushima-07201", "lat": 37.65297, "lon": 140.48423, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001397", "st-001422"] },
+
+    { "id": "st-001434", "name": "東長原駅", "genre": "station", "kind": "HUB", "area": "会津若松市", "region": "fukushima-07202", "lat": 37.56658, "lon": 139.94901, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001438", "st-001443"] },
+    { "id": "st-001440", "name": "堂島駅", "genre": "station", "kind": "HUB", "area": "会津若松市", "region": "fukushima-07202", "lat": 37.55506, "lon": 139.91153, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001430", "st-001443", "st-001456"] },
+    { "id": "st-001443", "name": "広田駅", "genre": "station", "kind": "HUB", "area": "会津若松市", "region": "fukushima-07202", "lat": 37.54939, "lon": 139.9335, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001434", "st-001440", "st-001456"] },
+    { "id": "st-001456", "name": "会津若松駅", "genre": "station", "kind": "HUB", "area": "会津若松市", "region": "fukushima-07202", "lat": 37.50984, "lon": 139.93035, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 只見線", "東日本旅客鉄道 磐越西線"], "adj": ["st-001440", "st-001443", "st-001460"] },
+    { "id": "st-001460", "name": "七日町駅", "genre": "station", "kind": "HUB", "area": "会津若松市", "region": "fukushima-07202", "lat": 37.50195, "lon": 139.91961, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001456", "st-001467"] },
+    { "id": "st-001467", "name": "西若松駅", "genre": "station", "kind": "HUB", "area": "会津若松市", "region": "fukushima-07202", "lat": 37.48607, "lon": 139.91413, "level": 2, "value": 2, "lines": ["会津鉄道 会津線", "東日本旅客鉄道 只見線"], "adj": ["st-001460", "st-001480", "st-001481"] },
+    { "id": "st-001480", "name": "会津本郷駅", "genre": "station", "kind": "HUB", "area": "会津若松市", "region": "fukushima-07202", "lat": 37.4633, "lon": 139.89214, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001467", "st-001477"] },
+    { "id": "st-001481", "name": "南若松駅", "genre": "station", "kind": "HUB", "area": "会津若松市", "region": "fukushima-07202", "lat": 37.45887, "lon": 139.91446, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001467", "st-001494"] },
+    { "id": "st-001494", "name": "門田駅", "genre": "station", "kind": "HUB", "area": "会津若松市", "region": "fukushima-07202", "lat": 37.44234, "lon": 139.91378, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001481", "st-001500"] },
+    { "id": "st-001500", "name": "あまや駅", "genre": "station", "kind": "HUB", "area": "会津若松市", "region": "fukushima-07202", "lat": 37.41725, "lon": 139.91759, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001494", "st-001511"] },
+    { "id": "st-001511", "name": "芦ノ牧温泉駅", "genre": "station", "kind": "HUB", "area": "会津若松市", "region": "fukushima-07202", "lat": 37.39503, "lon": 139.93229, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001500", "st-001534"] },
+    { "id": "st-001534", "name": "大川ダム公園駅", "genre": "station", "kind": "HUB", "area": "会津若松市", "region": "fukushima-07202", "lat": 37.34649, "lon": 139.92068, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001511", "st-001541"] },
+    { "id": "st-001541", "name": "芦ノ牧温泉南駅", "genre": "station", "kind": "HUB", "area": "会津若松市", "region": "fukushima-07202", "lat": 37.33429, "lon": 139.91877, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001534", "st-001549"] },
+
+    { "id": "st-001462", "name": "中山宿駅", "genre": "station", "kind": "HUB", "area": "郡山市", "region": "fukushima-07203", "lat": 37.49577, "lon": 140.21992, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001466", "st-001473"] },
+    { "id": "st-001473", "name": "磐梯熱海駅", "genre": "station", "kind": "HUB", "area": "郡山市", "region": "fukushima-07203", "lat": 37.48032, "lon": 140.27135, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001462", "st-001475"] },
+    { "id": "st-001475", "name": "安子ヶ島駅", "genre": "station", "kind": "HUB", "area": "郡山市", "region": "fukushima-07203", "lat": 37.47159, "lon": 140.31139, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001473", "st-001486"] },
+    { "id": "st-001486", "name": "喜久田駅", "genre": "station", "kind": "HUB", "area": "郡山市", "region": "fukushima-07203", "lat": 37.45089, "lon": 140.3421, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001475", "st-001499"] },
+    { "id": "st-001491", "name": "日和田駅", "genre": "station", "kind": "HUB", "area": "郡山市", "region": "fukushima-07203", "lat": 37.44522, "lon": 140.38871, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001471", "st-001507"] },
+    { "id": "st-001499", "name": "郡山富田駅", "genre": "station", "kind": "HUB", "area": "郡山市", "region": "fukushima-07203", "lat": 37.42017, "lon": 140.36974, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001486", "st-001507"] },
+    { "id": "st-001501", "name": "舞木駅", "genre": "station", "kind": "HUB", "area": "郡山市", "region": "fukushima-07203", "lat": 37.41669, "lon": 140.43422, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越東線"], "adj": ["st-001487", "st-001507"] },
+    { "id": "st-001507", "name": "郡山駅", "genre": "station", "kind": "HUB", "area": "郡山市", "region": "fukushima-07203", "lat": 37.3969, "lon": 140.3885, "level": 3, "value": 3, "lines": ["東日本旅客鉄道 東北新幹線", "東日本旅客鉄道 東北線", "東日本旅客鉄道 磐越東線", "東日本旅客鉄道 磐越西線"], "adj": ["st-001373", "st-001491", "st-001499", "st-001501", "st-001528", "st-001629"] },
+    { "id": "st-001528", "name": "安積永盛駅", "genre": "station", "kind": "HUB", "area": "郡山市", "region": "fukushima-07203", "lat": 37.35757, "lon": 140.36918, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 東北線", "東日本旅客鉄道 水郡線"], "adj": ["st-001507", "st-001543", "st-001550"] },
+    { "id": "st-001543", "name": "磐城守山駅", "genre": "station", "kind": "HUB", "area": "郡山市", "region": "fukushima-07203", "lat": 37.33036, "lon": 140.4067, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001528", "st-001547"] },
+    { "id": "st-001547", "name": "谷田川駅", "genre": "station", "kind": "HUB", "area": "郡山市", "region": "fukushima-07203", "lat": 37.31367, "lon": 140.43167, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001543", "st-001551"] },
+
+    { "id": "st-001587", "name": "川前駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 37.20588, "lon": 140.74951, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越東線"], "adj": ["st-001566", "st-001597"] },
+    { "id": "st-001597", "name": "江田駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 37.17932, "lon": 140.82607, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越東線"], "adj": ["st-001587", "st-001627"] },
+    { "id": "st-001599", "name": "末続駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 37.17182, "lon": 140.9958, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001582", "st-001617"] },
+    { "id": "st-001617", "name": "久ノ浜駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 37.14341, "lon": 140.99556, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001599", "st-001635"] },
+    { "id": "st-001627", "name": "小川郷駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 37.12552, "lon": 140.86259, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越東線"], "adj": ["st-001597", "st-001646"] },
+    { "id": "st-001635", "name": "四ツ倉駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 37.10242, "lon": 140.98102, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001617", "st-001653"] },
+    { "id": "st-001646", "name": "赤井駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 37.08029, "lon": 140.86659, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越東線"], "adj": ["st-001627", "st-001657"] },
+    { "id": "st-001653", "name": "草野駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 37.07322, "lon": 140.9463, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001635", "st-001657"] },
+    { "id": "st-001657", "name": "いわき駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 37.05819, "lon": 140.89063, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 常磐線", "東日本旅客鉄道 磐越東線"], "adj": ["st-001646", "st-001653", "st-001672"] },
+    { "id": "st-001672", "name": "内郷駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 37.0356, "lon": 140.85454, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001657", "st-001684"] },
+    { "id": "st-001684", "name": "湯本駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 37.00611, "lon": 140.85028, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001672", "st-001710"] },
+    { "id": "st-001710", "name": "泉駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 36.95574, "lon": 140.85493, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001684", "st-001726"] },
+    { "id": "st-001726", "name": "植田駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 36.92093, "lon": 140.79648, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001710", "st-001738"] },
+    { "id": "st-001738", "name": "勿来駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 36.88356, "lon": 140.78672, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001726", "st-001768"] },
+
+    { "id": "st-001620", "name": "久田野駅", "genre": "station", "kind": "HUB", "area": "白河市", "region": "fukushima-07205", "lat": 37.137, "lon": 140.25933, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001609", "st-001625"] },
+    { "id": "st-001625", "name": "白河駅", "genre": "station", "kind": "HUB", "area": "白河市", "region": "fukushima-07205", "lat": 37.13052, "lon": 140.21096, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001620", "st-001629"] },
+    { "id": "st-001640", "name": "白坂駅", "genre": "station", "kind": "HUB", "area": "白河市", "region": "fukushima-07205", "lat": 37.09453, "lon": 140.18433, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001629", "st-001661"] },
+
+    { "id": "st-001550", "name": "須賀川駅", "genre": "station", "kind": "HUB", "area": "須賀川市", "region": "fukushima-07207", "lat": 37.30006, "lon": 140.3709, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001528", "st-001568"] },
+    { "id": "st-001551", "name": "小塩江駅", "genre": "station", "kind": "HUB", "area": "須賀川市", "region": "fukushima-07207", "lat": 37.29527, "lon": 140.42976, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001547", "st-001560"] },
+    { "id": "st-001560", "name": "川東駅", "genre": "station", "kind": "HUB", "area": "須賀川市", "region": "fukushima-07207", "lat": 37.2698, "lon": 140.40584, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001551", "st-001581"] },
+
+    { "id": "st-001408", "name": "喜多方駅", "genre": "station", "kind": "HUB", "area": "喜多方市", "region": "fukushima-07208", "lat": 37.64401, "lon": 139.8669, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001410", "st-001412"] },
+    { "id": "st-001410", "name": "山都駅", "genre": "station", "kind": "HUB", "area": "喜多方市", "region": "fukushima-07208", "lat": 37.63867, "lon": 139.76585, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001408", "st-001420"] },
+    { "id": "st-001412", "name": "会津豊川駅", "genre": "station", "kind": "HUB", "area": "喜多方市", "region": "fukushima-07208", "lat": 37.63372, "lon": 139.8768, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001408", "st-001421"] },
+    { "id": "st-001420", "name": "荻野駅", "genre": "station", "kind": "HUB", "area": "喜多方市", "region": "fukushima-07208", "lat": 37.61789, "lon": 139.72137, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001410", "st-001423"] },
+    { "id": "st-001421", "name": "姥堂駅", "genre": "station", "kind": "HUB", "area": "喜多方市", "region": "fukushima-07208", "lat": 37.6161, "lon": 139.88095, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001412", "st-001426"] },
+    { "id": "st-001426", "name": "塩川駅", "genre": "station", "kind": "HUB", "area": "喜多方市", "region": "fukushima-07208", "lat": 37.59403, "lon": 139.8872, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001421", "st-001430"] },
+
+    { "id": "st-001347", "name": "相馬駅", "genre": "station", "kind": "HUB", "area": "相馬市", "region": "fukushima-07209", "lat": 37.80186, "lon": 140.92591, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001326", "st-001369"] },
+    { "id": "st-001369", "name": "日立木駅", "genre": "station", "kind": "HUB", "area": "相馬市", "region": "fukushima-07209", "lat": 37.75566, "lon": 140.93506, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001347", "st-001388"] },
+
+    { "id": "st-001422", "name": "安達駅", "genre": "station", "kind": "HUB", "area": "二本松市", "region": "fukushima-07210", "lat": 37.61216, "lon": 140.46647, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001405", "st-001429"] },
+    { "id": "st-001429", "name": "二本松駅", "genre": "station", "kind": "HUB", "area": "二本松市", "region": "fukushima-07210", "lat": 37.5893, "lon": 140.43477, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001422", "st-001436"] },
+    { "id": "st-001436", "name": "杉田駅", "genre": "station", "kind": "HUB", "area": "二本松市", "region": "fukushima-07210", "lat": 37.56365, "lon": 140.41416, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001429", "st-001455"] },
+
+    { "id": "st-001484", "name": "要田駅", "genre": "station", "kind": "HUB", "area": "田村市", "region": "fukushima-07211", "lat": 37.45409, "lon": 140.52076, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越東線"], "adj": ["st-001487", "st-001493"] },
+    { "id": "st-001493", "name": "船引駅", "genre": "station", "kind": "HUB", "area": "田村市", "region": "fukushima-07211", "lat": 37.44346, "lon": 140.57413, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越東線"], "adj": ["st-001484", "st-001498"] },
+    { "id": "st-001498", "name": "磐城常葉駅", "genre": "station", "kind": "HUB", "area": "田村市", "region": "fukushima-07211", "lat": 37.42132, "lon": 140.60557, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越東線"], "adj": ["st-001493", "st-001516"] },
+    { "id": "st-001516", "name": "大越駅", "genre": "station", "kind": "HUB", "area": "田村市", "region": "fukushima-07211", "lat": 37.38743, "lon": 140.63047, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越東線"], "adj": ["st-001498", "st-001532"] },
+    { "id": "st-001532", "name": "菅谷駅", "genre": "station", "kind": "HUB", "area": "田村市", "region": "fukushima-07211", "lat": 37.35091, "lon": 140.64391, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越東線"], "adj": ["st-001516", "st-001544"] },
+    { "id": "st-001544", "name": "神俣駅", "genre": "station", "kind": "HUB", "area": "田村市", "region": "fukushima-07211", "lat": 37.32415, "lon": 140.6597, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越東線"], "adj": ["st-001532", "st-001555"] },
+
+    { "id": "st-001388", "name": "鹿島駅", "genre": "station", "kind": "HUB", "area": "南相馬市", "region": "fukushima-07212", "lat": 37.70218, "lon": 140.97063, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001369", "st-001411"] },
+    { "id": "st-001411", "name": "原ノ町駅", "genre": "station", "kind": "HUB", "area": "南相馬市", "region": "fukushima-07212", "lat": 37.63784, "lon": 140.97123, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001388", "st-001424"] },
+    { "id": "st-001424", "name": "磐城太田駅", "genre": "station", "kind": "HUB", "area": "南相馬市", "region": "fukushima-07212", "lat": 37.60516, "lon": 140.99142, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001411", "st-001437"] },
+    { "id": "st-001437", "name": "小高駅", "genre": "station", "kind": "HUB", "area": "南相馬市", "region": "fukushima-07212", "lat": 37.56342, "lon": 140.99642, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001424", "st-001450"] },
+    { "id": "st-001450", "name": "桃内駅", "genre": "station", "kind": "HUB", "area": "南相馬市", "region": "fukushima-07212", "lat": 37.529, "lon": 140.98459, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001437", "st-001464"] },
+
+    { "id": "st-001310", "name": "兜駅", "genre": "station", "kind": "HUB", "area": "伊達市", "region": "fukushima-07213", "lat": 37.8953, "lon": 140.64646, "level": 1, "value": 1, "lines": ["阿武隈急行 阿武隈急行線"], "adj": ["st-001295", "st-001317"] },
+    { "id": "st-001317", "name": "富野駅", "genre": "station", "kind": "HUB", "area": "伊達市", "region": "fukushima-07213", "lat": 37.87507, "lon": 140.62773, "level": 1, "value": 1, "lines": ["阿武隈急行 阿武隈急行線"], "adj": ["st-001310", "st-001322"] },
+    { "id": "st-001322", "name": "やながわ希望の森公園前駅", "genre": "station", "kind": "HUB", "area": "伊達市", "region": "fukushima-07213", "lat": 37.85819, "lon": 140.61586, "level": 1, "value": 1, "lines": ["阿武隈急行 阿武隈急行線"], "adj": ["st-001317", "st-001325"] },
+    { "id": "st-001325", "name": "梁川駅", "genre": "station", "kind": "HUB", "area": "伊達市", "region": "fukushima-07213", "lat": 37.84629, "lon": 140.60383, "level": 1, "value": 1, "lines": ["阿武隈急行 阿武隈急行線"], "adj": ["st-001322", "st-001327"] },
+    { "id": "st-001327", "name": "新田駅", "genre": "station", "kind": "HUB", "area": "伊達市", "region": "fukushima-07213", "lat": 37.83803, "lon": 140.59338, "level": 1, "value": 1, "lines": ["阿武隈急行 阿武隈急行線"], "adj": ["st-001325", "st-001332"] },
+    { "id": "st-001332", "name": "二井田駅", "genre": "station", "kind": "HUB", "area": "伊達市", "region": "fukushima-07213", "lat": 37.82754, "lon": 140.58003, "level": 1, "value": 1, "lines": ["阿武隈急行 阿武隈急行線"], "adj": ["st-001327", "st-001335"] },
+    { "id": "st-001334", "name": "伊達駅", "genre": "station", "kind": "HUB", "area": "伊達市", "region": "fukushima-07213", "lat": 37.82351, "lon": 140.49279, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001323", "st-001352"] },
+    { "id": "st-001335", "name": "大泉駅", "genre": "station", "kind": "HUB", "area": "伊達市", "region": "fukushima-07213", "lat": 37.81969, "lon": 140.56646, "level": 1, "value": 1, "lines": ["阿武隈急行 阿武隈急行線"], "adj": ["st-001332", "st-001339"] },
+    { "id": "st-001339", "name": "保原駅", "genre": "station", "kind": "HUB", "area": "伊達市", "region": "fukushima-07213", "lat": 37.81435, "lon": 140.55618, "level": 1, "value": 1, "lines": ["阿武隈急行 阿武隈急行線"], "adj": ["st-001335", "st-001343"] },
+    { "id": "st-001343", "name": "上保原駅", "genre": "station", "kind": "HUB", "area": "伊達市", "region": "fukushima-07213", "lat": 37.8096, "lon": 140.54263, "level": 1, "value": 1, "lines": ["阿武隈急行 阿武隈急行線"], "adj": ["st-001339", "st-001344"] },
+    { "id": "st-001344", "name": "高子駅", "genre": "station", "kind": "HUB", "area": "伊達市", "region": "fukushima-07213", "lat": 37.80838, "lon": 140.52709, "level": 1, "value": 1, "lines": ["阿武隈急行 阿武隈急行線"], "adj": ["st-001343", "st-001345"] },
+
+    { "id": "st-001455", "name": "本宮駅", "genre": "station", "kind": "HUB", "area": "本宮市", "region": "fukushima-07214", "lat": 37.51477, "lon": 140.39932, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001436", "st-001471"] },
+    { "id": "st-001471", "name": "五百川駅", "genre": "station", "kind": "HUB", "area": "本宮市", "region": "fukushima-07214", "lat": 37.48164, "lon": 140.3872, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001455", "st-001491"] },
+
+    { "id": "st-001323", "name": "桑折駅", "genre": "station", "kind": "HUB", "area": "桑折町", "region": "fukushima-07301", "lat": 37.85593, "lon": 140.51789, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001315", "st-001334"] },
+
+    { "id": "st-001305", "name": "貝田駅", "genre": "station", "kind": "HUB", "area": "国見町", "region": "fukushima-07303", "lat": 37.90746, "lon": 140.58023, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001287", "st-001315"] },
+    { "id": "st-001315", "name": "藤田駅", "genre": "station", "kind": "HUB", "area": "国見町", "region": "fukushima-07303", "lat": 37.87948, "lon": 140.5403, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001305", "st-001323"] },
+
+    { "id": "st-001568", "name": "鏡石駅", "genre": "station", "kind": "HUB", "area": "鏡石町", "region": "fukushima-07342", "lat": 37.25052, "lon": 140.34683, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001550", "st-001586"] },
+
+    { "id": "st-001549", "name": "湯野上温泉駅", "genre": "station", "kind": "HUB", "area": "下郷町", "region": "fukushima-07362", "lat": 37.30371, "lon": 139.89534, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001541", "st-001556"] },
+    { "id": "st-001556", "name": "塔のへつり駅", "genre": "station", "kind": "HUB", "area": "下郷町", "region": "fukushima-07362", "lat": 37.27434, "lon": 139.90121, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001549", "st-001561"] },
+    { "id": "st-001561", "name": "弥五島駅", "genre": "station", "kind": "HUB", "area": "下郷町", "region": "fukushima-07362", "lat": 37.26653, "lon": 139.89036, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001556", "st-001565"] },
+    { "id": "st-001565", "name": "会津下郷駅", "genre": "station", "kind": "HUB", "area": "下郷町", "region": "fukushima-07362", "lat": 37.25544, "lon": 139.8652, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001561", "st-001570"] },
+    { "id": "st-001570", "name": "ふるさと公園駅", "genre": "station", "kind": "HUB", "area": "下郷町", "region": "fukushima-07362", "lat": 37.243, "lon": 139.85887, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001565", "st-001578"] },
+    { "id": "st-001578", "name": "養鱒公園駅", "genre": "station", "kind": "HUB", "area": "下郷町", "region": "fukushima-07362", "lat": 37.22426, "lon": 139.84153, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001570", "st-001580"] },
+
+    { "id": "st-001512", "name": "会津塩沢駅", "genre": "station", "kind": "HUB", "area": "只見町", "region": "fukushima-07367", "lat": 37.39387, "lon": 139.35539, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001513", "st-001518"] },
+    { "id": "st-001518", "name": "会津蒲生駅", "genre": "station", "kind": "HUB", "area": "只見町", "region": "fukushima-07367", "lat": 37.38184, "lon": 139.33372, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001512", "st-001533"] },
+    { "id": "st-001533", "name": "只見駅", "genre": "station", "kind": "HUB", "area": "只見町", "region": "fukushima-07367", "lat": 37.35055, "lon": 139.315, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001518", "st-001537"] },
+
+    { "id": "st-001580", "name": "会津長野駅", "genre": "station", "kind": "HUB", "area": "南会津町", "region": "fukushima-07368", "lat": 37.21516, "lon": 139.82344, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001578", "st-001585"] },
+    { "id": "st-001585", "name": "田島高校前駅", "genre": "station", "kind": "HUB", "area": "南会津町", "region": "fukushima-07368", "lat": 37.20933, "lon": 139.80046, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001580", "st-001588"] },
+    { "id": "st-001588", "name": "会津田島駅", "genre": "station", "kind": "HUB", "area": "南会津町", "region": "fukushima-07368", "lat": 37.20328, "lon": 139.77388, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001585", "st-001595"] },
+    { "id": "st-001595", "name": "中荒井駅", "genre": "station", "kind": "HUB", "area": "南会津町", "region": "fukushima-07368", "lat": 37.17995, "lon": 139.75068, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001588", "st-001612"] },
+    { "id": "st-001612", "name": "会津荒海駅", "genre": "station", "kind": "HUB", "area": "南会津町", "region": "fukushima-07368", "lat": 37.1533, "lon": 139.73368, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001595", "st-001616"] },
+    { "id": "st-001616", "name": "会津山村道場駅", "genre": "station", "kind": "HUB", "area": "南会津町", "region": "fukushima-07368", "lat": 37.14376, "lon": 139.73151, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001612", "st-001628"] },
+    { "id": "st-001628", "name": "七ヶ岳登山口駅", "genre": "station", "kind": "HUB", "area": "南会津町", "region": "fukushima-07368", "lat": 37.12418, "lon": 139.71738, "level": 1, "value": 1, "lines": ["会津鉄道 会津線"], "adj": ["st-001616", "st-001641"] },
+    { "id": "st-001641", "name": "会津高原尾瀬口駅", "genre": "station", "kind": "HUB", "area": "南会津町", "region": "fukushima-07368", "lat": 37.09002, "lon": 139.70512, "level": 2, "value": 2, "lines": ["会津鉄道 会津線", "野岩鉄道 会津鬼怒川線"], "adj": ["st-001628", "st-001665"] },
+
+    { "id": "st-001402", "name": "徳沢駅", "genre": "station", "kind": "HUB", "area": "西会津町", "region": "fukushima-07405", "lat": 37.6669, "lon": 139.60281, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001398", "st-001417"] },
+    { "id": "st-001417", "name": "上野尻駅", "genre": "station", "kind": "HUB", "area": "西会津町", "region": "fukushima-07405", "lat": 37.62571, "lon": 139.63384, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001402", "st-001428"] },
+    { "id": "st-001423", "name": "尾登駅", "genre": "station", "kind": "HUB", "area": "西会津町", "region": "fukushima-07405", "lat": 37.60885, "lon": 139.69145, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001420", "st-001428"] },
+    { "id": "st-001428", "name": "野沢駅", "genre": "station", "kind": "HUB", "area": "西会津町", "region": "fukushima-07405", "lat": 37.59122, "lon": 139.64351, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001417", "st-001423"] },
+
+    { "id": "st-001438", "name": "磐梯町駅", "genre": "station", "kind": "HUB", "area": "磐梯町", "region": "fukushima-07407", "lat": 37.55694, "lon": 139.99343, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001434", "st-001442"] },
+
+    { "id": "st-001442", "name": "翁島駅", "genre": "station", "kind": "HUB", "area": "猪苗代町", "region": "fukushima-07408", "lat": 37.55288, "lon": 140.05348, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001438", "st-001444"] },
+    { "id": "st-001444", "name": "猪苗代駅", "genre": "station", "kind": "HUB", "area": "猪苗代町", "region": "fukushima-07408", "lat": 37.54623, "lon": 140.10365, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001442", "st-001447"] },
+    { "id": "st-001447", "name": "川桁駅", "genre": "station", "kind": "HUB", "area": "猪苗代町", "region": "fukushima-07408", "lat": 37.53587, "lon": 140.13667, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001444", "st-001453"] },
+    { "id": "st-001453", "name": "関都駅", "genre": "station", "kind": "HUB", "area": "猪苗代町", "region": "fukushima-07408", "lat": 37.51532, "lon": 140.14365, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001447", "st-001461"] },
+    { "id": "st-001461", "name": "猪苗代湖畔駅", "genre": "station", "kind": "HUB", "area": "猪苗代町", "region": "fukushima-07408", "lat": 37.50019, "lon": 140.1477, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001453", "st-001466"] },
+    { "id": "st-001466", "name": "上戸駅", "genre": "station", "kind": "HUB", "area": "猪苗代町", "region": "fukushima-07408", "lat": 37.48769, "lon": 140.16394, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001461", "st-001462"] },
+
+    { "id": "st-001433", "name": "塔寺駅", "genre": "station", "kind": "HUB", "area": "会津坂下町", "region": "fukushima-07421", "lat": 37.56912, "lon": 139.78489, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001439", "st-001441"] },
+    { "id": "st-001439", "name": "会津坂下駅", "genre": "station", "kind": "HUB", "area": "会津坂下町", "region": "fukushima-07421", "lat": 37.55689, "lon": 139.82092, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001433", "st-001448"] },
+    { "id": "st-001441", "name": "会津坂本駅", "genre": "station", "kind": "HUB", "area": "会津坂下町", "region": "fukushima-07421", "lat": 37.55321, "lon": 139.75642, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001433", "st-001446"] },
+    { "id": "st-001448", "name": "若宮駅", "genre": "station", "kind": "HUB", "area": "会津坂下町", "region": "fukushima-07421", "lat": 37.53565, "lon": 139.8283, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001439", "st-001451"] },
+
+    { "id": "st-001430", "name": "笈川駅", "genre": "station", "kind": "HUB", "area": "湯川村", "region": "fukushima-07422", "lat": 37.57952, "lon": 139.89508, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越西線"], "adj": ["st-001426", "st-001440"] },
+
+    { "id": "st-001446", "name": "会津柳津駅", "genre": "station", "kind": "HUB", "area": "柳津町", "region": "fukushima-07423", "lat": 37.53821, "lon": 139.72384, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001441", "st-001452"] },
+    { "id": "st-001452", "name": "郷戸駅", "genre": "station", "kind": "HUB", "area": "柳津町", "region": "fukushima-07423", "lat": 37.51606, "lon": 139.70968, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001446", "st-001463"] },
+    { "id": "st-001463", "name": "滝谷駅", "genre": "station", "kind": "HUB", "area": "柳津町", "region": "fukushima-07423", "lat": 37.4941, "lon": 139.69773, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001452", "st-001465"] },
+
+    { "id": "st-001465", "name": "会津桧原駅", "genre": "station", "kind": "HUB", "area": "三島町", "region": "fukushima-07444", "lat": 37.49182, "lon": 139.67908, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001463", "st-001472"] },
+    { "id": "st-001472", "name": "会津西方駅", "genre": "station", "kind": "HUB", "area": "三島町", "region": "fukushima-07444", "lat": 37.48088, "lon": 139.66113, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001465", "st-001476"] },
+    { "id": "st-001476", "name": "会津宮下駅", "genre": "station", "kind": "HUB", "area": "三島町", "region": "fukushima-07444", "lat": 37.47098, "lon": 139.64671, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001472", "st-001478"] },
+    { "id": "st-001478", "name": "早戸駅", "genre": "station", "kind": "HUB", "area": "三島町", "region": "fukushima-07444", "lat": 37.47021, "lon": 139.59349, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001470", "st-001476"] },
+
+    { "id": "st-001470", "name": "会津水沼駅", "genre": "station", "kind": "HUB", "area": "金山町", "region": "fukushima-07445", "lat": 37.48292, "lon": 139.56031, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001474", "st-001478"] },
+    { "id": "st-001474", "name": "会津中川駅", "genre": "station", "kind": "HUB", "area": "金山町", "region": "fukushima-07445", "lat": 37.47395, "lon": 139.53226, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001470", "st-001483"] },
+    { "id": "st-001483", "name": "会津川口駅", "genre": "station", "kind": "HUB", "area": "金山町", "region": "fukushima-07445", "lat": 37.45503, "lon": 139.52348, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001474", "st-001492"] },
+    { "id": "st-001492", "name": "本名駅", "genre": "station", "kind": "HUB", "area": "金山町", "region": "fukushima-07445", "lat": 37.44458, "lon": 139.49846, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001483", "st-001505"] },
+    { "id": "st-001505", "name": "会津越川駅", "genre": "station", "kind": "HUB", "area": "金山町", "region": "fukushima-07445", "lat": 37.39858, "lon": 139.46904, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001492", "st-001515"] },
+    { "id": "st-001513", "name": "会津大塩駅", "genre": "station", "kind": "HUB", "area": "金山町", "region": "fukushima-07445", "lat": 37.39278, "lon": 139.41321, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001512", "st-001515"] },
+    { "id": "st-001515", "name": "会津横田駅", "genre": "station", "kind": "HUB", "area": "金山町", "region": "fukushima-07445", "lat": 37.3922, "lon": 139.43555, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001505", "st-001513"] },
+
+    { "id": "st-001451", "name": "新鶴駅", "genre": "station", "kind": "HUB", "area": "会津美里町", "region": "fukushima-07447", "lat": 37.51759, "lon": 139.82849, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001448", "st-001459"] },
+    { "id": "st-001459", "name": "根岸駅", "genre": "station", "kind": "HUB", "area": "会津美里町", "region": "fukushima-07447", "lat": 37.50226, "lon": 139.8286, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001451", "st-001477"] },
+    { "id": "st-001477", "name": "会津高田駅", "genre": "station", "kind": "HUB", "area": "会津美里町", "region": "fukushima-07447", "lat": 37.47096, "lon": 139.84067, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 只見線"], "adj": ["st-001459", "st-001480"] },
+
+    { "id": "st-001629", "name": "新白河駅", "genre": "station", "kind": "HUB", "area": "西郷村", "region": "fukushima-07461", "lat": 37.1229, "lon": 140.18815, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 東北新幹線", "東日本旅客鉄道 東北線"], "adj": ["st-001507", "st-001625", "st-001640", "st-001720"] },
+
+    { "id": "st-001609", "name": "泉崎駅", "genre": "station", "kind": "HUB", "area": "泉崎村", "region": "fukushima-07464", "lat": 37.15828, "lon": 140.2991, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001586", "st-001620"] },
+
+    { "id": "st-001586", "name": "矢吹駅", "genre": "station", "kind": "HUB", "area": "矢吹町", "region": "fukushima-07466", "lat": 37.20585, "lon": 140.32831, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001568", "st-001609"] },
+
+    { "id": "st-001673", "name": "磐城棚倉駅", "genre": "station", "kind": "HUB", "area": "棚倉町", "region": "fukushima-07481", "lat": 37.03541, "lon": 140.384, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001647", "st-001679"] },
+    { "id": "st-001679", "name": "中豊駅", "genre": "station", "kind": "HUB", "area": "棚倉町", "region": "fukushima-07481", "lat": 37.02281, "lon": 140.39328, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001673", "st-001688"] },
+    { "id": "st-001688", "name": "近津駅", "genre": "station", "kind": "HUB", "area": "棚倉町", "region": "fukushima-07481", "lat": 37.00088, "lon": 140.39376, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001679", "st-001709"] },
+
+    { "id": "st-001730", "name": "磐城石井駅", "genre": "station", "kind": "HUB", "area": "矢祭町", "region": "fukushima-07482", "lat": 36.90412, "lon": 140.41541, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001709", "st-001733"] },
+    { "id": "st-001733", "name": "南石井駅", "genre": "station", "kind": "HUB", "area": "矢祭町", "region": "fukushima-07482", "lat": 36.89435, "lon": 140.41699, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001730", "st-001751"] },
+    { "id": "st-001751", "name": "東館駅", "genre": "station", "kind": "HUB", "area": "矢祭町", "region": "fukushima-07482", "lat": 36.8708, "lon": 140.42328, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001733", "st-001763"] },
+    { "id": "st-001763", "name": "矢祭山駅", "genre": "station", "kind": "HUB", "area": "矢祭町", "region": "fukushima-07482", "lat": 36.84951, "lon": 140.39486, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001751", "st-001783"] },
+
+    { "id": "st-001709", "name": "磐城塙駅", "genre": "station", "kind": "HUB", "area": "塙町", "region": "fukushima-07483", "lat": 36.95895, "lon": 140.41188, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001688", "st-001730"] },
+
+    { "id": "st-001598", "name": "野木沢駅", "genre": "station", "kind": "HUB", "area": "石川町", "region": "fukushima-07501", "lat": 37.17556, "lon": 140.42105, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001591", "st-001618"] },
+    { "id": "st-001618", "name": "磐城石川駅", "genre": "station", "kind": "HUB", "area": "石川町", "region": "fukushima-07501", "lat": 37.14109, "lon": 140.44409, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001598", "st-001634"] },
+
+    { "id": "st-001581", "name": "泉郷駅", "genre": "station", "kind": "HUB", "area": "玉川村", "region": "fukushima-07502", "lat": 37.21505, "lon": 140.40549, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001560", "st-001591"] },
+    { "id": "st-001591", "name": "川辺沖駅", "genre": "station", "kind": "HUB", "area": "玉川村", "region": "fukushima-07502", "lat": 37.193, "lon": 140.40559, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001581", "st-001598"] },
+
+    { "id": "st-001634", "name": "里白石駅", "genre": "station", "kind": "HUB", "area": "浅川町", "region": "fukushima-07504", "lat": 37.10479, "lon": 140.41699, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001618", "st-001647"] },
+    { "id": "st-001647", "name": "磐城浅川駅", "genre": "station", "kind": "HUB", "area": "浅川町", "region": "fukushima-07504", "lat": 37.08014, "lon": 140.41444, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001634", "st-001673"] },
+
+    { "id": "st-001487", "name": "三春駅", "genre": "station", "kind": "HUB", "area": "三春町", "region": "fukushima-07521", "lat": 37.45008, "lon": 140.47758, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越東線"], "adj": ["st-001484", "st-001501"] },
+
+    { "id": "st-001555", "name": "小野新町駅", "genre": "station", "kind": "HUB", "area": "小野町", "region": "fukushima-07522", "lat": 37.27599, "lon": 140.63638, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越東線"], "adj": ["st-001544", "st-001566"] },
+    { "id": "st-001566", "name": "夏井駅", "genre": "station", "kind": "HUB", "area": "小野町", "region": "fukushima-07522", "lat": 37.25307, "lon": 140.6626, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 磐越東線"], "adj": ["st-001555", "st-001587"] },
+
+    { "id": "st-001571", "name": "Jヴィレッジ駅", "genre": "station", "kind": "HUB", "area": "広野町", "region": "fukushima-07541", "lat": 37.24077, "lon": 141.00738, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001562"] },
+    { "id": "st-001582", "name": "広野駅", "genre": "station", "kind": "HUB", "area": "広野町", "region": "fukushima-07541", "lat": 37.21117, "lon": 140.99853, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001599"] },
+
+    { "id": "st-001553", "name": "竜田駅", "genre": "station", "kind": "HUB", "area": "楢葉町", "region": "fukushima-07542", "lat": 37.28199, "lon": 141.00284, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001542", "st-001562"] },
+    { "id": "st-001562", "name": "木戸駅", "genre": "station", "kind": "HUB", "area": "楢葉町", "region": "fukushima-07542", "lat": 37.2584, "lon": 141.00214, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001553", "st-001571"] },
+
+    { "id": "st-001522", "name": "夜ノ森駅", "genre": "station", "kind": "HUB", "area": "富岡町", "region": "fukushima-07543", "lat": 37.36673, "lon": 140.99194, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001502", "st-001542"] },
+    { "id": "st-001542", "name": "富岡駅", "genre": "station", "kind": "HUB", "area": "富岡町", "region": "fukushima-07543", "lat": 37.33492, "lon": 141.02256, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001522", "st-001553"] },
+
+    { "id": "st-001502", "name": "大野駅", "genre": "station", "kind": "HUB", "area": "大熊町", "region": "fukushima-07545", "lat": 37.40917, "lon": 140.98411, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001485", "st-001522"] },
+
+    { "id": "st-001485", "name": "双葉駅", "genre": "station", "kind": "HUB", "area": "双葉町", "region": "fukushima-07546", "lat": 37.45454, "lon": 141.00641, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001464", "st-001502"] },
+
+    { "id": "st-001464", "name": "浪江駅", "genre": "station", "kind": "HUB", "area": "浪江町", "region": "fukushima-07547", "lat": 37.4926, "lon": 140.989, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001450", "st-001485"] },
+
+    { "id": "st-001313", "name": "新地駅", "genre": "station", "kind": "HUB", "area": "新地町", "region": "fukushima-07561", "lat": 37.87972, "lon": 140.92546, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001289", "st-001326"] },
+    { "id": "st-001326", "name": "駒ヶ嶺駅", "genre": "station", "kind": "HUB", "area": "新地町", "region": "fukushima-07561", "lat": 37.84283, "lon": 140.92505, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001313", "st-001347"] }
+  ]
+}

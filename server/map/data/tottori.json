@@ -1,0 +1,135 @@
+{
+  "region": "tottori",
+  "name": "鳥取県",
+  "version": 9,
+  "updatedAt": "2026-10-19",
+  "note": "鳥取県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
+  "sources": [
+    "「国土数値情報(鉄道データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N02-2025.html)を加工して作成",
+    "「国土数値情報(行政区域データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-2026.html)を加工して作成"
+  ],
+  "kinds": {
+    "IX": "相互接続点",
+    "DC": "データセンター",
+    "GOV": "官公庁",
+    "LM": "ランドマーク",
+    "HUB": "駅・交通",
+    "GW": "玄関口",
+    "EDU": "大学・研究"
+  },
+  "genres": [
+    "station",
+    "bus_terminal",
+    "airport",
+    "port",
+    "bridge",
+    "tower",
+    "park",
+    "nature",
+    "zoo_aquarium",
+    "museum",
+    "library",
+    "theater",
+    "stadium",
+    "heritage",
+    "monument",
+    "shrine_temple",
+    "government",
+    "university",
+    "market",
+    "convention",
+    "complex",
+    "observatory",
+    "ix"
+  ],
+  "nodes": [
+    { "id": "st-004378", "name": "福部駅", "genre": "station", "kind": "HUB", "area": "鳥取市", "region": "tottori-31201", "lat": 35.54631, "lon": 134.28664, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004318", "st-004541"] },
+    { "id": "st-004446", "name": "末恒駅", "genre": "station", "kind": "HUB", "area": "鳥取市", "region": "tottori-31201", "lat": 35.52381, "lon": 134.1348, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004463", "st-004476"] },
+    { "id": "st-004463", "name": "鳥取大学前駅", "genre": "station", "kind": "HUB", "area": "鳥取市", "region": "tottori-31201", "lat": 35.51837, "lon": 134.1732, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004446", "st-004478"] },
+    { "id": "st-004467", "name": "青谷駅", "genre": "station", "kind": "HUB", "area": "鳥取市", "region": "tottori-31201", "lat": 35.51623, "lon": 133.99488, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004491", "st-004494"] },
+    { "id": "st-004476", "name": "宝木駅", "genre": "station", "kind": "HUB", "area": "鳥取市", "region": "tottori-31201", "lat": 35.51384, "lon": 134.08151, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004446", "st-004491"] },
+    { "id": "st-004478", "name": "湖山駅", "genre": "station", "kind": "HUB", "area": "鳥取市", "region": "tottori-31201", "lat": 35.51404, "lon": 134.18527, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004463", "st-004541"] },
+    { "id": "st-004491", "name": "浜村駅", "genre": "station", "kind": "HUB", "area": "鳥取市", "region": "tottori-31201", "lat": 35.50928, "lon": 134.04951, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004467", "st-004476"] },
+    { "id": "st-004541", "name": "鳥取駅", "genre": "station", "kind": "HUB", "area": "鳥取市", "region": "tottori-31201", "lat": 35.4947, "lon": 134.22493, "level": 3, "value": 3, "lines": ["西日本旅客鉄道 因美線", "西日本旅客鉄道 山陰線"], "adj": ["st-004378", "st-004478", "st-004650"] },
+    { "id": "st-004650", "name": "津ノ井駅", "genre": "station", "kind": "HUB", "area": "鳥取市", "region": "tottori-31201", "lat": 35.46169, "lon": 134.24866, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 因美線"], "adj": ["st-004541", "st-004747"] },
+    { "id": "st-004908", "name": "国英駅", "genre": "station", "kind": "HUB", "area": "鳥取市", "region": "tottori-31201", "lat": 35.37375, "lon": 134.21804, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 因美線"], "adj": ["st-004837", "st-004958"] },
+    { "id": "st-004958", "name": "鷹狩駅", "genre": "station", "kind": "HUB", "area": "鳥取市", "region": "tottori-31201", "lat": 35.35446, "lon": 134.20667, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 因美線"], "adj": ["st-004908", "st-004987"] },
+    { "id": "st-004987", "name": "用瀬駅", "genre": "station", "kind": "HUB", "area": "鳥取市", "region": "tottori-31201", "lat": 35.34349, "lon": 134.20494, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 因美線"], "adj": ["st-004958", "st-005082"] },
+    { "id": "st-005082", "name": "因幡社駅", "genre": "station", "kind": "HUB", "area": "鳥取市", "region": "tottori-31201", "lat": 35.31276, "lon": 134.19608, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 因美線"], "adj": ["st-004987", "st-005190"] },
+
+    { "id": "st-004555", "name": "大篠津町駅", "genre": "station", "kind": "HUB", "area": "米子市", "region": "tottori-31202", "lat": 35.48861, "lon": 133.25613, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004516", "st-004587"] },
+    { "id": "st-004587", "name": "和田浜駅", "genre": "station", "kind": "HUB", "area": "米子市", "region": "tottori-31202", "lat": 35.48023, "lon": 133.26605, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004555", "st-004627"] },
+    { "id": "st-004627", "name": "弓ヶ浜駅", "genre": "station", "kind": "HUB", "area": "米子市", "region": "tottori-31202", "lat": 35.46635, "lon": 133.28926, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004587", "st-004659"] },
+    { "id": "st-004658", "name": "淀江駅", "genre": "station", "kind": "HUB", "area": "米子市", "region": "tottori-31202", "lat": 35.45754, "lon": 133.43057, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004568", "st-004738"] },
+    { "id": "st-004659", "name": "河崎口駅", "genre": "station", "kind": "HUB", "area": "米子市", "region": "tottori-31202", "lat": 35.45659, "lon": 133.30567, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004627", "st-004688"] },
+    { "id": "st-004688", "name": "三本松口駅", "genre": "station", "kind": "HUB", "area": "米子市", "region": "tottori-31202", "lat": 35.44596, "lon": 133.32347, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004659", "st-004710"] },
+    { "id": "st-004710", "name": "後藤駅", "genre": "station", "kind": "HUB", "area": "米子市", "region": "tottori-31202", "lat": 35.43959, "lon": 133.33177, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004688", "st-004722"] },
+    { "id": "st-004722", "name": "富士見町駅", "genre": "station", "kind": "HUB", "area": "米子市", "region": "tottori-31202", "lat": 35.43433, "lon": 133.33696, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004710", "st-004733"] },
+    { "id": "st-004733", "name": "博労町駅", "genre": "station", "kind": "HUB", "area": "米子市", "region": "tottori-31202", "lat": 35.43135, "lon": 133.33996, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004722", "st-004758"] },
+    { "id": "st-004735", "name": "東山公園駅", "genre": "station", "kind": "HUB", "area": "米子市", "region": "tottori-31202", "lat": 35.43089, "lon": 133.35112, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004738", "st-004758"] },
+    { "id": "st-004738", "name": "伯耆大山駅", "genre": "station", "kind": "HUB", "area": "米子市", "region": "tottori-31202", "lat": 35.43063, "lon": 133.38515, "level": 2, "value": 2, "lines": ["西日本旅客鉄道 伯備線", "西日本旅客鉄道 山陰線"], "adj": ["st-004658", "st-004735", "st-004869"] },
+    { "id": "st-004758", "name": "米子駅", "genre": "station", "kind": "HUB", "area": "米子市", "region": "tottori-31202", "lat": 35.4224, "lon": 133.33593, "level": 2, "value": 2, "lines": ["西日本旅客鉄道 境線", "西日本旅客鉄道 山陰線"], "adj": ["st-004733", "st-004735", "st-004748"] },
+
+    { "id": "st-004665", "name": "倉吉駅", "genre": "station", "kind": "HUB", "area": "倉吉市", "region": "tottori-31203", "lat": 35.45536, "lon": 133.84813, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004576", "st-004620"] },
+
+    { "id": "st-004384", "name": "境港駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.54425, "lon": 133.22326, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004405"] },
+    { "id": "st-004405", "name": "馬場崎町駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.53822, "lon": 133.22674, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004384", "st-004434"] },
+    { "id": "st-004434", "name": "上道駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.53086, "lon": 133.23103, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004405", "st-004454"] },
+    { "id": "st-004454", "name": "余子駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.52095, "lon": 133.23674, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004434", "st-004471"] },
+    { "id": "st-004471", "name": "高松町駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.51514, "lon": 133.24011, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004454", "st-004508"] },
+    { "id": "st-004508", "name": "中浜駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.50608, "lon": 133.24534, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004471", "st-004516"] },
+    { "id": "st-004516", "name": "米子空港駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.50169, "lon": 133.24825, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004508", "st-004555"] },
+
+    { "id": "st-004240", "name": "東浜駅", "genre": "station", "kind": "HUB", "area": "岩美町", "region": "tottori-31302", "lat": 35.59952, "lon": 134.36316, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004204", "st-004303"] },
+    { "id": "st-004303", "name": "岩美駅", "genre": "station", "kind": "HUB", "area": "岩美町", "region": "tottori-31302", "lat": 35.57506, "lon": 134.3359, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004240", "st-004318"] },
+    { "id": "st-004318", "name": "大岩駅", "genre": "station", "kind": "HUB", "area": "岩美町", "region": "tottori-31302", "lat": 35.56692, "lon": 134.30978, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004303", "st-004378"] },
+
+    { "id": "st-004979", "name": "若桜駅", "genre": "station", "kind": "HUB", "area": "若桜町", "region": "tottori-31325", "lat": 35.34468, "lon": 134.39898, "level": 1, "value": 1, "lines": ["若桜鉄道 若桜線"], "adj": ["st-004942"] },
+
+    { "id": "st-005190", "name": "智頭駅", "genre": "station", "kind": "HUB", "area": "智頭町", "region": "tottori-31328", "lat": 35.26454, "lon": 134.22569, "level": 2, "value": 2, "lines": ["智頭急行 智頭線", "西日本旅客鉄道 因美線"], "adj": ["st-005082", "st-005219", "st-005275"] },
+    { "id": "st-005219", "name": "恋山形駅", "genre": "station", "kind": "HUB", "area": "智頭町", "region": "tottori-31328", "lat": 35.25615, "lon": 134.27877, "level": 1, "value": 1, "lines": ["智頭急行 智頭線"], "adj": ["st-005190", "st-005276"] },
+    { "id": "st-005275", "name": "土師駅", "genre": "station", "kind": "HUB", "area": "智頭町", "region": "tottori-31328", "lat": 35.23247, "lon": 134.22581, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 因美線"], "adj": ["st-005190", "st-005318"] },
+    { "id": "st-005276", "name": "山郷駅", "genre": "station", "kind": "HUB", "area": "智頭町", "region": "tottori-31328", "lat": 35.23248, "lon": 134.28905, "level": 1, "value": 1, "lines": ["智頭急行 智頭線"], "adj": ["st-005219", "st-005399"] },
+    { "id": "st-005318", "name": "那岐駅", "genre": "station", "kind": "HUB", "area": "智頭町", "region": "tottori-31328", "lat": 35.21378, "lon": 134.20971, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 因美線"], "adj": ["st-005275", "st-005334"] },
+
+    { "id": "st-004747", "name": "東郡家駅", "genre": "station", "kind": "HUB", "area": "八頭町", "region": "tottori-31329", "lat": 35.42949, "lon": 134.25967, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 因美線"], "adj": ["st-004650", "st-004779"] },
+    { "id": "st-004779", "name": "郡家駅", "genre": "station", "kind": "HUB", "area": "八頭町", "region": "tottori-31329", "lat": 35.41215, "lon": 134.25036, "level": 2, "value": 2, "lines": ["若桜鉄道 若桜線", "西日本旅客鉄道 因美線"], "adj": ["st-004747", "st-004798", "st-004837"] },
+    { "id": "st-004798", "name": "八頭高校前駅", "genre": "station", "kind": "HUB", "area": "八頭町", "region": "tottori-31329", "lat": 35.40567, "lon": 134.24626, "level": 1, "value": 1, "lines": ["若桜鉄道 若桜線"], "adj": ["st-004779", "st-004847"] },
+    { "id": "st-004837", "name": "河原駅", "genre": "station", "kind": "HUB", "area": "八頭町", "region": "tottori-31329", "lat": 35.39744, "lon": 134.22385, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 因美線"], "adj": ["st-004779", "st-004908"] },
+    { "id": "st-004847", "name": "因幡船岡駅", "genre": "station", "kind": "HUB", "area": "八頭町", "region": "tottori-31329", "lat": 35.39541, "lon": 134.24856, "level": 1, "value": 1, "lines": ["若桜鉄道 若桜線"], "adj": ["st-004798", "st-004866"] },
+    { "id": "st-004866", "name": "隼駅", "genre": "station", "kind": "HUB", "area": "八頭町", "region": "tottori-31329", "lat": 35.3888, "lon": 134.26983, "level": 1, "value": 1, "lines": ["若桜鉄道 若桜線"], "adj": ["st-004847", "st-004904"] },
+    { "id": "st-004904", "name": "安部駅", "genre": "station", "kind": "HUB", "area": "八頭町", "region": "tottori-31329", "lat": 35.37472, "lon": 134.29122, "level": 1, "value": 1, "lines": ["若桜鉄道 若桜線"], "adj": ["st-004866", "st-004935"] },
+    { "id": "st-004933", "name": "徳丸駅", "genre": "station", "kind": "HUB", "area": "八頭町", "region": "tottori-31329", "lat": 35.36433, "lon": 134.33606, "level": 1, "value": 1, "lines": ["若桜鉄道 若桜線"], "adj": ["st-004935", "st-004942"] },
+    { "id": "st-004935", "name": "八東駅", "genre": "station", "kind": "HUB", "area": "八頭町", "region": "tottori-31329", "lat": 35.3636, "lon": 134.31597, "level": 1, "value": 1, "lines": ["若桜鉄道 若桜線"], "adj": ["st-004904", "st-004933"] },
+    { "id": "st-004942", "name": "丹比駅", "genre": "station", "kind": "HUB", "area": "八頭町", "region": "tottori-31329", "lat": 35.36069, "lon": 134.35664, "level": 1, "value": 1, "lines": ["若桜鉄道 若桜線"], "adj": ["st-004933", "st-004979"] },
+
+    { "id": "st-004494", "name": "泊駅", "genre": "station", "kind": "HUB", "area": "湯梨浜町", "region": "tottori-31370", "lat": 35.50807, "lon": 133.93612, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004467", "st-004620"] },
+    { "id": "st-004620", "name": "松崎駅", "genre": "station", "kind": "HUB", "area": "湯梨浜町", "region": "tottori-31370", "lat": 35.46759, "lon": 133.90045, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004494", "st-004665"] },
+
+    { "id": "st-004482", "name": "赤碕駅", "genre": "station", "kind": "HUB", "area": "琴浦町", "region": "tottori-31371", "lat": 35.51228, "lon": 133.63377, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004455", "st-004514"] },
+    { "id": "st-004514", "name": "八橋駅", "genre": "station", "kind": "HUB", "area": "琴浦町", "region": "tottori-31371", "lat": 35.50314, "lon": 133.67345, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004482", "st-004523"] },
+    { "id": "st-004523", "name": "浦安駅", "genre": "station", "kind": "HUB", "area": "琴浦町", "region": "tottori-31371", "lat": 35.49982, "lon": 133.69233, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004514", "st-004550"] },
+
+    { "id": "st-004550", "name": "由良駅", "genre": "station", "kind": "HUB", "area": "北栄町", "region": "tottori-31372", "lat": 35.49024, "lon": 133.75449, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004523", "st-004576"] },
+    { "id": "st-004576", "name": "下北条駅", "genre": "station", "kind": "HUB", "area": "北栄町", "region": "tottori-31372", "lat": 35.482, "lon": 133.80892, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004550", "st-004665"] },
+
+    { "id": "st-004455", "name": "中山口駅", "genre": "station", "kind": "HUB", "area": "大山町", "region": "tottori-31386", "lat": 35.52102, "lon": 133.58942, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004460", "st-004482"] },
+    { "id": "st-004460", "name": "下市駅", "genre": "station", "kind": "HUB", "area": "大山町", "region": "tottori-31386", "lat": 35.51864, "lon": 133.56552, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004455", "st-004483"] },
+    { "id": "st-004483", "name": "御来屋駅", "genre": "station", "kind": "HUB", "area": "大山町", "region": "tottori-31386", "lat": 35.51208, "lon": 133.50226, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004460", "st-004502"] },
+    { "id": "st-004502", "name": "名和駅", "genre": "station", "kind": "HUB", "area": "大山町", "region": "tottori-31386", "lat": 35.50709, "lon": 133.49167, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004483", "st-004568"] },
+    { "id": "st-004568", "name": "大山口駅", "genre": "station", "kind": "HUB", "area": "大山町", "region": "tottori-31386", "lat": 35.48536, "lon": 133.45731, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004502", "st-004658"] },
+
+    { "id": "st-004869", "name": "岸本駅", "genre": "station", "kind": "HUB", "area": "伯耆町", "region": "tottori-31390", "lat": 35.38739, "lon": 133.40949, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["st-004738", "st-004972"] },
+    { "id": "st-004972", "name": "伯耆溝口駅", "genre": "station", "kind": "HUB", "area": "伯耆町", "region": "tottori-31390", "lat": 35.34821, "lon": 133.43538, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["st-004869", "st-005152"] },
+
+    { "id": "st-005452", "name": "生山駅", "genre": "station", "kind": "HUB", "area": "日南町", "region": "tottori-31401", "lat": 35.17143, "lon": 133.32193, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["st-005379", "st-005662"] },
+    { "id": "st-005662", "name": "上石見駅", "genre": "station", "kind": "HUB", "area": "日南町", "region": "tottori-31401", "lat": 35.11238, "lon": 133.35255, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["st-005452", "st-005737"] },
+
+    { "id": "st-005255", "name": "根雨駅", "genre": "station", "kind": "HUB", "area": "日野町", "region": "tottori-31402", "lat": 35.24099, "lon": 133.44104, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["st-005184", "st-005330"] },
+    { "id": "st-005330", "name": "黒坂駅", "genre": "station", "kind": "HUB", "area": "日野町", "region": "tottori-31402", "lat": 35.20587, "lon": 133.38347, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["st-005255", "st-005379"] },
+    { "id": "st-005379", "name": "上菅駅", "genre": "station", "kind": "HUB", "area": "日野町", "region": "tottori-31402", "lat": 35.19354, "lon": 133.34249, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["st-005330", "st-005452"] },
+
+    { "id": "st-005152", "name": "江尾駅", "genre": "station", "kind": "HUB", "area": "江府町", "region": "tottori-31403", "lat": 35.28357, "lon": 133.48497, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["st-004972", "st-005184"] },
+    { "id": "st-005184", "name": "武庫駅", "genre": "station", "kind": "HUB", "area": "江府町", "region": "tottori-31403", "lat": 35.26772, "lon": 133.4766, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["st-005152", "st-005255"] }
+  ]
+}
