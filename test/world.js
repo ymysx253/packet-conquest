@@ -356,6 +356,14 @@ async function solve(world, p, nodeId) {
   mover.movedAt = Date.now() - MOVE_INTERVAL_MS - 1000;
   await w.move(mover, tokyoSt.id);
   assert.ok(distanceKm(w.nodes.get(mover.homeNodeId), tokyoSt) <= 1.05, '1 日たてばまた引っ越せる');
+  // 引っ越し後に再起動しても(メモリに自分の拠点が無くても)、welcome は新しい拠点を返す。ホームボタンと最初の表示はこれを使う
+  mover.movedAt = Date.now() - MOVE_INTERVAL_MS - 1000;
+  const home3 = await w.move(mover, takao.id);
+  const wFresh = await new World({ store, minAnswerMs: 0 }).init();
+  const back = await wFresh.join(fakeWs(), null, mover.token);
+  const wel = await wFresh.welcome(back);
+  assert.ok(wel.home && wel.home.id === home3.id && wel.home.lat === home3.lat, '再起動後の welcome も引っ越し先の拠点を返す');
+  assert.ok(distanceKm(wel.home, takao) <= 1.05, 'ホームは引っ越し先(高尾)のそば');
 
   // 入力式の問題(COMMON.md): 欄の配信に accept は含まれない。inputs で答え、正規化して判定。結果に正解(正規形)と defenseNote
   const tq = { answerKind: 'text', fields: [{ name: 'net', label: 'ネットワーク', format: 'ipv4cidr', hint: '例: 10.0.0.0/24', accept: ['10.1.2.0/23'] }, { name: 'n', label: '台数', format: 'number', accept: ['510'] }], explanation: 'テスト', defenseNote: '守る側の一文' };

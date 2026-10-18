@@ -137,7 +137,7 @@ async function handle(ws, msg) {
       typeof msg.startNodeId === 'string' && msg.startNodeId ? msg.startNodeId.slice(0, 40) : null);
     ws.player = player;
     await world.regionIndex(); // 右上の都道府県名のため(メモリに無ければ 1 回だけ読む)
-    send(ws, world.welcome(player));
+    send(ws, await world.welcome(player));
     await world.emitPlayers();
     return;
   }

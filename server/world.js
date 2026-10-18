@@ -913,11 +913,20 @@ class World {
     const pref = r && r.state ? idx.byId.get(r.state) : null;
     return pref ? pref.name : (r ? r.name : null);
   }
-  welcome(p) {
-    const home = p.homeNodeId ? this.nodes.get(p.homeNodeId) : null;
+  // 自分の拠点はメモリ(タイルのキャッシュ)に無いことがある(再起動・しばらく見ていない範囲の解放)。無ければ保存から読む。
+  // 読めないと画面は既定の開始地点(東京)へ戻ってしまう(2026-10-19 の不具合: 引っ越し後のホームボタンが引っ越し前を出す)
+  async welcome(p) {
+    let home = null;
+    if (p.homeNodeId) {
+      home = this.nodes.get(p.homeNodeId) || null;
+      if (!home) { const d = await this.store.loadNode(p.homeNodeId); if (d) home = this.adopt(d); }
+    }
+    // 自分の拠点が無いときの目安は、選んだ開始地点(無ければ東京)
+    let spawn = tokyo.SPAWN_CENTER;
+    if (!home && p.startNodeId) { try { const s = await this.startNode(p); spawn = { ...spawn, lat: s.lat, lon: s.lon, name: s.name }; } catch { /* 選べない開始地点なら既定のまま */ } }
     return { t: 'welcome', id: p.id, token: p.token, name: p.name, country: p.country || this.country, startNodeId: p.startNodeId || null, movedAt: p.movedAt || null, area: this.areaNameOf(p),
       team: p.team || null, teamName: p.team ? (this.teamNames.get(p.team) || null) : null, cooldownUntil: p.cooldownUntil || 0,
-      home: home ? { id: home.id, lat: home.lat, lon: home.lon } : null, spawn: tokyo.SPAWN_CENTER };
+      home: home ? { id: home.id, lat: home.lat, lon: home.lon } : null, spawn };
   }
 }
 
