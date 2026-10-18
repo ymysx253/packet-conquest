@@ -233,14 +233,24 @@ async function solve(world, p, nodeId) {
   const sub = await w.join(fakeWs(), 'かいいん', null, tokyoSt.id);
   sub.plan = 'sub';
   await w.disconnect(idle); await w.disconnect(sub);
+  // 休眠は稼働時計で数える: 実時刻だけ進んでも(メンテナンスで止まっていた間は)回収しない
   idle.lastSeen = Date.now() - 8 * 24 * 3600 * 1000; sub.lastSeen = idle.lastSeen; await w.persistPlayer(idle); await w.persistPlayer(sub);
-  assert.strictEqual(await w.reclaimIdle(), 1, '休眠 1 件を回収(会員は残る)');
+  assert.strictEqual(await w.reclaimIdle(), 0, '稼働時計が進んでいなければ回収しない');
+  const upBefore = w.uptime;
+  w.lastTick = Date.now() - 24 * 3600 * 1000; await w.tick();
+  assert.ok(w.uptime - upBefore <= 5 * 60 * 1000, '止まっていた時間は 1 回の刻みで 5 分までしか進まない');
+  w.uptime += 8 * 24 * 3600 * 1000; // 稼働 8 日ぶん進んだことにする
+  await w.touch(a); await w.persistPlayer(a); // 接続中の a は最近見た扱い
+  assert.strictEqual(await w.reclaimIdle(), 1, '稼働時計で 7 日たてば休眠 1 件を回収(会員は残る)');
   assert.ok(!(await store.loadPlayer(idle.id)) && !(await store.loadNode(idleHome.id)) && !w.nodes.has(idleHome.id), 'アカウントと自分の拠点が消える');
   assert.strictEqual((await store.loadNode(victim.id)).owner, null, '奪っていた拠点は中立に戻る');
   assert.strictEqual(victim.defense, 0);
   assert.ok(await store.loadPlayer(sub.id) && (await store.loadNode(sub.homeNodeId)), 'サブスク会員は残る');
   assert.ok(await store.loadPlayer(a.id), '接続中の人は残る');
   assert.ok(w.log.some((l) => l.text.includes('きゅうみん') && l.text.includes('中立')));
+  // 稼働時計は保存され、再起動後に続きから数える
+  const w3 = await new World({ store }).init();
+  assert.ok(w3.uptime >= upBefore, '稼働時計が保存から復元される');
 
   // 参加前の人も地図を読める(開始地点を地図から選ぶため)。配信先にはならない
   const gws = fakeWs();

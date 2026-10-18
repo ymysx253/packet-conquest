@@ -11,6 +11,7 @@ const CONTAINERS = [
   { id: 'regions', partitionKey: { paths: ['/parent'] } },
   { id: 'players', partitionKey: { paths: ['/id'] } },
   { id: 'questions', partitionKey: { paths: ['/nodeId'] } },
+  { id: 'meta', partitionKey: { paths: ['/id'] } }, // 小さな設定・状態(稼働時計 clock)。無ければ起動時に作る(共有スループット)
 ];
 const SHARED_RU = 1000;
 const CHUNK = 60; // IN 句に並べるタイル数の上限
@@ -111,10 +112,16 @@ class CosmosStore {
     return rows;
   }
   // 休眠アカウントの回収
-  async findIdlePlayers(before) {
-    const rows = await this.query('players', { query: 'SELECT * FROM c WHERE c.lastSeen < @t AND (NOT IS_DEFINED(c.plan) OR IS_NULL(c.plan))', parameters: [{ name: '@t', value: before }] });
+  async findIdlePlayers(beforeUp) {
+    // lastSeenUp(稼働時計)が無い古いドキュメントは条件に合わないので対象にならない(次の接続で付く)
+    const rows = await this.query('players', { query: 'SELECT * FROM c WHERE c.lastSeenUp < @t AND (NOT IS_DEFINED(c.plan) OR IS_NULL(c.plan))', parameters: [{ name: '@t', value: beforeUp }] });
     return rows.map((r) => this.strip(r));
   }
+  async loadMeta(id) {
+    await this.ensure();
+    try { const { resource } = await this.c.meta.item(id, id).read(); return this.strip(resource) || null; } catch (e) { if (e.code === 404) return null; throw e; }
+  }
+  async saveMeta(doc) { await this.ensure(); await this.c.meta.items.upsert(doc); }
   async nodesOwnedBy(playerId) {
     const rows = await this.query('nodes', { query: 'SELECT * FROM c WHERE c.owner = @id', parameters: [{ name: '@id', value: playerId }] });
     return rows.map((r) => this.strip(r));

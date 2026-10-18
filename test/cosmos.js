@@ -53,7 +53,10 @@ const dbName = process.env.COSMOS_TEST_DATABASE || 'pc-test';
     assert.ok((await store.countOwners('japan', saved.region)).byOwner[a.id] >= 1, '所有者の集計(GROUP BY)が動く');
     // 休眠の回収(Cosmos のクエリと削除が動くこと)
     const idle = await w.join(fakeWs(), 'きゅうみん', null);
-    await w.disconnect(idle); idle.lastSeen = Date.now() - 8 * 24 * 3600 * 1000; await w.persistPlayer(idle);
+    await w.disconnect(idle);
+    await w.tick(); w.uptime += 8 * 24 * 3600 * 1000; await w.tick();
+    assert.ok((await store.loadMeta('clock')).uptimeMs >= 8 * 24 * 3600 * 1000, '稼働時計が保存される');
+    await w.touch(a); await w.persistPlayer(a);
     assert.strictEqual(await w.reclaimIdle(), 1, '休眠を回収');
     assert.ok(!(await store.loadPlayer(idle.id)) && !(await store.loadNode(idle.homeNodeId)), 'アカウントと拠点が消える');
     assert.ok(await store.loadPlayer(a.id), '接続中の人は残る');

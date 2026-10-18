@@ -18,7 +18,8 @@ const MAX_LEVEL = 999;                  // 出題レベルの上限(強化はこ
 const PROTECT_MS = 24 * 60 * 60 * 1000; // 初心者保護: 生まれた拠点は 24 時間攻撃されない
 const PROTECT_MAX_NODES = 3;            // 初心者保護: 所持拠点がこの数以下の人は攻撃されない(作成から NEWBIE_MS の間だけ)
 const NEWBIE_MS = 7 * 24 * 60 * 60 * 1000;  // 初心者保護の期限: 作成から 7 日(2026-10-18 決定。別アカウントで要衝を永久に守る穴をふさぐ)
-const IDLE_MS = 7 * 24 * 60 * 60 * 1000;    // 休眠: 7 日間接続が無い無料アカウントは、拠点をすべて中立に戻して削除(サブスク会員は除外)
+const IDLE_MS = 7 * 24 * 60 * 60 * 1000;    // 休眠: 稼働時間で 7 日接続が無い無料アカウントは、拠点をすべて中立に戻して削除(サブスク会員は除外)
+const TICK_CAP_MS = 5 * 60 * 1000;          // 稼働時計: 1 回の刻みで進めてよい上限。止まっていた時間(メンテナンス)は数えない
 const HOME_LINKS = 2;                   // プレイヤーの拠点がつながる近隣拠点の数(開始地点 + 近い 1 つ)
 const SPAWN_RINGS_KM = [0.3, 0.6, 1.0];  // 開始地点のまわりに置く半径。空きがなければ広げ、1 km でも無ければ満員(第 3.1 節)
 const SPAWN_TRIES = 80;                 // 半径ごとの試行回数
@@ -50,6 +51,9 @@ class World {
     this.listeners = new Set(); // 配信先(index.js が登録)
     this.log = [];
     this.homeSeq = 0;
+    // 稼働時計(2026-10-18 決定): サーバーが動いていた時間だけを足す。休眠の判定はこの時計で行い、メンテナンス中は日数が進まない
+    this.uptime = 0;
+    this.lastTick = now();
   }
 
   // ---------- 起動 ----------
@@ -60,8 +64,21 @@ class World {
     if ((await this.store.countRegions()) === 0) {
       await this.store.seedRegions(regionDocs(tokyo.NODES));
     }
+    const clock = await this.store.loadMeta('clock');
+    this.uptime = clock && Number.isFinite(clock.uptimeMs) ? clock.uptimeMs : 0;
+    this.lastTick = now();
     return this;
   }
+  // 稼働時計を進める(1 分ごと)。前回から TICK_CAP_MS を超えて経っていれば、その分は止まっていたとみなして数えない
+  async tick() {
+    const t = now();
+    this.uptime += Math.min(TICK_CAP_MS, Math.max(0, t - this.lastTick));
+    this.lastTick = t;
+    try { await this.store.saveMeta({ id: 'clock', type: 'meta', uptimeMs: this.uptime, savedAt: t }); } catch (e) { console.error('稼働時計の保存に失敗:', e.message); }
+    return this.uptime;
+  }
+  // 最終接続を記録する(実時刻と稼働時計の両方)
+  touch(p) { p.lastSeen = now(); p.lastSeenUp = this.uptime; }
 
   // ---------- タイルの読み込みとリンク ----------
   tile(t) {
@@ -230,7 +247,7 @@ class World {
       if (!p) { const doc = await this.store.findPlayerByToken(token); if (doc) p = this.attach(doc); }
       if (p) {
         if (p.ws && p.ws !== ws) { try { p.ws.close(); } catch { /* 古い接続は閉じるだけ */ } }
-        p.ws = ws; p.online = true; p.lastSeen = now(); p.view = new Set();
+        p.ws = ws; p.online = true; this.touch(p); p.view = new Set();
         if (name) p.name = name;
         this.addLog(`${p.name} が戻ってきました`);
         await this.persistPlayer(p);
@@ -241,7 +258,7 @@ class World {
       id: newId(), token: newId(), name, color: await this.pickColor(),
       country: this.country, startNodeId: startNodeId || DEFAULT_START_ID, // 登録国と開始地点(第 3.1 節)
       plan: null, // サブスク(予約)。入っていれば休眠でも消えない
-      points: 0, score: 0, nodesOwned: 0, homeNodeId: null, team: null, sponsorId: null, createdAt: now(), lastSeen: now(),
+      points: 0, score: 0, nodesOwned: 0, homeNodeId: null, team: null, sponsorId: null, createdAt: now(), lastSeen: now(), lastSeenUp: this.uptime,
     });
     p.ws = ws; p.online = true;
     try { await this.spawnHome(p); } catch (e) { this.players.delete(p.id); throw e; }
@@ -265,10 +282,11 @@ class World {
     await this.persistPlayer(p);
     return p.token;
   }
-  // 休眠アカウントの回収(2026-10-18 決定): 7 日間接続が無い無料アカウントは、奪った拠点も自分の拠点も含めて全部中立に戻し、アカウントを削除する。
-  // サブスク(plan あり)は対象外。いま接続中の人も対象外
+  // 休眠アカウントの回収(2026-10-18 決定): 稼働時計で 7 日接続が無い無料アカウントは、奪った拠点も自分の拠点も含めて全部中立に戻し、アカウントを削除する。
+  // サブスク(plan あり)は対象外。いま接続中の人も対象外。古いドキュメント(lastSeenUp 無し)は次に接続したときから数え始める
   async reclaimIdle() {
-    const docs = await this.store.findIdlePlayers(now() - IDLE_MS);
+    if (this.uptime < IDLE_MS) return 0; // 時計がまだ 7 日ぶん進んでいなければ誰も対象にならない
+    const docs = await this.store.findIdlePlayers(this.uptime - IDLE_MS);
     let count = 0;
     const touched = new Map(); // region → その地域の拠点(支配の再集計用)
     for (const doc of docs) {
@@ -307,7 +325,7 @@ class World {
     for (const p of this.players.values()) if (p.online && p.view.has(t)) this.send(p, msg);
   }
   async disconnect(p) {
-    p.online = false; p.ws = null; p.pending = null; p.lastSeen = now(); p.view = new Set();
+    p.online = false; p.ws = null; p.pending = null; this.touch(p); p.view = new Set();
     await this.persistPlayer(p);
   }
   async pickColor() {
@@ -444,7 +462,7 @@ class World {
   async answer(p, qid, choice) {
     const pend = p.pending;
     if (!pend || pend.qid !== qid) throw new Error('この問題はもう終わっています');
-    p.pending = null; p.lastSeen = now();
+    p.pending = null; this.touch(p);
     const correct = choice === pend.answerIndex;
     let outcome;
     if (correct) outcome = await this.apply(p, pend.nodeId, pend.mode);

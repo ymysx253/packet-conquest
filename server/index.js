@@ -108,7 +108,8 @@ setInterval(() => {
   }
   world.evict();
 }, 25000);
-// 休眠アカウントの回収は 1 時間ごと(起動時にも 1 回)
+// 稼働時計は 1 分ごとに進める(止まっていた時間は数えない)。休眠アカウントの回収は 1 時間ごと(起動時にも 1 回)
+setInterval(() => { world.tick().catch(() => {}); }, 60 * 1000);
 setInterval(() => { limiter.sweep(); world.reclaimIdle().catch((e) => console.error('休眠の回収に失敗:', e.message)); }, 60 * 60 * 1000);
 
 world.init().then(async () => {

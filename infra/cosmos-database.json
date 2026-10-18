@@ -69,6 +69,15 @@
       "properties": {
         "resource": { "id": "questions", "partitionKey": { "paths": [ "/nodeId" ], "kind": "Hash" } }
       }
+    },
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+      "apiVersion": "2024-05-15",
+      "name": "[format('{0}/meta', variables('db'))]",
+      "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('accountName'), parameters('databaseName'))]" ],
+      "properties": {
+        "resource": { "id": "meta", "partitionKey": { "paths": [ "/id" ], "kind": "Hash" } }
+      }
     }
   ]
 }
