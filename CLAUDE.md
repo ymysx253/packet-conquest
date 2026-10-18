@@ -29,7 +29,7 @@ npm.cmd run test:e2e   # サーバー起動中に実行。2人で1試合を通�
 - `server/questions/index.js`: 問題の取得口(レベル → 生成器の対応はここ 1 か所) / `server/questions/subnet.js`: Lv1〜3 サブネット計算 / `server/questions/basics.js`: Lv4〜10(VLSM、集約、IPv6、経路表、ARP/MAC 表、ACL、NAT 表)。Lv11 以上は LEVELS.md の階段に沿って追加する(設計書は `docs/questions/`: README → COMMON → design-11-50 / design-51-100 の順に読む)。固定問題は DB(Cosmos DB の questions)に テンプレート id・seed・版 で保存する前提
 - `server/map/data/regions.json`: 地域マスター(宇宙→天体→大陸→国→地方→州→市・区。段(tier)で表す共通の階層。DB の regions と同じ項目) / `server/map/data/tokyo.json`: 東京の拠点マスター(DB の nodes と同じ項目。`region` で区・市を指す)。拠点や地域を足すときはこれらに1行追加し `npm.cmd test` で検証 / `server/map/load.js`: 読み込み・検証・保存用の形(`regionDocs`) / `server/map/geo.js`: 距離・リンク自動生成
 - 画面は緯度・経度を受け取って自分で投影する(サーバーは描画座標を送らない)
-- `public/`: 画面(ビルド不要の HTML / CSS / JS)。`public/data/bounds/<都道府県>.json` と `japan.json`(粗い全国版)は区・市の境界(`tools/import-boundaries.js` が国土数値情報 N03 から作る)。拠点マスターは都道府県ごとのファイル(`tokyo.json`、`kanagawa.json`、`chiba.json` …)で、`server/map/all.js` が全部まとめて読む。地域マスターは全国の都道府県・市区町村を持つ(`tools/import-regions.js`)
+- `public/`: 画面(ビルド不要の HTML / CSS / JS)。`public/data/bounds/<都道府県>.json` と `japan.json`(粗い全国版)は区・市の境界(`tools/import-boundaries.js` が国土数値情報 N03 から作る)。`public/data/water.json` は湖・湾の形(`tools/import-water.js`。薄い水色で塗る)。拠点マスターは都道府県ごとのファイル(`tokyo.json`、`kanagawa.json`、`chiba.json` …)で、`server/map/all.js` が全部まとめて読む。地域マスターは全国の都道府県・市区町村を持つ(`tools/import-regions.js`)
 - 手元の確認は保存をメモリ版にして(環境変数 `STORE=memory`。`.claude/launch.json` の `packet-conquest-memory`)ブラウザで行う。本番 DB に確認用の書き込みをしない。DB の確認は `npm.cmd test` の `pc-test`(作って消す)
 
 ## 守ること

@@ -258,6 +258,7 @@ port,unlocode,JPOSM,元町港,Motomachi Port,元町港,34.75114,139.35147,JP,dom
 | `src-wikidata` | Wikidata | CC0 | 可 | なし | 名所、離島の空港・港・島、識別コード |
 | `src-internal` | 手で入れた拠点 | 自作 | 可 | なし | 東京の名所 64 件 |
 | `src-ksj-s10a-2016` | 国土数値情報 港湾間流通量・海上経路(S10a) | 商用可(国土数値情報の規約) | 可 | なし | 海路(取り込み予定) |
+| `src-ksj-w09-2005` | 国土数値情報 湖沼データ(W09、2005) | 商用可(国土数値情報の規約) | 可 | なし | 湖・貯水池の形(塗るだけ) |
 | `src-estat-boundary-2020` | 国勢調査 2020 年 小地域(町丁・字等)境界データ(e-Stat) | e-Stat の利用規約(CC BY 4.0 と互換) | 可 | なし | 町・字 |
 | `src-mlit-air-stats` | 国土交通省 航空輸送統計調査(路線別) | 政府統計(出典表示) | 可(見込み) | なし | 空路(取り込み予定) |
 | (使わない)`src-ksj-c02` `src-ksj-c09` `src-ksj-n09` `src-ksj-s10b` | 港湾・漁港・旅客航路・空港間流通量 | 非商用 | 不可 | — | 記録として台帳に残す(`status: retired`) |
@@ -288,13 +289,14 @@ port,unlocode,JPOSM,元町港,Motomachi Port,元町港,34.75114,139.35147,JP,dom
 - `tools/import-stations.js`、`import-landmarks.js`、`import-islands.js`: 取り込みの時点で `codes`・`src`・`gateway` を書く
 - `tools/import-gateways.js`: 航路の端点になる空港・港を拠点にする(id は `ap-` / `pt-`)。既にある港には出典のコード(`codes.ext`)を付ける
 - `tools/import-towns.js`: 町・字を拠点にする(id は `tw-`)。境界が接している町・字(`borders`)と中の駅・名所(`contains`)も書く
+- `tools/import-water.js`: 湖・貯水池の形を `public/data/water.json`(`pc.water/1`。`{ water: [{ id, name, kind, src, polys }] }`)に書く。画面が薄い水色で塗る。拠点は作らない
 - `tools/import-routes.js`: 航路の記録を出典ごとに書き直す(`server/map/data/routes/<出典 id>.json`)。照合できなかった端点は `docs/routes/README.md` に出す
 - `tools/route-sources.js`(出典の読み取りと、統計表の空港名 → IATA / ICAO の表)、`tools/xlsx.js`(依存なしの xlsx 読み取り)
 
 **取り込みの順番**(前の道具は自分の拠点を入れ直すので、この順に流す):
 
 ```
-import-stations → import-landmarks → import-islands → import-gateways → import-towns → fetch-codes → import-links → import-routes → db-setup --force
+import-stations → import-landmarks → import-islands → import-gateways → import-towns → import-water → fetch-codes → import-links → import-routes → db-setup --force
 ```
 
 **今のデータ**

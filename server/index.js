@@ -5,6 +5,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const zlib = require('zlib');
 const { WebSocketServer } = require('ws');
 const { loadEnv } = require('./env');
 loadEnv();
@@ -15,6 +16,9 @@ const { EventLog } = require('./events');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC = path.join(__dirname, '..', 'public');
+// gzip で縮めて送る種類と、縮めたものの置き場(ファイル + 更新時刻ごと)
+const COMPRESSIBLE = new Set(['.json', '.js', '.css', '.html', '.svg']);
+const gzipCache = new Map();
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -68,7 +72,19 @@ const server = http.createServer((req, res) => {
   if (!file.startsWith(PUBLIC + path.sep) && file !== PUBLIC) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8', ...SECURITY_HEADERS }); return res.end('見つかりません'); }
   fs.readFile(file, (err, data) => {
     if (err) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8', ...SECURITY_HEADERS }); return res.end('見つかりません'); }
-    res.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-cache', ...SECURITY_HEADERS });
+    const headers = { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-cache', Vary: 'Accept-Encoding', ...SECURITY_HEADERS };
+    // 文字のファイル(境界・湖の形の JSON など)は gzip で縮めて送る(2026-10-19。湖の形 510 KB が数分の 1 になる)。縮めたものはファイルの更新時刻ごとに覚える
+    if (COMPRESSIBLE.has(path.extname(file)) && /\bgzip\b/.test(req.headers['accept-encoding'] || '') && data.length > 1024) {
+      fs.stat(file, (e, st) => {
+        const key = `${file}|${st ? st.mtimeMs : 0}`;
+        let gz = gzipCache.get(key);
+        if (!gz) { gz = zlib.gzipSync(data); gzipCache.set(key, gz); }
+        res.writeHead(200, { ...headers, 'Content-Encoding': 'gzip' });
+        res.end(gz);
+      });
+      return;
+    }
+    res.writeHead(200, headers);
     res.end(data);
   });
 });
