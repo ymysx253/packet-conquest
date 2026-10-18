@@ -110,7 +110,7 @@ for (const list of byPref.values()) {
 let added = 0; const renamed = [];
 for (const c of picked) {
   const { T } = files.get(c.pref.id);
-  const names = new Set(T.nodes.map((n) => n.name));
+  const names = new Set(T.nodes.filter((n) => n.genre === c.genre).map((n) => n.name)); // 同じジャンルの中だけ
   let name = c.name;
   if (names.has(name)) { name = `${c.name}(${c.city.name})`; renamed.push(name); }
   if (names.has(name)) { name = `${c.name}(${c.qid})`; }

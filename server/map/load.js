@@ -15,7 +15,8 @@ const GATEWAY_SCOPES = new Set(['international', 'domestic']);
 const NODE_STATUSES = new Set(['public', 'hidden']);
 // 非公開の理由: military = 自衛隊・米軍が設置・管理する飛行場(2026-10-18 決定。tools/military.js)
 // restricted = 立ち入りが制限された場所(皇居、硫黄島・南鳥島・沖ノ鳥島など)
-const HIDDEN_REASONS = new Set(['military', 'restricted']);
+// disputed = 領有をめぐる争いがある地域(北方領土、尖閣諸島。2026-10-19)
+const HIDDEN_REASONS = new Set(['military', 'restricted', 'disputed']);
 
 const DATA_DIR = path.join(__dirname, 'data');
 const LEVEL_MIN = 1, LEVEL_MAX = 999; // 1〜10 が基本(国は 10)。11〜999 は拡張用。形は public/shapes.js
@@ -133,8 +134,9 @@ function validate(region, data) {
     if (reg.name !== n.area) fail(region, `${n.id}: area「${n.area}」と region「${reg.name}」が食い違います`);
     if (!/^[a-z0-9-]+$/.test(n.id)) fail(region, `${n.id}: id は英小文字・数字・ハイフンだけ`);
     if (ids.has(n.id)) fail(region, `${n.id}: id が重複`);
-    if (names.has(n.name)) fail(region, `${n.name}: 名称が重複`);
-    ids.add(n.id); names.add(n.name);
+    // 名前は同じジャンルの中で重ならない(ジャンルが違えば同じ名前でよい。町・字「諏訪湖」と自然の名所「諏訪湖」など。2026-10-19)
+    if (names.has(`${n.genre}|${n.name}`)) fail(region, `${n.name}: 名称が重複(同じジャンルの中)`);
+    ids.add(n.id); names.add(`${n.genre}|${n.name}`);
     if (!data.kinds[n.kind]) fail(region, `${n.id}: kind が不正 ${n.kind}`);
     if (typeof n.lat !== 'number' || typeof n.lon !== 'number' || n.lat < -90 || n.lat > 90 || n.lon < -180 || n.lon > 180) fail(region, `${n.id}: 緯度・経度が不正`);
     if (!Number.isInteger(n.level) || n.level < LEVEL_MIN || n.level > LEVEL_MAX) fail(region, `${n.id}: level は ${LEVEL_MIN}〜${LEVEL_MAX}`);

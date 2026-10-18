@@ -26,11 +26,14 @@ const SOURCE = 'src-estat-boundary-2020';
 const TODAY = new Date().toISOString().slice(0, 10);
 // 入れない区画(名前): 河川敷、湖・水面の扱いのもの
 const SKIP_NAME = /河川敷|水面|水域|無番地/; // 無番地 = 番地の無い国有地などの区画
-// 湖・湾・大きな川の水面が 1 つの区画になっているもの(人口 0 のときだけ。同じ名前の陸の町は残す)。
-// 周りの町・字と一気につながる近道にもなるので入れない
-const WATER_BODY = /(琵琶湖|霞ヶ浦|霞ケ浦|北浦|厚岸湾|厚岸湖|風蓮湖|中海|宍道湖|浜名湖|諏訪湖|猪苗代湖|十和田湖|田沢湖|八郎潟|サロマ湖|能取湖|涛沸湖|網走湖|洞爺湖|支笏湖|屈斜路湖|阿寒湖|小川原湖|河口湖|山中湖|芦ノ湖|中禅寺湖|印旛沼|手賀沼|牛久沼|信濃川|天竜川|木曽川|利根川|阿賀野川|最上川|北上川|石狩川|筑後川|吉野川|四万十川|多摩川|荒川|江戸川|淀川|長良川|揖斐川|球磨川|阿武隈川|那珂川|鬼怒川|渡良瀬川|富士川|大井川|相模川)$/;
-// 扱わない地域(DB にも入れない): 尖閣諸島(石垣市登野城尖閣)。北方領土と竹島は国勢調査の小地域に無い
-const EXCLUDE_NAME = /尖閣/;
+// 大きな川の水面が 1 つの区画になっているもの(人口 0 のときだけ。同じ名前の陸の町は残す)。
+// 細長く、川沿いの町・字を何十もつなぐ線になるので入れない。
+// 湖・湾(琵琶湖、霞ヶ浦、浜名湖、中海 など)は入れる(2026-10-19 ユーザー決定: 周りの町と一気につながる要所として面白い)
+const WATER_BODY = /(信濃川|天竜川|木曽川|利根川|阿賀野川|最上川|北上川|石狩川|筑後川|吉野川|四万十川|多摩川|荒川|江戸川|淀川|長良川|揖斐川|球磨川|阿武隈川|那珂川|鬼怒川|渡良瀬川|富士川|大井川|相模川)$/;
+// 領有をめぐる争いがある地域は、DB に非公開(disputed)で入れる(2026-10-19 ユーザー決定。ゲームでは使わない)。
+// 尖閣諸島は国勢調査の小地域(石垣市登野城尖閣)にある。北方領土は小地域に無いので、下で村ごとに入れる。竹島は小地域にも地域マスターにも無い
+const DISPUTED_NAME = /尖閣/;
+const NORTHERN_VILLAGES = ['01695', '01696', '01697', '01698', '01699', '01700']; // 色丹村・泊村・留夜別村・留別村・紗那村・蘂取村
 // 非公開にする区画(名前 → 理由)
 const HIDE_RULES = [
   { re: /基地|駐屯地|分屯地|演習場/, reason: 'military' }, // 米軍・自衛隊の基地・駐屯地・演習場(横田基地、朝霞駐屯地、えびの市 浦演習場 など)
@@ -179,20 +182,19 @@ for (const t of towns) {
 const report = { skipped: [], hidden: [], noRegion: [], moved: 0 };
 const keep = [];
 for (const t of towns) {
-  if (!t.name || SKIP_NAME.test(t.name) || EXCLUDE_NAME.test(t.name) || (t.jinko === 0 && WATER_BODY.test(t.name))) { report.skipped.push(`${t.cityName} ${t.name}`); continue; }
+  if (!t.name || SKIP_NAME.test(t.name) || (t.jinko === 0 && WATER_BODY.test(t.name))) { report.skipped.push(`${t.cityName} ${t.name}`); continue; }
   if (!t.region) { report.noRegion.push(`${t.code5} ${t.cityName} ${t.name}`); continue; }
   const rule = HIDE_RULES.find((x) => x.re.test(t.name));
-  t.hidden = HIDE_TOWNS[`${t.code5}|${t.name}`] || (rule && rule.reason) || (RESTRICTED.some(([s, n, w, e]) => t.lat >= s && t.lat <= n && t.lon >= w && t.lon <= e) ? 'restricted' : null);
+  t.hidden = HIDE_TOWNS[`${t.code5}|${t.name}`] || (rule && rule.reason) || (DISPUTED_NAME.test(t.name) ? 'disputed' : null) || (RESTRICTED.some(([s, n, w, e]) => t.lat >= s && t.lat <= n && t.lon >= w && t.lon <= e) ? 'restricted' : null);
   if (t.hidden) report.hidden.push(`${t.cityName} ${t.name}(${t.hidden})`);
   keep.push(t);
 }
 
-// 名前: 同じ都道府県で名前が重なる町・字、または既存の拠点と同じ名前なら「(市区町村名)」を付ける
+// 名前: 同じ都道府県で名前が重なる町・字には「(市区町村名)」を付ける
 const nameCount = new Map();
 for (const t of keep) { const k = `${t.code5.slice(0, 2)}|${t.name}`; nameCount.set(k, (nameCount.get(k) || 0) + 1); }
-const existingNames = new Set(others.map((n) => `${n.region.split('-')[0]}|${n.name}`));
 for (const t of keep) {
-  const dup = nameCount.get(`${t.code5.slice(0, 2)}|${t.name}`) > 1 || existingNames.has(`${t.region.parent}|${t.name}`);
+  const dup = nameCount.get(`${t.code5.slice(0, 2)}|${t.name}`) > 1; // 名前の重なりは町・字どうしだけで見る(ジャンルが違えば同じ名前でよい)
   t.display = dup ? `${t.name}(${t.region.name})` : t.name;
 }
 // 同じ市区町村の中でも重なる(字ごとに分けたもの)ときは小地域コードで区別
@@ -279,6 +281,19 @@ for (const t of keep) {
     if (c.length) node.contains = c;
   }
   f.T.nodes.push(node); added++;
+}
+// 北方領土(2026-10-19 ユーザー決定): 国勢調査の小地域に無いので、村ごとに 1 件、地域マスターの村の中心に非公開(disputed)で入れる。
+// 出どころは行政区域(国土数値情報 N03)。北海道を取り込むときだけ
+if (prefsInData.has('01')) {
+  const f = nodeFiles.get('hokkaido');
+  for (const code of NORTHERN_VILLAGES) {
+    const r = regionByCode.get(code);
+    if (!r || !r.center || !f) { report.noRegion.push(`${code}: 北方領土の村が地域マスターに無い`); continue; }
+    const taken = f.T.nodes.some((n) => n.name === r.name); // 北海道には古宇郡の泊村もある
+    f.T.nodes.push({ id: `tw-${code}-000000`, name: taken ? `${r.name}(北方領土)` : r.name, genre: 'town', kind: 'TOWN', area: r.name, region: r.id, lat: Number(r.center.lat.toFixed(5)), lon: Number(r.center.lon.toFixed(5)), level: 1, value: 1,
+      src: 'src-ksj-n03-2026', status: 'hidden', hiddenReason: 'disputed' });
+    report.hidden.push(`${r.name}(disputed)`); added++;
+  }
 }
 const order = Object.fromEntries(R.regions.map((r, i) => [r.id, i]));
 const rank = (n) => (n.genre === 'station' ? 2 : n.genre === 'town' ? 1 : 0); // 名所 → 町・字 → 駅 の順に並べる

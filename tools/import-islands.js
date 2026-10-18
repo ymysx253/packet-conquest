@@ -214,7 +214,7 @@ const hackableNodes = allNodes.filter((n) => n.hackable !== false);
       const region = regionByCode.get(c.code); const f = files.get(g.pref.id);
       if (!region || !f) continue;
       if (allNodes.some((nd) => distKm(nd, c) < 0.025)) continue; // 同じ場所の二重登録を避ける
-      const taken = new Set(f.T.nodes.map((nd) => nd.name));
+      const taken = new Set(f.T.nodes.filter((nd) => nd.genre === c.genre).map((nd) => nd.name)); // 同じジャンルの中だけ
       let name = c.name; if (taken.has(name)) name = `${c.name}(${region.name})`; if (taken.has(name)) name = `${c.name}(${c.qid})`;
       const level = gatewayLevel(c.genre, c.name, levelOf(c.sitelinks)); // 空港・港は最低レベルを上げる(tools/gateway.js)
       const node = { id: `isl-${c.qid.toLowerCase()}`, name, genre: c.genre, kind: 'GW', area: region.name, region: region.id, lat: Number(c.lat.toFixed(5)), lon: Number(c.lon.toFixed(5)), level, value: level, codes: { wikidata: c.qid }, src: 'src-wikidata' };

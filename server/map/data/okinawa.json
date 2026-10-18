@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "okinawa",
   "name": "沖縄県",
-  "version": 32,
+  "version": 35,
   "updatedAt": "2026-10-19",
   "note": "沖縄県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -204,6 +204,7 @@
     { "id": "tw-47207-020001", "name": "浜崎町", "genre": "town", "kind": "TOWN", "area": "石垣市", "region": "okinawa-47207", "lat": 24.33893, "lon": 124.14869, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "47207020001"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-47207-005000", "tw-47207-006000"], "adj": ["tw-47207-005000", "tw-47207-006000"] },
     { "id": "tw-47207-021001", "name": "八島町", "genre": "town", "kind": "TOWN", "area": "石垣市", "region": "okinawa-47207", "lat": 24.3322, "lon": 124.16591, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "47207021001"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-47207-001000", "tw-47207-005000", "tw-47207-012000", "tw-47207-023000"], "adj": ["tw-47207-001000", "tw-47207-005000", "tw-47207-012000", "tw-47207-023000"] },
     { "id": "tw-47207-023000", "name": "南ぬ浜町", "genre": "town", "kind": "TOWN", "area": "石垣市", "region": "okinawa-47207", "lat": 24.33123, "lon": 124.14847, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "47207023000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-47207-021001"], "adj": ["tw-47207-021001", "tw-47381-010000"] },
+    { "id": "tw-47207-024000", "name": "登野城尖閣", "genre": "town", "kind": "TOWN", "area": "石垣市", "region": "okinawa-47207", "lat": 25.74371, "lon": 123.47415, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "47207024000"}]}, "src": "src-estat-boundary-2020", "status": "hidden", "hiddenReason": "disputed" },
 
     { "id": "lm-q2037226", "name": "浦添ようどれ", "genre": "monument", "kind": "LM", "area": "浦添市", "region": "okinawa-47208", "lat": 26.24753, "lon": 127.73172, "level": 1, "value": 1, "codes": {"wikidata": "Q2037226"}, "src": "src-wikidata", "adj": ["st-010124", "tw-47208-001101"] },
     { "id": "lm-q11558303", "name": "浦添市美術館", "genre": "museum", "kind": "LM", "area": "浦添市", "region": "okinawa-47208", "lat": 26.24992, "lon": 127.71947, "level": 1, "value": 1, "codes": {"wikidata": "Q11558303"}, "src": "src-wikidata", "adj": ["st-010124", "tw-47208-001101"] },
@@ -948,7 +949,7 @@
     { "id": "tw-47381-008000", "name": "鳩間", "genre": "town", "kind": "TOWN", "area": "竹富町", "region": "okinawa-47381", "lat": 24.47254, "lon": 123.82003, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "47381008000"}]}, "src": "src-estat-boundary-2020", "adj": ["tw-47381-001000"] },
     { "id": "tw-47381-009000", "name": "小浜", "genre": "town", "kind": "TOWN", "area": "竹富町", "region": "okinawa-47381", "lat": 24.3394, "lon": 123.98073, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "47381009000"}]}, "src": "src-estat-boundary-2020", "contains": ["isl-q48751306"], "adj": ["isl-q48751306", "lm-q700908"] },
     { "id": "tw-47381-010000", "name": "竹富", "genre": "town", "kind": "TOWN", "area": "竹富町", "region": "okinawa-47381", "lat": 24.32505, "lon": 124.08806, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "47381010000"}]}, "src": "src-estat-boundary-2020", "adj": ["isl-q48751306", "tw-47207-023000"] },
-    { "id": "tw-47381-011000", "name": "黒島(竹富町)", "genre": "town", "kind": "TOWN", "area": "竹富町", "region": "okinawa-47381", "lat": 24.23778, "lon": 124.01024, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "47381011000"}]}, "src": "src-estat-boundary-2020", "contains": ["isl-q701089"], "adj": ["isl-q701089", "tw-47381-012000"] },
+    { "id": "tw-47381-011000", "name": "黒島", "genre": "town", "kind": "TOWN", "area": "竹富町", "region": "okinawa-47381", "lat": 24.23778, "lon": 124.01024, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "47381011000"}]}, "src": "src-estat-boundary-2020", "contains": ["isl-q701089"], "adj": ["isl-q701089", "tw-47381-012000"] },
     { "id": "tw-47381-012000", "name": "新城(竹富町)", "genre": "town", "kind": "TOWN", "area": "竹富町", "region": "okinawa-47381", "lat": 24.23427, "lon": 123.94519, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "47381012000"}]}, "src": "src-estat-boundary-2020", "contains": ["isl-q20662194", "isl-q4419682"], "adj": ["isl-q20662194", "isl-q4419682", "tw-47381-011000"] },
     { "id": "tw-47381-013000", "name": "波照間", "genre": "town", "kind": "TOWN", "area": "竹富町", "region": "okinawa-47381", "lat": 24.05852, "lon": 123.78237, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "47381013000"}]}, "src": "src-estat-boundary-2020", "contains": ["isl-q713881"], "adj": ["isl-q11555576", "isl-q713881"] },
 

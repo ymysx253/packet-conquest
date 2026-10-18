@@ -101,7 +101,7 @@
 | `gateway` | 空港・港などの玄関口の情報。`{ type: "airport" \| "port" \| "heliport" \| "station", scope: "international" \| "domestic", hub: true }`。航路を受けられるのは `gateway` を持つ拠点だけ |
 | `replacedBy` | 統合で使わなくなった拠点の行き先 id(ゲーム状態の引き継ぎに使う) |
 | `status` | 公開状態。`public`(既定)/ `hidden`(非公開)。非公開の拠点は DB には入れるが、ゲームでは使わない(線・航路・地域の集計・検索・配信の対象外)。後で公開に戻せるよう、コードや玄関口の情報は残す |
-| `hiddenReason` | 非公開の理由(`status: hidden` のとき必須)。`military` = 自衛隊・米軍が設置・管理する飛行場や基地・駐屯地(`tools/military.js`)、`restricted` = 立ち入りが制限された場所(皇居、硫黄島・南鳥島・沖ノ鳥島) |
+| `hiddenReason` | 非公開の理由(`status: hidden` のとき必須)。`military` = 自衛隊・米軍が設置・管理する飛行場や基地・駐屯地(`tools/military.js`)、`restricted` = 立ち入りが制限された場所(皇居、硫黄島・南鳥島・沖ノ鳥島)、`disputed` = 領有をめぐる争いがある地域(北方領土、尖閣諸島) |
 | `borders` | 町・字(`town`)だけ。境界が接している町・字の id(国勢調査の境界から求めた事実)。線はここから作る |
 | `contains` | 町・字(`town`)だけ。その町・字の中にある駅・名所の id。線はここから作る |
 

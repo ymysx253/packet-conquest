@@ -129,7 +129,7 @@ function regionAt(p) {
     if (!region) { added.skipped.push(`${node.name}: 市区町村が決まらない`); return null; }
     const f = files.get(region.parent);
     if (!f) { added.skipped.push(`${node.name}: 都道府県のファイルが無い(${region.parent})`); return null; }
-    const taken = new Set(f.T.nodes.map((n) => n.name));
+    const taken = new Set(f.T.nodes.filter((n) => n.genre === node.genre).map((n) => n.name)); // 同じジャンルの中だけ
     let name = node.name; if (taken.has(name)) name = `${node.name}(${region.name})`;
     const full = { ...node, name, area: region.name, region: region.id };
     f.T.nodes.push(full); all.push(full); prefOfNode.set(full.id, region.parent);

@@ -12,7 +12,7 @@ const prefOf = (n) => n.region.split('-')[0];
 assert.ok(new Set(NODES.map(prefOf)).size >= 3, '東京・神奈川・千葉が入っている');
 assert.ok(NODES.length >= 60, '都内の拠点が少なすぎます');
 assert.strictEqual(new Set(NODES.map((n) => n.id)).size, NODES.length, 'id が重複');
-assert.strictEqual(new Set(NODES.map((n) => prefOf(n) + '|' + n.name)).size, NODES.length, '名称が重複(同じ都道府県の中)');
+assert.strictEqual(new Set(NODES.map((n) => prefOf(n) + '|' + n.genre + '|' + n.name)).size, NODES.length, '名称が重複(同じ都道府県・同じジャンルの中。ジャンルが違えば同じ名前でよい)');
 // 架空ネットワークは id から決定的に作るので重複してよい(DESIGN.md 第 13 章)。代わりにタイルと国を確認
 for (const n of NODES) { assert.strictEqual(n.country, 'japan'); for (let z = 0; z <= 4; z++) assert.match(n['t' + z], new RegExp('^t' + z + ':-?\\d+:-?\\d+$')); assert.match(n.subnet, /^10\.\d+\.\d+\.0\/20$/); assert.strictEqual(n.span, 4094); }
 for (const n of NODES) {
@@ -187,7 +187,7 @@ assert.doesNotThrow(broken((d) => { d.nodes[0].codes = { iata: 'HND', icao: 'RJT
   assert.ok(TOWNS.length >= 10000, '関東の町・字は 1 万件以上');
   for (const n of TOWNS) {
     assert.match(n.id, /^tw-[0-9]{5}-[0-9]{6}$/, `${n.name}: 町・字の id`);
-    assert.ok(n.level === 1 && n.kind === 'TOWN' && n.hackable && n.src === 'src-estat-boundary-2020', `${n.name}: Lv1・占領できる・出典`);
+    assert.ok(n.level === 1 && n.kind === 'TOWN' && n.hackable && (n.src === 'src-estat-boundary-2020' || (n.hiddenReason === 'disputed' && n.src === 'src-ksj-n03-2026')), `${n.name}: Lv1・占領できる・出典`);
     assert.ok(!/^(大字|字)/.test(n.name) && !/[一二三四五六七八九十]丁目./.test(n.name), `${n.name}: 大字・丁目を含まない`);
     if (n.status === 'public') assert.ok(n.adj.length >= 1, `${n.name}: 町・字もどこかとつながる`);
   }
@@ -196,6 +196,11 @@ assert.doesNotThrow(broken((d) => { d.nodes[0].codes = { iata: 'HND', icao: 'RJT
   assert.ok(ginza[0].adj.some((id) => byIdAll[id].name === '銀座駅'), '銀座は中にある銀座駅とつながる');
   assert.ok(ginza[0].adj.some((id) => byIdAll[id].genre === 'town'), '銀座は隣の町とつながる');
   for (const [area, name] of [['千代田区', '千代田'], ['瑞穂町', '横田基地'], ['小笠原村', '硫黄島'], ['朝霞市', '陸上自衛隊朝霞駐屯地']]) { const t = TOWNS.find((n) => n.area === area && n.name === name); assert.ok(t && t.status === 'hidden', `${area} ${name}: 非公開(皇居・基地・立ち入り制限)`); }
+  // 湖・湾は公開の町・字(2026-10-19)。大きな川の水面の区画は入れない。領有をめぐる争いがある地域は非公開(disputed)
+  assert.ok(TOWNS.some((n) => n.name.startsWith('琵琶湖') && n.status === 'public' && n.adj.length >= 10), '琵琶湖は周りの町と一気につながる町・字');
+  assert.ok(!TOWNS.some((n) => n.name === '信濃川' && n.area === '長岡市'), '大きな川の水面は入れない');
+  assert.ok(TOWNS.some((n) => n.name === '登野城尖閣' && n.status === 'hidden' && n.hiddenReason === 'disputed'), '尖閣諸島は非公開');
+  assert.strictEqual(TOWNS.filter((n) => /^tw-0169[5-9]-|^tw-01700-/.test(n.id) && n.status === 'hidden' && n.hiddenReason === 'disputed').length, 6, '北方領土の 6 村は非公開');
   assert.ok(TOWNS.some((n) => n.region.startsWith('kanagawa') && n.adj.some((id) => byIdAll[id].genre === 'town' && byIdAll[id].region.startsWith('tokyo'))), '都県境をまたいで隣の町とつながる');
   assert.ok(NODES.find((n) => n.name === '那覇空港').status === 'public' && NODES.find((n) => n.name === '名古屋飛行場').status === 'public', '国・自治体が管理する空港(那覇・名古屋)は民間として公開');
   for (const n of NODES) {
