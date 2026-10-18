@@ -137,8 +137,36 @@ if (LM.length) {
 assert.ok(!NODES.some((n) => /DC$|IX$/.test(n.name)), '架空名の DC / IX は使わない');
 assert.throws(broken((d) => { d.nodes[0].region = 'tokyo-chuo'; }), /食い違います/);
 assert.throws(broken((d) => { d.nodes[0].id = 'Bad_ID'; }), /英小文字/);
-assert.throws(broken((d) => { d.nodes.find((n) => n.genre === 'station').routes = [{ to: 'haneda', mode: 'air' }]; }), /空港と港だけ/, '航路は空港と港だけ');
-assert.throws(broken((d) => { d.nodes.find((n) => n.genre === 'airport').routes = [{ to: 'haneda', mode: 'bus' }]; }), /routes は/, '航路の種類は air か sea');
+// 形式 pc.nodes/1(docs/DATA-FORMAT.md 第 4 章)
+assert.throws(broken((d) => { d.nodes.find((n) => n.genre === 'airport').routes = [{ to: 'haneda', mode: 'air' }]; }), /data.routes/, '航路は拠点に書かない(独立した記録)');
+assert.throws(broken((d) => { d.schema = 'pc.nodes/0'; }), /schema/);
+assert.throws(broken((d) => { d.defaultSource = 'src-nope'; }), /defaultSource/);
+assert.throws(broken((d) => { d.nodes[0].src = 'src-nope'; }), /台帳に無い/);
+assert.throws(broken((d) => { d.nodes[0].codes = { iata: 'hnd' }; }), /codes[.]iata の形/);
+assert.throws(broken((d) => { d.nodes[0].codes = { icao: 'RJT' }; }), /codes[.]icao の形/);
+assert.throws(broken((d) => { d.nodes[0].codes = { unlocode: 'JP-TYO' }; }), /codes[.]unlocode の形/);
+assert.throws(broken((d) => { d.nodes[0].codes = { iso: 'x' }; }), /決まった名前でない/);
+assert.throws(broken((d) => { d.nodes[0].codes = { ext: [{ scheme: 'src-nope', value: 'x' }] }; }), /codes[.]ext/, '協力企業のコードは台帳の出典 id で名前空間を分ける');
+assert.throws(broken((d) => { d.nodes[0].wikidata = 'Q1'; }), /codes[.]wikidata/);
+assert.throws(broken((d) => { d.nodes.find((n) => n.gateway).gateway = { type: 'airport', scope: 'world' }; }), /gateway は/);
+assert.throws(broken((d) => { const n = d.nodes.find((x) => x.hackable === false); n.gateway = { type: 'port', scope: 'domestic' }; }), /玄関口/);
+assert.throws(broken((d) => { d.nodes[0].names = { en: 1 }; }), /names は/);
+assert.doesNotThrow(broken((d) => { d.nodes[0].codes = { iata: 'HND', icao: 'RJTT', unlocode: 'JPHND', wikidata: 'Q1', ext: [{ scheme: 'src-internal', value: 'A-1' }] }; d.nodes[0].names = { en: 'Haneda' }; }));
+{
+  const { loadSources } = require('../server/map/sources');
+  const S = loadSources();
+  // 外部コードは拠点ごとに一意(協力企業のデータを結びつける鍵になる)
+  for (const k of ['iata', 'icao', 'unlocode', 'wikidata', 'ksj']) {
+    const seen = new Map();
+    for (const n of NODES) { const v = n.codes[k]; if (!v) continue; assert.ok(!seen.has(v), `codes.${k} ${v} が ${seen.get(v)} と ${n.id} で重複`); seen.set(v, n.id); }
+  }
+  assert.strictEqual(NODES.find((n) => n.id === 'haneda').codes.iata, 'HND', '羽田は IATA コードを持つ');
+  for (const n of NODES) {
+    assert.ok(S.usable(n.src).ok, `${n.name}: 出典 ${n.src} はゲームに使える`);
+    if (n.genre === 'airport' || n.genre === 'port') if (n.hackable !== false) assert.ok(n.gateway && n.gateway.type === n.genre, `${n.name}: ハック可の空港・港は玄関口(gateway)`);
+    if (/^st-[0-9]+$/.test(n.id)) assert.strictEqual(n.codes.ksj, n.id.slice(3), `${n.name}: 駅は国土数値情報のコードを持つ`);
+  }
+}
 assert.throws(broken((d) => { d.nodes.find((n) => n.adj && n.adj.length).adj.push('ST NOPE'); }), /不正/, 'adj の id の形を検査(別ファイルの拠点への線は許す)');
 assert.throws(broken((d) => { const n = d.nodes.find((x) => x.hackable === false); n.adj = ['st-003766']; }), /ハック不可の拠点に adj/);
 assert.doesNotThrow(broken(() => {}));

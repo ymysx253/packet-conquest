@@ -14,6 +14,8 @@ loadEnv(path.join(__dirname, '..', '.env'));
 const { CosmosStore } = require('../server/store-cosmos');
 const { nodeDocs, regionDocs } = require('../server/map/load');
 const all = require('../server/map/all');
+const { loadSources } = require('../server/map/sources');
+const { readRouteFiles } = require('../server/map/routes');
 
 const args = process.argv.slice(2);
 const flag = (name) => { const i = args.indexOf(name); return i >= 0 ? (args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : true) : null; };
@@ -66,6 +68,21 @@ async function inChunks(items, fn) {
     if (kept.length) console.log(`  持ち主がいるため残した拠点: ${kept.map((r) => `${r.id}(${r.owner})`).join(', ')}`);
   } else {
     console.log(`nodes: すでに ${count} 件あるので何もしません(--force でマスター項目を更新)`);
+  }
+  // 出典の台帳(docs/DATA-FORMAT.md 第 2・7 章): meta に 1 件で写す
+  const S = loadSources();
+  await store.c.meta.items.upsert({ id: 'sources', schema: 'pc.sources/1', sources: S.SOURCES, syncedAt: new Date().toISOString() });
+  console.log(`meta/sources: 出典 ${S.SOURCES.length} 件を保存`);
+
+  // 航路の記録(第 5・7 章): 出典ごとに差し替える。ファイルから消えた記録は削除する
+  for (const { name, data } of readRouteFiles()) {
+    const recs = data.routes.map((r) => ({ ...r, source: data.source }));
+    const { resources: cur } = await store.c.routes.items.query({ query: 'SELECT c.id FROM c WHERE c.source = @s', parameters: [{ name: '@s', value: data.source }] }, { partitionKey: data.source }).fetchAll();
+    const keep = new Set(recs.map((r) => r.id));
+    await inChunks(recs, (d) => store.c.routes.items.upsert(d));
+    const gone = cur.filter((r) => !keep.has(r.id));
+    await inChunks(gone, (r) => store.c.routes.item(r.id, data.source).delete().catch((e) => { if (e.code !== 404) throw e; }));
+    console.log(`routes: ${name} の ${recs.length} 件を保存、${gone.length} 件を削除`);
   }
   console.log('完了');
 })().catch((e) => { console.error('失敗:', e.message); process.exit(1); });

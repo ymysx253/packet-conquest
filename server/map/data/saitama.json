@@ -1,14 +1,10 @@
 {
+  "schema": "pc.nodes/1",
   "region": "saitama",
   "name": "埼玉県",
   "version": 21,
   "updatedAt": "2026-10-19",
   "note": "埼玉県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
-  "sources": [
-    "「国土数値情報(鉄道データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N02-2025.html)を加工して作成",
-    "「国土数値情報(行政区域データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-2026.html)を加工して作成",
-    "名所の名前と位置の一部は Wikidata(CC0)による(tools/import-landmarks.js)"
-  ],
   "kinds": {
     "IX": "相互接続点",
     "DC": "データセンター",
@@ -43,6 +39,7 @@
     "observatory",
     "ix"
   ],
+  "defaultSource": "src-ksj-n02-2025",
   "nodes": [
     { "id": "st-002877", "name": "西大宮駅", "genre": "station", "kind": "HUB", "area": "さいたま市西区", "region": "saitama-11101", "lat": 35.92203, "lon": 139.5791, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 川越線"], "adj": ["st-002862", "st-002891"] },
     { "id": "st-002891", "name": "指扇駅", "genre": "station", "kind": "HUB", "area": "さいたま市西区", "region": "saitama-11101", "lat": 35.91674, "lon": 139.56435, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 川越線"], "adj": ["st-002877", "st-002919"] },
@@ -55,12 +52,12 @@
     { "id": "st-002859", "name": "土呂駅", "genre": "station", "kind": "HUB", "area": "さいたま市北区", "region": "saitama-11102", "lat": 35.93067, "lon": 139.63154, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-002838", "st-002914"] },
     { "id": "st-002862", "name": "日進駅", "genre": "station", "kind": "HUB", "area": "さいたま市北区", "region": "saitama-11102", "lat": 35.93178, "lon": 139.6068, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 川越線"], "adj": ["lm-q6133253", "st-002877", "st-002914"] },
 
-    { "id": "lm-q1189715", "name": "さいたま市大宮公園サッカー場", "genre": "stadium", "kind": "LM", "area": "さいたま市大宮区", "region": "saitama-11103", "lat": 35.9163, "lon": 139.63338, "level": 2, "value": 2, "wikidata": "Q1189715", "adj": ["st-002876", "st-002887"] },
-    { "id": "lm-q846106", "name": "鉄道博物館", "genre": "museum", "kind": "LM", "area": "さいたま市大宮区", "region": "saitama-11103", "lat": 35.92056, "lon": 139.61833, "level": 1, "value": 1, "wikidata": "Q846106", "adj": ["st-002881"] },
-    { "id": "lm-q5355981", "name": "大宮競輪場", "genre": "stadium", "kind": "LM", "area": "さいたま市大宮区", "region": "saitama-11103", "lat": 35.9192, "lon": 139.634, "level": 1, "value": 1, "wikidata": "Q5355981", "adj": ["st-002876"] },
-    { "id": "lm-q11248611", "name": "埼玉県立歴史と民俗の博物館", "genre": "museum", "kind": "LM", "area": "さいたま市大宮区", "region": "saitama-11103", "lat": 35.92111, "lon": 139.63, "level": 1, "value": 1, "wikidata": "Q11248611", "adj": ["st-002876"] },
-    { "id": "lm-q5356064", "name": "大宮公園", "genre": "park", "kind": "LM", "area": "さいたま市大宮区", "region": "saitama-11103", "lat": 35.919, "lon": 139.631, "level": 1, "value": 1, "wikidata": "Q5356064", "adj": ["st-002887"] },
-    { "id": "lm-q703633", "name": "氷川神社", "genre": "shrine_temple", "kind": "LM", "area": "さいたま市大宮区", "region": "saitama-11103", "lat": 35.91704, "lon": 139.62946, "level": 3, "value": 3, "hackable": false, "wikidata": "Q703633" },
+    { "id": "lm-q1189715", "name": "さいたま市大宮公園サッカー場", "genre": "stadium", "kind": "LM", "area": "さいたま市大宮区", "region": "saitama-11103", "lat": 35.9163, "lon": 139.63338, "level": 2, "value": 2, "adj": ["st-002876", "st-002887"], "codes": {"wikidata": "Q1189715"}, "src": "src-wikidata" },
+    { "id": "lm-q846106", "name": "鉄道博物館", "genre": "museum", "kind": "LM", "area": "さいたま市大宮区", "region": "saitama-11103", "lat": 35.92056, "lon": 139.61833, "level": 1, "value": 1, "adj": ["st-002881"], "codes": {"wikidata": "Q846106"}, "src": "src-wikidata" },
+    { "id": "lm-q5355981", "name": "大宮競輪場", "genre": "stadium", "kind": "LM", "area": "さいたま市大宮区", "region": "saitama-11103", "lat": 35.9192, "lon": 139.634, "level": 1, "value": 1, "adj": ["st-002876"], "codes": {"wikidata": "Q5355981"}, "src": "src-wikidata" },
+    { "id": "lm-q11248611", "name": "埼玉県立歴史と民俗の博物館", "genre": "museum", "kind": "LM", "area": "さいたま市大宮区", "region": "saitama-11103", "lat": 35.92111, "lon": 139.63, "level": 1, "value": 1, "adj": ["st-002876"], "codes": {"wikidata": "Q11248611"}, "src": "src-wikidata" },
+    { "id": "lm-q5356064", "name": "大宮公園", "genre": "park", "kind": "LM", "area": "さいたま市大宮区", "region": "saitama-11103", "lat": 35.919, "lon": 139.631, "level": 1, "value": 1, "adj": ["st-002887"], "codes": {"wikidata": "Q5356064"}, "src": "src-wikidata" },
+    { "id": "lm-q703633", "name": "氷川神社", "genre": "shrine_temple", "kind": "LM", "area": "さいたま市大宮区", "region": "saitama-11103", "lat": 35.91704, "lon": 139.62946, "level": 3, "value": 3, "hackable": false, "codes": {"wikidata": "Q703633"}, "src": "src-wikidata" },
     { "id": "st-002876", "name": "大宮公園駅", "genre": "station", "kind": "HUB", "area": "さいたま市大宮区", "region": "saitama-11103", "lat": 35.92372, "lon": 139.6324, "level": 1, "value": 1, "lines": ["東武鉄道 野田線"], "adj": ["lm-q11248611", "lm-q1189715", "lm-q5355981", "st-002869", "st-002887"] },
     { "id": "st-002881", "name": "鉄道博物館駅", "genre": "station", "kind": "HUB", "area": "さいたま市大宮区", "region": "saitama-11103", "lat": 35.92058, "lon": 139.6177, "level": 1, "value": 1, "lines": ["埼玉新都市交通 伊奈線"], "adj": ["lm-q846106", "st-002857", "st-002914"] },
     { "id": "st-002887", "name": "北大宮駅", "genre": "station", "kind": "HUB", "area": "さいたま市大宮区", "region": "saitama-11103", "lat": 35.91849, "lon": 139.62511, "level": 1, "value": 1, "lines": ["東武鉄道 野田線"], "adj": ["lm-q1189715", "lm-q5356064", "st-002876", "st-002914"] },
@@ -71,17 +68,17 @@
     { "id": "st-002854", "name": "七里駅", "genre": "station", "kind": "HUB", "area": "さいたま市見沼区", "region": "saitama-11104", "lat": 35.9361, "lon": 139.66545, "level": 1, "value": 1, "lines": ["東武鉄道 野田線"], "adj": ["st-002833", "st-002869"] },
     { "id": "st-002869", "name": "大和田駅", "genre": "station", "kind": "HUB", "area": "さいたま市見沼区", "region": "saitama-11104", "lat": 35.92923, "lon": 139.65038, "level": 1, "value": 1, "lines": ["東武鉄道 野田線"], "adj": ["st-002854", "st-002876"] },
 
-    { "id": "lm-q1052149", "name": "さいたまスーパーアリーナ", "genre": "stadium", "kind": "LM", "area": "さいたま市中央区", "region": "saitama-11105", "lat": 35.89489, "lon": 139.63083, "level": 4, "value": 4, "wikidata": "Q1052149", "adj": ["st-002914", "st-002934", "st-002938", "st-002947"] },
+    { "id": "lm-q1052149", "name": "さいたまスーパーアリーナ", "genre": "stadium", "kind": "LM", "area": "さいたま市中央区", "region": "saitama-11105", "lat": 35.89489, "lon": 139.63083, "level": 4, "value": 4, "adj": ["st-002914", "st-002934", "st-002938", "st-002947"], "codes": {"wikidata": "Q1052149"}, "src": "src-wikidata" },
     { "id": "st-002938", "name": "北与野駅", "genre": "station", "kind": "HUB", "area": "さいたま市中央区", "region": "saitama-11105", "lat": 35.89068, "lon": 139.62851, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["lm-q1052149", "st-002914", "st-002951"] },
     { "id": "st-002951", "name": "与野本町駅", "genre": "station", "kind": "HUB", "area": "さいたま市中央区", "region": "saitama-11105", "lat": 35.88008, "lon": 139.62633, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["lm-q1322412", "st-002938", "st-002975"] },
     { "id": "st-002975", "name": "南与野駅", "genre": "station", "kind": "HUB", "area": "さいたま市中央区", "region": "saitama-11105", "lat": 35.86652, "lon": 139.63137, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["lm-q1322412", "st-002951", "st-002995"] },
 
-    { "id": "lm-q1322412", "name": "埼玉大学", "genre": "university", "kind": "EDU", "area": "さいたま市桜区", "region": "saitama-11106", "lat": 35.86472, "lon": 139.60722, "level": 3, "value": 3, "wikidata": "Q1322412", "adj": ["st-002951", "st-002975", "st-003014"] },
-    { "id": "lm-q4700903", "name": "秋ヶ瀬公園", "genre": "park", "kind": "LM", "area": "さいたま市桜区", "region": "saitama-11106", "lat": 35.85073, "lon": 139.60095, "level": 1, "value": 1, "wikidata": "Q4700903", "adj": ["st-003014"] },
+    { "id": "lm-q1322412", "name": "埼玉大学", "genre": "university", "kind": "EDU", "area": "さいたま市桜区", "region": "saitama-11106", "lat": 35.86472, "lon": 139.60722, "level": 3, "value": 3, "adj": ["st-002951", "st-002975", "st-003014"], "codes": {"wikidata": "Q1322412"}, "src": "src-wikidata" },
+    { "id": "lm-q4700903", "name": "秋ヶ瀬公園", "genre": "park", "kind": "LM", "area": "さいたま市桜区", "region": "saitama-11106", "lat": 35.85073, "lon": 139.60095, "level": 1, "value": 1, "adj": ["st-003014"], "codes": {"wikidata": "Q4700903"}, "src": "src-wikidata" },
     { "id": "st-003014", "name": "西浦和駅", "genre": "station", "kind": "HUB", "area": "さいたま市桜区", "region": "saitama-11106", "lat": 35.84385, "lon": 139.62722, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 武蔵野線"], "adj": ["lm-q1322412", "lm-q4700903", "st-003006", "st-003056"] },
 
-    { "id": "lm-q11426772", "name": "埼玉県立近代美術館", "genre": "museum", "kind": "LM", "area": "さいたま市浦和区", "region": "saitama-11107", "lat": 35.86961, "lon": 139.64292, "level": 1, "value": 1, "wikidata": "Q11426772", "adj": ["st-002968"] },
-    { "id": "lm-q24817370", "name": "幼いイエスの聖テレジア司教座聖堂", "genre": "shrine_temple", "kind": "LM", "area": "さいたま市浦和区", "region": "saitama-11107", "lat": 35.8589, "lon": 139.64309, "level": 1, "value": 1, "hackable": false, "wikidata": "Q24817370" },
+    { "id": "lm-q11426772", "name": "埼玉県立近代美術館", "genre": "museum", "kind": "LM", "area": "さいたま市浦和区", "region": "saitama-11107", "lat": 35.86961, "lon": 139.64292, "level": 1, "value": 1, "adj": ["st-002968"], "codes": {"wikidata": "Q11426772"}, "src": "src-wikidata" },
+    { "id": "lm-q24817370", "name": "幼いイエスの聖テレジア司教座聖堂", "genre": "shrine_temple", "kind": "LM", "area": "さいたま市浦和区", "region": "saitama-11107", "lat": 35.8589, "lon": 139.64309, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q24817370"}, "src": "src-wikidata" },
     { "id": "st-002947", "name": "与野駅", "genre": "station", "kind": "HUB", "area": "さいたま市浦和区", "region": "saitama-11107", "lat": 35.88514, "lon": 139.63864, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 東北線", "東日本旅客鉄道 武蔵野線"], "adj": ["lm-q1052149", "st-002934", "st-002968"] },
     { "id": "st-002968", "name": "北浦和駅", "genre": "station", "kind": "HUB", "area": "さいたま市浦和区", "region": "saitama-11107", "lat": 35.8729, "lon": 139.64498, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["lm-q11426772", "st-002947", "st-002989"] },
     { "id": "st-002989", "name": "浦和駅", "genre": "station", "kind": "HUB", "area": "さいたま市浦和区", "region": "saitama-11107", "lat": 35.85936, "lon": 139.65666, "level": 3, "value": 3, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-002968", "st-003004", "st-003041"] },
@@ -90,19 +87,19 @@
     { "id": "st-003004", "name": "南浦和駅", "genre": "station", "kind": "HUB", "area": "さいたま市南区", "region": "saitama-11108", "lat": 35.84734, "lon": 139.66901, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 東北線", "東日本旅客鉄道 武蔵野線"], "adj": ["st-002980", "st-002989", "st-003006", "st-003041"] },
     { "id": "st-003006", "name": "武蔵浦和駅", "genre": "station", "kind": "HUB", "area": "さいたま市南区", "region": "saitama-11108", "lat": 35.8458, "lon": 139.64704, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 東北線", "東日本旅客鉄道 武蔵野線"], "adj": ["st-002995", "st-003004", "st-003014", "st-003044"] },
 
-    { "id": "lm-q482446", "name": "埼玉スタジアム2002", "genre": "stadium", "kind": "LM", "area": "さいたま市緑区", "region": "saitama-11109", "lat": 35.90314, "lon": 139.71749, "level": 4, "value": 4, "wikidata": "Q482446", "adj": ["st-002933", "st-002956", "st-002980"] },
+    { "id": "lm-q482446", "name": "埼玉スタジアム2002", "genre": "stadium", "kind": "LM", "area": "さいたま市緑区", "region": "saitama-11109", "lat": 35.90314, "lon": 139.71749, "level": 4, "value": 4, "adj": ["st-002933", "st-002956", "st-002980"], "codes": {"wikidata": "Q482446"}, "src": "src-wikidata" },
     { "id": "st-002933", "name": "浦和美園駅", "genre": "station", "kind": "HUB", "area": "さいたま市緑区", "region": "saitama-11109", "lat": 35.89431, "lon": 139.72738, "level": 1, "value": 1, "lines": ["埼玉高速鉄道 埼玉高速鉄道線"], "adj": ["lm-q482446", "st-002956"] },
     { "id": "st-002980", "name": "東浦和駅", "genre": "station", "kind": "HUB", "area": "さいたま市緑区", "region": "saitama-11109", "lat": 35.8641, "lon": 139.70467, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 武蔵野線"], "adj": ["lm-q482446", "lm-q7402533", "st-002956", "st-003004"] },
 
-    { "id": "lm-q11475219", "name": "岩槻城", "genre": "heritage", "kind": "LM", "area": "さいたま市岩槻区", "region": "saitama-11110", "lat": 35.95135, "lon": 139.71024, "level": 1, "value": 1, "wikidata": "Q11475219", "adj": ["st-002813"] },
+    { "id": "lm-q11475219", "name": "岩槻城", "genre": "heritage", "kind": "LM", "area": "さいたま市岩槻区", "region": "saitama-11110", "lat": 35.95135, "lon": 139.71024, "level": 1, "value": 1, "adj": ["st-002813"], "codes": {"wikidata": "Q11475219"}, "src": "src-wikidata" },
     { "id": "st-002813", "name": "東岩槻駅", "genre": "station", "kind": "HUB", "area": "さいたま市岩槻区", "region": "saitama-11110", "lat": 35.96307, "lon": 139.71163, "level": 1, "value": 1, "lines": ["東武鉄道 野田線"], "adj": ["lm-q11475219", "st-002807", "st-002833"] },
     { "id": "st-002833", "name": "岩槻駅", "genre": "station", "kind": "HUB", "area": "さいたま市岩槻区", "region": "saitama-11110", "lat": 35.94984, "lon": 139.6926, "level": 1, "value": 1, "lines": ["東武鉄道 野田線"], "adj": ["st-002813", "st-002854"] },
 
-    { "id": "lm-q7813901", "name": "東京国際大学", "genre": "university", "kind": "EDU", "area": "川越市", "region": "saitama-11201", "lat": 35.92625, "lon": 139.43842, "level": 2, "value": 2, "wikidata": "Q7813901", "adj": ["st-002874", "st-002889"] },
-    { "id": "lm-q1073688", "name": "川越城", "genre": "heritage", "kind": "LM", "area": "川越市", "region": "saitama-11201", "lat": 35.92451, "lon": 139.4915, "level": 10, "value": 10, "wikidata": "Q1073688", "adj": ["st-002874", "st-002885", "st-002893", "st-002895", "st-002909", "st-002919", "st-002937"] },
-    { "id": "lm-q17221309", "name": "時の鐘", "genre": "tower", "kind": "LM", "area": "川越市", "region": "saitama-11201", "lat": 35.92349, "lon": 139.48331, "level": 1, "value": 1, "wikidata": "Q17221309", "adj": ["st-002893"] },
-    { "id": "lm-q11619944", "name": "菓子屋横丁", "genre": "market", "kind": "LM", "area": "川越市", "region": "saitama-11201", "lat": 35.92461, "lon": 139.48106, "level": 1, "value": 1, "wikidata": "Q11619944", "adj": ["st-002893"] },
-    { "id": "lm-q3080561", "name": "喜多院", "genre": "shrine_temple", "kind": "LM", "area": "川越市", "region": "saitama-11201", "lat": 35.91752, "lon": 139.48907, "level": 2, "value": 2, "hackable": false, "wikidata": "Q3080561" },
+    { "id": "lm-q7813901", "name": "東京国際大学", "genre": "university", "kind": "EDU", "area": "川越市", "region": "saitama-11201", "lat": 35.92625, "lon": 139.43842, "level": 2, "value": 2, "adj": ["st-002874", "st-002889"], "codes": {"wikidata": "Q7813901"}, "src": "src-wikidata" },
+    { "id": "lm-q1073688", "name": "川越城", "genre": "heritage", "kind": "LM", "area": "川越市", "region": "saitama-11201", "lat": 35.92451, "lon": 139.4915, "level": 10, "value": 10, "adj": ["st-002874", "st-002885", "st-002893", "st-002895", "st-002909", "st-002919", "st-002937"], "codes": {"wikidata": "Q1073688"}, "src": "src-wikidata" },
+    { "id": "lm-q17221309", "name": "時の鐘", "genre": "tower", "kind": "LM", "area": "川越市", "region": "saitama-11201", "lat": 35.92349, "lon": 139.48331, "level": 1, "value": 1, "adj": ["st-002893"], "codes": {"wikidata": "Q17221309"}, "src": "src-wikidata" },
+    { "id": "lm-q11619944", "name": "菓子屋横丁", "genre": "market", "kind": "LM", "area": "川越市", "region": "saitama-11201", "lat": 35.92461, "lon": 139.48106, "level": 1, "value": 1, "adj": ["st-002893"], "codes": {"wikidata": "Q11619944"}, "src": "src-wikidata" },
+    { "id": "lm-q3080561", "name": "喜多院", "genre": "shrine_temple", "kind": "LM", "area": "川越市", "region": "saitama-11201", "lat": 35.91752, "lon": 139.48907, "level": 2, "value": 2, "hackable": false, "codes": {"wikidata": "Q3080561"}, "src": "src-wikidata" },
     { "id": "st-002852", "name": "鶴ヶ島駅", "genre": "station", "kind": "HUB", "area": "川越市", "region": "saitama-11201", "lat": 35.93693, "lon": 139.42369, "level": 1, "value": 1, "lines": ["東武鉄道 東上本線"], "adj": ["st-002837", "st-002874"] },
     { "id": "st-002874", "name": "霞ヶ関駅", "genre": "station", "kind": "GOV", "area": "川越市", "region": "saitama-11201", "lat": 35.92557, "lon": 139.4434, "level": 4, "value": 4, "lines": ["東武鉄道 東上本線"], "adj": ["lm-q1073688", "lm-q7813901", "st-002852", "st-002893"] },
     { "id": "st-002885", "name": "西川越駅", "genre": "station", "kind": "HUB", "area": "川越市", "region": "saitama-11201", "lat": 35.91898, "lon": 139.46062, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 川越線"], "adj": ["lm-q1073688", "st-002889", "st-002909"] },
@@ -115,8 +112,8 @@
     { "id": "st-002937", "name": "新河岸駅", "genre": "station", "kind": "HUB", "area": "川越市", "region": "saitama-11201", "lat": 35.89148, "lon": 139.49692, "level": 1, "value": 1, "lines": ["東武鉄道 東上本線"], "adj": ["lm-q1073688", "st-002909", "st-002964"] },
     { "id": "st-002940", "name": "南大塚駅", "genre": "station", "kind": "HUB", "area": "川越市", "region": "saitama-11201", "lat": 35.88935, "lon": 139.45373, "level": 1, "value": 1, "lines": ["西武鉄道 新宿線"], "adj": ["st-002895", "st-002963"] },
 
-    { "id": "lm-q9600912", "name": "熊谷ラグビー場", "genre": "stadium", "kind": "LM", "area": "熊谷市", "region": "saitama-11202", "lat": 36.16826, "lon": 139.40245, "level": 2, "value": 2, "wikidata": "Q9600912", "adj": ["st-002584", "st-002589"] },
-    { "id": "lm-q6443380", "name": "熊谷スポーツ文化公園陸上競技場", "genre": "stadium", "kind": "LM", "area": "熊谷市", "region": "saitama-11202", "lat": 36.164, "lon": 139.411, "level": 1, "value": 1, "wikidata": "Q6443380", "adj": ["st-002594"] },
+    { "id": "lm-q9600912", "name": "熊谷ラグビー場", "genre": "stadium", "kind": "LM", "area": "熊谷市", "region": "saitama-11202", "lat": 36.16826, "lon": 139.40245, "level": 2, "value": 2, "adj": ["st-002584", "st-002589"], "codes": {"wikidata": "Q9600912"}, "src": "src-wikidata" },
+    { "id": "lm-q6443380", "name": "熊谷スポーツ文化公園陸上競技場", "genre": "stadium", "kind": "LM", "area": "熊谷市", "region": "saitama-11202", "lat": 36.164, "lon": 139.411, "level": 1, "value": 1, "adj": ["st-002594"], "codes": {"wikidata": "Q6443380"}, "src": "src-wikidata" },
     { "id": "st-002561", "name": "籠原駅", "genre": "station", "kind": "HUB", "area": "熊谷市", "region": "saitama-11202", "lat": 36.17515, "lon": 139.32852, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 高崎線"], "adj": ["st-002553", "st-002589"] },
     { "id": "st-002579", "name": "石原駅", "genre": "station", "kind": "HUB", "area": "熊谷市", "region": "saitama-11202", "lat": 36.1473, "lon": 139.36968, "level": 1, "value": 1, "lines": ["秩父鉄道 秩父本線"], "adj": ["st-002581", "st-002584"] },
     { "id": "st-002581", "name": "ひろせ野鳥の森駅", "genre": "station", "kind": "HUB", "area": "熊谷市", "region": "saitama-11202", "lat": 36.14625, "lon": 139.35236, "level": 1, "value": 1, "lines": ["秩父鉄道 秩父本線"], "adj": ["st-002579", "st-002582"] },
@@ -125,9 +122,9 @@
     { "id": "st-002589", "name": "熊谷駅", "genre": "station", "kind": "HUB", "area": "熊谷市", "region": "saitama-11202", "lat": 36.13978, "lon": 139.38888, "level": 3, "value": 3, "lines": ["東日本旅客鉄道 上越新幹線", "東日本旅客鉄道 高崎線", "秩父鉄道 秩父本線"], "adj": ["lm-q9600912", "st-002525", "st-002561", "st-002584", "st-002594", "st-002619", "st-002914"] },
     { "id": "st-002594", "name": "ソシオ流通センター駅", "genre": "station", "kind": "HUB", "area": "熊谷市", "region": "saitama-11202", "lat": 36.13651, "lon": 139.42489, "level": 1, "value": 1, "lines": ["秩父鉄道 秩父本線"], "adj": ["lm-q6443380", "st-002589", "st-002593"] },
 
-    { "id": "lm-q6379501", "name": "川口市立グリーンセンター", "genre": "zoo_aquarium", "kind": "LM", "area": "川口市", "region": "saitama-11203", "lat": 35.84583, "lon": 139.72639, "level": 1, "value": 1, "wikidata": "Q6379501", "adj": ["st-003017"] },
-    { "id": "lm-q7402533", "name": "埼玉学園大学", "genre": "university", "kind": "EDU", "area": "川口市", "region": "saitama-11203", "lat": 35.85707, "lon": 139.71418, "level": 1, "value": 1, "wikidata": "Q7402533", "adj": ["st-002980"] },
-    { "id": "lm-q139783736", "name": "川口市立美術館", "genre": "museum", "kind": "LM", "area": "川口市", "region": "saitama-11203", "lat": 35.80106, "lon": 139.71662, "level": 1, "value": 1, "wikidata": "Q139783736", "adj": ["st-003086"] },
+    { "id": "lm-q6379501", "name": "川口市立グリーンセンター", "genre": "zoo_aquarium", "kind": "LM", "area": "川口市", "region": "saitama-11203", "lat": 35.84583, "lon": 139.72639, "level": 1, "value": 1, "adj": ["st-003017"], "codes": {"wikidata": "Q6379501"}, "src": "src-wikidata" },
+    { "id": "lm-q7402533", "name": "埼玉学園大学", "genre": "university", "kind": "EDU", "area": "川口市", "region": "saitama-11203", "lat": 35.85707, "lon": 139.71418, "level": 1, "value": 1, "adj": ["st-002980"], "codes": {"wikidata": "Q7402533"}, "src": "src-wikidata" },
+    { "id": "lm-q139783736", "name": "川口市立美術館", "genre": "museum", "kind": "LM", "area": "川口市", "region": "saitama-11203", "lat": 35.80106, "lon": 139.71662, "level": 1, "value": 1, "adj": ["st-003086"], "codes": {"wikidata": "Q139783736"}, "src": "src-wikidata" },
     { "id": "st-002956", "name": "東川口駅", "genre": "station", "kind": "HUB", "area": "川口市", "region": "saitama-11203", "lat": 35.87617, "lon": 139.74336, "level": 2, "value": 2, "lines": ["埼玉高速鉄道 埼玉高速鉄道線", "東日本旅客鉄道 武蔵野線"], "adj": ["lm-q482446", "st-002933", "st-002958", "st-002980", "st-002988"] },
     { "id": "st-002988", "name": "戸塚安行駅", "genre": "station", "kind": "HUB", "area": "川口市", "region": "saitama-11203", "lat": 35.85996, "lon": 139.75379, "level": 1, "value": 1, "lines": ["埼玉高速鉄道 埼玉高速鉄道線"], "adj": ["st-002956", "st-003017"] },
     { "id": "st-003017", "name": "新井宿駅", "genre": "station", "kind": "HUB", "area": "川口市", "region": "saitama-11203", "lat": 35.84304, "lon": 139.73911, "level": 1, "value": 1, "lines": ["埼玉高速鉄道 埼玉高速鉄道線"], "adj": ["lm-q6379501", "st-002988", "st-003036"] },
@@ -137,20 +134,20 @@
     { "id": "st-003086", "name": "川口駅", "genre": "station", "kind": "HUB", "area": "川口市", "region": "saitama-11203", "lat": 35.80207, "lon": 139.71735, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["lm-q139783736", "st-003055", "st-003130", "st-003155"] },
     { "id": "st-003092", "name": "川口元郷駅", "genre": "station", "kind": "HUB", "area": "川口市", "region": "saitama-11203", "lat": 35.79974, "lon": 139.72963, "level": 1, "value": 1, "lines": ["埼玉高速鉄道 埼玉高速鉄道線"], "adj": ["st-003054", "st-003141"] },
 
-    { "id": "lm-q3198272", "name": "稲荷山古墳", "genre": "monument", "kind": "LM", "area": "行田市", "region": "saitama-11206", "lat": 36.12939, "lon": 139.48102, "level": 1, "value": 1, "wikidata": "Q3198272", "adj": ["st-002580"] },
-    { "id": "lm-q5017775", "name": "埼玉県立さきたま史跡の博物館", "genre": "museum", "kind": "LM", "area": "行田市", "region": "saitama-11206", "lat": 36.12493, "lon": 139.47559, "level": 1, "value": 1, "wikidata": "Q5017775", "adj": ["st-002580"] },
-    { "id": "lm-q2213580", "name": "埼玉古墳群", "genre": "monument", "kind": "LM", "area": "行田市", "region": "saitama-11206", "lat": 36.12833, "lon": 139.47944, "level": 1, "value": 1, "wikidata": "Q2213580", "adj": ["st-002580"] },
-    { "id": "lm-q11649597", "name": "鉄砲山古墳", "genre": "monument", "kind": "LM", "area": "行田市", "region": "saitama-11206", "lat": 36.12381, "lon": 139.47821, "level": 1, "value": 1, "wikidata": "Q11649597", "adj": ["st-002580"] },
+    { "id": "lm-q3198272", "name": "稲荷山古墳", "genre": "monument", "kind": "LM", "area": "行田市", "region": "saitama-11206", "lat": 36.12939, "lon": 139.48102, "level": 1, "value": 1, "adj": ["st-002580"], "codes": {"wikidata": "Q3198272"}, "src": "src-wikidata" },
+    { "id": "lm-q5017775", "name": "埼玉県立さきたま史跡の博物館", "genre": "museum", "kind": "LM", "area": "行田市", "region": "saitama-11206", "lat": 36.12493, "lon": 139.47559, "level": 1, "value": 1, "adj": ["st-002580"], "codes": {"wikidata": "Q5017775"}, "src": "src-wikidata" },
+    { "id": "lm-q2213580", "name": "埼玉古墳群", "genre": "monument", "kind": "LM", "area": "行田市", "region": "saitama-11206", "lat": 36.12833, "lon": 139.47944, "level": 1, "value": 1, "adj": ["st-002580"], "codes": {"wikidata": "Q2213580"}, "src": "src-wikidata" },
+    { "id": "lm-q11649597", "name": "鉄砲山古墳", "genre": "monument", "kind": "LM", "area": "行田市", "region": "saitama-11206", "lat": 36.12381, "lon": 139.47821, "level": 1, "value": 1, "adj": ["st-002580"], "codes": {"wikidata": "Q11649597"}, "src": "src-wikidata" },
     { "id": "st-002571", "name": "武州荒木駅", "genre": "station", "kind": "HUB", "area": "行田市", "region": "saitama-11206", "lat": 36.16237, "lon": 139.48815, "level": 1, "value": 1, "lines": ["秩父鉄道 秩父本線"], "adj": ["st-002564", "st-002580"] },
     { "id": "st-002580", "name": "東行田駅", "genre": "station", "kind": "HUB", "area": "行田市", "region": "saitama-11206", "lat": 36.14706, "lon": 139.46802, "level": 1, "value": 1, "lines": ["秩父鉄道 秩父本線"], "adj": ["lm-q11649597", "lm-q2213580", "lm-q3198272", "lm-q5017775", "st-002571", "st-002583"] },
     { "id": "st-002583", "name": "行田市駅", "genre": "station", "kind": "HUB", "area": "行田市", "region": "saitama-11206", "lat": 36.14367, "lon": 139.45763, "level": 1, "value": 1, "lines": ["秩父鉄道 秩父本線"], "adj": ["st-002580", "st-002593"] },
     { "id": "st-002593", "name": "持田駅", "genre": "station", "kind": "HUB", "area": "行田市", "region": "saitama-11206", "lat": 36.1375, "lon": 139.44117, "level": 1, "value": 1, "lines": ["秩父鉄道 秩父本線"], "adj": ["st-002583", "st-002594"] },
     { "id": "st-002619", "name": "行田駅", "genre": "station", "kind": "HUB", "area": "行田市", "region": "saitama-11206", "lat": 36.11426, "lon": 139.43171, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 高崎線"], "adj": ["st-002589", "st-002627"] },
 
-    { "id": "lm-q1781878", "name": "雲取山", "genre": "nature", "kind": "LM", "area": "秩父市", "region": "saitama-11207", "lat": 35.85528, "lon": 138.94361, "level": 3, "value": 3, "wikidata": "Q1781878", "adj": ["lm-q11371709", "lm-q11599855"] },
-    { "id": "lm-q11362665", "name": "両神山", "genre": "nature", "kind": "LM", "area": "秩父市", "region": "saitama-11207", "lat": 36.0236, "lon": 138.8392, "level": 2, "value": 2, "wikidata": "Q11362665", "adj": ["lm-q11371709", "lm-q11631856"] },
-    { "id": "lm-q11371709", "name": "二瀬ダム", "genre": "bridge", "kind": "LM", "area": "秩父市", "region": "saitama-11207", "lat": 35.94158, "lon": 138.90976, "level": 1, "value": 1, "wikidata": "Q11371709", "adj": ["lm-q11362665", "lm-q1781878", "st-002817"] },
-    { "id": "lm-q11599855", "name": "笠取山 (奥秩父)", "genre": "nature", "kind": "LM", "area": "秩父市", "region": "saitama-11207", "lat": 35.86528, "lon": 138.81972, "level": 1, "value": 1, "wikidata": "Q11599855", "adj": ["lm-q1781878"] },
+    { "id": "lm-q1781878", "name": "雲取山", "genre": "nature", "kind": "LM", "area": "秩父市", "region": "saitama-11207", "lat": 35.85528, "lon": 138.94361, "level": 3, "value": 3, "adj": ["lm-q11371709", "lm-q11599855"], "codes": {"wikidata": "Q1781878"}, "src": "src-wikidata" },
+    { "id": "lm-q11362665", "name": "両神山", "genre": "nature", "kind": "LM", "area": "秩父市", "region": "saitama-11207", "lat": 36.0236, "lon": 138.8392, "level": 2, "value": 2, "adj": ["lm-q11371709", "lm-q11631856"], "codes": {"wikidata": "Q11362665"}, "src": "src-wikidata" },
+    { "id": "lm-q11371709", "name": "二瀬ダム", "genre": "bridge", "kind": "LM", "area": "秩父市", "region": "saitama-11207", "lat": 35.94158, "lon": 138.90976, "level": 1, "value": 1, "adj": ["lm-q11362665", "lm-q1781878", "st-002817"], "codes": {"wikidata": "Q11371709"}, "src": "src-wikidata" },
+    { "id": "lm-q11599855", "name": "笠取山 (奥秩父)", "genre": "nature", "kind": "LM", "area": "秩父市", "region": "saitama-11207", "lat": 35.86528, "lon": 138.81972, "level": 1, "value": 1, "adj": ["lm-q1781878"], "codes": {"wikidata": "Q11599855"}, "src": "src-wikidata" },
     { "id": "st-002707", "name": "和銅黒谷駅", "genre": "station", "kind": "HUB", "area": "秩父市", "region": "saitama-11207", "lat": 36.0471, "lon": 139.10165, "level": 1, "value": 1, "lines": ["秩父鉄道 秩父本線"], "adj": ["st-002681", "st-002734"] },
     { "id": "st-002734", "name": "大野原駅", "genre": "station", "kind": "HUB", "area": "秩父市", "region": "saitama-11207", "lat": 36.01893, "lon": 139.09434, "level": 1, "value": 1, "lines": ["秩父鉄道 秩父本線"], "adj": ["st-002707", "st-002758"] },
     { "id": "st-002758", "name": "秩父駅", "genre": "station", "kind": "HUB", "area": "秩父市", "region": "saitama-11207", "lat": 35.99935, "lon": 139.08624, "level": 1, "value": 1, "lines": ["秩父鉄道 秩父本線"], "adj": ["st-002734", "st-002768"] },
@@ -163,15 +160,15 @@
     { "id": "st-002820", "name": "武州中川駅", "genre": "station", "kind": "HUB", "area": "秩父市", "region": "saitama-11207", "lat": 35.95856, "lon": 139.03593, "level": 1, "value": 1, "lines": ["秩父鉄道 秩父本線"], "adj": ["st-002811", "st-002826"] },
     { "id": "st-002826", "name": "武州日野駅", "genre": "station", "kind": "HUB", "area": "秩父市", "region": "saitama-11207", "lat": 35.95386, "lon": 139.02252, "level": 1, "value": 1, "lines": ["秩父鉄道 秩父本線"], "adj": ["st-002818", "st-002820"] },
 
-    { "id": "lm-q1194822", "name": "西武ドーム", "genre": "stadium", "kind": "LM", "area": "所沢市", "region": "saitama-11208", "lat": 35.7685, "lon": 139.4205, "level": 2, "value": 2, "wikidata": "Q1194822", "adj": ["st-003181", "st-003192"] },
-    { "id": "lm-q1041232", "name": "所沢航空発祥記念館", "genre": "museum", "kind": "LM", "area": "所沢市", "region": "saitama-11208", "lat": 35.7989, "lon": 139.472, "level": 2, "value": 2, "wikidata": "Q1041232", "adj": ["st-003094", "st-003131"] },
-    { "id": "lm-q11235143", "name": "所沢航空記念公園", "genre": "park", "kind": "LM", "area": "所沢市", "region": "saitama-11208", "lat": 35.79806, "lon": 139.47417, "level": 1, "value": 1, "wikidata": "Q11235143", "adj": ["st-003094"] },
-    { "id": "lm-q6972190", "name": "防衛医科大学校", "genre": "university", "kind": "EDU", "area": "所沢市", "region": "saitama-11208", "lat": 35.80381, "lon": 139.46758, "level": 1, "value": 1, "wikidata": "Q6972190", "adj": ["st-003094"] },
-    { "id": "lm-q11467481", "name": "山口貯水池", "genre": "nature", "kind": "LM", "area": "所沢市", "region": "saitama-11208", "lat": 35.77806, "lon": 139.40861, "level": 1, "value": 1, "wikidata": "Q11467481", "adj": ["st-003181"] },
-    { "id": "lm-q4700994", "name": "秋草学園短期大学", "genre": "university", "kind": "EDU", "area": "所沢市", "region": "saitama-11208", "lat": 35.80175, "lon": 139.46058, "level": 1, "value": 1, "wikidata": "Q4700994", "adj": ["st-003094"] },
-    { "id": "lm-q2970751", "name": "滝の城", "genre": "heritage", "kind": "LM", "area": "所沢市", "region": "saitama-11208", "lat": 35.8006, "lon": 139.532, "level": 1, "value": 1, "wikidata": "Q2970751", "adj": ["st-003100"] },
-    { "id": "lm-q288248", "name": "所澤神明社", "genre": "shrine_temple", "kind": "LM", "area": "所沢市", "region": "saitama-11208", "lat": 35.7941, "lon": 139.463, "level": 1, "value": 1, "hackable": false, "wikidata": "Q288248" },
-    { "id": "lm-q11628910", "name": "西武園ゆうえんち", "genre": "park", "kind": "LM", "area": "所沢市", "region": "saitama-11208", "lat": 35.76831, "lon": 139.44219, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11628910" },
+    { "id": "lm-q1194822", "name": "西武ドーム", "genre": "stadium", "kind": "LM", "area": "所沢市", "region": "saitama-11208", "lat": 35.7685, "lon": 139.4205, "level": 2, "value": 2, "adj": ["st-003181", "st-003192"], "codes": {"wikidata": "Q1194822"}, "src": "src-wikidata" },
+    { "id": "lm-q1041232", "name": "所沢航空発祥記念館", "genre": "museum", "kind": "LM", "area": "所沢市", "region": "saitama-11208", "lat": 35.7989, "lon": 139.472, "level": 2, "value": 2, "adj": ["st-003094", "st-003131"], "codes": {"wikidata": "Q1041232"}, "src": "src-wikidata" },
+    { "id": "lm-q11235143", "name": "所沢航空記念公園", "genre": "park", "kind": "LM", "area": "所沢市", "region": "saitama-11208", "lat": 35.79806, "lon": 139.47417, "level": 1, "value": 1, "adj": ["st-003094"], "codes": {"wikidata": "Q11235143"}, "src": "src-wikidata" },
+    { "id": "lm-q6972190", "name": "防衛医科大学校", "genre": "university", "kind": "EDU", "area": "所沢市", "region": "saitama-11208", "lat": 35.80381, "lon": 139.46758, "level": 1, "value": 1, "adj": ["st-003094"], "codes": {"wikidata": "Q6972190"}, "src": "src-wikidata" },
+    { "id": "lm-q11467481", "name": "山口貯水池", "genre": "nature", "kind": "LM", "area": "所沢市", "region": "saitama-11208", "lat": 35.77806, "lon": 139.40861, "level": 1, "value": 1, "adj": ["st-003181"], "codes": {"wikidata": "Q11467481"}, "src": "src-wikidata" },
+    { "id": "lm-q4700994", "name": "秋草学園短期大学", "genre": "university", "kind": "EDU", "area": "所沢市", "region": "saitama-11208", "lat": 35.80175, "lon": 139.46058, "level": 1, "value": 1, "adj": ["st-003094"], "codes": {"wikidata": "Q4700994"}, "src": "src-wikidata" },
+    { "id": "lm-q2970751", "name": "滝の城", "genre": "heritage", "kind": "LM", "area": "所沢市", "region": "saitama-11208", "lat": 35.8006, "lon": 139.532, "level": 1, "value": 1, "adj": ["st-003100"], "codes": {"wikidata": "Q2970751"}, "src": "src-wikidata" },
+    { "id": "lm-q288248", "name": "所澤神明社", "genre": "shrine_temple", "kind": "LM", "area": "所沢市", "region": "saitama-11208", "lat": 35.7941, "lon": 139.463, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q288248"}, "src": "src-wikidata" },
+    { "id": "lm-q11628910", "name": "西武園ゆうえんち", "genre": "park", "kind": "LM", "area": "所沢市", "region": "saitama-11208", "lat": 35.76831, "lon": 139.44219, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q11628910"}, "src": "src-wikidata" },
     { "id": "st-003068", "name": "狭山ヶ丘駅", "genre": "station", "kind": "HUB", "area": "所沢市", "region": "saitama-11208", "lat": 35.8108, "lon": 139.41629, "level": 1, "value": 1, "lines": ["西武鉄道 池袋線"], "adj": ["st-003050", "st-003088"] },
     { "id": "st-003077", "name": "新所沢駅", "genre": "station", "kind": "HUB", "area": "所沢市", "region": "saitama-11208", "lat": 35.80662, "lon": 139.45626, "level": 1, "value": 1, "lines": ["西武鉄道 新宿線"], "adj": ["st-003033", "st-003094"] },
     { "id": "st-003088", "name": "小手指駅", "genre": "station", "kind": "HUB", "area": "所沢市", "region": "saitama-11208", "lat": 35.80104, "lon": 139.43705, "level": 1, "value": 1, "lines": ["西武鉄道 池袋線"], "adj": ["st-003068", "st-003118"] },
@@ -183,8 +180,8 @@
     { "id": "st-003181", "name": "西武球場前駅", "genre": "station", "kind": "HUB", "area": "所沢市", "region": "saitama-11208", "lat": 35.7711, "lon": 139.42028, "level": 2, "value": 2, "lines": ["西武鉄道 山口線", "西武鉄道 狭山線"], "adj": ["lm-q11467481", "lm-q1194822", "st-003148", "st-003192"] },
     { "id": "st-003192", "name": "西武園ゆうえんち駅", "genre": "station", "kind": "HUB", "area": "所沢市", "region": "saitama-11208", "lat": 35.7693, "lon": 139.44001, "level": 1, "value": 1, "lines": ["西武鉄道 山口線"], "adj": ["lm-q1194822", "st-003181", "st-003201"] },
 
-    { "id": "lm-q17189670", "name": "天覧山", "genre": "nature", "kind": "LM", "area": "飯能市", "region": "saitama-11209", "lat": 35.86194, "lon": 139.30833, "level": 1, "value": 1, "wikidata": "Q17189670", "adj": ["st-002999"] },
-    { "id": "lm-q21654949", "name": "メッツァ", "genre": "park", "kind": "LM", "area": "飯能市", "region": "saitama-11209", "lat": 35.8725, "lon": 139.32933, "level": 1, "value": 1, "hackable": false, "wikidata": "Q21654949" },
+    { "id": "lm-q17189670", "name": "天覧山", "genre": "nature", "kind": "LM", "area": "飯能市", "region": "saitama-11209", "lat": 35.86194, "lon": 139.30833, "level": 1, "value": 1, "adj": ["st-002999"], "codes": {"wikidata": "Q17189670"}, "src": "src-wikidata" },
+    { "id": "lm-q21654949", "name": "メッツァ", "genre": "park", "kind": "LM", "area": "飯能市", "region": "saitama-11209", "lat": 35.8725, "lon": 139.32933, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q21654949"}, "src": "src-wikidata" },
     { "id": "st-002849", "name": "正丸駅", "genre": "station", "kind": "HUB", "area": "飯能市", "region": "saitama-11209", "lat": 35.938, "lon": 139.18212, "level": 1, "value": 1, "lines": ["西武鉄道 西武秩父線"], "adj": ["st-002791", "st-002871"] },
     { "id": "st-002871", "name": "西吾野駅", "genre": "station", "kind": "HUB", "area": "飯能市", "region": "saitama-11209", "lat": 35.92642, "lon": 139.20231, "level": 1, "value": 1, "lines": ["西武鉄道 西武秩父線"], "adj": ["st-002849", "st-002904"] },
     { "id": "st-002904", "name": "吾野駅", "genre": "station", "kind": "HUB", "area": "飯能市", "region": "saitama-11209", "lat": 35.90829, "lon": 139.22592, "level": 2, "value": 2, "lines": ["西武鉄道 池袋線", "西武鉄道 西武秩父線"], "adj": ["st-002871", "st-002936"] },
@@ -202,7 +199,7 @@
     { "id": "st-002525", "name": "本庄早稲田駅", "genre": "station", "kind": "HUB", "area": "本庄市", "region": "saitama-11211", "lat": 36.21856, "lon": 139.17998, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 上越新幹線"], "adj": ["st-002389", "st-002589"] },
     { "id": "st-002549", "name": "児玉駅", "genre": "station", "kind": "HUB", "area": "本庄市", "region": "saitama-11211", "lat": 36.19285, "lon": 139.1357, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 八高線"], "adj": ["st-002527", "st-002563"] },
 
-    { "id": "lm-q11426567", "name": "埼玉県平和資料館", "genre": "museum", "kind": "LM", "area": "東松山市", "region": "saitama-11212", "lat": 35.99861, "lon": 139.36563, "level": 1, "value": 1, "wikidata": "Q11426567", "adj": ["st-002753"] },
+    { "id": "lm-q11426567", "name": "埼玉県平和資料館", "genre": "museum", "kind": "LM", "area": "東松山市", "region": "saitama-11212", "lat": 35.99861, "lon": 139.36563, "level": 1, "value": 1, "adj": ["st-002753"], "codes": {"wikidata": "Q11426567"}, "src": "src-wikidata" },
     { "id": "st-002717", "name": "東松山駅", "genre": "station", "kind": "HUB", "area": "東松山市", "region": "saitama-11212", "lat": 36.03466, "lon": 139.40157, "level": 1, "value": 1, "lines": ["東武鉄道 東上本線"], "adj": ["lm-q11414302", "st-002708", "st-002753"] },
     { "id": "st-002753", "name": "高坂駅", "genre": "station", "kind": "HUB", "area": "東松山市", "region": "saitama-11212", "lat": 36.00294, "lon": 139.39769, "level": 1, "value": 1, "lines": ["東武鉄道 東上本線"], "adj": ["lm-q11426567", "st-002717", "st-002800"] },
 
@@ -237,19 +234,19 @@
     { "id": "st-002601", "name": "ふかや花園駅", "genre": "station", "kind": "HUB", "area": "深谷市", "region": "saitama-11218", "lat": 36.13085, "lon": 139.24871, "level": 1, "value": 1, "lines": ["秩父鉄道 秩父本線"], "adj": ["st-002597", "st-002603"] },
     { "id": "st-002603", "name": "小前田駅", "genre": "station", "kind": "HUB", "area": "深谷市", "region": "saitama-11218", "lat": 36.12892, "lon": 139.22196, "level": 1, "value": 1, "lines": ["秩父鉄道 秩父本線"], "adj": ["st-002601", "st-002604"] },
 
-    { "id": "lm-q6133253", "name": "聖学院大学", "genre": "university", "kind": "EDU", "area": "上尾市", "region": "saitama-11219", "lat": 35.93794, "lon": 139.59619, "level": 1, "value": 1, "wikidata": "Q6133253", "adj": ["st-002862"] },
+    { "id": "lm-q6133253", "name": "聖学院大学", "genre": "university", "kind": "EDU", "area": "上尾市", "region": "saitama-11219", "lat": 35.93794, "lon": 139.59619, "level": 1, "value": 1, "adj": ["st-002862"], "codes": {"wikidata": "Q6133253"}, "src": "src-wikidata" },
     { "id": "st-002775", "name": "北上尾駅", "genre": "station", "kind": "HUB", "area": "上尾市", "region": "saitama-11219", "lat": 35.98405, "lon": 139.57863, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 高崎線"], "adj": ["st-002761", "st-002796"] },
     { "id": "st-002796", "name": "上尾駅", "genre": "station", "kind": "HUB", "area": "上尾市", "region": "saitama-11219", "lat": 35.97185, "lon": 139.58981, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 高崎線"], "adj": ["st-002775", "st-002847"] },
     { "id": "st-002802", "name": "沼南駅", "genre": "station", "kind": "HUB", "area": "上尾市", "region": "saitama-11219", "lat": 35.97133, "lon": 139.62357, "level": 1, "value": 1, "lines": ["埼玉新都市交通 伊奈線"], "adj": ["st-002787", "st-002812"] },
     { "id": "st-002812", "name": "原市駅", "genre": "station", "kind": "HUB", "area": "上尾市", "region": "saitama-11219", "lat": 35.96351, "lon": 139.62212, "level": 1, "value": 1, "lines": ["埼玉新都市交通 伊奈線"], "adj": ["st-002802", "st-002824"] },
 
-    { "id": "lm-q953446", "name": "獨協大学", "genre": "university", "kind": "EDU", "area": "草加市", "region": "saitama-11221", "lat": 35.83986, "lon": 139.79437, "level": 1, "value": 1, "wikidata": "Q953446", "adj": ["st-003016"] },
+    { "id": "lm-q953446", "name": "獨協大学", "genre": "university", "kind": "EDU", "area": "草加市", "region": "saitama-11221", "lat": 35.83986, "lon": 139.79437, "level": 1, "value": 1, "adj": ["st-003016"], "codes": {"wikidata": "Q953446"}, "src": "src-wikidata" },
     { "id": "st-002994", "name": "新田駅", "genre": "station", "kind": "HUB", "area": "草加市", "region": "saitama-11221", "lat": 35.8536, "lon": 139.79567, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["st-002977", "st-003016"] },
     { "id": "st-003016", "name": "獨協大学前駅", "genre": "station", "kind": "HUB", "area": "草加市", "region": "saitama-11221", "lat": 35.84262, "lon": 139.801, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["lm-q953446", "st-002994", "st-003040"] },
     { "id": "st-003040", "name": "草加駅", "genre": "station", "kind": "HUB", "area": "草加市", "region": "saitama-11221", "lat": 35.82914, "lon": 139.80352, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["st-003016", "st-003059"] },
     { "id": "st-003059", "name": "谷塚駅", "genre": "station", "kind": "HUB", "area": "草加市", "region": "saitama-11221", "lat": 35.81562, "lon": 139.80186, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["st-003040", "st-003101"] },
 
-    { "id": "lm-q4802788", "name": "埼玉県立大学", "genre": "university", "kind": "EDU", "area": "越谷市", "region": "saitama-11222", "lat": 35.92997, "lon": 139.75522, "level": 1, "value": 1, "wikidata": "Q4802788", "adj": ["st-002856"] },
+    { "id": "lm-q4802788", "name": "埼玉県立大学", "genre": "university", "kind": "EDU", "area": "越谷市", "region": "saitama-11222", "lat": 35.92997, "lon": 139.75522, "level": 1, "value": 1, "adj": ["st-002856"], "codes": {"wikidata": "Q4802788"}, "src": "src-wikidata" },
     { "id": "st-002856", "name": "せんげん台駅", "genre": "station", "kind": "HUB", "area": "越谷市", "region": "saitama-11222", "lat": 35.93672, "lon": 139.77437, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["lm-q4802788", "st-002836", "st-002875"] },
     { "id": "st-002875", "name": "大袋駅", "genre": "station", "kind": "HUB", "area": "越谷市", "region": "saitama-11222", "lat": 35.92538, "lon": 139.77772, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["st-002856", "st-002920"] },
     { "id": "st-002920", "name": "北越谷駅", "genre": "station", "kind": "HUB", "area": "越谷市", "region": "saitama-11222", "lat": 35.90099, "lon": 139.78002, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["st-002875", "st-002942"] },
@@ -276,7 +273,7 @@
 
     { "id": "st-003038", "name": "柳瀬川駅", "genre": "station", "kind": "HUB", "area": "志木市", "region": "saitama-11228", "lat": 35.8301, "lon": 139.56316, "level": 1, "value": 1, "lines": ["東武鉄道 東上本線"], "adj": ["st-003025", "st-003049", "st-003061"] },
 
-    { "id": "lm-q11484097", "name": "幸魂大橋", "genre": "bridge", "kind": "LM", "area": "和光市", "region": "saitama-11229", "lat": 35.80833, "lon": 139.62583, "level": 1, "value": 1, "wikidata": "Q11484097", "adj": ["st-003104"] },
+    { "id": "lm-q11484097", "name": "幸魂大橋", "genre": "bridge", "kind": "LM", "area": "和光市", "region": "saitama-11229", "lat": 35.80833, "lon": 139.62583, "level": 1, "value": 1, "adj": ["st-003104"], "codes": {"wikidata": "Q11484097"}, "src": "src-wikidata" },
     { "id": "st-003123", "name": "和光市駅", "genre": "station", "kind": "HUB", "area": "和光市", "region": "saitama-11229", "lat": 35.78793, "lon": 139.61391, "level": 2, "value": 2, "lines": ["東京地下鉄 8号線有楽町線", "東武鉄道 東上本線"], "adj": ["st-003097", "st-003156", "st-003163"] },
 
     { "id": "st-003049", "name": "志木駅", "genre": "station", "kind": "HUB", "area": "新座市", "region": "saitama-11230", "lat": 35.82171, "lon": 139.57601, "level": 1, "value": 1, "lines": ["東武鉄道 東上本線"], "adj": ["st-003038", "st-003061"] },
@@ -284,7 +281,7 @@
 
     { "id": "st-002761", "name": "桶川駅", "genre": "station", "kind": "HUB", "area": "桶川市", "region": "saitama-11231", "lat": 35.99758, "lon": 139.56515, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 高崎線"], "adj": ["st-002720", "st-002775"] },
 
-    { "id": "lm-q611108", "name": "鷲宮神社", "genre": "shrine_temple", "kind": "LM", "area": "久喜市", "region": "saitama-11232", "lat": 36.09992, "lon": 139.65492, "level": 1, "value": 1, "hackable": false, "wikidata": "Q611108" },
+    { "id": "lm-q611108", "name": "鷲宮神社", "genre": "shrine_temple", "kind": "LM", "area": "久喜市", "region": "saitama-11232", "lat": 36.09992, "lon": 139.65492, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q611108"}, "src": "src-wikidata" },
     { "id": "st-002592", "name": "栗橋駅", "genre": "station", "kind": "HUB", "area": "久喜市", "region": "saitama-11232", "lat": 36.13632, "lon": 139.69394, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 東北線", "東武鉄道 日光線"], "adj": ["st-002547", "st-002550", "st-002621", "st-002643", "st-002683"] },
     { "id": "st-002621", "name": "南栗橋駅", "genre": "station", "kind": "HUB", "area": "久喜市", "region": "saitama-11232", "lat": 36.11379, "lon": 139.71209, "level": 1, "value": 1, "lines": ["東武鉄道 日光線"], "adj": ["st-002592", "st-002672"] },
     { "id": "st-002632", "name": "鷲宮駅", "genre": "station", "kind": "HUB", "area": "久喜市", "region": "saitama-11232", "lat": 36.0968, "lon": 139.65653, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["st-002623", "st-002683"] },
@@ -314,7 +311,7 @@
 
     { "id": "st-002848", "name": "一本松駅", "genre": "station", "kind": "HUB", "area": "鶴ヶ島市", "region": "saitama-11241", "lat": 35.93995, "lon": 139.3697, "level": 1, "value": 1, "lines": ["東武鉄道 越生線"], "adj": ["st-002822", "st-002860"] },
 
-    { "id": "lm-q10855289", "name": "高麗神社", "genre": "shrine_temple", "kind": "LM", "area": "日高市", "region": "saitama-11242", "lat": 35.89858, "lon": 139.32281, "level": 1, "value": 1, "hackable": false, "wikidata": "Q10855289" },
+    { "id": "lm-q10855289", "name": "高麗神社", "genre": "shrine_temple", "kind": "LM", "area": "日高市", "region": "saitama-11242", "lat": 35.89858, "lon": 139.32281, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q10855289"}, "src": "src-wikidata" },
     { "id": "st-002921", "name": "武蔵高萩駅", "genre": "station", "kind": "HUB", "area": "日高市", "region": "saitama-11242", "lat": 35.90175, "lon": 139.37161, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 川越線"], "adj": ["st-002908", "st-002927"] },
     { "id": "st-002927", "name": "高麗川駅", "genre": "station", "kind": "HUB", "area": "日高市", "region": "saitama-11242", "lat": 35.89688, "lon": 139.33784, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 八高線", "東日本旅客鉄道 川越線"], "adj": ["st-002846", "st-002921", "st-002997"] },
     { "id": "st-002945", "name": "武蔵横手駅", "genre": "station", "kind": "HUB", "area": "日高市", "region": "saitama-11242", "lat": 35.88516, "lon": 139.28078, "level": 1, "value": 1, "lines": ["西武鉄道 池袋線"], "adj": ["st-002936", "st-002950"] },
@@ -334,7 +331,7 @@
     { "id": "st-002770", "name": "志久駅", "genre": "station", "kind": "HUB", "area": "伊奈町", "region": "saitama-11301", "lat": 35.9907, "lon": 139.62232, "level": 1, "value": 1, "lines": ["埼玉新都市交通 伊奈線"], "adj": ["st-002756", "st-002787"] },
     { "id": "st-002787", "name": "丸山駅", "genre": "station", "kind": "HUB", "area": "伊奈町", "region": "saitama-11301", "lat": 35.97929, "lon": 139.62453, "level": 1, "value": 1, "lines": ["埼玉新都市交通 伊奈線"], "adj": ["st-002770", "st-002802"] },
 
-    { "id": "lm-q7402537", "name": "埼玉医科大学", "genre": "university", "kind": "EDU", "area": "毛呂山町", "region": "saitama-11326", "lat": 35.93944, "lon": 139.30528, "level": 1, "value": 1, "wikidata": "Q7402537", "adj": ["st-002846"] },
+    { "id": "lm-q7402537", "name": "埼玉医科大学", "genre": "university", "kind": "EDU", "area": "毛呂山町", "region": "saitama-11326", "lat": 35.93944, "lon": 139.30528, "level": 1, "value": 1, "adj": ["st-002846"], "codes": {"wikidata": "Q7402537"}, "src": "src-wikidata" },
     { "id": "st-002839", "name": "東毛呂駅", "genre": "station", "kind": "HUB", "area": "毛呂山町", "region": "saitama-11326", "lat": 35.94748, "lon": 139.31491, "level": 1, "value": 1, "lines": ["東武鉄道 越生線"], "adj": ["st-002829", "st-002845"] },
     { "id": "st-002845", "name": "武州長瀬駅", "genre": "station", "kind": "HUB", "area": "毛呂山町", "region": "saitama-11326", "lat": 35.94212, "lon": 139.32567, "level": 1, "value": 1, "lines": ["東武鉄道 越生線"], "adj": ["st-002839", "st-002850"] },
     { "id": "st-002846", "name": "毛呂駅", "genre": "station", "kind": "HUB", "area": "毛呂山町", "region": "saitama-11326", "lat": 35.94127, "lon": 139.3091, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 八高線"], "adj": ["lm-q7402537", "st-002814", "st-002927"] },
@@ -346,23 +343,23 @@
     { "id": "st-002708", "name": "森林公園駅", "genre": "station", "kind": "HUB", "area": "滑川町", "region": "saitama-11341", "lat": 36.04537, "lon": 139.3743, "level": 1, "value": 1, "lines": ["東武鉄道 東上本線"], "adj": ["st-002710", "st-002717"] },
     { "id": "st-002710", "name": "つきのわ駅", "genre": "station", "kind": "HUB", "area": "滑川町", "region": "saitama-11341", "lat": 36.04365, "lon": 139.34597, "level": 1, "value": 1, "lines": ["東武鉄道 東上本線"], "adj": ["st-002708", "st-002709"] },
 
-    { "id": "lm-q11521871", "name": "杉山城", "genre": "heritage", "kind": "LM", "area": "嵐山町", "region": "saitama-11342", "lat": 36.06258, "lon": 139.31214, "level": 1, "value": 1, "wikidata": "Q11521871", "adj": ["st-002709"] },
-    { "id": "lm-q11619403", "name": "菅谷館", "genre": "heritage", "kind": "LM", "area": "嵐山町", "region": "saitama-11342", "lat": 36.03556, "lon": 139.32194, "level": 1, "value": 1, "wikidata": "Q11619403", "adj": ["st-002709"] },
+    { "id": "lm-q11521871", "name": "杉山城", "genre": "heritage", "kind": "LM", "area": "嵐山町", "region": "saitama-11342", "lat": 36.06258, "lon": 139.31214, "level": 1, "value": 1, "adj": ["st-002709"], "codes": {"wikidata": "Q11521871"}, "src": "src-wikidata" },
+    { "id": "lm-q11619403", "name": "菅谷館", "genre": "heritage", "kind": "LM", "area": "嵐山町", "region": "saitama-11342", "lat": 36.03556, "lon": 139.32194, "level": 1, "value": 1, "adj": ["st-002709"], "codes": {"wikidata": "Q11619403"}, "src": "src-wikidata" },
     { "id": "st-002709", "name": "武蔵嵐山駅", "genre": "station", "kind": "HUB", "area": "嵐山町", "region": "saitama-11342", "lat": 36.04474, "lon": 139.32695, "level": 1, "value": 1, "lines": ["東武鉄道 東上本線"], "adj": ["lm-q11521871", "lm-q11619403", "st-002692", "st-002710"] },
 
     { "id": "st-002665", "name": "竹沢駅", "genre": "station", "kind": "HUB", "area": "小川町", "region": "saitama-11343", "lat": 36.07533, "lon": 139.23052, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 八高線"], "adj": ["st-002633", "st-002692"] },
     { "id": "st-002666", "name": "東武竹沢駅", "genre": "station", "kind": "HUB", "area": "小川町", "region": "saitama-11343", "lat": 36.07502, "lon": 139.2376, "level": 1, "value": 1, "lines": ["東武鉄道 東上本線"], "adj": ["st-002640", "st-002692"] },
     { "id": "st-002692", "name": "小川町駅", "genre": "station", "kind": "HUB", "area": "小川町", "region": "saitama-11343", "lat": 36.05907, "lon": 139.26006, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 八高線", "東武鉄道 東上本線"], "adj": ["st-002665", "st-002666", "st-002709", "st-002752"] },
 
-    { "id": "lm-q21653719", "name": "遠山記念館", "genre": "museum", "kind": "LM", "area": "川島町", "region": "saitama-11346", "lat": 35.98771, "lon": 139.49331, "level": 1, "value": 1, "wikidata": "Q21653719", "adj": ["st-002720"] },
+    { "id": "lm-q21653719", "name": "遠山記念館", "genre": "museum", "kind": "LM", "area": "川島町", "region": "saitama-11346", "lat": 35.98771, "lon": 139.49331, "level": 1, "value": 1, "adj": ["st-002720"], "codes": {"wikidata": "Q21653719"}, "src": "src-wikidata" },
 
-    { "id": "lm-q11414302", "name": "吉見百穴", "genre": "monument", "kind": "LM", "area": "吉見町", "region": "saitama-11347", "lat": 36.0392, "lon": 139.422, "level": 1, "value": 1, "wikidata": "Q11414302", "adj": ["st-002717"] },
+    { "id": "lm-q11414302", "name": "吉見百穴", "genre": "monument", "kind": "LM", "area": "吉見町", "region": "saitama-11347", "lat": 36.0392, "lon": 139.422, "level": 1, "value": 1, "adj": ["st-002717"], "codes": {"wikidata": "Q11414302"}, "src": "src-wikidata" },
 
-    { "id": "lm-q11427887", "name": "堂平山", "genre": "nature", "kind": "LM", "area": "ときがわ町", "region": "saitama-11349", "lat": 36.00575, "lon": 139.19006, "level": 1, "value": 1, "wikidata": "Q11427887", "adj": ["st-002791"] },
+    { "id": "lm-q11427887", "name": "堂平山", "genre": "nature", "kind": "LM", "area": "ときがわ町", "region": "saitama-11349", "lat": 36.00575, "lon": 139.19006, "level": 1, "value": 1, "adj": ["st-002791"], "codes": {"wikidata": "Q11427887"}, "src": "src-wikidata" },
     { "id": "st-002752", "name": "明覚駅", "genre": "station", "kind": "HUB", "area": "ときがわ町", "region": "saitama-11349", "lat": 36.00386, "lon": 139.28948, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 八高線"], "adj": ["st-002692", "st-002814"] },
 
-    { "id": "lm-q6352347", "name": "武甲山", "genre": "nature", "kind": "LM", "area": "横瀬町", "region": "saitama-11361", "lat": 35.95167, "lon": 139.09778, "level": 2, "value": 2, "wikidata": "Q6352347", "adj": ["st-002778", "st-002799"] },
-    { "id": "lm-q4458228", "name": "秩父天文台", "genre": "observatory", "kind": "EDU", "area": "横瀬町", "region": "saitama-11361", "lat": 35.95667, "lon": 139.14583, "level": 1, "value": 1, "wikidata": "Q4458228", "adj": ["st-002791"] },
+    { "id": "lm-q6352347", "name": "武甲山", "genre": "nature", "kind": "LM", "area": "横瀬町", "region": "saitama-11361", "lat": 35.95167, "lon": 139.09778, "level": 2, "value": 2, "adj": ["st-002778", "st-002799"], "codes": {"wikidata": "Q6352347"}, "src": "src-wikidata" },
+    { "id": "lm-q4458228", "name": "秩父天文台", "genre": "observatory", "kind": "EDU", "area": "横瀬町", "region": "saitama-11361", "lat": 35.95667, "lon": 139.14583, "level": 1, "value": 1, "adj": ["st-002791"], "codes": {"wikidata": "Q4458228"}, "src": "src-wikidata" },
     { "id": "st-002778", "name": "横瀬駅", "genre": "station", "kind": "HUB", "area": "横瀬町", "region": "saitama-11361", "lat": 35.98513, "lon": 139.09779, "level": 1, "value": 1, "lines": ["西武鉄道 西武秩父線"], "adj": ["lm-q6352347", "st-002771", "st-002791"] },
     { "id": "st-002791", "name": "芦ヶ久保駅", "genre": "station", "kind": "HUB", "area": "横瀬町", "region": "saitama-11361", "lat": 35.97653, "lon": 139.13702, "level": 1, "value": 1, "lines": ["西武鉄道 西武秩父線"], "adj": ["lm-q11427887", "lm-q4458228", "st-002778", "st-002849"] },
 
@@ -380,7 +377,7 @@
 
     { "id": "st-002484", "name": "神保原駅", "genre": "station", "kind": "HUB", "area": "上里町", "region": "saitama-11385", "lat": 36.25365, "lon": 139.14895, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 高崎線"], "adj": ["lm-q6206881", "st-002458", "st-002503"] },
 
-    { "id": "lm-q2969388", "name": "鉢形城", "genre": "heritage", "kind": "LM", "area": "寄居町", "region": "saitama-11408", "lat": 36.1092, "lon": 139.196, "level": 2, "value": 2, "wikidata": "Q2969388", "adj": ["st-002611", "st-002614"] },
+    { "id": "lm-q2969388", "name": "鉢形城", "genre": "heritage", "kind": "LM", "area": "寄居町", "region": "saitama-11408", "lat": 36.1092, "lon": 139.196, "level": 2, "value": 2, "adj": ["st-002611", "st-002614"], "codes": {"wikidata": "Q2969388"}, "src": "src-wikidata" },
     { "id": "st-002573", "name": "用土駅", "genre": "station", "kind": "HUB", "area": "寄居町", "region": "saitama-11408", "lat": 36.15391, "lon": 139.20061, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 八高線"], "adj": ["st-002563", "st-002611"] },
     { "id": "st-002604", "name": "桜沢駅", "genre": "station", "kind": "HUB", "area": "寄居町", "region": "saitama-11408", "lat": 36.12872, "lon": 139.20782, "level": 1, "value": 1, "lines": ["秩父鉄道 秩父本線"], "adj": ["st-002603", "st-002611"] },
     { "id": "st-002605", "name": "波久礼駅", "genre": "station", "kind": "HUB", "area": "寄居町", "region": "saitama-11408", "lat": 36.12722, "lon": 139.15816, "level": 1, "value": 1, "lines": ["秩父鉄道 秩父本線"], "adj": ["st-002600", "st-002611"] },
@@ -391,7 +388,7 @@
     { "id": "st-002633", "name": "折原駅", "genre": "station", "kind": "HUB", "area": "寄居町", "region": "saitama-11408", "lat": 36.09646, "lon": 139.19509, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 八高線"], "adj": ["st-002611", "st-002665"] },
     { "id": "st-002640", "name": "みなみ寄居駅", "genre": "station", "kind": "HUB", "area": "寄居町", "region": "saitama-11408", "lat": 36.09179, "lon": 139.2365, "level": 1, "value": 1, "lines": ["東武鉄道 東上本線"], "adj": ["st-002626", "st-002666"] },
 
-    { "id": "lm-q11527526", "name": "東武動物公園", "genre": "zoo_aquarium", "kind": "LM", "area": "宮代町", "region": "saitama-11442", "lat": 36.02008, "lon": 139.71972, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11527526" },
+    { "id": "lm-q11527526", "name": "東武動物公園", "genre": "zoo_aquarium", "kind": "LM", "area": "宮代町", "region": "saitama-11442", "lat": 36.02008, "lon": 139.71972, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q11527526"}, "src": "src-wikidata" },
     { "id": "st-002713", "name": "和戸駅", "genre": "station", "kind": "HUB", "area": "宮代町", "region": "saitama-11442", "lat": 36.04002, "lon": 139.70058, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["st-002683", "st-002728"] },
     { "id": "st-002728", "name": "東武動物公園駅", "genre": "station", "kind": "HUB", "area": "宮代町", "region": "saitama-11442", "lat": 36.02516, "lon": 139.72601, "level": 2, "value": 2, "lines": ["東武鉄道 伊勢崎線", "東武鉄道 日光線"], "adj": ["st-002700", "st-002713", "st-002750"] },
     { "id": "st-002750", "name": "姫宮駅", "genre": "station", "kind": "HUB", "area": "宮代町", "region": "saitama-11442", "lat": 36.00493, "lon": 139.73846, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["st-002728", "st-002772"] },

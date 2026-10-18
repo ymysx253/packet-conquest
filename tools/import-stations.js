@@ -190,7 +190,7 @@ for (const code of [...groups.keys()]) if (otherIds.has(`st-${code}`)) { groups.
 const template = JSON.parse(fs.readFileSync(TEMPLATE_FILE, 'utf8'));
 let T;
 if (fs.existsSync(NODE_FILE)) T = JSON.parse(fs.readFileSync(NODE_FILE, 'utf8'));
-else T = { region: prefId, name: pref.name, version: 0, updatedAt: TODAY, note: `${pref.name}の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。`, sources: template.sources, kinds: template.kinds, genres: template.genres };
+else T = { schema: 'pc.nodes/1', region: prefId, name: pref.name, version: 0, updatedAt: TODAY, note: `${pref.name}の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。形式は docs/DATA-FORMAT.md 第 4 章。`, kinds: template.kinds, genres: template.genres, defaultSource: 'src-ksj-n02-2025' };
 const keep = T.nodes ? T.nodes.filter((n) => n.genre !== 'station') : [];
 const levelByName = Object.fromEntries((T.nodes || []).filter((n) => n.genre === 'station').map((n) => [n.name, n.level]));
 const kindByName = Object.fromEntries((T.nodes || []).filter((n) => n.genre === 'station').map((n) => [n.name, n.kind]));
@@ -213,7 +213,7 @@ const order = Object.fromEntries(R.regions.map((r, i) => [r.id, i]));
 T.nodes = T.nodes.map((n, i) => ({ n, i })).sort((a, b) => (order[a.n.region] - order[b.n.region]) || (a.i - b.i)).map((x) => x.n);
 T.version = (T.version || 0) + 1;
 T.updatedAt = TODAY;
-T.sources = template.sources;
+T.schema = 'pc.nodes/1'; T.defaultSource = T.defaultSource || 'src-ksj-n02-2025'; delete T.sources; // 出典は台帳(server/map/data/sources.json)
 // 地域マスターに nodeFile を付ける
 if (pref.nodeFile !== prefId) { pref.nodeFile = prefId; }
 

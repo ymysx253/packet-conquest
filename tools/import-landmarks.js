@@ -14,7 +14,7 @@
 //   - 同じ都道府県に同じ名前があれば「(市区町村名)」を付ける
 const fs = require('fs');
 const path = require('path');
-const { gatewayLevel } = require('./gateway');
+const { gatewayLevel, HUB_AIRPORTS } = require('./gateway');
 
 const ROOT = path.join(__dirname, '..');
 const DATA = path.join(ROOT, 'server/map/data');
@@ -116,7 +116,12 @@ for (const c of picked) {
   };
   if (!c.hackable) node.hackable = false;
   if (c.company) node.company = c.company;
-  node.wikidata = c.qid;
+  node.codes = { wikidata: c.qid }; // 形式は docs/DATA-FORMAT.md 第 4 章(空港・港の IATA などは tools/fetch-codes.js が足す)
+  node.src = 'src-wikidata';
+  if (c.hackable && (c.genre === 'airport' || c.genre === 'port')) {
+    const hub = c.genre === 'airport' && HUB_AIRPORTS.has(name);
+    node.gateway = { type: c.genre, scope: hub ? 'international' : 'domestic', ...(hub ? { hub: true } : {}) };
+  }
   T.nodes.push(node);
   added++;
 }
@@ -134,7 +139,6 @@ for (const { file, T } of files.values()) {
   T.nodes = T.nodes.map((n, i) => ({ n, i })).sort((a, b) => (order[a.n.region] - order[b.n.region]) || ((a.n.genre === 'station') - (b.n.genre === 'station')) || (a.i - b.i)).map((x) => x.n);
   T.version = (T.version || 0) + 1;
   T.updatedAt = TODAY;
-  if (!(T.sources || []).some((s) => s.includes('Wikidata'))) T.sources = [...(T.sources || []), '名所の名前と位置の一部は Wikidata(CC0)による(tools/import-landmarks.js)'];
   const { nodes, ...headObj } = T;
   fs.writeFileSync(file, writeList(headObj, 'nodes', nodes, 'area'));
 }

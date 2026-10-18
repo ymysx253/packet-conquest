@@ -5,6 +5,13 @@
 const fs = require('fs');
 const path = require('path');
 const { buildLinks, nearest, tileFields, addrOf } = require('./geo');
+const { loadSources } = require('./sources');
+const { readRouteFiles, deriveRoutes } = require('./routes');
+
+// 外部の識別コード(docs/DATA-FORMAT.md 第 4 章)。キーは決まった名前だけ
+const CODE_FORMATS = { iata: /^[A-Z0-9]{3}$/, icao: /^[A-Z0-9]{4}$/, unlocode: /^[A-Z]{2}[A-Z2-9]{3}$/, wikidata: /^Q[0-9]+$/, ksj: /^[0-9]+$/ };
+const GATEWAY_TYPES = new Set(['airport', 'port', 'heliport', 'station']);
+const GATEWAY_SCOPES = new Set(['international', 'domestic']);
 
 const DATA_DIR = path.join(__dirname, 'data');
 const LEVEL_MIN = 1, LEVEL_MAX = 999; // 1〜10 が基本(国は 10)。11〜999 は拡張用。形は public/shapes.js
@@ -105,6 +112,10 @@ function regionDocs(nodes = []) {
 function validate(region, data) {
   if (!data || !Array.isArray(data.nodes)) fail(region, 'nodes がありません');
   if (!data.kinds || typeof data.kinds !== 'object') fail(region, 'kinds がありません');
+  // 形式と既定の出典(docs/DATA-FORMAT.md 第 4 章、第 2 章)
+  if (data.schema !== 'pc.nodes/1') fail(region, 'schema は pc.nodes/1');
+  const sources = loadSources();
+  if (!sources.byId.has(data.defaultSource)) fail(region, `defaultSource ${data.defaultSource} が出典の台帳に無い`);
   const sp = data.spawn;
   if (sp !== undefined && (!sp || typeof sp.lat !== 'number' || typeof sp.lon !== 'number' || !(sp.radiusKm > 0))) fail(region, 'spawn が不正です');
   const ids = new Set(), names = new Set();
@@ -128,6 +139,25 @@ function validate(region, data) {
     // 企業名の施設(命名権など)はハック不可(2026-10-19 決定)。企業名は画面に出す
     if (n.company !== undefined && (typeof n.company !== 'string' || !n.company)) fail(region, `${n.id}: company は企業名の文字列`);
     if (n.company && n.hackable !== false) fail(region, `${n.id}: 企業名の施設はハック不可(hackable: false)にする`);
+    // 出典・識別コード・玄関口(docs/DATA-FORMAT.md 第 4 章)
+    if (n.src !== undefined && !sources.byId.has(n.src)) fail(region, `${n.id}: src ${n.src} が出典の台帳に無い`);
+    if (n.codes !== undefined) {
+      if (!n.codes || typeof n.codes !== 'object' || Array.isArray(n.codes)) fail(region, `${n.id}: codes はオブジェクト`);
+      for (const [k, v] of Object.entries(n.codes)) {
+        if (k === 'ext') { if (!Array.isArray(v) || v.some((e) => !e || !sources.byId.has(e.scheme) || typeof e.value !== 'string' || !e.value)) fail(region, `${n.id}: codes.ext は [{ scheme: 出典 id, value }]`); continue; }
+        if (!CODE_FORMATS[k]) fail(region, `${n.id}: codes の ${k} は決まった名前でない(${Object.keys(CODE_FORMATS).join('/')}/ext)`);
+        if (typeof v !== 'string' || !CODE_FORMATS[k].test(v)) fail(region, `${n.id}: codes.${k} の形が違う(${v})`);
+      }
+    }
+    if (n.wikidata !== undefined) fail(region, `${n.id}: wikidata は codes.wikidata に置く`);
+    if (n.gateway !== undefined) {
+      const g = n.gateway;
+      if (!g || !GATEWAY_TYPES.has(g.type) || !GATEWAY_SCOPES.has(g.scope) || (g.hub !== undefined && typeof g.hub !== 'boolean')) fail(region, `${n.id}: gateway は { type, scope, hub? }`);
+      if (n.hackable === false) fail(region, `${n.id}: ハック不可の拠点は玄関口(gateway)にしない`);
+    }
+    if (n.names !== undefined && (!n.names || typeof n.names !== 'object' || Object.values(n.names).some((v) => typeof v !== 'string'))) fail(region, `${n.id}: names は { 言語: 名前 }`);
+    if (n.replacedBy !== undefined && (typeof n.replacedBy !== 'string' || !/^[a-z0-9-]+$/.test(n.replacedBy))) fail(region, `${n.id}: replacedBy は拠点 id`);
+    if (n.routes !== undefined) fail(region, `${n.id}: 航路は拠点に書かず server/map/data/routes/ に置く(DATA-FORMAT.md 第 5 章)`);
     // 名所のジャンル(docs/PLACES.md 第2章)。地名ではなく名所であることの担保
     if (typeof n.genre !== 'string' || !GENRES.has(n.genre)) fail(region, `${n.id}: genre が不正 ${n.genre}(PLACES.md のジャンルから選ぶ)`);
     if (n.genre !== 'station' && /[0-9０-９一二三四五六七八九十]+丁目/.test(n.name)) fail(region, `${n.id}: 丁目を含む名前は使わない(名所の名前にする。駅名は除く)`);
@@ -140,12 +170,6 @@ function validate(region, data) {
   }
   // adj のつながり先が別のファイル(隣の都県)にあることがあるので、ここでは形だけ見る。全体での存在は loadAll が確かめる
   for (const n of data.nodes) for (const m of n.adj || []) if (!/^[a-z0-9-]+$/.test(m)) fail(region, `${n.id}: adj の ${m} が不正`);
-  // 航路(空路・海路。2026-10-19): 空港・港だけが持つ。行き先は別のファイルにあってよい(全体での存在は loadAll が確かめる)
-  for (const n of data.nodes) {
-    if (n.routes === undefined) continue;
-    if (!Array.isArray(n.routes) || n.routes.some((r) => !r || typeof r.to !== 'string' || !/^[a-z0-9-]+$/.test(r.to) || !['air', 'sea'].includes(r.mode))) fail(region, `${n.id}: routes は { to, mode: air|sea } の配列`);
-    if (!['airport', 'port'].includes(n.genre)) fail(region, `${n.id}: 航路を持てるのは空港と港だけ`);
-  }
 }
 
 function readRegionFile(region) {
@@ -168,14 +192,18 @@ function loadRegion(region) {
     lines: Array.isArray(n.lines) ? n.lines : [], // 駅の路線(事業者 路線名)。取り込み元: 国土数値情報
     tags: Array.isArray(n.tags) ? n.tags : [],
     company: n.company || null, // 命名権など企業名の施設の企業名(画面に出す)
-    wikidata: n.wikidata || null, // 名所の出どころ(Wikidata の id)
+    // 識別コード(駅は国土数値情報のグループコードを id から)、出典、玄関口、言語ごとの名前(DATA-FORMAT.md 第 4 章)
+    codes: { ...(n.codes || {}), ...(/^st-[0-9]+$/.test(n.id) ? { ksj: n.id.slice(3) } : {}) },
+    wikidata: (n.codes && n.codes.wikidata) || null, // 互換(codes.wikidata と同じ)
+    src: n.src || data.defaultSource,
+    gateway: n.gateway || null,
+    names: n.names || null,
     // 問題生成に使う架空のネットワーク 10.(i+1).0.0/16(順番で決まる。DB 化したら項目として持つ)
     // 問題生成に使う架空のネットワーク。拠点 id から決定的に決める(上限なし。DESIGN.md 第 13 章)
     ...addrOf(n.id),
     adj: Array.isArray(n.adj) ? [...n.adj] : [],
     adjMaster: Array.isArray(n.adj) ? [...n.adj] : [], // マスターの原文(別のファイルの拠点への線を含む。loadAll が使う)
-    routesMaster: Array.isArray(n.routes) ? n.routes.map((r) => ({ to: r.to, mode: r.mode })) : [], // 航路の原文(loadAll が両向きにそろえる)
-    routes: [],
+    routes: [], // 航路の要約(loadAll が server/map/data/routes/ の記録から作る)
   }));
 
   // つながり(設計書 第 14 章): マスターの adj を両向きにそろえる。adj が無い地域(古いマスター)は近い 3 拠点で代用
@@ -216,17 +244,10 @@ function loadAll() {
   const ADJ = Object.fromEntries(NODES.map((n) => [n.id, new Set()]));
   for (const n of NODES) for (const m of n.adjMaster || n.adj || []) if (byId[m] && n.hackable && byId[m].hackable) { ADJ[n.id].add(m); ADJ[m].add(n.id); }
   for (const n of NODES) { n.adj = [...ADJ[n.id]].sort(); ADJ[n.id] = n.adj; n.hits = Math.max(1, n.adj.length); delete n.adjMaster; }
-  // 航路: 両向きにそろえ、行き先の名前と座標を添える(画面が遠くの行き先へ線を引くため)。突破回数(つながりの本数)には数えない
-  const ROUTES = new Map(NODES.map((n) => [n.id, new Map()]));
-  for (const n of NODES) for (const r of n.routesMaster || []) {
-    const o = byId[r.to];
-    if (!o || o.id === n.id || n.hackable === false || o.hackable === false) continue;
-    ROUTES.get(n.id).set(o.id, r.mode); ROUTES.get(o.id).set(n.id, r.mode);
-  }
-  for (const n of NODES) {
-    n.routes = [...ROUTES.get(n.id)].map(([to, mode]) => ({ to, mode, name: byId[to].name, lat: byId[to].lat, lon: byId[to].lon })).sort((a, b) => a.to.localeCompare(b.to));
-    delete n.routesMaster;
-  }
+  // 航路(DATA-FORMAT.md 第 5 章): 拠点から独立した記録から、ゲームで使える航路だけを拠点ごとの要約にする。突破回数には数えない
+  const ROUTE_FILES = readRouteFiles();
+  const routes = deriveRoutes(byId, ROUTE_FILES, loadSources());
+  for (const n of NODES) n.routes = routes.byNode.get(n.id) || [];
   const EDGES = [];
   for (const n of NODES) for (const m of n.adj) if (n.id < m) EDGES.push({ a: n.id, b: m });
   const KINDS = Object.assign({}, ...parts.map((p) => p.KINDS));
@@ -248,7 +269,7 @@ function nodeDocs(nodes, now = Date.now()) {
     location: { type: 'Point', coordinates: [m.lon, m.lat] },
     t0: m.t0, t1: m.t1, t2: m.t2, t3: m.t3, t4: m.t4,
     level: m.level, value: m.value, hackable: m.hackable !== false, lines: m.lines || [], tags: m.tags || [],
-    company: m.company || null, wikidata: m.wikidata || null,
+    company: m.company || null, codes: m.codes || {}, src: m.src || null, gateway: m.gateway || null, names: m.names || null,
     adj: m.adj || [], hits: m.hits || Math.max(1, (m.adj || []).length), // つながりと、突破に必要な正解の回数(第 14 章)
     routes: m.routes || [], // 航路(空路・海路)。行き先 { to, mode, name, lat, lon }。占領した空港・港から行き先を攻撃できる
     subnet: m.subnet, base: m.base, span: m.span,

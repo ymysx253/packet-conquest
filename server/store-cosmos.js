@@ -14,6 +14,7 @@ const CONTAINERS = [
   { id: 'questions', partitionKey: { paths: ['/nodeId'] } },
   { id: 'meta', partitionKey: { paths: ['/id'] } }, // 小さな設定・状態(稼働時計 clock)。無ければ起動時に作る(共有スループット)
   { id: 'teams', partitionKey: { paths: ['/id'] } }, // チーム(第 3.11 節)。無ければ起動時に作る
+  { id: 'routes', partitionKey: { paths: ['/source'] } }, // 航路の記録(docs/DATA-FORMAT.md 第 5・7 章)。管理と監査用で、ゲームは拠点の要約を使う。出典ごとに差し替える
   // 出来事の記録(docs/LOGS.md 第 3・7.7 節)。既定 TTL 90 日(ドキュメントの ttl で種類ごとに上書き)、インデックスは絞り込みに使う項目だけ。
   // createIfNotExists は既にあるコンテナーの設定を変えないので、本番(作成済み)の TTL とインデックスはポータルから合わせる(LOGS.md 7.7)
   {

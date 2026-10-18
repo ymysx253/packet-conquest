@@ -38,7 +38,8 @@
 | `events` | `/day` | 出来事の記録(`docs/LOGS.md`)。既定 TTL 90 日、種類ごとに 30 日〜無期限。1 日に DAU × 100 件 | フェーズ 1 手順 9〜10(作成済み。設定は LOGS.md 7.7) | 多い(TTL で回収) |
 | `sponsors` | `/id` | スポンサー(店・施設)と掲載条件 | 段階 C | 少ない |
 | `teams` | `/id` | チーム(`{ id, type: "team", name, ownerId, maxMembers, memberCount, createdAt, style: { frame, fill, text }, icon }`)。style は #RRGGBB、icon は用意した記号。リーダー(ownerId)だけ変更可。合計点は players を team で GROUP BY | 手順 8(2026-10-18) | 少ない |
-| `meta` | `/id` | 小さな設定・状態。いまは稼働時計 `clock`(`{ id: "clock", uptimeMs, savedAt }`)。無ければ起動時に SDK が作る(共有スループット) | 手順 5(2026-10-18) | 数件 |
+| `routes` | `/source` | 航路の記録(空路・海路。形は `docs/DATA-FORMAT.md` 第 5 章)。出典ごとに差し替えるので出典で分ける。管理と監査用で、ゲームは `nodes` の `routes`(要約)を使う | 2026-10-19(起動時に SDK が作る) | 国内数百件、世界で数万件 |
+| `meta` | `/id` | 小さな設定・状態。稼働時計 `clock`(`{ id: "clock", uptimeMs, savedAt }`)と、出典の台帳の写し `sources`(`{ id: "sources", schema, sources: [...], syncedAt }`。`tools/db-setup.js` が書く)。無ければ起動時に SDK が作る(共有スループット) | 手順 5(2026-10-18) | 数件 |
 | `terms` / `devices` | `/category` / `/id` | 技術用語マスター・機器種別マスター(いまは JSON ファイル。問題生成を DB 駆動にするときに移す) | 必要になったら | 数十〜数百件 |
 
 読み方の基本: 起動時に `regions` と `nodes` を全件読み、以後はメモリで持ち、変更のたびに該当ドキュメントだけ書き戻す(`server/store.js` の `saveNode` / `savePlayer`)。クエリは管理と集計に限り、ゲームの 1 操作ごとに DB を読まない。
@@ -104,6 +105,11 @@
   "tags": [],
   "adj": ["st-003767", "st-003799"],
   "hits": 9,
+  "codes": { "ksj": "002915" },
+  "src": "src-ksj-n02-2025",
+  "gateway": null,
+  "names": null,
+  "routes": [],
   "subnet": "10.0.16.0/20",
   "base": 167776256,
   "span": 4094,
@@ -124,6 +130,8 @@
 - **マスターの項目**(登録・審査で決まる): name、genre、kind、area、country(地域マスターから引く。パーティションキーの 1 段目)、region、lat、lon、level、value、hackable、lines、alias、status、registeredBy、sponsorId
 - **つながり(2026-10-18、DESIGN.md 第 14 章)**: `adj` はつながっている拠点 id(駅は同じ路線の前後の駅、名所は近い駅をレベルと同じ数。`tools/import-links.js` が国土数値情報 N02 から作る)。`hits` は突破に必要な正解の回数 = `adj` の本数(1 以上)。どちらもマスターの項目
 - **ゲーム状態の項目**(遊びで変わる): owner、defense、fortifiedAt(最後に強化・奪取した時刻。強化は 24 時間ごとに 1 下がる)、progress(攻め手 → 正解回数。キーはプレイヤー id かチーム id。占領で空に戻る)、protectedUntil、updatedAt。`value` は基礎点で、画面に出す点数は `value + 減衰後の defense`
+- **出典と識別コード(2026-10-19、`docs/DATA-FORMAT.md` 第 4 章)**: `codes` は外部の識別コード(`iata` / `icao` / `unlocode` / `wikidata` / `ksj` / `ext`)。駅の `ksj` は id から付く。`src` は出典の台帳の id。`gateway` は空港・港の玄関口の情報(`{ type, scope, hub? }`)。`names` は言語ごとの名前。どれもマスターの項目
+- **航路の要約(`routes`)**: `[{ to, mode: "air" | "sea", name, lat, lon }]`。`routes` コンテナーの記録から、使ってよい出典・運航中・両端が玄関口のものだけを `load.js` が作る派生値
 - `location` は Cosmos DB の地理空間クエリ用(GeoJSON Point は経度・緯度の順)。lat / lon と二重に持つ
 - プレイヤーの拠点は `id` が `home-` で始まり、`isPlayerNode: true`、`kind: "HOME"`、`region` は開始地点の区(いまは `area` に「東京駅周辺」。region は `tokyo-chiyoda` にする)、`subnet` は 172.16.0.0/12 の /24、`span: 254`
 - `status`: public(地図に出る)/ pending(審査中)/ hidden(非公開)。public 以外は配信しない
