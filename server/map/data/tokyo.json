@@ -1,7 +1,7 @@
 {
   "region": "tokyo",
   "name": "東京",
-  "version": 11,
+  "version": 12,
   "updatedAt": "2026-10-19",
   "note": "東京の拠点マスター。名前は地名ではなく正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。genre は名所のジャンル、kind はゲーム内の役割。hackable: false は存在するがハック不可(寺社など)。位置は緯度・経度(おおよそ)。ゲーム内のネットワークと機器はすべて架空。level は 1〜999(東京は 1〜5)。Cosmos DB の nodes コンテナーと同じ項目(設計書 8.7)。",
   "sources": [
@@ -202,7 +202,7 @@
     { "id": "st-003399", "name": "三ノ輪駅", "genre": "station", "kind": "HUB", "area": "台東区", "region": "tokyo-taito", "lat": 35.72867, "lon": 139.79051, "level": 1, "value": 1, "lines": ["東京地下鉄 2号線日比谷線"], "adj": ["st-003363", "st-003469"] },
     { "id": "st-003460", "name": "鶯谷駅", "genre": "station", "kind": "HUB", "area": "台東区", "region": "tokyo-taito", "lat": 35.72085, "lon": 139.77865, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-003210", "st-003236", "st-003278", "st-003417", "st-003505"] },
     { "id": "st-003469", "name": "入谷駅", "genre": "station", "kind": "HUB", "area": "台東区", "region": "tokyo-taito", "lat": 35.72057, "lon": 139.78448, "level": 1, "value": 1, "lines": ["東京地下鉄 2号線日比谷線"], "adj": ["st-003399", "st-003505"] },
-    { "id": "st-003505", "name": "上野駅", "genre": "station", "kind": "HUB", "area": "台東区", "region": "tokyo-taito", "lat": 35.71278, "lon": 139.77645, "level": 4, "value": 4, "lines": ["東京地下鉄 2号線日比谷線", "東京地下鉄 3号線銀座線", "東日本旅客鉄道 東北新幹線", "東日本旅客鉄道 東北線"], "adj": ["st-003417", "st-003460", "st-003469", "st-003519", "st-003545", "st-003555", "st-003560", "st-003624", "st-003677", "st-003766", "ueno"] },
+    { "id": "st-003505", "name": "上野駅", "genre": "station", "kind": "HUB", "area": "台東区", "region": "tokyo-taito", "lat": 35.71278, "lon": 139.77645, "level": 4, "value": 4, "lines": ["東京地下鉄 2号線日比谷線", "東京地下鉄 3号線銀座線", "東日本旅客鉄道 東北新幹線", "東日本旅客鉄道 東北線"], "adj": ["st-002914", "st-003417", "st-003460", "st-003469", "st-003519", "st-003545", "st-003555", "st-003560", "st-003624", "st-003677", "st-003766", "ueno"] },
     { "id": "st-003519", "name": "稲荷町駅", "genre": "station", "kind": "HUB", "area": "台東区", "region": "tokyo-taito", "lat": 35.71144, "lon": 139.78194, "level": 1, "value": 1, "lines": ["東京地下鉄 3号線銀座線"], "adj": ["st-003505", "st-003530"] },
     { "id": "st-003521", "name": "京成上野駅", "genre": "station", "kind": "HUB", "area": "台東区", "region": "tokyo-taito", "lat": 35.71181, "lon": 139.7734, "level": 1, "value": 1, "lines": ["京成電鉄 本線"], "adj": ["ameyoko", "st-003417", "ueno"] },
     { "id": "st-003522", "name": "浅草駅", "genre": "station", "kind": "HUB", "area": "台東区", "region": "tokyo-taito", "lat": 35.71117, "lon": 139.79617, "level": 3, "value": 3, "lines": ["東京地下鉄 3号線銀座線", "東京都 1号線浅草線", "東武鉄道 伊勢崎線", "首都圏新都市鉄道 常磐新線"], "adj": ["skytree", "st-003363", "st-003524", "st-003530", "st-003538", "st-003556", "st-003571"] },
@@ -473,11 +473,11 @@
     { "id": "st-003490", "name": "学習院下駅", "genre": "station", "kind": "HUB", "area": "豊島区", "region": "tokyo-toshima", "lat": 35.71596, "lon": 139.71241, "level": 1, "value": 1, "lines": ["東京都 荒川線"], "adj": ["st-003468", "st-003509"] },
 
     { "id": "asukayama", "name": "飛鳥山公園", "genre": "park", "kind": "LM", "area": "北区", "region": "tokyo-kita", "lat": 35.7503, "lon": 139.7378, "level": 1, "value": 1, "adj": ["st-003256"] },
-    { "id": "st-003107", "name": "浮間舟渡駅", "genre": "station", "kind": "HUB", "area": "北区", "region": "tokyo-kita", "lat": 35.79124, "lon": 139.69145, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-003130"] },
-    { "id": "st-003130", "name": "北赤羽駅", "genre": "station", "kind": "HUB", "area": "北区", "region": "tokyo-kita", "lat": 35.7869, "lon": 139.70591, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-003107", "st-003155"] },
-    { "id": "st-003141", "name": "赤羽岩淵駅", "genre": "station", "kind": "HUB", "area": "北区", "region": "tokyo-kita", "lat": 35.78361, "lon": 139.72076, "level": 2, "value": 2, "lines": ["埼玉高速鉄道 埼玉高速鉄道線", "東京地下鉄 7号線南北線"], "adj": ["st-003153"] },
+    { "id": "st-003107", "name": "浮間舟渡駅", "genre": "station", "kind": "HUB", "area": "北区", "region": "tokyo-kita", "lat": 35.79124, "lon": 139.69145, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-003072", "st-003130"] },
+    { "id": "st-003130", "name": "北赤羽駅", "genre": "station", "kind": "HUB", "area": "北区", "region": "tokyo-kita", "lat": 35.7869, "lon": 139.70591, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-003086", "st-003107", "st-003155"] },
+    { "id": "st-003141", "name": "赤羽岩淵駅", "genre": "station", "kind": "HUB", "area": "北区", "region": "tokyo-kita", "lat": 35.78361, "lon": 139.72076, "level": 2, "value": 2, "lines": ["埼玉高速鉄道 埼玉高速鉄道線", "東京地下鉄 7号線南北線"], "adj": ["st-003092", "st-003153"] },
     { "id": "st-003153", "name": "志茂駅", "genre": "station", "kind": "HUB", "area": "北区", "region": "tokyo-kita", "lat": 35.77877, "lon": 139.73197, "level": 1, "value": 1, "lines": ["東京地下鉄 7号線南北線"], "adj": ["st-003141", "st-003207"] },
-    { "id": "st-003155", "name": "赤羽駅", "genre": "station", "kind": "HUB", "area": "北区", "region": "tokyo-kita", "lat": 35.77753, "lon": 139.7211, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 東北線", "東日本旅客鉄道 赤羽線"], "adj": ["st-003130", "st-003210", "st-003218"] },
+    { "id": "st-003155", "name": "赤羽駅", "genre": "station", "kind": "HUB", "area": "北区", "region": "tokyo-kita", "lat": 35.77753, "lon": 139.7211, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 東北線", "東日本旅客鉄道 赤羽線"], "adj": ["st-003086", "st-003130", "st-003210", "st-003218"] },
     { "id": "st-003207", "name": "王子神谷駅", "genre": "station", "kind": "HUB", "area": "北区", "region": "tokyo-kita", "lat": 35.76523, "lon": 139.73566, "level": 1, "value": 1, "lines": ["東京地下鉄 7号線南北線"], "adj": ["st-003153", "st-003236"] },
     { "id": "st-003210", "name": "東十条駅", "genre": "station", "kind": "HUB", "area": "北区", "region": "tokyo-kita", "lat": 35.76395, "lon": 139.72663, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-003155", "st-003236", "st-003278", "st-003417", "st-003460"] },
     { "id": "st-003218", "name": "十条駅", "genre": "station", "kind": "HUB", "area": "北区", "region": "tokyo-kita", "lat": 35.76117, "lon": 139.72225, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 赤羽線"], "adj": ["st-003155", "st-003286"] },
@@ -520,9 +520,9 @@
     { "id": "st-003117", "name": "高島平駅", "genre": "station", "kind": "LM", "area": "板橋区", "region": "tokyo-itabashi", "lat": 35.78912, "lon": 139.66035, "level": 1, "value": 1, "lines": ["東京都 6号線三田線"], "adj": ["st-003112", "st-003128"] },
     { "id": "st-003128", "name": "西台駅", "genre": "station", "kind": "HUB", "area": "板橋区", "region": "tokyo-itabashi", "lat": 35.78717, "lon": 139.67169, "level": 1, "value": 1, "lines": ["東京都 6号線三田線"], "adj": ["st-003117", "st-003140"] },
     { "id": "st-003140", "name": "蓮根駅", "genre": "station", "kind": "HUB", "area": "板橋区", "region": "tokyo-itabashi", "lat": 35.78469, "lon": 139.67914, "level": 1, "value": 1, "lines": ["東京都 6号線三田線"], "adj": ["st-003128", "st-003158"] },
-    { "id": "st-003156", "name": "成増駅", "genre": "station", "kind": "HUB", "area": "板橋区", "region": "tokyo-itabashi", "lat": 35.77771, "lon": 139.63271, "level": 1, "value": 1, "lines": ["東武鉄道 東上本線"], "adj": ["st-003184"] },
+    { "id": "st-003156", "name": "成増駅", "genre": "station", "kind": "HUB", "area": "板橋区", "region": "tokyo-itabashi", "lat": 35.77771, "lon": 139.63271, "level": 1, "value": 1, "lines": ["東武鉄道 東上本線"], "adj": ["st-003123", "st-003184"] },
     { "id": "st-003158", "name": "志村三丁目駅", "genre": "station", "kind": "HUB", "area": "板橋区", "region": "tokyo-itabashi", "lat": 35.77726, "lon": 139.68499, "level": 1, "value": 1, "lines": ["東京都 6号線三田線"], "adj": ["st-003140", "st-003165"] },
-    { "id": "st-003163", "name": "地下鉄成増駅", "genre": "station", "kind": "HUB", "area": "板橋区", "region": "tokyo-itabashi", "lat": 35.77748, "lon": 139.62976, "level": 1, "value": 1, "lines": ["東京地下鉄 8号線有楽町線"], "adj": ["st-003186"] },
+    { "id": "st-003163", "name": "地下鉄成増駅", "genre": "station", "kind": "HUB", "area": "板橋区", "region": "tokyo-itabashi", "lat": 35.77748, "lon": 139.62976, "level": 1, "value": 1, "lines": ["東京地下鉄 8号線有楽町線"], "adj": ["st-003123", "st-003186"] },
     { "id": "st-003165", "name": "志村坂上駅", "genre": "station", "kind": "HUB", "area": "板橋区", "region": "tokyo-itabashi", "lat": 35.7769, "lon": 139.69416, "level": 1, "value": 1, "lines": ["東京都 6号線三田線"], "adj": ["st-003158", "st-003193"] },
     { "id": "st-003184", "name": "下赤塚駅", "genre": "station", "kind": "HUB", "area": "板橋区", "region": "tokyo-itabashi", "lat": 35.77067, "lon": 139.64433, "level": 1, "value": 1, "lines": ["東武鉄道 東上本線"], "adj": ["st-003156", "st-003194"] },
     { "id": "st-003193", "name": "本蓮沼駅", "genre": "station", "kind": "HUB", "area": "板橋区", "region": "tokyo-itabashi", "lat": 35.7696, "lon": 139.70169, "level": 1, "value": 1, "lines": ["東京都 6号線三田線"], "adj": ["st-003165", "st-003216"] },
@@ -563,9 +563,9 @@
     { "id": "st-003060", "name": "見沼代親水公園駅", "genre": "station", "kind": "HUB", "area": "足立区", "region": "tokyo-adachi", "lat": 35.81479, "lon": 139.77072, "level": 1, "value": 1, "lines": ["東京都 日暮里・舎人ライナー"], "adj": ["st-003078"] },
     { "id": "st-003078", "name": "舎人駅", "genre": "station", "kind": "HUB", "area": "足立区", "region": "tokyo-adachi", "lat": 35.80594, "lon": 139.77013, "level": 1, "value": 1, "lines": ["東京都 日暮里・舎人ライナー"], "adj": ["st-003060", "st-003098"] },
     { "id": "st-003098", "name": "舎人公園駅", "genre": "station", "kind": "HUB", "area": "足立区", "region": "tokyo-adachi", "lat": 35.79712, "lon": 139.77012, "level": 1, "value": 1, "lines": ["東京都 日暮里・舎人ライナー"], "adj": ["st-003078", "st-003120", "toneri-park"] },
-    { "id": "st-003101", "name": "竹ノ塚駅", "genre": "station", "kind": "HUB", "area": "足立区", "region": "tokyo-adachi", "lat": 35.79511, "lon": 139.79098, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["st-003159"] },
+    { "id": "st-003101", "name": "竹ノ塚駅", "genre": "station", "kind": "HUB", "area": "足立区", "region": "tokyo-adachi", "lat": 35.79511, "lon": 139.79098, "level": 1, "value": 1, "lines": ["東武鉄道 伊勢崎線"], "adj": ["st-003059", "st-003159"] },
     { "id": "st-003120", "name": "谷在家駅", "genre": "station", "kind": "HUB", "area": "足立区", "region": "tokyo-adachi", "lat": 35.78893, "lon": 139.7701, "level": 1, "value": 1, "lines": ["東京都 日暮里・舎人ライナー"], "adj": ["st-003098", "st-003144"] },
-    { "id": "st-003133", "name": "六町駅", "genre": "station", "kind": "HUB", "area": "足立区", "region": "tokyo-adachi", "lat": 35.78562, "lon": 139.8219, "level": 1, "value": 1, "lines": ["首都圏新都市鉄道 常磐新線"], "adj": ["st-003177"] },
+    { "id": "st-003133", "name": "六町駅", "genre": "station", "kind": "HUB", "area": "足立区", "region": "tokyo-adachi", "lat": 35.78562, "lon": 139.8219, "level": 1, "value": 1, "lines": ["首都圏新都市鉄道 常磐新線"], "adj": ["st-003073", "st-003177"] },
     { "id": "st-003144", "name": "西新井大師西駅", "genre": "station", "kind": "HUB", "area": "足立区", "region": "tokyo-adachi", "lat": 35.78149, "lon": 139.77014, "level": 1, "value": 1, "lines": ["東京都 日暮里・舎人ライナー"], "adj": ["st-003120", "st-003171"] },
     { "id": "st-003150", "name": "大師前駅", "genre": "station", "kind": "HUB", "area": "足立区", "region": "tokyo-adachi", "lat": 35.77886, "lon": 139.78126, "level": 1, "value": 1, "lines": ["東武鉄道 大師線"], "adj": ["st-003159"] },
     { "id": "st-003159", "name": "西新井駅", "genre": "station", "kind": "HUB", "area": "足立区", "region": "tokyo-adachi", "lat": 35.77786, "lon": 139.78977, "level": 2, "value": 2, "lines": ["東武鉄道 伊勢崎線", "東武鉄道 大師線"], "adj": ["st-003101", "st-003150", "st-003176"] },
@@ -759,11 +759,11 @@
     { "id": "st-003450", "name": "鷹の台駅", "genre": "station", "kind": "HUB", "area": "小平市", "region": "tokyo-13211", "lat": 35.72344, "lon": 139.46113, "level": 1, "value": 1, "lines": ["西武鉄道 国分寺線"], "adj": ["st-003333", "st-003520"] },
     { "id": "st-003455", "name": "一橋学園駅", "genre": "station", "kind": "HUB", "area": "小平市", "region": "tokyo-13211", "lat": 35.72251, "lon": 139.48003, "level": 1, "value": 1, "lines": ["西武鉄道 多摩湖線"], "adj": ["st-003382", "st-003606"] },
 
-    { "id": "st-003151", "name": "秋津駅", "genre": "station", "kind": "HUB", "area": "東村山市", "region": "tokyo-13213", "lat": 35.77851, "lon": 139.49677, "level": 1, "value": 1, "lines": ["西武鉄道 池袋線"], "adj": ["st-003179"] },
-    { "id": "st-003152", "name": "新秋津駅", "genre": "station", "kind": "HUB", "area": "東村山市", "region": "tokyo-13213", "lat": 35.77853, "lon": 139.49393, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 武蔵野線"], "adj": ["st-003385"] },
+    { "id": "st-003151", "name": "秋津駅", "genre": "station", "kind": "HUB", "area": "東村山市", "region": "tokyo-13213", "lat": 35.77851, "lon": 139.49677, "level": 1, "value": 1, "lines": ["西武鉄道 池袋線"], "adj": ["st-003131", "st-003179"] },
+    { "id": "st-003152", "name": "新秋津駅", "genre": "station", "kind": "HUB", "area": "東村山市", "region": "tokyo-13213", "lat": 35.77853, "lon": 139.49393, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 武蔵野線"], "adj": ["st-003100", "st-003385"] },
     { "id": "st-003197", "name": "西武園駅", "genre": "station", "kind": "HUB", "area": "東村山市", "region": "tokyo-13213", "lat": 35.76756, "lon": 139.44934, "level": 1, "value": 1, "lines": ["西武鉄道 西武園線"], "adj": ["st-003220"] },
-    { "id": "st-003201", "name": "多摩湖駅", "genre": "station", "kind": "HUB", "area": "東村山市", "region": "tokyo-13213", "lat": 35.76646, "lon": 139.44255, "level": 2, "value": 2, "lines": ["西武鉄道 多摩湖線", "西武鉄道 山口線"], "adj": ["st-003231"] },
-    { "id": "st-003220", "name": "東村山駅", "genre": "station", "kind": "HUB", "area": "東村山市", "region": "tokyo-13213", "lat": 35.7609, "lon": 139.46591, "level": 2, "value": 2, "lines": ["西武鉄道 国分寺線", "西武鉄道 新宿線", "西武鉄道 西武園線"], "adj": ["st-003197", "st-003262", "st-003333"] },
+    { "id": "st-003201", "name": "多摩湖駅", "genre": "station", "kind": "HUB", "area": "東村山市", "region": "tokyo-13213", "lat": 35.76646, "lon": 139.44255, "level": 2, "value": 2, "lines": ["西武鉄道 多摩湖線", "西武鉄道 山口線"], "adj": ["st-003192", "st-003231"] },
+    { "id": "st-003220", "name": "東村山駅", "genre": "station", "kind": "HUB", "area": "東村山市", "region": "tokyo-13213", "lat": 35.7609, "lon": 139.46591, "level": 2, "value": 2, "lines": ["西武鉄道 国分寺線", "西武鉄道 新宿線", "西武鉄道 西武園線"], "adj": ["st-003131", "st-003197", "st-003262", "st-003333"] },
     { "id": "st-003231", "name": "武蔵大和駅", "genre": "station", "kind": "HUB", "area": "東村山市", "region": "tokyo-13213", "lat": 35.7568, "lon": 139.44381, "level": 1, "value": 1, "lines": ["西武鉄道 多摩湖線"], "adj": ["st-003201", "st-003287"] },
     { "id": "st-003262", "name": "久米川駅", "genre": "station", "kind": "HUB", "area": "東村山市", "region": "tokyo-13213", "lat": 35.75003, "lon": 139.47209, "level": 1, "value": 1, "lines": ["西武鉄道 新宿線"], "adj": ["st-003220", "st-003340"] },
     { "id": "st-003287", "name": "八坂駅", "genre": "station", "kind": "HUB", "area": "東村山市", "region": "tokyo-13213", "lat": 35.74519, "lon": 139.46706, "level": 1, "value": 1, "lines": ["西武鉄道 多摩湖線"], "adj": ["st-003231", "st-003312"] },
@@ -812,6 +812,6 @@
     { "id": "st-003409", "name": "西武柳沢駅", "genre": "station", "kind": "HUB", "area": "西東京市", "region": "tokyo-13229", "lat": 35.72853, "lon": 139.55186, "level": 1, "value": 1, "lines": ["西武鉄道 新宿線"], "adj": ["st-003408", "st-003423"] },
     { "id": "st-003423", "name": "田無駅", "genre": "station", "kind": "HUB", "area": "西東京市", "region": "tokyo-13229", "lat": 35.7271, "lon": 139.5381, "level": 1, "value": 1, "lines": ["西武鉄道 新宿線"], "adj": ["st-003409", "st-003430"] },
 
-    { "id": "st-003180", "name": "箱根ヶ崎駅", "genre": "station", "kind": "HUB", "area": "瑞穂町", "region": "tokyo-13303", "lat": 35.77227, "lon": 139.34675, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 八高線"], "adj": ["st-003282"] }
+    { "id": "st-003180", "name": "箱根ヶ崎駅", "genre": "station", "kind": "HUB", "area": "瑞穂町", "region": "tokyo-13303", "lat": 35.77227, "lon": 139.34675, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 八高線"], "adj": ["st-003067", "st-003282"] }
   ]
 }

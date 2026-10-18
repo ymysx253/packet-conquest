@@ -17,7 +17,7 @@ assert.strictEqual(new Set(NODES.map((n) => prefOf(n) + '|' + n.name)).size, NOD
 for (const n of NODES) { assert.strictEqual(n.country, 'japan'); for (let z = 0; z <= 4; z++) assert.match(n['t' + z], new RegExp('^t' + z + ':-?\\d+:-?\\d+$')); assert.match(n.subnet, /^10\.\d+\.\d+\.0\/20$/); assert.strictEqual(n.span, 4094); }
 for (const n of NODES) {
   assert.ok(KINDS[n.kind], `${n.name}: kind が不正 ${n.kind}`);
-  assert.ok(n.lat > 34.8 && n.lat < 36.2 && n.lon > 138.9 && n.lon < 141.0, `${n.name}: 関東南部の範囲外`);
+  assert.ok(n.lat > 34.8 && n.lat < 37.3 && n.lon > 138.3 && n.lon < 141.2, `${n.name}: 関東の範囲外`);
   assert.ok(Number.isInteger(n.level) && n.level >= 1 && (n.level <= 5 || (n.genre !== 'station' && n.level <= 30)), `${n.name}: 駅は Lv1〜5(象徴的な名所は 30 まで)`);
   assert.ok(Number.isInteger(n.value) && n.value >= 1 && n.value <= 999, `${n.name}: 点数は 1〜999`);
   assert.ok(n.value >= n.level - 1, `${n.name}: Lv に対して点数が低すぎる`);

@@ -1,0 +1,209 @@
+{
+  "region": "ibaraki",
+  "name": "茨城県",
+  "version": 2,
+  "updatedAt": "2026-10-19",
+  "note": "茨城県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
+  "sources": [
+    "「国土数値情報(鉄道データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N02-2025.html)を加工して作成",
+    "「国土数値情報(行政区域データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-2026.html)を加工して作成"
+  ],
+  "kinds": {
+    "IX": "相互接続点",
+    "DC": "データセンター",
+    "GOV": "官公庁",
+    "LM": "ランドマーク",
+    "HUB": "駅・交通",
+    "GW": "玄関口",
+    "EDU": "大学・研究"
+  },
+  "genres": [
+    "station",
+    "bus_terminal",
+    "airport",
+    "port",
+    "bridge",
+    "tower",
+    "park",
+    "nature",
+    "zoo_aquarium",
+    "museum",
+    "library",
+    "theater",
+    "stadium",
+    "heritage",
+    "monument",
+    "shrine_temple",
+    "government",
+    "university",
+    "market",
+    "convention",
+    "complex",
+    "observatory",
+    "ix"
+  ],
+  "nodes": [
+    { "id": "st-002300", "name": "赤塚駅", "genre": "station", "kind": "HUB", "area": "水戸市", "region": "ibaraki-08201", "lat": 36.3815, "lon": 140.41333, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002311", "st-002321"] },
+    { "id": "st-002311", "name": "偕楽園駅", "genre": "station", "kind": "HUB", "area": "水戸市", "region": "ibaraki-08201", "lat": 36.37311, "lon": 140.45496, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002300", "st-002319"] },
+    { "id": "st-002319", "name": "水戸駅", "genre": "station", "kind": "HUB", "area": "水戸市", "region": "ibaraki-08201", "lat": 36.37099, "lon": 140.47811, "level": 3, "value": 3, "lines": ["東日本旅客鉄道 常磐線", "東日本旅客鉄道 水郡線", "鹿島臨海鉄道 大洗鹿島線"], "adj": ["st-002280", "st-002296", "st-002311", "st-002329"] },
+    { "id": "st-002321", "name": "内原駅", "genre": "station", "kind": "HUB", "area": "水戸市", "region": "ibaraki-08201", "lat": 36.36953, "lon": 140.35143, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002300", "st-002350"] },
+    { "id": "st-002329", "name": "東水戸駅", "genre": "station", "kind": "HUB", "area": "水戸市", "region": "ibaraki-08201", "lat": 36.36217, "lon": 140.51523, "level": 1, "value": 1, "lines": ["鹿島臨海鉄道 大洗鹿島線"], "adj": ["st-002319", "st-002364"] },
+    { "id": "st-002364", "name": "常澄駅", "genre": "station", "kind": "HUB", "area": "水戸市", "region": "ibaraki-08201", "lat": 36.34116, "lon": 140.55797, "level": 1, "value": 1, "lines": ["鹿島臨海鉄道 大洗鹿島線"], "adj": ["st-002329", "st-002404"] },
+
+    { "id": "st-001990", "name": "十王駅", "genre": "station", "kind": "HUB", "area": "日立市", "region": "ibaraki-08202", "lat": 36.67223, "lon": 140.68664, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001903", "st-002040"] },
+    { "id": "st-002040", "name": "小木津駅", "genre": "station", "kind": "HUB", "area": "日立市", "region": "ibaraki-08202", "lat": 36.63777, "lon": 140.67494, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001990", "st-002079"] },
+    { "id": "st-002079", "name": "日立駅", "genre": "station", "kind": "HUB", "area": "日立市", "region": "ibaraki-08202", "lat": 36.58894, "lon": 140.66113, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002040", "st-002129"] },
+    { "id": "st-002129", "name": "常陸多賀駅", "genre": "station", "kind": "HUB", "area": "日立市", "region": "ibaraki-08202", "lat": 36.5522, "lon": 140.63281, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002079", "st-002171"] },
+    { "id": "st-002171", "name": "大甕駅", "genre": "station", "kind": "HUB", "area": "日立市", "region": "ibaraki-08202", "lat": 36.51339, "lon": 140.61967, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002129", "st-002207"] },
+
+    { "id": "st-002660", "name": "土浦駅", "genre": "station", "kind": "HUB", "area": "土浦市", "region": "ibaraki-08203", "lat": 36.07725, "lon": 140.20555, "level": 3, "value": 3, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002608", "st-002723"] },
+    { "id": "st-002723", "name": "荒川沖駅", "genre": "station", "kind": "HUB", "area": "土浦市", "region": "ibaraki-08203", "lat": 36.02951, "lon": 140.16517, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002660", "st-002746"] },
+
+    { "id": "st-002547", "name": "古河駅", "genre": "station", "kind": "HUB", "area": "古河市", "region": "ibaraki-08204", "lat": 36.19327, "lon": 139.71007, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-002509", "st-002592"] },
+
+    { "id": "st-002552", "name": "石岡駅", "genre": "station", "kind": "HUB", "area": "石岡市", "region": "ibaraki-08205", "lat": 36.19083, "lon": 140.28021, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002490", "st-002569"] },
+    { "id": "st-002569", "name": "高浜駅", "genre": "station", "kind": "HUB", "area": "石岡市", "region": "ibaraki-08205", "lat": 36.16433, "lon": 140.29503, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002552", "st-002608"] },
+
+    { "id": "st-002424", "name": "小田林駅", "genre": "station", "kind": "HUB", "area": "結城市", "region": "ibaraki-08207", "lat": 36.30073, "lon": 139.85401, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水戸線"], "adj": ["st-002407", "st-002432"] },
+    { "id": "st-002432", "name": "結城駅", "genre": "station", "kind": "HUB", "area": "結城市", "region": "ibaraki-08207", "lat": 36.29822, "lon": 139.87192, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水戸線"], "adj": ["st-002424", "st-002433"] },
+    { "id": "st-002433", "name": "東結城駅", "genre": "station", "kind": "HUB", "area": "結城市", "region": "ibaraki-08207", "lat": 36.29662, "lon": 139.89088, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水戸線"], "adj": ["st-002432", "st-002434"] },
+
+    { "id": "st-002866", "name": "龍ケ崎市駅", "genre": "station", "kind": "HUB", "area": "龍ケ崎市", "region": "ibaraki-08208", "lat": 35.9298, "lon": 140.13805, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002794", "st-002867", "st-002879"] },
+    { "id": "st-002867", "name": "佐貫駅", "genre": "station", "kind": "HUB", "area": "龍ケ崎市", "region": "ibaraki-08208", "lat": 35.92975, "lon": 140.13833, "level": 1, "value": 1, "lines": ["関東鉄道 竜ヶ崎線"], "adj": ["st-002866", "st-002886"] },
+    { "id": "st-002886", "name": "入地駅", "genre": "station", "kind": "HUB", "area": "龍ケ崎市", "region": "ibaraki-08208", "lat": 35.91887, "lon": 140.15759, "level": 1, "value": 1, "lines": ["関東鉄道 竜ヶ崎線"], "adj": ["st-002867", "st-002903"] },
+    { "id": "st-002903", "name": "竜ヶ崎駅", "genre": "station", "kind": "HUB", "area": "龍ケ崎市", "region": "ibaraki-08208", "lat": 35.90843, "lon": 140.17926, "level": 1, "value": 1, "lines": ["関東鉄道 竜ヶ崎線"], "adj": ["st-002886"] },
+
+    { "id": "st-002518", "name": "騰波ノ江駅", "genre": "station", "kind": "HUB", "area": "下妻市", "region": "ibaraki-08210", "lat": 36.22285, "lon": 139.97626, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002491", "st-002531", "st-002544"] },
+    { "id": "st-002544", "name": "大宝駅", "genre": "station", "kind": "HUB", "area": "下妻市", "region": "ibaraki-08210", "lat": 36.20285, "lon": 139.9701, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002518", "st-002557"] },
+    { "id": "st-002557", "name": "下妻駅", "genre": "station", "kind": "HUB", "area": "下妻市", "region": "ibaraki-08210", "lat": 36.18182, "lon": 139.96466, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002544", "st-002574"] },
+    { "id": "st-002574", "name": "宗道駅", "genre": "station", "kind": "HUB", "area": "下妻市", "region": "ibaraki-08210", "lat": 36.15292, "lon": 139.97065, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002557", "st-002596"] },
+
+    { "id": "st-002596", "name": "玉村駅", "genre": "station", "kind": "HUB", "area": "常総市", "region": "ibaraki-08211", "lat": 36.13519, "lon": 139.96994, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002574", "st-002613"] },
+    { "id": "st-002613", "name": "石下駅", "genre": "station", "kind": "HUB", "area": "常総市", "region": "ibaraki-08211", "lat": 36.11755, "lon": 139.97423, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002596", "st-002628"] },
+    { "id": "st-002628", "name": "南石下駅", "genre": "station", "kind": "HUB", "area": "常総市", "region": "ibaraki-08211", "lat": 36.10266, "lon": 139.97397, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002613", "st-002674"] },
+    { "id": "st-002674", "name": "三妻駅", "genre": "station", "kind": "HUB", "area": "常総市", "region": "ibaraki-08211", "lat": 36.07377, "lon": 139.983, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002628", "st-002704"] },
+    { "id": "st-002704", "name": "中妻駅", "genre": "station", "kind": "HUB", "area": "常総市", "region": "ibaraki-08211", "lat": 36.04765, "lon": 139.99065, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002674", "st-002721"] },
+    { "id": "st-002721", "name": "北水海道駅", "genre": "station", "kind": "HUB", "area": "常総市", "region": "ibaraki-08211", "lat": 36.03248, "lon": 139.99278, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002704", "st-002736"] },
+    { "id": "st-002736", "name": "水海道駅", "genre": "station", "kind": "HUB", "area": "常総市", "region": "ibaraki-08211", "lat": 36.0182, "lon": 139.99198, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002721", "st-002782"] },
+
+    { "id": "st-002154", "name": "常陸太田駅", "genre": "station", "kind": "HUB", "area": "常陸太田市", "region": "ibaraki-08212", "lat": 36.53087, "lon": 140.52793, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002165"] },
+    { "id": "st-002165", "name": "谷河原駅", "genre": "station", "kind": "HUB", "area": "常陸太田市", "region": "ibaraki-08212", "lat": 36.51944, "lon": 140.52487, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002154", "st-002174"] },
+    { "id": "st-002174", "name": "河合駅", "genre": "station", "kind": "HUB", "area": "常陸太田市", "region": "ibaraki-08212", "lat": 36.5079, "lon": 140.51703, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002165", "st-002192"] },
+
+    { "id": "st-001903", "name": "高萩駅", "genre": "station", "kind": "HUB", "area": "高萩市", "region": "ibaraki-08214", "lat": 36.71549, "lon": 140.71708, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001849", "st-001990"] },
+
+    { "id": "st-001768", "name": "大津港駅", "genre": "station", "kind": "HUB", "area": "北茨城市", "region": "ibaraki-08215", "lat": 36.84532, "lon": 140.77792, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001800"] },
+    { "id": "st-001800", "name": "磯原駅", "genre": "station", "kind": "HUB", "area": "北茨城市", "region": "ibaraki-08215", "lat": 36.79085, "lon": 140.74664, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001768", "st-001849"] },
+    { "id": "st-001849", "name": "南中郷駅", "genre": "station", "kind": "HUB", "area": "北茨城市", "region": "ibaraki-08215", "lat": 36.75427, "lon": 140.7294, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001800", "st-001903"] },
+
+    { "id": "st-002310", "name": "笠間駅", "genre": "station", "kind": "HUB", "area": "笠間市", "region": "ibaraki-08216", "lat": 36.37298, "lon": 140.2467, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水戸線"], "adj": ["st-002323", "st-002359"] },
+    { "id": "st-002323", "name": "稲田駅", "genre": "station", "kind": "HUB", "area": "笠間市", "region": "ibaraki-08216", "lat": 36.36842, "lon": 140.21421, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水戸線"], "adj": ["st-002310", "st-002348"] },
+    { "id": "st-002348", "name": "福原駅", "genre": "station", "kind": "HUB", "area": "笠間市", "region": "ibaraki-08216", "lat": 36.35121, "lon": 140.18639, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水戸線"], "adj": ["st-002323", "st-002342"] },
+    { "id": "st-002350", "name": "友部駅", "genre": "station", "kind": "HUB", "area": "笠間市", "region": "ibaraki-08216", "lat": 36.34986, "lon": 140.3046, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 常磐線", "東日本旅客鉄道 水戸線"], "adj": ["st-002321", "st-002359", "st-002435"] },
+    { "id": "st-002359", "name": "宍戸駅", "genre": "station", "kind": "HUB", "area": "笠間市", "region": "ibaraki-08216", "lat": 36.34462, "lon": 140.28863, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水戸線"], "adj": ["st-002310", "st-002350"] },
+    { "id": "st-002435", "name": "岩間駅", "genre": "station", "kind": "HUB", "area": "笠間市", "region": "ibaraki-08216", "lat": 36.29547, "lon": 140.27648, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002350", "st-002490"] },
+
+    { "id": "st-002868", "name": "戸頭駅", "genre": "station", "kind": "HUB", "area": "取手市", "region": "ibaraki-08217", "lat": 35.92958, "lon": 140.01379, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002858", "st-002872"] },
+    { "id": "st-002872", "name": "稲戸井駅", "genre": "station", "kind": "HUB", "area": "取手市", "region": "ibaraki-08217", "lat": 35.92631, "lon": 140.02216, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002868", "st-002878"] },
+    { "id": "st-002878", "name": "ゆめみ野駅", "genre": "station", "kind": "HUB", "area": "取手市", "region": "ibaraki-08217", "lat": 35.92112, "lon": 140.03469, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002872", "st-002888"] },
+    { "id": "st-002879", "name": "藤代駅", "genre": "station", "kind": "HUB", "area": "取手市", "region": "ibaraki-08217", "lat": 35.92014, "lon": 140.11626, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002866", "st-002925"] },
+    { "id": "st-002888", "name": "新取手駅", "genre": "station", "kind": "HUB", "area": "取手市", "region": "ibaraki-08217", "lat": 35.91798, "lon": 140.04146, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002878", "st-002898"] },
+    { "id": "st-002898", "name": "寺原駅", "genre": "station", "kind": "HUB", "area": "取手市", "region": "ibaraki-08217", "lat": 35.912, "lon": 140.05419, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002888", "st-002902"] },
+    { "id": "st-002902", "name": "西取手駅", "genre": "station", "kind": "HUB", "area": "取手市", "region": "ibaraki-08217", "lat": 35.90914, "lon": 140.05893, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002898", "st-002925"] },
+    { "id": "st-002925", "name": "取手駅", "genre": "station", "kind": "HUB", "area": "取手市", "region": "ibaraki-08217", "lat": 35.89612, "lon": 140.06329, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 常磐線", "関東鉄道 常総線"], "adj": ["st-002879", "st-002902", "st-002967"] },
+
+    { "id": "st-002746", "name": "ひたち野うしく駅", "genre": "station", "kind": "HUB", "area": "牛久市", "region": "ibaraki-08219", "lat": 36.00702, "lon": 140.15818, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002723", "st-002794"] },
+    { "id": "st-002794", "name": "牛久駅", "genre": "station", "kind": "HUB", "area": "牛久市", "region": "ibaraki-08219", "lat": 35.97563, "lon": 140.14107, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002746", "st-002866"] },
+
+    { "id": "st-002515", "name": "筑波山頂駅", "genre": "station", "kind": "HUB", "area": "つくば市", "region": "ibaraki-08220", "lat": 36.22582, "lon": 140.10073, "level": 1, "value": 1, "lines": ["筑波観光鉄道 筑波山鋼索鉄道線"], "adj": ["st-002531"] },
+    { "id": "st-002531", "name": "宮脇駅", "genre": "station", "kind": "HUB", "area": "つくば市", "region": "ibaraki-08220", "lat": 36.2144, "lon": 140.0999, "level": 1, "value": 1, "lines": ["筑波観光鉄道 筑波山鋼索鉄道線"], "adj": ["st-002515", "st-002518"] },
+    { "id": "st-002655", "name": "つくば駅", "genre": "station", "kind": "HUB", "area": "つくば市", "region": "ibaraki-08220", "lat": 36.08288, "lon": 140.11153, "level": 3, "value": 3, "lines": ["首都圏新都市鉄道 常磐新線"], "adj": ["st-002656"] },
+    { "id": "st-002656", "name": "研究学園駅", "genre": "station", "kind": "HUB", "area": "つくば市", "region": "ibaraki-08220", "lat": 36.08213, "lon": 140.08301, "level": 1, "value": 1, "lines": ["首都圏新都市鉄道 常磐新線"], "adj": ["st-002655", "st-002694"] },
+    { "id": "st-002694", "name": "万博記念公園駅", "genre": "station", "kind": "HUB", "area": "つくば市", "region": "ibaraki-08220", "lat": 36.05899, "lon": 140.05933, "level": 1, "value": 1, "lines": ["首都圏新都市鉄道 常磐新線"], "adj": ["st-002656", "st-002724"] },
+    { "id": "st-002724", "name": "みどりの駅", "genre": "station", "kind": "HUB", "area": "つくば市", "region": "ibaraki-08220", "lat": 36.03049, "lon": 140.05633, "level": 1, "value": 1, "lines": ["首都圏新都市鉄道 常磐新線"], "adj": ["st-002694", "st-002765"] },
+
+    { "id": "st-002229", "name": "佐和駅", "genre": "station", "kind": "HUB", "area": "ひたちなか市", "region": "ibaraki-08221", "lat": 36.42961, "lon": 140.54016, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002207", "st-002280"] },
+    { "id": "st-002266", "name": "常陸津田駅", "genre": "station", "kind": "HUB", "area": "ひたちなか市", "region": "ibaraki-08221", "lat": 36.4041, "lon": 140.48291, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002235", "st-002296"] },
+    { "id": "st-002280", "name": "勝田駅", "genre": "station", "kind": "HUB", "area": "ひたちなか市", "region": "ibaraki-08221", "lat": 36.3939, "lon": 140.52433, "level": 2, "value": 2, "lines": ["ひたちなか海浜鉄道 湊線", "東日本旅客鉄道 常磐線"], "adj": ["st-002229", "st-002292", "st-002319"] },
+    { "id": "st-002292", "name": "工機前駅", "genre": "station", "kind": "HUB", "area": "ひたちなか市", "region": "ibaraki-08221", "lat": 36.38787, "lon": 140.5249, "level": 1, "value": 1, "lines": ["ひたちなか海浜鉄道 湊線"], "adj": ["st-002280", "st-002299"] },
+    { "id": "st-002296", "name": "常陸青柳駅", "genre": "station", "kind": "HUB", "area": "ひたちなか市", "region": "ibaraki-08221", "lat": 36.38345, "lon": 140.48447, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002266", "st-002319"] },
+    { "id": "st-002298", "name": "阿字ヶ浦駅", "genre": "station", "kind": "HUB", "area": "ひたちなか市", "region": "ibaraki-08221", "lat": 36.38375, "lon": 140.61243, "level": 1, "value": 1, "lines": ["ひたちなか海浜鉄道 湊線"], "adj": ["st-002306"] },
+    { "id": "st-002299", "name": "金上駅", "genre": "station", "kind": "HUB", "area": "ひたちなか市", "region": "ibaraki-08221", "lat": 36.38203, "lon": 140.53459, "level": 1, "value": 1, "lines": ["ひたちなか海浜鉄道 湊線"], "adj": ["st-002292", "st-002324"] },
+    { "id": "st-002306", "name": "磯崎駅", "genre": "station", "kind": "HUB", "area": "ひたちなか市", "region": "ibaraki-08221", "lat": 36.37805, "lon": 140.61794, "level": 1, "value": 1, "lines": ["ひたちなか海浜鉄道 湊線"], "adj": ["st-002298", "st-002312"] },
+    { "id": "st-002312", "name": "美乃浜学園駅", "genre": "station", "kind": "HUB", "area": "ひたちなか市", "region": "ibaraki-08221", "lat": 36.37245, "lon": 140.61698, "level": 1, "value": 1, "lines": ["ひたちなか海浜鉄道 湊線"], "adj": ["st-002306", "st-002339"] },
+    { "id": "st-002324", "name": "中根駅", "genre": "station", "kind": "HUB", "area": "ひたちなか市", "region": "ibaraki-08221", "lat": 36.36727, "lon": 140.56242, "level": 1, "value": 1, "lines": ["ひたちなか海浜鉄道 湊線"], "adj": ["st-002299", "st-002347"] },
+    { "id": "st-002339", "name": "平磯駅", "genre": "station", "kind": "HUB", "area": "ひたちなか市", "region": "ibaraki-08221", "lat": 36.35778, "lon": 140.60775, "level": 1, "value": 1, "lines": ["ひたちなか海浜鉄道 湊線"], "adj": ["st-002312", "st-002352"] },
+    { "id": "st-002347", "name": "高田の鉄橋駅", "genre": "station", "kind": "HUB", "area": "ひたちなか市", "region": "ibaraki-08221", "lat": 36.35225, "lon": 140.58046, "level": 1, "value": 1, "lines": ["ひたちなか海浜鉄道 湊線"], "adj": ["st-002324", "st-002358"] },
+    { "id": "st-002352", "name": "殿山駅", "genre": "station", "kind": "HUB", "area": "ひたちなか市", "region": "ibaraki-08221", "lat": 36.3496, "lon": 140.60135, "level": 1, "value": 1, "lines": ["ひたちなか海浜鉄道 湊線"], "adj": ["st-002339", "st-002358"] },
+    { "id": "st-002358", "name": "那珂湊駅", "genre": "station", "kind": "HUB", "area": "ひたちなか市", "region": "ibaraki-08221", "lat": 36.34503, "lon": 140.58821, "level": 1, "value": 1, "lines": ["ひたちなか海浜鉄道 湊線"], "adj": ["st-002347", "st-002352"] },
+
+    { "id": "st-002663", "name": "鹿島灘駅", "genre": "station", "kind": "HUB", "area": "鹿嶋市", "region": "ibaraki-08222", "lat": 36.07601, "lon": 140.59658, "level": 1, "value": 1, "lines": ["鹿島臨海鉄道 大洗鹿島線"], "adj": ["st-002625", "st-002701"] },
+    { "id": "st-002701", "name": "鹿島大野駅", "genre": "station", "kind": "HUB", "area": "鹿嶋市", "region": "ibaraki-08222", "lat": 36.05104, "lon": 140.60968, "level": 1, "value": 1, "lines": ["鹿島臨海鉄道 大洗鹿島線"], "adj": ["st-002663", "st-002722"] },
+    { "id": "st-002722", "name": "長者ヶ浜潮騒はまなす公園前駅", "genre": "station", "kind": "HUB", "area": "鹿嶋市", "region": "ibaraki-08222", "lat": 36.03163, "lon": 140.6187, "level": 1, "value": 1, "lines": ["鹿島臨海鉄道 大洗鹿島線"], "adj": ["st-002701", "st-002739"] },
+    { "id": "st-002739", "name": "荒野台駅", "genre": "station", "kind": "HUB", "area": "鹿嶋市", "region": "ibaraki-08222", "lat": 36.01723, "lon": 140.62508, "level": 1, "value": 1, "lines": ["鹿島臨海鉄道 大洗鹿島線"], "adj": ["st-002722", "st-002766"] },
+    { "id": "st-002766", "name": "鹿島サッカースタジアム駅", "genre": "station", "kind": "HUB", "area": "鹿嶋市", "region": "ibaraki-08222", "lat": 35.99338, "lon": 140.63577, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 鹿島線", "鹿島臨海鉄道 大洗鹿島線"], "adj": ["st-002739", "st-002804"] },
+    { "id": "st-002804", "name": "鹿島神宮駅", "genre": "station", "kind": "HUB", "area": "鹿嶋市", "region": "ibaraki-08222", "lat": 35.97061, "lon": 140.62543, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 鹿島線"], "adj": ["st-002766", "st-002821"] },
+
+    { "id": "st-002821", "name": "延方駅", "genre": "station", "kind": "HUB", "area": "潮来市", "region": "ibaraki-08223", "lat": 35.95794, "lon": 140.58931, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 鹿島線"], "adj": ["st-002804", "st-002851"] },
+    { "id": "st-002851", "name": "潮来駅", "genre": "station", "kind": "HUB", "area": "潮来市", "region": "ibaraki-08223", "lat": 35.93844, "lon": 140.54998, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 鹿島線"], "adj": ["st-002821", "st-002890"] },
+
+    { "id": "st-002809", "name": "新守谷駅", "genre": "station", "kind": "HUB", "area": "守谷市", "region": "ibaraki-08224", "lat": 35.96652, "lon": 139.98574, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002782", "st-002830"] },
+    { "id": "st-002830", "name": "守谷駅", "genre": "station", "kind": "HUB", "area": "守谷市", "region": "ibaraki-08224", "lat": 35.95077, "lon": 139.99232, "level": 2, "value": 2, "lines": ["関東鉄道 常総線", "首都圏新都市鉄道 常磐新線"], "adj": ["st-002765", "st-002809", "st-002858", "st-002900"] },
+    { "id": "st-002858", "name": "南守谷駅", "genre": "station", "kind": "HUB", "area": "守谷市", "region": "ibaraki-08224", "lat": 35.93448, "lon": 140.00182, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002830", "st-002868"] },
+
+    { "id": "st-001995", "name": "下小川駅", "genre": "station", "kind": "HUB", "area": "常陸大宮市", "region": "ibaraki-08225", "lat": 36.6686, "lon": 140.3871, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001949", "st-002028"] },
+    { "id": "st-002028", "name": "中舟生駅", "genre": "station", "kind": "HUB", "area": "常陸大宮市", "region": "ibaraki-08225", "lat": 36.64521, "lon": 140.39209, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001995", "st-002052"] },
+    { "id": "st-002052", "name": "山方宿駅", "genre": "station", "kind": "HUB", "area": "常陸大宮市", "region": "ibaraki-08225", "lat": 36.62381, "lon": 140.40124, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002028", "st-002069"] },
+    { "id": "st-002069", "name": "野上原駅", "genre": "station", "kind": "HUB", "area": "常陸大宮市", "region": "ibaraki-08225", "lat": 36.60578, "lon": 140.38931, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002052", "st-002090"] },
+    { "id": "st-002090", "name": "玉川村駅", "genre": "station", "kind": "HUB", "area": "常陸大宮市", "region": "ibaraki-08225", "lat": 36.57979, "lon": 140.37466, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002069", "st-002133"] },
+    { "id": "st-002133", "name": "常陸大宮駅", "genre": "station", "kind": "HUB", "area": "常陸大宮市", "region": "ibaraki-08225", "lat": 36.54779, "lon": 140.41223, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002090", "st-002176"] },
+
+    { "id": "st-002176", "name": "静駅", "genre": "station", "kind": "HUB", "area": "那珂市", "region": "ibaraki-08226", "lat": 36.50646, "lon": 140.43777, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002133", "st-002182"] },
+    { "id": "st-002182", "name": "瓜連駅", "genre": "station", "kind": "HUB", "area": "那珂市", "region": "ibaraki-08226", "lat": 36.49854, "lon": 140.44902, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002176", "st-002199"] },
+    { "id": "st-002192", "name": "額田駅", "genre": "station", "kind": "HUB", "area": "那珂市", "region": "ibaraki-08226", "lat": 36.48538, "lon": 140.50339, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002174", "st-002196"] },
+    { "id": "st-002196", "name": "南酒出駅", "genre": "station", "kind": "HUB", "area": "那珂市", "region": "ibaraki-08226", "lat": 36.47677, "lon": 140.49802, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002192", "st-002199", "st-002213"] },
+    { "id": "st-002199", "name": "常陸鴻巣駅", "genre": "station", "kind": "HUB", "area": "那珂市", "region": "ibaraki-08226", "lat": 36.47256, "lon": 140.46756, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002182", "st-002196", "st-002213"] },
+    { "id": "st-002213", "name": "上菅谷駅", "genre": "station", "kind": "HUB", "area": "那珂市", "region": "ibaraki-08226", "lat": 36.45642, "lon": 140.49264, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002196", "st-002199", "st-002222"] },
+    { "id": "st-002222", "name": "中菅谷駅", "genre": "station", "kind": "HUB", "area": "那珂市", "region": "ibaraki-08226", "lat": 36.44606, "lon": 140.49265, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002213", "st-002226"] },
+    { "id": "st-002226", "name": "下菅谷駅", "genre": "station", "kind": "HUB", "area": "那珂市", "region": "ibaraki-08226", "lat": 36.43555, "lon": 140.49413, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002222", "st-002235"] },
+    { "id": "st-002235", "name": "後台駅", "genre": "station", "kind": "HUB", "area": "那珂市", "region": "ibaraki-08226", "lat": 36.42433, "lon": 140.49037, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-002226", "st-002266"] },
+
+    { "id": "st-002337", "name": "ひぐち駅", "genre": "station", "kind": "HUB", "area": "筑西市", "region": "ibaraki-08227", "lat": 36.35881, "lon": 139.9704, "level": 1, "value": 1, "lines": ["真岡鐵道 真岡線"], "adj": ["st-002307", "st-002365"] },
+    { "id": "st-002365", "name": "折本駅", "genre": "station", "kind": "HUB", "area": "筑西市", "region": "ibaraki-08227", "lat": 36.34097, "lon": 139.97106, "level": 1, "value": 1, "lines": ["真岡鐵道 真岡線"], "adj": ["st-002337", "st-002394"] },
+    { "id": "st-002378", "name": "新治駅", "genre": "station", "kind": "HUB", "area": "筑西市", "region": "ibaraki-08227", "lat": 36.32762, "lon": 140.03852, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水戸線"], "adj": ["st-002357", "st-002419"] },
+    { "id": "st-002394", "name": "下館二高前駅", "genre": "station", "kind": "HUB", "area": "筑西市", "region": "ibaraki-08227", "lat": 36.31895, "lon": 139.97225, "level": 1, "value": 1, "lines": ["真岡鐵道 真岡線"], "adj": ["st-002365", "st-002419"] },
+    { "id": "st-002419", "name": "下館駅", "genre": "station", "kind": "HUB", "area": "筑西市", "region": "ibaraki-08227", "lat": 36.3039, "lon": 139.9772, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 水戸線", "真岡鐵道 真岡線", "関東鉄道 常総線"], "adj": ["st-002378", "st-002394", "st-002430", "st-002450"] },
+    { "id": "st-002430", "name": "玉戸駅", "genre": "station", "kind": "HUB", "area": "筑西市", "region": "ibaraki-08227", "lat": 36.29846, "lon": 139.93776, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水戸線"], "adj": ["st-002419", "st-002434"] },
+    { "id": "st-002434", "name": "川島駅", "genre": "station", "kind": "HUB", "area": "筑西市", "region": "ibaraki-08227", "lat": 36.29595, "lon": 139.91525, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水戸線"], "adj": ["st-002430", "st-002433"] },
+    { "id": "st-002450", "name": "大田郷駅", "genre": "station", "kind": "HUB", "area": "筑西市", "region": "ibaraki-08227", "lat": 36.27889, "lon": 139.95949, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002419", "st-002491"] },
+    { "id": "st-002491", "name": "黒子駅", "genre": "station", "kind": "HUB", "area": "筑西市", "region": "ibaraki-08227", "lat": 36.24682, "lon": 139.97503, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002450", "st-002518"] },
+
+    { "id": "st-002608", "name": "神立駅", "genre": "station", "kind": "HUB", "area": "かすみがうら市", "region": "ibaraki-08230", "lat": 36.12124, "lon": 140.2496, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002569", "st-002660"] },
+
+    { "id": "st-002334", "name": "岩瀬駅", "genre": "station", "kind": "HUB", "area": "桜川市", "region": "ibaraki-08231", "lat": 36.35956, "lon": 140.10761, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水戸線"], "adj": ["st-002342", "st-002357"] },
+    { "id": "st-002342", "name": "羽黒駅", "genre": "station", "kind": "HUB", "area": "桜川市", "region": "ibaraki-08231", "lat": 36.35542, "lon": 140.14206, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水戸線"], "adj": ["st-002334", "st-002348"] },
+    { "id": "st-002357", "name": "大和駅", "genre": "station", "kind": "HUB", "area": "桜川市", "region": "ibaraki-08231", "lat": 36.34573, "lon": 140.07357, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水戸線"], "adj": ["st-002334", "st-002378"] },
+
+    { "id": "st-002517", "name": "鹿島旭駅", "genre": "station", "kind": "HUB", "area": "鉾田市", "region": "ibaraki-08234", "lat": 36.22416, "lon": 140.51264, "level": 1, "value": 1, "lines": ["鹿島臨海鉄道 大洗鹿島線"], "adj": ["st-002462", "st-002554"] },
+    { "id": "st-002554", "name": "徳宿駅", "genre": "station", "kind": "HUB", "area": "鉾田市", "region": "ibaraki-08234", "lat": 36.1896, "lon": 140.51445, "level": 1, "value": 1, "lines": ["鹿島臨海鉄道 大洗鹿島線"], "adj": ["st-002517", "st-002576"] },
+    { "id": "st-002576", "name": "新鉾田駅", "genre": "station", "kind": "HUB", "area": "鉾田市", "region": "ibaraki-08234", "lat": 36.15301, "lon": 140.52035, "level": 1, "value": 1, "lines": ["鹿島臨海鉄道 大洗鹿島線"], "adj": ["st-002554", "st-002607"] },
+    { "id": "st-002607", "name": "北浦湖畔駅", "genre": "station", "kind": "HUB", "area": "鉾田市", "region": "ibaraki-08234", "lat": 36.12072, "lon": 140.53635, "level": 1, "value": 1, "lines": ["鹿島臨海鉄道 大洗鹿島線"], "adj": ["st-002576", "st-002625"] },
+    { "id": "st-002625", "name": "大洋駅", "genre": "station", "kind": "HUB", "area": "鉾田市", "region": "ibaraki-08234", "lat": 36.10868, "lon": 140.57605, "level": 1, "value": 1, "lines": ["鹿島臨海鉄道 大洗鹿島線"], "adj": ["st-002607", "st-002663"] },
+
+    { "id": "st-002765", "name": "みらい平駅", "genre": "station", "kind": "HUB", "area": "つくばみらい市", "region": "ibaraki-08235", "lat": 35.99501, "lon": 140.03868, "level": 1, "value": 1, "lines": ["首都圏新都市鉄道 常磐新線"], "adj": ["st-002724", "st-002830"] },
+    { "id": "st-002782", "name": "小絹駅", "genre": "station", "kind": "HUB", "area": "つくばみらい市", "region": "ibaraki-08235", "lat": 35.98166, "lon": 139.98327, "level": 1, "value": 1, "lines": ["関東鉄道 常総線"], "adj": ["st-002736", "st-002809"] },
+
+    { "id": "st-002490", "name": "羽鳥駅", "genre": "station", "kind": "HUB", "area": "小美玉市", "region": "ibaraki-08236", "lat": 36.24653, "lon": 140.28704, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002435", "st-002552"] },
+
+    { "id": "st-002404", "name": "大洗駅", "genre": "station", "kind": "HUB", "area": "大洗町", "region": "ibaraki-08309", "lat": 36.31478, "lon": 140.56241, "level": 1, "value": 1, "lines": ["鹿島臨海鉄道 大洗鹿島線"], "adj": ["st-002364", "st-002462"] },
+    { "id": "st-002462", "name": "涸沼駅", "genre": "station", "kind": "HUB", "area": "大洗町", "region": "ibaraki-08309", "lat": 36.26626, "lon": 140.5275, "level": 1, "value": 1, "lines": ["鹿島臨海鉄道 大洗鹿島線"], "adj": ["st-002404", "st-002517"] },
+
+    { "id": "st-002207", "name": "東海駅", "genre": "station", "kind": "HUB", "area": "東海村", "region": "ibaraki-08341", "lat": 36.46483, "lon": 140.56517, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002171", "st-002229"] },
+
+    { "id": "st-001783", "name": "下野宮駅", "genre": "station", "kind": "HUB", "area": "大子町", "region": "ibaraki-08364", "lat": 36.81577, "lon": 140.37552, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001825"] },
+    { "id": "st-001825", "name": "常陸大子駅", "genre": "station", "kind": "HUB", "area": "大子町", "region": "ibaraki-08364", "lat": 36.77126, "lon": 140.35045, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001783", "st-001846"] },
+    { "id": "st-001846", "name": "袋田駅", "genre": "station", "kind": "HUB", "area": "大子町", "region": "ibaraki-08364", "lat": 36.75545, "lon": 140.37955, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001825", "st-001899"] },
+    { "id": "st-001899", "name": "上小川駅", "genre": "station", "kind": "HUB", "area": "大子町", "region": "ibaraki-08364", "lat": 36.71965, "lon": 140.37771, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001846", "st-001949"] },
+    { "id": "st-001949", "name": "西金駅", "genre": "station", "kind": "HUB", "area": "大子町", "region": "ibaraki-08364", "lat": 36.69611, "lon": 140.38594, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 水郡線"], "adj": ["st-001899", "st-001995"] }
+  ]
+}

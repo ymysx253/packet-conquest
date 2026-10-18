@@ -75,10 +75,10 @@
 
     { "id": "hokkaido", "name": "北海道", "nameEn": "Hokkaido", "kind": "state", "parent": "hokkaido-region", "code": "JP-01", "status": "public" },
 
-    { "id": "ibaraki", "name": "茨城県", "nameEn": "Ibaraki", "kind": "state", "parent": "kanto", "code": "JP-08", "status": "public" },
-    { "id": "tochigi", "name": "栃木県", "nameEn": "Tochigi", "kind": "state", "parent": "kanto", "code": "JP-09", "status": "public" },
-    { "id": "gunma", "name": "群馬県", "nameEn": "Gunma", "kind": "state", "parent": "kanto", "code": "JP-10", "status": "public" },
-    { "id": "saitama", "name": "埼玉県", "nameEn": "Saitama", "kind": "state", "parent": "kanto", "code": "JP-11", "status": "public" },
+    { "id": "ibaraki", "name": "茨城県", "nameEn": "Ibaraki", "kind": "state", "parent": "kanto", "code": "JP-08", "status": "public", "nodeFile": "ibaraki" },
+    { "id": "tochigi", "name": "栃木県", "nameEn": "Tochigi", "kind": "state", "parent": "kanto", "code": "JP-09", "status": "public", "nodeFile": "tochigi" },
+    { "id": "gunma", "name": "群馬県", "nameEn": "Gunma", "kind": "state", "parent": "kanto", "code": "JP-10", "status": "public", "nodeFile": "gunma" },
+    { "id": "saitama", "name": "埼玉県", "nameEn": "Saitama", "kind": "state", "parent": "kanto", "code": "JP-11", "status": "public", "nodeFile": "saitama" },
     { "id": "chiba", "name": "千葉県", "nameEn": "Chiba", "kind": "state", "parent": "kanto", "code": "JP-12", "status": "public", "nodeFile": "chiba" },
     { "id": "tokyo", "name": "東京都", "nameEn": "Tokyo", "kind": "state", "parent": "kanto", "code": "JP-13", "status": "public", "nodeFile": "tokyo" },
     { "id": "kanagawa", "name": "神奈川県", "nameEn": "Kanagawa", "kind": "state", "parent": "kanto", "code": "JP-14", "status": "public", "nodeFile": "kanagawa" },

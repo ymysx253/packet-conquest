@@ -418,10 +418,10 @@ async function solve(world, p, nodeId) {
   assert.ok(daily.every((e) => e.id === `ctl-${today}-${e.regionId}` && e.ttl === -1 && [3, 5, 6].includes(e.detail.tier) && !('playerId' in e)), 'id は ctl-日付-地域、無期限');
   const ctlCount = daily.length;
   w.lastDay = today; await w.tick(); await events.flush();
-  assert.strictEqual((await store.eventsByDay(today, { kind: 'control.daily' })).length, ctlCount, '日付が変わらなければ書かない');
+  assert.strictEqual((await store.eventsByDay(today, { kind: 'control.daily', limit: 5000 })).length, ctlCount, '日付が変わらなければ書かない');
   w.lastDay = '2000-01-01'; await w.tick(); await events.flush();
   assert.strictEqual(w.lastDay, today); assert.strictEqual((await store.loadMeta('clock')).day, today, '日付は稼働時計と一緒に保存される');
-  assert.strictEqual((await store.eventsByDay(today, { kind: 'control.daily' })).length, ctlCount, '日付が変わっていれば断面を書く(同じ id で上書き)');
+  assert.strictEqual((await store.eventsByDay(today, { kind: 'control.daily', limit: 5000 })).length, ctlCount, '日付が変わっていれば断面を書く(同じ id で上書き)');
 
   console.log(`world ok: ${w.nodes.size} nodes loaded of ${await store.countNodes()}, ${w.players.size} players, ${w.tiles.size} tiles, ${allEvents.length} events`);
 })().catch((e) => { console.error(e); process.exit(1); });
