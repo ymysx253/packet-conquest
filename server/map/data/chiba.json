@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "chiba",
   "name": "千葉県",
-  "version": 22,
+  "version": 23,
   "updatedAt": "2026-10-19",
   "note": "千葉県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -141,7 +141,7 @@
     { "id": "st-003445", "name": "京成八幡駅", "genre": "station", "kind": "HUB", "area": "市川市", "region": "chiba-12203", "lat": 35.7241, "lon": 139.9278, "level": 1, "value": 1, "lines": ["京成電鉄 本線"], "adj": ["st-003412", "st-003472"] },
     { "id": "st-003449", "name": "本八幡駅", "genre": "station", "kind": "HUB", "area": "市川市", "region": "chiba-12203", "lat": 35.72192, "lon": 139.9264, "level": 2, "value": 2, "lines": ["東京都 10号線新宿線", "東日本旅客鉄道 総武線"], "adj": ["st-003403", "st-003498", "st-003565"] },
     { "id": "st-003472", "name": "鬼越駅", "genre": "station", "kind": "HUB", "area": "市川市", "region": "chiba-12203", "lat": 35.71998, "lon": 139.93743, "level": 1, "value": 1, "lines": ["京成電鉄 本線"], "adj": ["lm-q5095308", "st-003445", "st-003485"] },
-    { "id": "st-003682", "name": "二俣新町駅", "genre": "station", "kind": "HUB", "area": "市川市", "region": "chiba-12203", "lat": 35.69114, "lon": 139.95871, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 京葉線"], "adj": ["st-003547", "st-003761", "st-003870"] },
+    { "id": "st-003682", "name": "二俣新町駅", "genre": "station", "kind": "HUB", "area": "市川市", "region": "chiba-12203", "lat": 35.69114, "lon": 139.95871, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 京葉線"], "adj": ["pt-sc84917edb8", "st-003547", "st-003761", "st-003870"] },
     { "id": "st-003686", "name": "妙典駅", "genre": "station", "kind": "HUB", "area": "市川市", "region": "chiba-12203", "lat": 35.69101, "lon": 139.92427, "level": 1, "value": 1, "lines": ["東京地下鉄 5号線東西線"], "adj": ["lm-q7813868", "st-003582", "st-003755"] },
     { "id": "st-003755", "name": "行徳駅", "genre": "station", "kind": "HUB", "area": "市川市", "region": "chiba-12203", "lat": 35.68324, "lon": 139.91494, "level": 1, "value": 1, "lines": ["東京地下鉄 5号線東西線"], "adj": ["lm-q7813868", "st-003686", "st-003819"] },
     { "id": "st-003819", "name": "南行徳駅", "genre": "station", "kind": "HUB", "area": "市川市", "region": "chiba-12203", "lat": 35.67281, "lon": 139.90237, "level": 1, "value": 1, "lines": ["東京地下鉄 5号線東西線"], "adj": ["st-003755", "st-003875"] },
@@ -149,6 +149,7 @@
 
     { "id": "lm-q11614230", "name": "船橋市総合体育館", "genre": "stadium", "kind": "LM", "area": "船橋市", "region": "chiba-12204", "lat": 35.7295, "lon": 140.05172, "level": 1, "value": 1, "adj": ["st-003421"], "codes": {"wikidata": "Q11614230"}, "src": "src-wikidata" },
     { "id": "lm-q11277206", "name": "ふなばしアンデルセン公園", "genre": "park", "kind": "LM", "area": "船橋市", "region": "chiba-12204", "lat": 35.75999, "lon": 140.06294, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q11277206"}, "src": "src-wikidata" },
+    { "id": "pt-sc84917edb8", "name": "船橋港", "genre": "port", "kind": "GW", "lat": 35.67483, "lon": 139.97668, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "千葉/船橋"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "船橋市", "region": "chiba-12204", "adj": ["st-003664", "st-003682", "st-003761"] },
     { "id": "st-003129", "name": "小室駅", "genre": "station", "kind": "HUB", "area": "船橋市", "region": "chiba-12204", "lat": 35.78707, "lon": 140.07642, "level": 1, "value": 1, "lines": ["北総鉄道 北総線"], "adj": ["st-003090", "st-003135"] },
     { "id": "st-003238", "name": "二和向台駅", "genre": "station", "kind": "HUB", "area": "船橋市", "region": "chiba-12204", "lat": 35.75412, "lon": 140.02315, "level": 1, "value": 1, "lines": ["京成電鉄 松戸線"], "adj": ["st-003227", "st-003265"] },
     { "id": "st-003265", "name": "三咲駅", "genre": "station", "kind": "HUB", "area": "船橋市", "region": "chiba-12204", "lat": 35.74872, "lon": 140.02863, "level": 1, "value": 1, "lines": ["京成電鉄 松戸線"], "adj": ["st-003238", "st-003327"] },
@@ -176,9 +177,9 @@
     { "id": "st-003603", "name": "前原駅", "genre": "station", "kind": "HUB", "area": "船橋市", "region": "chiba-12204", "lat": 35.70035, "lon": 140.02702, "level": 1, "value": 1, "lines": ["京成電鉄 松戸線"], "adj": ["st-003535", "st-003694"] },
     { "id": "st-003609", "name": "京成船橋駅", "genre": "station", "kind": "HUB", "area": "船橋市", "region": "chiba-12204", "lat": 35.69989, "lon": 139.98479, "level": 1, "value": 1, "lines": ["京成電鉄 本線"], "adj": ["st-003567", "st-003664"] },
     { "id": "st-003613", "name": "東船橋駅", "genre": "station", "kind": "HUB", "area": "船橋市", "region": "chiba-12204", "lat": 35.69976, "lon": 140.00464, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 総武線"], "adj": ["st-003589", "st-003681"] },
-    { "id": "st-003664", "name": "大神宮下駅", "genre": "station", "kind": "HUB", "area": "船橋市", "region": "chiba-12204", "lat": 35.69396, "lon": 139.99137, "level": 1, "value": 1, "lines": ["京成電鉄 本線"], "adj": ["st-003609", "st-003699"] },
+    { "id": "st-003664", "name": "大神宮下駅", "genre": "station", "kind": "HUB", "area": "船橋市", "region": "chiba-12204", "lat": 35.69396, "lon": 139.99137, "level": 1, "value": 1, "lines": ["京成電鉄 本線"], "adj": ["pt-sc84917edb8", "st-003609", "st-003699"] },
     { "id": "st-003699", "name": "船橋競馬場駅", "genre": "station", "kind": "HUB", "area": "船橋市", "region": "chiba-12204", "lat": 35.68961, "lon": 139.99797, "level": 1, "value": 1, "lines": ["京成電鉄 本線"], "adj": ["st-003664", "st-003731"] },
-    { "id": "st-003761", "name": "南船橋駅", "genre": "station", "kind": "HUB", "area": "船橋市", "region": "chiba-12204", "lat": 35.68202, "lon": 139.99497, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 京葉線"], "adj": ["st-003547", "st-003682", "st-003863", "st-003870"] },
+    { "id": "st-003761", "name": "南船橋駅", "genre": "station", "kind": "HUB", "area": "船橋市", "region": "chiba-12204", "lat": 35.68202, "lon": 139.99497, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 京葉線"], "adj": ["pt-sc84917edb8", "st-003547", "st-003682", "st-003863", "st-003870"] },
 
     { "id": "lm-q11641183", "name": "道の駅南房パラダイス", "genre": "zoo_aquarium", "kind": "LM", "area": "館山市", "region": "chiba-12205", "lat": 34.93972, "lon": 139.82167, "level": 1, "value": 1, "adj": ["st-006028"], "codes": {"wikidata": "Q11641183"}, "src": "src-wikidata" },
     { "id": "lm-q556746", "name": "那古寺", "genre": "shrine_temple", "kind": "LM", "area": "館山市", "region": "chiba-12205", "lat": 35.02544, "lon": 139.85787, "level": 2, "value": 2, "hackable": false, "codes": {"wikidata": "Q556746"}, "src": "src-wikidata" },
@@ -300,7 +301,8 @@
     { "id": "st-005566", "name": "上総興津駅", "genre": "station", "kind": "HUB", "area": "勝浦市", "region": "chiba-12218", "lat": 35.13694, "lon": 140.24977, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 外房線"], "adj": ["st-005559", "st-005634"] },
     { "id": "st-005634", "name": "行川アイランド駅", "genre": "station", "kind": "HUB", "area": "勝浦市", "region": "chiba-12218", "lat": 35.1183, "lon": 140.22611, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 外房線"], "adj": ["st-005566", "st-005590"] },
 
-    { "id": "lm-q938966", "name": "市原緑地運動公園臨海競技場", "genre": "stadium", "kind": "LM", "area": "市原市", "region": "chiba-12219", "lat": 35.52797, "lon": 140.07164, "level": 1, "value": 1, "adj": ["st-004479"], "codes": {"wikidata": "Q938966"}, "src": "src-wikidata" },
+    { "id": "lm-q938966", "name": "市原緑地運動公園臨海競技場", "genre": "stadium", "kind": "LM", "area": "市原市", "region": "chiba-12219", "lat": 35.52797, "lon": 140.07164, "level": 1, "value": 1, "adj": ["pt-s3346ba36b0", "st-004479"], "codes": {"wikidata": "Q938966"}, "src": "src-wikidata" },
+    { "id": "pt-s3346ba36b0", "name": "千葉港", "genre": "port", "kind": "GW", "lat": 35.57307, "lon": 140.00355, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "千葉/千葉"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "市原市", "region": "chiba-12219", "adj": ["lm-q938966"] },
     { "id": "st-004411", "name": "八幡宿駅", "genre": "station", "kind": "HUB", "area": "市原市", "region": "chiba-12219", "lat": 35.53687, "lon": 140.12083, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 内房線"], "adj": ["st-004357", "st-004479"] },
     { "id": "st-004423", "name": "ちはら台駅", "genre": "station", "kind": "HUB", "area": "市原市", "region": "chiba-12219", "lat": 35.53441, "lon": 140.17023, "level": 1, "value": 1, "lines": ["京成電鉄 千原線"], "adj": ["st-004365"] },
     { "id": "st-004479", "name": "五井駅", "genre": "station", "kind": "HUB", "area": "市原市", "region": "chiba-12219", "lat": 35.51405, "lon": 140.091, "level": 2, "value": 2, "lines": ["小湊鐵道 小湊鐵道線", "東日本旅客鉄道 内房線"], "adj": ["lm-q938966", "st-004411", "st-004535", "st-004591"] },
@@ -376,12 +378,13 @@
     { "id": "lm-q5120896", "name": "鋸山", "genre": "nature", "kind": "LM", "area": "富津市", "region": "chiba-12226", "lat": 35.16028, "lon": 139.84083, "level": 2, "value": 2, "adj": ["st-005471", "st-005558"], "codes": {"wikidata": "Q5120896"}, "src": "src-wikidata" },
     { "id": "lm-q575336", "name": "東京湾観音", "genre": "monument", "kind": "LM", "area": "富津市", "region": "chiba-12226", "lat": 35.26361, "lon": 139.8625, "level": 1, "value": 1, "adj": ["st-005205"], "codes": {"wikidata": "Q575336"}, "src": "src-wikidata" },
     { "id": "lm-q575499", "name": "マザー牧場", "genre": "park", "kind": "LM", "area": "富津市", "region": "chiba-12226", "lat": 35.24603, "lon": 139.93483, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q575499"}, "src": "src-wikidata" },
+    { "id": "pt-q575503", "name": "浜金谷港", "genre": "port", "kind": "GW", "lat": 35.16944, "lon": 139.81764, "level": 3, "value": 3, "codes": {"wikidata": "Q575503", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "千葉/浜金谷"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "富津市", "region": "chiba-12226", "adj": ["st-005359", "st-005471", "st-005558"] },
     { "id": "st-005026", "name": "青堀駅", "genre": "station", "kind": "HUB", "area": "富津市", "region": "chiba-12226", "lat": 35.33008, "lon": 139.85809, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 内房線"], "adj": ["st-005014", "st-005137"] },
     { "id": "st-005137", "name": "大貫駅", "genre": "station", "kind": "HUB", "area": "富津市", "region": "chiba-12226", "lat": 35.29249, "lon": 139.85538, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 内房線"], "adj": ["st-005026", "st-005205"] },
     { "id": "st-005205", "name": "佐貫町駅", "genre": "station", "kind": "HUB", "area": "富津市", "region": "chiba-12226", "lat": 35.26092, "lon": 139.8758, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 内房線"], "adj": ["lm-q575336", "st-005137", "st-005302"] },
     { "id": "st-005302", "name": "上総湊駅", "genre": "station", "kind": "HUB", "area": "富津市", "region": "chiba-12226", "lat": 35.22271, "lon": 139.87124, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 内房線"], "adj": ["st-005205", "st-005359"] },
-    { "id": "st-005359", "name": "竹岡駅", "genre": "station", "kind": "HUB", "area": "富津市", "region": "chiba-12226", "lat": 35.19708, "lon": 139.82915, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 内房線"], "adj": ["st-005302", "st-005471"] },
-    { "id": "st-005471", "name": "浜金谷駅", "genre": "station", "kind": "HUB", "area": "富津市", "region": "chiba-12226", "lat": 35.16873, "lon": 139.82121, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 内房線"], "adj": ["lm-q5120896", "st-005359", "st-005558"] },
+    { "id": "st-005359", "name": "竹岡駅", "genre": "station", "kind": "HUB", "area": "富津市", "region": "chiba-12226", "lat": 35.19708, "lon": 139.82915, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 内房線"], "adj": ["pt-q575503", "st-005302", "st-005471"] },
+    { "id": "st-005471", "name": "浜金谷駅", "genre": "station", "kind": "HUB", "area": "富津市", "region": "chiba-12226", "lat": 35.16873, "lon": 139.82121, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 内房線"], "adj": ["lm-q5120896", "pt-q575503", "st-005359", "st-005558"] },
 
     { "id": "lm-q3567503", "name": "ウエスタンリバー鉄道", "genre": "museum", "kind": "LM", "area": "浦安市", "region": "chiba-12227", "lat": 35.63372, "lon": 139.88243, "level": 1, "value": 1, "adj": ["st-004055", "st-004063"], "codes": {"wikidata": "Q3567503"}, "src": "src-wikidata" },
     { "id": "lm-q843997", "name": "東京ディズニーランド", "genre": "park", "kind": "LM", "area": "浦安市", "region": "chiba-12227", "lat": 35.63278, "lon": 139.88056, "level": 5, "value": 5, "hackable": false, "codes": {"wikidata": "Q843997"}, "src": "src-wikidata" },
@@ -497,7 +500,7 @@
 
     { "id": "lm-q8536418", "name": "嵯峨山 (千葉県)", "genre": "nature", "kind": "LM", "area": "鋸南町", "region": "chiba-12463", "lat": 35.15722, "lon": 139.88333, "level": 1, "value": 1, "adj": ["st-005558"], "codes": {"wikidata": "Q8536418"}, "src": "src-wikidata" },
     { "id": "lm-q3341454", "name": "日本寺", "genre": "shrine_temple", "kind": "LM", "area": "鋸南町", "region": "chiba-12463", "lat": 35.15641, "lon": 139.83211, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q3341454"}, "src": "src-wikidata" },
-    { "id": "st-005558", "name": "保田駅", "genre": "station", "kind": "HUB", "area": "鋸南町", "region": "chiba-12463", "lat": 35.14207, "lon": 139.83773, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 内房線"], "adj": ["lm-q5120896", "lm-q8536418", "st-005471", "st-005656"] },
+    { "id": "st-005558", "name": "保田駅", "genre": "station", "kind": "HUB", "area": "鋸南町", "region": "chiba-12463", "lat": 35.14207, "lon": 139.83773, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 内房線"], "adj": ["lm-q5120896", "lm-q8536418", "pt-q575503", "st-005471", "st-005656"] },
     { "id": "st-005656", "name": "安房勝山駅", "genre": "station", "kind": "HUB", "area": "鋸南町", "region": "chiba-12463", "lat": 35.11491, "lon": 139.83308, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 内房線"], "adj": ["lm-q557396", "st-005558", "st-005717"] }
   ]
 }

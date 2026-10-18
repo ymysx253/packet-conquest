@@ -390,17 +390,20 @@ async function solve(world, p, nodeId) {
   await w.ensureTiles(tilesAround(hnd.t0, 1)); await w.ensureTiles(tilesAround(cts.t0, 1));
   const H = w.nodes.get(hnd.id), C2 = w.nodes.get(cts.id);
   assert.ok(H && C2 && H.level === 10, '羽田空港は国際線の拠点 Lv10');
+  // 実際の航路(国土交通省 航空輸送統計 2025 年。server/map/data/routes/)に羽田–新千歳がある
+  assert.ok(H.routes.some((r) => r.to === C2.id && r.mode === 'air' && r.metrics && r.metrics.passengers > 1000000), '羽田–新千歳の空路(年間の旅客数つき)');
+  assert.ok(C2.routes.some((r) => r.to === H.id), '航路は接続なので両向き');
+  assert.ok(!(await w.canAttack(rp.id, C2.id)), '空港を占領していなければ航路の先は攻撃できない');
   H.owner = rp.id; w.addEdge(rp.homeNodeId, H.id, w.nodes.get(rp.homeNodeId).t0); rp.reach = null;
-  assert.ok(!(await w.canAttack(rp.id, C2.id)), '航路が無ければ遠くの空港は攻撃できない');
-  H.routes = [{ to: C2.id, mode: 'air', name: C2.name, lat: C2.lat, lon: C2.lon }];
-  C2.routes = [{ to: H.id, mode: 'air', name: H.name, lat: H.lat, lon: H.lon }];
-  rp.reach = null;
   assert.ok(await w.canAttack(rp.id, C2.id), '占領した空港から空路の先を攻撃できる');
-  assert.ok(w.pub(C2).routes && w.pub(C2).routes[0].to === H.id, '航路は配信される(画面が線を引く)');
+  assert.ok(w.pub(C2).routes.some((r) => r.to === H.id), '航路は配信される(画面が線を引く)');
   assert.strictEqual(C2.hits, Math.max(1, C2.adj.length), '航路は突破回数に数えない');
+  const saved = [H.routes, C2.routes];
+  H.routes = []; C2.routes = []; rp.reach = null;
+  assert.ok(!(await w.canAttack(rp.id, C2.id)), '航路が無ければ遠くの空港は攻撃できない');
+  [H.routes, C2.routes] = saved;
   H.owner = null; rp.reach = null;
   assert.ok(!(await w.canAttack(rp.id, C2.id)), '空港を手放すと航路の先は攻撃できない');
-  H.routes = []; C2.routes = [];
 
   // 参加前の人も地図を読める(開始地点を地図から選ぶため)。配信先にはならない
   const gws = fakeWs();

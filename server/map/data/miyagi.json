@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "miyagi",
   "name": "宮城県",
-  "version": 20,
+  "version": 21,
   "updatedAt": "2026-10-19",
   "note": "宮城県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -133,6 +133,8 @@
     { "id": "lm-q4391562", "name": "石ノ森萬画館", "genre": "museum", "kind": "LM", "area": "石巻市", "region": "miyagi-04202", "lat": 38.42963, "lon": 141.31069, "level": 2, "value": 2, "adj": ["st-001080", "st-001083"], "codes": {"wikidata": "Q4391562"}, "src": "src-wikidata" },
     { "id": "lm-q11505196", "name": "日和山", "genre": "nature", "kind": "LM", "area": "石巻市", "region": "miyagi-04202", "lat": 38.42444, "lon": 141.30806, "level": 1, "value": 1, "adj": ["st-001083"], "codes": {"wikidata": "Q11505196"}, "src": "src-wikidata" },
     { "id": "lm-q6080384", "name": "石巻ハリストス正教会", "genre": "shrine_temple", "kind": "LM", "area": "石巻市", "region": "miyagi-04202", "lat": 38.42914, "lon": 141.31111, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q6080384"}, "src": "src-wikidata" },
+    { "id": "pt-sd29169f67e", "name": "鮎川港", "genre": "port", "kind": "GW", "lat": 38.29455, "lon": 141.50666, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "宮城/鮎川"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "石巻市", "region": "miyagi-04202", "adj": ["st-001081"] },
+    { "id": "pt-q11586481", "name": "石巻港", "genre": "port", "kind": "GW", "lat": 38.4, "lon": 141.31667, "level": 3, "value": 3, "codes": {"unlocode": "JPISM", "wikidata": "Q11586481", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "宮城/石巻"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "石巻市", "region": "miyagi-04202", "adj": ["st-001080", "st-001083", "st-001092"] },
     { "id": "st-001064", "name": "和渕駅", "genre": "station", "kind": "HUB", "area": "石巻市", "region": "miyagi-04202", "lat": 38.52643, "lon": 141.22062, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 気仙沼線"], "adj": ["st-001057", "st-001067"] },
     { "id": "st-001067", "name": "前谷地駅", "genre": "station", "kind": "HUB", "area": "石巻市", "region": "miyagi-04202", "lat": 38.51243, "lon": 141.19337, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 気仙沼線", "東日本旅客鉄道 石巻線"], "adj": ["st-001063", "st-001064", "st-001069"] },
     { "id": "st-001069", "name": "佳景山駅", "genre": "station", "kind": "HUB", "area": "石巻市", "region": "miyagi-04202", "lat": 38.49797, "lon": 141.23965, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 石巻線"], "adj": ["st-001067", "st-001071"] },
@@ -140,25 +142,28 @@
     { "id": "st-001074", "name": "曽波神駅", "genre": "station", "kind": "HUB", "area": "石巻市", "region": "miyagi-04202", "lat": 38.4658, "lon": 141.28785, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 石巻線"], "adj": ["st-001071", "st-001083"] },
     { "id": "st-001078", "name": "陸前稲井駅", "genre": "station", "kind": "HUB", "area": "石巻市", "region": "miyagi-04202", "lat": 38.44558, "lon": 141.33548, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 石巻線"], "adj": ["st-001083", "st-001092"] },
     { "id": "st-001079", "name": "蛇田駅", "genre": "station", "kind": "HUB", "area": "石巻市", "region": "miyagi-04202", "lat": 38.43839, "lon": 141.27727, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 仙石線"], "adj": ["st-001080", "st-001082"] },
-    { "id": "st-001080", "name": "陸前山下駅", "genre": "station", "kind": "HUB", "area": "石巻市", "region": "miyagi-04202", "lat": 38.43782, "lon": 141.28922, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 仙石線"], "adj": ["lm-q4391562", "st-001079", "st-001083"] },
+    { "id": "st-001080", "name": "陸前山下駅", "genre": "station", "kind": "HUB", "area": "石巻市", "region": "miyagi-04202", "lat": 38.43782, "lon": 141.28922, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 仙石線"], "adj": ["lm-q4391562", "pt-q11586481", "st-001079", "st-001083"] },
     { "id": "st-001082", "name": "石巻あゆみ野駅", "genre": "station", "kind": "HUB", "area": "石巻市", "region": "miyagi-04202", "lat": 38.43603, "lon": 141.2592, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 仙石線"], "adj": ["st-001079", "st-001085"] },
-    { "id": "st-001083", "name": "石巻駅", "genre": "station", "kind": "HUB", "area": "石巻市", "region": "miyagi-04202", "lat": 38.43535, "lon": 141.3035, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 仙石線", "東日本旅客鉄道 石巻線"], "adj": ["lm-q11505196", "lm-q4391562", "st-001074", "st-001078", "st-001080"] },
+    { "id": "st-001083", "name": "石巻駅", "genre": "station", "kind": "HUB", "area": "石巻市", "region": "miyagi-04202", "lat": 38.43535, "lon": 141.3035, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 仙石線", "東日本旅客鉄道 石巻線"], "adj": ["lm-q11505196", "lm-q4391562", "pt-q11586481", "st-001074", "st-001078", "st-001080"] },
     { "id": "st-001086", "name": "沢田駅", "genre": "station", "kind": "HUB", "area": "石巻市", "region": "miyagi-04202", "lat": 38.43215, "lon": 141.38209, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 石巻線"], "adj": ["st-001081", "st-001088"] },
     { "id": "st-001088", "name": "万石浦駅", "genre": "station", "kind": "HUB", "area": "石巻市", "region": "miyagi-04202", "lat": 38.42885, "lon": 141.36871, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 石巻線"], "adj": ["st-001086", "st-001092"] },
-    { "id": "st-001092", "name": "渡波駅", "genre": "station", "kind": "HUB", "area": "石巻市", "region": "miyagi-04202", "lat": 38.41998, "lon": 141.36516, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 石巻線"], "adj": ["st-001078", "st-001088"] },
+    { "id": "st-001092", "name": "渡波駅", "genre": "station", "kind": "HUB", "area": "石巻市", "region": "miyagi-04202", "lat": 38.41998, "lon": 141.36516, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 石巻線"], "adj": ["pt-q11586481", "st-001078", "st-001088"] },
 
     { "id": "lm-q133753", "name": "鹽竈神社", "genre": "shrine_temple", "kind": "LM", "area": "塩竈市", "region": "miyagi-04203", "lat": 38.31875, "lon": 141.01256, "level": 2, "value": 2, "hackable": false, "codes": {"wikidata": "Q133753"}, "src": "src-wikidata" },
-    { "id": "st-001123", "name": "東塩釜駅", "genre": "station", "kind": "HUB", "area": "塩竈市", "region": "miyagi-04203", "lat": 38.32536, "lon": 141.03126, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 仙石線"], "adj": ["st-001116", "st-001127"] },
+    { "id": "pt-s27bfa39a26", "name": "仙台塩釜港", "genre": "port", "kind": "GW", "lat": 38.32254, "lon": 141.09087, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "宮城/仙台塩釜"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "塩竈市", "region": "miyagi-04203", "adj": ["st-001123"] },
+    { "id": "st-001123", "name": "東塩釜駅", "genre": "station", "kind": "HUB", "area": "塩竈市", "region": "miyagi-04203", "lat": 38.32536, "lon": 141.03126, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 仙石線"], "adj": ["pt-s27bfa39a26", "st-001116", "st-001127"] },
     { "id": "st-001127", "name": "本塩釜駅", "genre": "station", "kind": "HUB", "area": "塩竈市", "region": "miyagi-04203", "lat": 38.31742, "lon": 141.02209, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 仙石線"], "adj": ["st-001123", "st-001132"] },
     { "id": "st-001132", "name": "西塩釜駅", "genre": "station", "kind": "HUB", "area": "塩竈市", "region": "miyagi-04203", "lat": 38.31159, "lon": 141.0182, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 仙石線"], "adj": ["st-001127", "st-001135"] },
     { "id": "st-001133", "name": "塩釜駅", "genre": "station", "kind": "HUB", "area": "塩竈市", "region": "miyagi-04203", "lat": 38.30961, "lon": 141.00953, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 東北線"], "adj": ["st-001107", "st-001140"] },
 
-    { "id": "lm-q7399863", "name": "最知駅", "genre": "bus_terminal", "kind": "HUB", "area": "気仙沼市", "region": "miyagi-04205", "lat": 38.8533, "lon": 141.5814, "level": 1, "value": 1, "adj": ["lm-q105944997", "lm-q11651383", "lm-q7741262"], "codes": {"wikidata": "Q7399863"}, "src": "src-wikidata" },
+    { "id": "lm-q7399863", "name": "最知駅", "genre": "bus_terminal", "kind": "HUB", "area": "気仙沼市", "region": "miyagi-04205", "lat": 38.8533, "lon": 141.5814, "level": 1, "value": 1, "adj": ["lm-q105944997", "lm-q11651383", "pt-s2f101a00dd"], "codes": {"wikidata": "Q7399863"}, "src": "src-wikidata" },
     { "id": "lm-q11450936", "name": "安波山", "genre": "nature", "kind": "LM", "area": "気仙沼市", "region": "miyagi-04205", "lat": 38.915, "lon": 141.56917, "level": 1, "value": 1, "adj": ["st-000982"], "codes": {"wikidata": "Q11450936"}, "src": "src-wikidata" },
     { "id": "lm-q105944997", "name": "気仙沼市東日本大震災遺構・伝承館", "genre": "museum", "kind": "LM", "area": "気仙沼市", "region": "miyagi-04205", "lat": 38.83125, "lon": 141.59097, "level": 1, "value": 1, "adj": ["lm-q7399863"], "codes": {"wikidata": "Q105944997"}, "src": "src-wikidata" },
     { "id": "lm-q11651383", "name": "長の森山", "genre": "nature", "kind": "LM", "area": "気仙沼市", "region": "miyagi-04205", "lat": 38.82944, "lon": 141.52028, "level": 1, "value": 1, "adj": ["lm-q7399863"], "codes": {"wikidata": "Q11651383"}, "src": "src-wikidata" },
-    { "id": "lm-q7741262", "name": "氷の水族館", "genre": "zoo_aquarium", "kind": "LM", "area": "気仙沼市", "region": "miyagi-04205", "lat": 38.9001, "lon": 141.58, "level": 1, "value": 1, "adj": ["lm-q7399863", "st-000982"], "codes": {"wikidata": "Q7741262"}, "src": "src-wikidata" },
-    { "id": "st-000982", "name": "気仙沼駅", "genre": "station", "kind": "HUB", "area": "気仙沼市", "region": "miyagi-04205", "lat": 38.91042, "lon": 141.55807, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 大船渡線"], "adj": ["lm-q11450936", "lm-q7741262", "st-000981"] },
+    { "id": "lm-q7741262", "name": "氷の水族館", "genre": "zoo_aquarium", "kind": "LM", "area": "気仙沼市", "region": "miyagi-04205", "lat": 38.9001, "lon": 141.58, "level": 1, "value": 1, "adj": ["st-000982"], "codes": {"wikidata": "Q7741262"}, "src": "src-wikidata" },
+    { "id": "pt-s2f101a00dd", "name": "浦ノ浜港", "genre": "port", "kind": "GW", "lat": 38.86543, "lon": 141.60761, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "宮城/浦ノ浜"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "気仙沼市", "region": "miyagi-04205", "adj": ["lm-q7399863", "pt-s16fab91d9e"] },
+    { "id": "pt-s16fab91d9e", "name": "気仙沼港", "genre": "port", "kind": "GW", "lat": 38.88595, "lon": 141.59642, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "宮城/気仙沼"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "気仙沼市", "region": "miyagi-04205", "adj": ["pt-s2f101a00dd", "st-000982"] },
+    { "id": "st-000982", "name": "気仙沼駅", "genre": "station", "kind": "HUB", "area": "気仙沼市", "region": "miyagi-04205", "lat": 38.91042, "lon": 141.55807, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 大船渡線"], "adj": ["lm-q11450936", "lm-q7741262", "pt-s16fab91d9e", "st-000981"] },
 
     { "id": "lm-q1037902", "name": "白石城", "genre": "heritage", "kind": "LM", "area": "白石市", "region": "miyagi-04206", "lat": 38.00259, "lon": 140.61713, "level": 2, "value": 2, "adj": ["st-001269", "st-001272"], "codes": {"wikidata": "Q1037902"}, "src": "src-wikidata" },
     { "id": "lm-q11454001", "name": "宮城蔵王キツネ村", "genre": "zoo_aquarium", "kind": "LM", "area": "白石市", "region": "miyagi-04206", "lat": 38.04099, "lon": 140.53031, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q11454001"}, "src": "src-wikidata" },
@@ -283,6 +288,6 @@
     { "id": "st-001060", "name": "小牛田駅", "genre": "station", "kind": "HUB", "area": "美里町", "region": "miyagi-04505", "lat": 38.53985, "lon": 141.06449, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 東北線", "東日本旅客鉄道 石巻線", "東日本旅客鉄道 陸羽東線"], "adj": ["lm-q28690093", "st-001046", "st-001055", "st-001058", "st-001066"] },
 
     { "id": "st-001077", "name": "女川駅", "genre": "station", "kind": "HUB", "area": "女川町", "region": "miyagi-04581", "lat": 38.44695, "lon": 141.44293, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 石巻線"], "adj": ["st-001081"] },
-    { "id": "st-001081", "name": "浦宿駅", "genre": "station", "kind": "HUB", "area": "女川町", "region": "miyagi-04581", "lat": 38.4364, "lon": 141.42098, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 石巻線"], "adj": ["st-001077", "st-001086"] }
+    { "id": "st-001081", "name": "浦宿駅", "genre": "station", "kind": "HUB", "area": "女川町", "region": "miyagi-04581", "lat": 38.4364, "lon": 141.42098, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 石巻線"], "adj": ["pt-sd29169f67e", "st-001077", "st-001086"] }
   ]
 }

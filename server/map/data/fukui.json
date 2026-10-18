@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "fukui",
   "name": "福井県",
-  "version": 20,
+  "version": 21,
   "updatedAt": "2026-10-19",
   "note": "福井県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -102,10 +102,11 @@
     { "id": "lm-q17216403", "name": "敦賀市立看護大学", "genre": "university", "kind": "EDU", "area": "敦賀市", "region": "fukui-18202", "lat": 35.64511, "lon": 136.03375, "level": 1, "value": 1, "adj": ["st-004149"], "codes": {"wikidata": "Q17216403"}, "src": "src-wikidata" },
     { "id": "lm-q11499542", "name": "敦賀市立博物館", "genre": "museum", "kind": "LM", "area": "敦賀市", "region": "fukui-18202", "lat": 35.6565, "lon": 136.06875, "level": 1, "value": 1, "adj": ["st-010186"], "codes": {"wikidata": "Q11499542"}, "src": "src-wikidata" },
     { "id": "lm-q11129346", "name": "氣比神宮", "genre": "shrine_temple", "kind": "LM", "area": "敦賀市", "region": "fukui-18202", "lat": 35.65472, "lon": 136.07473, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q11129346"}, "src": "src-wikidata" },
-    { "id": "st-004142", "name": "西敦賀駅", "genre": "station", "kind": "HUB", "area": "敦賀市", "region": "fukui-18202", "lat": 35.61759, "lon": 136.0674, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 小浜線"], "adj": ["st-004149", "st-010186"] },
-    { "id": "st-004149", "name": "粟野駅", "genre": "station", "kind": "HUB", "area": "敦賀市", "region": "fukui-18202", "lat": 35.61777, "lon": 136.02597, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 小浜線"], "adj": ["lm-q11645277", "lm-q17216403", "st-004142", "st-004164"] },
+    { "id": "pt-q7850265", "name": "敦賀港", "genre": "port", "kind": "GW", "lat": 35.65, "lon": 136.05, "level": 3, "value": 3, "codes": {"wikidata": "Q7850265", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "福井/敦賀"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "敦賀市", "region": "fukui-18202", "adj": ["st-004142", "st-004149", "st-010186"] },
+    { "id": "st-004142", "name": "西敦賀駅", "genre": "station", "kind": "HUB", "area": "敦賀市", "region": "fukui-18202", "lat": 35.61759, "lon": 136.0674, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 小浜線"], "adj": ["pt-q7850265", "st-004149", "st-010186"] },
+    { "id": "st-004149", "name": "粟野駅", "genre": "station", "kind": "HUB", "area": "敦賀市", "region": "fukui-18202", "lat": 35.61777, "lon": 136.02597, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 小浜線"], "adj": ["lm-q11645277", "lm-q17216403", "pt-q7850265", "st-004142", "st-004164"] },
     { "id": "st-004256", "name": "新疋田駅", "genre": "station", "kind": "HUB", "area": "敦賀市", "region": "fukui-18202", "lat": 35.59458, "lon": 136.10046, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 北陸線"], "adj": ["st-004400", "st-010186"] },
-    { "id": "st-010186", "name": "敦賀駅", "genre": "station", "kind": "HUB", "area": "敦賀市", "region": "fukui-18202", "lat": 35.6443, "lon": 136.07622, "level": 3, "value": 3, "lines": ["ハピラインふくい ハピラインふくい線", "西日本旅客鉄道 北陸新幹線", "西日本旅客鉄道 北陸線", "西日本旅客鉄道 小浜線"], "adj": ["lm-q11499542", "lm-q11646283", "lm-q17176596", "lm-q28683858", "lm-q47419034", "st-003230", "st-004142", "st-004256", "st-010180"] },
+    { "id": "st-010186", "name": "敦賀駅", "genre": "station", "kind": "HUB", "area": "敦賀市", "region": "fukui-18202", "lat": 35.6443, "lon": 136.07622, "level": 3, "value": 3, "lines": ["ハピラインふくい ハピラインふくい線", "西日本旅客鉄道 北陸新幹線", "西日本旅客鉄道 北陸線", "西日本旅客鉄道 小浜線"], "adj": ["lm-q11499542", "lm-q11646283", "lm-q17176596", "lm-q28683858", "lm-q47419034", "pt-q7850265", "st-003230", "st-004142", "st-004256", "st-010180"] },
 
     { "id": "lm-q909308", "name": "小浜城", "genre": "heritage", "kind": "LM", "area": "小浜市", "region": "fukui-18204", "lat": 35.50394, "lon": 135.74575, "level": 2, "value": 2, "adj": ["st-004548", "st-004567"], "codes": {"wikidata": "Q909308"}, "src": "src-wikidata" },
     { "id": "lm-q11488357", "name": "後瀬山城", "genre": "heritage", "kind": "LM", "area": "小浜市", "region": "fukui-18204", "lat": 35.4882, "lon": 135.73906, "level": 1, "value": 1, "adj": ["st-004548"], "codes": {"wikidata": "Q11488357"}, "src": "src-wikidata" },

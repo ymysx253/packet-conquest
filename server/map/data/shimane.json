@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "shimane",
   "name": "島根県",
-  "version": 20,
+  "version": 21,
   "updatedAt": "2026-10-19",
   "note": "島根県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -59,6 +59,7 @@
     { "id": "lm-q11577586", "name": "由志園", "genre": "park", "kind": "LM", "area": "松江市", "region": "shimane-32201", "lat": 35.49099, "lon": 133.17616, "level": 1, "value": 1, "adj": ["lm-q1077275"], "codes": {"wikidata": "Q11577586"}, "src": "src-wikidata" },
     { "id": "lm-q21583279", "name": "いずもまがたまの里 伝承館", "genre": "museum", "kind": "LM", "area": "松江市", "region": "shimane-32201", "lat": 35.4319, "lon": 133.00538, "level": 1, "value": 1, "adj": ["st-004736"], "codes": {"wikidata": "Q21583279"}, "src": "src-wikidata" },
     { "id": "lm-q3461072", "name": "佐太神社", "genre": "shrine_temple", "kind": "LM", "area": "松江市", "region": "shimane-32201", "lat": 35.50892, "lon": 133.00644, "level": 2, "value": 2, "hackable": false, "codes": {"wikidata": "Q3461072"}, "src": "src-wikidata" },
+    { "id": "pt-q11353738", "name": "七類港", "genre": "port", "kind": "GW", "lat": 35.57144, "lon": 133.22994, "level": 3, "value": 3, "codes": {"wikidata": "Q11353738", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "島根/七類"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "松江市", "region": "shimane-32201", "adj": ["lm-q11567667", "st-004384", "st-004405", "st-004434"] },
     { "id": "st-004585", "name": "朝日ヶ丘駅", "genre": "station", "kind": "HUB", "area": "松江市", "region": "shimane-32201", "lat": 35.48106, "lon": 132.98758, "level": 1, "value": 1, "lines": ["一畑電車 北松江線"], "adj": ["st-004589", "st-004599"] },
     { "id": "st-004589", "name": "長江駅", "genre": "station", "kind": "HUB", "area": "松江市", "region": "shimane-32201", "lat": 35.47962, "lon": 132.97464, "level": 1, "value": 1, "lines": ["一畑電車 北松江線"], "adj": ["lm-q1151248", "st-004585", "st-004600"] },
     { "id": "st-004599", "name": "松江イングリッシュガーデン前駅", "genre": "station", "kind": "HUB", "area": "松江市", "region": "shimane-32201", "lat": 35.47741, "lon": 133.00359, "level": 1, "value": 1, "lines": ["一畑電車 北松江線"], "adj": ["st-004585", "st-004625"] },
@@ -195,11 +196,13 @@
     { "id": "st-007884", "name": "青野山駅", "genre": "station", "kind": "HUB", "area": "津和野町", "region": "shimane-32501", "lat": 34.48083, "lon": 131.80361, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山口線"], "adj": ["lm-q846305", "st-007769", "st-007902"] },
     { "id": "st-007902", "name": "津和野駅", "genre": "station", "kind": "HUB", "area": "津和野町", "region": "shimane-32501", "lat": 34.47318, "lon": 131.77399, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山口線"], "adj": ["lm-q846305", "st-007884", "st-007981"] },
 
-    { "id": "lm-q55529473", "name": "海士町中央図書館", "genre": "library", "kind": "EDU", "area": "海士町", "region": "shimane-32525", "lat": 36.09683, "lon": 133.09617, "level": 1, "value": 1, "adj": ["lm-q1148447", "lm-q11567667"], "codes": {"wikidata": "Q55529473"}, "src": "src-wikidata" },
+    { "id": "lm-q55529473", "name": "海士町中央図書館", "genre": "library", "kind": "EDU", "area": "海士町", "region": "shimane-32525", "lat": 36.09683, "lon": 133.09617, "level": 1, "value": 1, "adj": ["lm-q1148447", "pt-q11620211"], "codes": {"wikidata": "Q55529473"}, "src": "src-wikidata" },
+    { "id": "pt-q11620211", "name": "菱浦港", "genre": "port", "kind": "GW", "lat": 36.10533, "lon": 133.0775, "level": 3, "value": 3, "codes": {"wikidata": "Q11620211", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "島根/菱浦"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "海士町", "region": "shimane-32525", "adj": ["lm-q11567667", "lm-q55529473"] },
 
-    { "id": "lm-q11567667", "name": "焼火山", "genre": "nature", "kind": "LM", "area": "西ノ島町", "region": "shimane-32526", "lat": 36.07472, "lon": 133.03194, "level": 1, "value": 1, "adj": ["lm-q11548750", "lm-q55529473"], "codes": {"wikidata": "Q11567667"}, "src": "src-wikidata" },
+    { "id": "lm-q11567667", "name": "焼火山", "genre": "nature", "kind": "LM", "area": "西ノ島町", "region": "shimane-32526", "lat": 36.07472, "lon": 133.03194, "level": 1, "value": 1, "adj": ["pt-q11353738", "pt-q11620211"], "codes": {"wikidata": "Q11567667"}, "src": "src-wikidata" },
 
-    { "id": "lm-q1148447", "name": "隠岐空港", "genre": "airport", "kind": "GW", "area": "隠岐の島町", "region": "shimane-32528", "lat": 36.17833, "lon": 133.32333, "level": 5, "value": 5, "adj": ["lm-q11437553", "lm-q55529473"], "codes": {"iata": "OKI", "icao": "RJNO", "wikidata": "Q1148447"}, "src": "src-wikidata", "gateway": {"type": "airport", "scope": "domestic"} },
-    { "id": "lm-q11437553", "name": "大満寺山", "genre": "nature", "kind": "LM", "area": "隠岐の島町", "region": "shimane-32528", "lat": 36.25675, "lon": 133.33053, "level": 1, "value": 1, "adj": ["lm-q1148447"], "codes": {"wikidata": "Q11437553"}, "src": "src-wikidata" }
+    { "id": "lm-q1148447", "name": "隠岐空港", "genre": "airport", "kind": "GW", "area": "隠岐の島町", "region": "shimane-32528", "lat": 36.17833, "lon": 133.32333, "level": 5, "value": 5, "adj": ["lm-q55529473", "pt-sc3a83f66e8"], "codes": {"iata": "OKI", "icao": "RJNO", "wikidata": "Q1148447"}, "src": "src-wikidata", "gateway": {"type": "airport", "scope": "domestic"} },
+    { "id": "lm-q11437553", "name": "大満寺山", "genre": "nature", "kind": "LM", "area": "隠岐の島町", "region": "shimane-32528", "lat": 36.25675, "lon": 133.33053, "level": 1, "value": 1, "adj": ["pt-sc3a83f66e8"], "codes": {"wikidata": "Q11437553"}, "src": "src-wikidata" },
+    { "id": "pt-sc3a83f66e8", "name": "西郷港", "genre": "port", "kind": "GW", "lat": 36.21002, "lon": 133.3426, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "島根/西郷"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "隠岐の島町", "region": "shimane-32528", "adj": ["lm-q11437553", "lm-q1148447"] }
   ]
 }

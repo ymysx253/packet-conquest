@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "tottori",
   "name": "鳥取県",
-  "version": 20,
+  "version": 21,
   "updatedAt": "2026-10-19",
   "note": "鳥取県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -108,10 +108,10 @@
     { "id": "lm-q7828505", "name": "鳥取短期大学", "genre": "university", "kind": "EDU", "area": "倉吉市", "region": "tottori-31203", "lat": 35.4561, "lon": 133.859, "level": 1, "value": 1, "adj": ["st-004665"], "codes": {"wikidata": "Q7828505"}, "src": "src-wikidata" },
     { "id": "st-004665", "name": "倉吉駅", "genre": "station", "kind": "HUB", "area": "倉吉市", "region": "tottori-31203", "lat": 35.45536, "lon": 133.84813, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["lm-q63253503", "lm-q65258230", "lm-q7828505", "lm-q7828506", "st-004576", "st-004620"] },
 
-    { "id": "lm-q11548750", "name": "水木しげるロード", "genre": "market", "kind": "LM", "area": "境港市", "region": "tottori-31204", "lat": 35.54644, "lon": 133.23125, "level": 1, "value": 1, "adj": ["lm-q11567667", "st-004384"], "codes": {"wikidata": "Q11548750"}, "src": "src-wikidata" },
-    { "id": "st-004384", "name": "境港駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.54425, "lon": 133.22326, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["lm-q11548750", "lm-q11550847", "st-004405"] },
-    { "id": "st-004405", "name": "馬場崎町駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.53822, "lon": 133.22674, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["lm-q11550847", "st-004384", "st-004434"] },
-    { "id": "st-004434", "name": "上道駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.53086, "lon": 133.23103, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["lm-q11550847", "st-004405", "st-004454"] },
+    { "id": "lm-q11548750", "name": "水木しげるロード", "genre": "market", "kind": "LM", "area": "境港市", "region": "tottori-31204", "lat": 35.54644, "lon": 133.23125, "level": 1, "value": 1, "adj": ["st-004384"], "codes": {"wikidata": "Q11548750"}, "src": "src-wikidata" },
+    { "id": "st-004384", "name": "境港駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.54425, "lon": 133.22326, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["lm-q11548750", "lm-q11550847", "pt-q11353738", "st-004405"] },
+    { "id": "st-004405", "name": "馬場崎町駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.53822, "lon": 133.22674, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["lm-q11550847", "pt-q11353738", "st-004384", "st-004434"] },
+    { "id": "st-004434", "name": "上道駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.53086, "lon": 133.23103, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["lm-q11550847", "pt-q11353738", "st-004405", "st-004454"] },
     { "id": "st-004454", "name": "余子駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.52095, "lon": 133.23674, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["lm-q11550847", "st-004434", "st-004471"] },
     { "id": "st-004471", "name": "高松町駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.51514, "lon": 133.24011, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004454", "st-004508"] },
     { "id": "st-004508", "name": "中浜駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.50608, "lon": 133.24534, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004471", "st-004516"] },

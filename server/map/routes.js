@@ -14,6 +14,8 @@ const MODES_RESERVED = new Set(['rail', 'land']); // 予約(形式としては�
 const ROUTE_RULES = Object.freeze({ directed: false });
 // 規模(DATA-FORMAT.md 第 5.2 節 metrics)。2026-10-19 決定: 航路の価値は規模で変える(式は未決。DESIGN.md 第 6 章)
 const METRIC_KEYS = ['passengers', 'flights', 'cargoTons'];
+const METRIC_BASES = new Set(['actual', 'schedule']); // 実績(統計)か、時刻表からの見込み(週の便数 × 52 など)
+const SERVICE_TYPES = new Set(['passenger', 'ferry', 'passenger-cargo', 'ro-ro', 'cargo', 'other']); // 船・便の種類(旅客、フェリー、貨客、RORO、貨物)
 const STATUSES = new Set(['active', 'seasonal', 'suspended', 'planned', 'ended']);
 const SCHEMES = new Set(['iata', 'icao', 'unlocode', 'wikidata', 'ksj', 'internal']);
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -47,9 +49,11 @@ function validateRouteFile(name, data, sourcesById) {
     if (r.metrics !== undefined) {
       const m = r.metrics;
       if (!m || !Number.isInteger(m.year) || m.year < 1900) fail(`${w}: metrics は { year, passengers?, flights?, cargoTons? }(1 年間の値)`);
-      for (const k of Object.keys(m)) if (k !== 'year' && !METRIC_KEYS.includes(k)) fail(`${w}: metrics の ${k} は決まった名前でない(${METRIC_KEYS.join('/')})`);
+      for (const k of Object.keys(m)) if (k !== 'year' && k !== 'basis' && !METRIC_KEYS.includes(k)) fail(`${w}: metrics の ${k} は決まった名前でない(${METRIC_KEYS.join('/')}/basis)`);
+      if (m.basis !== undefined && !METRIC_BASES.has(m.basis)) fail(`${w}: metrics.basis は actual(実績)か schedule(時刻表からの見込み)`);
       for (const k of METRIC_KEYS) if (m[k] !== undefined && !(Number.isFinite(m[k]) && m[k] >= 0)) fail(`${w}: metrics.${k} は 0 以上の数`);
     }
+    if (r.serviceTypes !== undefined && (!Array.isArray(r.serviceTypes) || r.serviceTypes.some((t) => !SERVICE_TYPES.has(t)))) fail(`${w}: serviceTypes は ${[...SERVICE_TYPES].join('/')} の配列`);
     for (const c of r.carriers || []) if (!c || typeof c.code !== 'string' || !c.code || (c.sponsorId !== undefined && typeof c.sponsorId !== 'string')) fail(`${w}: carriers は [{ scheme, code, name, sponsorId? }]`);
     if (r.id !== routeId({ src: r.src, mode: r.mode, from: r.from, to: r.to, carrier: r.carriers && r.carriers[0] && r.carriers[0].code })) fail(`${w}: id が出典・種類・端点・運航者から作った値と違う`);
   }
@@ -82,7 +86,10 @@ function deriveRoutes(byId, files, sources, today = new Date().toISOString().sli
     if (!list.length) return null;
     const year = Math.max(...list.map((x) => x.year));
     const sum = { year };
-    for (const x of list.filter((y) => y.year === year)) for (const k of METRIC_KEYS) if (x[k] !== undefined) sum[k] = (sum[k] || 0) + x[k];
+    const latest = list.filter((y) => y.year === year);
+    for (const x of latest) for (const k of METRIC_KEYS) if (x[k] !== undefined) sum[k] = (sum[k] || 0) + x[k];
+    const bases = new Set(latest.map((x) => x.basis || 'actual'));
+    sum.basis = bases.size === 1 ? [...bases][0] : 'mixed'; // 実績と見込みが混ざったら mixed(価値の式で扱いを決める)
     return sum;
   };
   for (const { name, data } of files) {
@@ -109,4 +116,4 @@ function deriveRoutes(byId, files, sources, today = new Date().toISOString().sli
   return { byNode: result, skipped };
 }
 
-module.exports = { routeId, validateRouteFile, readRouteFiles, deriveRoutes, MODES, MODES_RESERVED, ROUTE_RULES, METRIC_KEYS, DIR };
+module.exports = { routeId, validateRouteFile, readRouteFiles, deriveRoutes, MODES, MODES_RESERVED, ROUTE_RULES, METRIC_KEYS, METRIC_BASES, SERVICE_TYPES, DIR };

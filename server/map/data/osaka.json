@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "osaka",
   "name": "大阪府",
-  "version": 20,
+  "version": 21,
   "updatedAt": "2026-10-19",
   "note": "大阪府の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -64,7 +64,7 @@
     { "id": "st-007275", "name": "安治川口駅", "genre": "station", "kind": "HUB", "area": "大阪市此花区", "region": "osaka-27104", "lat": 34.67308, "lon": 135.44354, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 桜島線"], "adj": ["st-007187", "st-007300"] },
     { "id": "st-007300", "name": "ユニバーサルシティ駅", "genre": "station", "kind": "HUB", "area": "大阪市此花区", "region": "osaka-27104", "lat": 34.66843, "lon": 135.43911, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 桜島線"], "adj": ["lm-q1191885", "st-007275", "st-007364"] },
     { "id": "st-007364", "name": "桜島駅", "genre": "station", "kind": "HUB", "area": "大阪市此花区", "region": "osaka-27104", "lat": 34.66208, "lon": 135.43199, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 桜島線"], "adj": ["lm-q1191885", "st-007300"] },
-    { "id": "st-010188", "name": "夢洲駅", "genre": "station", "kind": "HUB", "area": "大阪市此花区", "region": "osaka-27104", "lat": 34.65222, "lon": 135.38972, "level": 1, "value": 1, "lines": ["大阪市高速電気軌道 4号線(中央線)"], "adj": ["lm-q133959805", "st-007464"] },
+    { "id": "st-010188", "name": "夢洲駅", "genre": "station", "kind": "HUB", "area": "大阪市此花区", "region": "osaka-27104", "lat": 34.65222, "lon": 135.38972, "level": 1, "value": 1, "lines": ["大阪市高速電気軌道 4号線(中央線)"], "adj": ["lm-q133959805", "pt-s8ec929d4b9", "st-007464"] },
 
     { "id": "lm-q128836", "name": "大阪ドーム", "genre": "stadium", "kind": "LM", "area": "大阪市西区", "region": "osaka-27106", "lat": 34.6693, "lon": 135.4761, "level": 3, "value": 3, "adj": ["st-007280", "st-007283", "st-007327"], "codes": {"wikidata": "Q128836"}, "src": "src-wikidata" },
     { "id": "lm-q10272491", "name": "川口基督教会", "genre": "shrine_temple", "kind": "LM", "area": "大阪市西区", "region": "osaka-27106", "lat": 34.68217, "lon": 135.48214, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q10272491"}, "src": "src-wikidata" },
@@ -236,8 +236,9 @@
     { "id": "st-007162", "name": "放出駅", "genre": "station", "kind": "HUB", "area": "大阪市鶴見区", "region": "osaka-27124", "lat": 34.688, "lon": 135.56314, "level": 2, "value": 2, "lines": ["西日本旅客鉄道 おおさか東線", "西日本旅客鉄道 片町線"], "adj": ["st-007128", "st-007131", "st-007229"] },
 
     { "id": "lm-q2070374", "name": "インテックス大阪", "genre": "convention", "kind": "LM", "area": "大阪市住之江区", "region": "osaka-27125", "lat": 34.63724, "lon": 135.41818, "level": 2, "value": 2, "adj": ["st-007473", "st-007494"], "codes": {"wikidata": "Q2070374"}, "src": "src-wikidata" },
-    { "id": "st-007464", "name": "コスモスクエア駅", "genre": "station", "kind": "HUB", "area": "大阪市住之江区", "region": "osaka-27125", "lat": 34.64272, "lon": 135.41262, "level": 2, "value": 2, "lines": ["大阪市高速電気軌道 4号線(中央線)", "大阪市高速電気軌道 南港ポートタウン線"], "adj": ["st-007409", "st-007473", "st-010188"] },
-    { "id": "st-007473", "name": "トレードセンター前駅", "genre": "station", "kind": "HUB", "area": "大阪市住之江区", "region": "osaka-27125", "lat": 34.63901, "lon": 135.41155, "level": 1, "value": 1, "lines": ["大阪市高速電気軌道 南港ポートタウン線"], "adj": ["lm-q2070374", "st-007464", "st-007494"] },
+    { "id": "pt-s8ec929d4b9", "name": "大阪港", "genre": "port", "kind": "GW", "lat": 34.63223, "lon": 135.38786, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "大阪/大阪"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "大阪市住之江区", "region": "osaka-27125", "adj": ["st-007464", "st-007473", "st-010188"] },
+    { "id": "st-007464", "name": "コスモスクエア駅", "genre": "station", "kind": "HUB", "area": "大阪市住之江区", "region": "osaka-27125", "lat": 34.64272, "lon": 135.41262, "level": 2, "value": 2, "lines": ["大阪市高速電気軌道 4号線(中央線)", "大阪市高速電気軌道 南港ポートタウン線"], "adj": ["pt-s8ec929d4b9", "st-007409", "st-007473", "st-010188"] },
+    { "id": "st-007473", "name": "トレードセンター前駅", "genre": "station", "kind": "HUB", "area": "大阪市住之江区", "region": "osaka-27125", "lat": 34.63901, "lon": 135.41155, "level": 1, "value": 1, "lines": ["大阪市高速電気軌道 南港ポートタウン線"], "adj": ["lm-q2070374", "pt-s8ec929d4b9", "st-007464", "st-007494"] },
     { "id": "st-007494", "name": "中ふ頭駅", "genre": "station", "kind": "HUB", "area": "大阪市住之江区", "region": "osaka-27125", "lat": 34.63367, "lon": 135.41751, "level": 1, "value": 1, "lines": ["大阪市高速電気軌道 南港ポートタウン線"], "adj": ["lm-q2070374", "st-007473", "st-007506"] },
     { "id": "st-007506", "name": "ポートタウン西駅", "genre": "station", "kind": "HUB", "area": "大阪市住之江区", "region": "osaka-27125", "lat": 34.63089, "lon": 135.42306, "level": 1, "value": 1, "lines": ["大阪市高速電気軌道 南港ポートタウン線"], "adj": ["st-007494", "st-007507"] },
     { "id": "st-007507", "name": "ポートタウン東駅", "genre": "station", "kind": "HUB", "area": "大阪市住之江区", "region": "osaka-27125", "lat": 34.63087, "lon": 135.42864, "level": 1, "value": 1, "lines": ["大阪市高速電気軌道 南港ポートタウン線"], "adj": ["st-007506", "st-007552"] },
@@ -414,9 +415,10 @@
     { "id": "st-006800", "name": "江坂駅", "genre": "station", "kind": "HUB", "area": "吹田市", "region": "osaka-27205", "lat": 34.75789, "lon": 135.49703, "level": 2, "value": 2, "lines": ["北大阪急行電鉄 南北線", "大阪市高速電気軌道 1号線(御堂筋線)"], "adj": ["st-006728", "st-006869"] },
     { "id": "st-006836", "name": "南吹田駅", "genre": "station", "kind": "HUB", "area": "吹田市", "region": "osaka-27205", "lat": 34.74948, "lon": 135.51175, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 おおさか東線"], "adj": ["st-006872", "st-006911"] },
 
-    { "id": "st-007808", "name": "北助松駅", "genre": "station", "kind": "HUB", "area": "泉大津市", "region": "osaka-27206", "lat": 34.51408, "lon": 135.42213, "level": 1, "value": 1, "lines": ["南海電気鉄道 南海本線"], "adj": ["st-007794", "st-007824"] },
-    { "id": "st-007824", "name": "松ノ浜駅", "genre": "station", "kind": "HUB", "area": "泉大津市", "region": "osaka-27206", "lat": 34.50864, "lon": 135.4143, "level": 1, "value": 1, "lines": ["南海電気鉄道 南海本線"], "adj": ["st-007808", "st-007834"] },
-    { "id": "st-007834", "name": "泉大津駅", "genre": "station", "kind": "HUB", "area": "泉大津市", "region": "osaka-27206", "lat": 34.50327, "lon": 135.40668, "level": 1, "value": 1, "lines": ["南海電気鉄道 南海本線"], "adj": ["st-007824", "st-007867"] },
+    { "id": "pt-sacdb3ffec1", "name": "泉大津港", "genre": "port", "kind": "GW", "lat": 34.51593, "lon": 135.39216, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "大阪/泉大津"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "泉大津市", "region": "osaka-27206", "adj": ["st-007808", "st-007824", "st-007834"] },
+    { "id": "st-007808", "name": "北助松駅", "genre": "station", "kind": "HUB", "area": "泉大津市", "region": "osaka-27206", "lat": 34.51408, "lon": 135.42213, "level": 1, "value": 1, "lines": ["南海電気鉄道 南海本線"], "adj": ["pt-sacdb3ffec1", "st-007794", "st-007824"] },
+    { "id": "st-007824", "name": "松ノ浜駅", "genre": "station", "kind": "HUB", "area": "泉大津市", "region": "osaka-27206", "lat": 34.50864, "lon": 135.4143, "level": 1, "value": 1, "lines": ["南海電気鉄道 南海本線"], "adj": ["pt-sacdb3ffec1", "st-007808", "st-007834"] },
+    { "id": "st-007834", "name": "泉大津駅", "genre": "station", "kind": "HUB", "area": "泉大津市", "region": "osaka-27206", "lat": 34.50327, "lon": 135.40668, "level": 1, "value": 1, "lines": ["南海電気鉄道 南海本線"], "adj": ["pt-sacdb3ffec1", "st-007824", "st-007867"] },
 
     { "id": "lm-q11614735", "name": "芥川山城", "genre": "heritage", "kind": "LM", "area": "高槻市", "region": "osaka-27207", "lat": 34.88083, "lon": 135.58806, "level": 2, "value": 2, "adj": ["st-006432", "st-006440"], "codes": {"wikidata": "Q11614735"}, "src": "src-wikidata" },
     { "id": "st-006383", "name": "上牧駅", "genre": "station", "kind": "HUB", "area": "高槻市", "region": "osaka-27207", "lat": 34.87148, "lon": 135.66112, "level": 1, "value": 1, "lines": ["阪急電鉄 京都線"], "adj": ["st-006369", "st-006440"] },

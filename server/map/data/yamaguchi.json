@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "yamaguchi",
   "name": "山口県",
-  "version": 20,
+  "version": 21,
   "updatedAt": "2026-10-19",
   "note": "山口県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -57,6 +57,7 @@
     { "id": "lm-q1088510", "name": "功山寺", "genre": "shrine_temple", "kind": "LM", "area": "下関市", "region": "yamaguchi-35201", "lat": 33.97699, "lon": 130.96174, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q1088510"}, "src": "src-wikidata" },
     { "id": "lm-q17216562", "name": "はい!からっと横丁", "genre": "park", "kind": "LM", "area": "下関市", "region": "yamaguchi-35201", "lat": 33.95308, "lon": 130.94122, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q17216562"}, "src": "src-wikidata" },
     { "id": "isl-q1475428", "name": "蓋井島", "genre": "nature", "kind": "GW", "area": "下関市", "region": "yamaguchi-35201", "lat": 34.10417, "lon": 130.7875, "level": 1, "value": 1, "adj": ["st-008470"], "codes": {"wikidata": "Q1475428"}, "src": "src-wikidata" },
+    { "id": "pt-q10868415", "name": "下関港", "genre": "port", "kind": "GW", "lat": 33.95789, "lon": 130.94133, "level": 3, "value": 3, "codes": {"unlocode": "JPSHS", "wikidata": "Q10868415", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "山口/下関"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "下関市", "region": "yamaguchi-35201", "adj": ["st-008623", "st-008630", "st-008637"] },
     { "id": "st-008149", "name": "長門粟野駅", "genre": "station", "kind": "HUB", "area": "下関市", "region": "yamaguchi-35201", "lat": 34.3579, "lon": 130.97086, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-008126", "st-008201"] },
     { "id": "st-008201", "name": "阿川駅", "genre": "station", "kind": "HUB", "area": "下関市", "region": "yamaguchi-35201", "lat": 34.33655, "lon": 130.92636, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-008149", "st-008254"] },
     { "id": "st-008254", "name": "特牛駅", "genre": "station", "kind": "HUB", "area": "下関市", "region": "yamaguchi-35201", "lat": 34.30633, "lon": 130.91851, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-008201", "st-008281"] },
@@ -77,7 +78,7 @@
     { "id": "st-008577", "name": "新下関駅", "genre": "station", "kind": "HUB", "area": "下関市", "region": "yamaguchi-35201", "lat": 34.00674, "lon": 130.94808, "level": 2, "value": 2, "lines": ["西日本旅客鉄道 山陽新幹線", "西日本旅客鉄道 山陽線"], "adj": ["st-008524", "st-008565", "st-008592", "st-008684"] },
     { "id": "st-008581", "name": "綾羅木駅", "genre": "station", "kind": "HUB", "area": "下関市", "region": "yamaguchi-35201", "lat": 34.00326, "lon": 130.92693, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-008568", "st-008592"] },
     { "id": "st-008592", "name": "幡生駅", "genre": "station", "kind": "HUB", "area": "下関市", "region": "yamaguchi-35201", "lat": 33.98088, "lon": 130.92696, "level": 2, "value": 2, "lines": ["西日本旅客鉄道 山陰線", "西日本旅客鉄道 山陽線"], "adj": ["lm-q11361445", "lm-q909784", "st-008577", "st-008581", "st-008630"] },
-    { "id": "st-008630", "name": "下関駅", "genre": "station", "kind": "HUB", "area": "下関市", "region": "yamaguchi-35201", "lat": 33.94887, "lon": 130.92143, "level": 3, "value": 3, "lines": ["九州旅客鉄道 山陽線", "西日本旅客鉄道 山陽線"], "adj": ["lm-q2815999", "st-008592", "st-008660"] },
+    { "id": "st-008630", "name": "下関駅", "genre": "station", "kind": "HUB", "area": "下関市", "region": "yamaguchi-35201", "lat": 33.94887, "lon": 130.92143, "level": 3, "value": 3, "lines": ["九州旅客鉄道 山陽線", "西日本旅客鉄道 山陽線"], "adj": ["lm-q2815999", "pt-q10868415", "st-008592", "st-008660"] },
 
     { "id": "lm-q1328906", "name": "山口宇部空港", "genre": "airport", "kind": "GW", "area": "宇部市", "region": "yamaguchi-35202", "lat": 33.93, "lon": 131.27861, "level": 8, "value": 8, "adj": ["st-008620", "st-008627", "st-008628", "st-008632", "st-008641", "st-008643", "st-008644"], "codes": {"iata": "UBJ", "icao": "RJDC", "wikidata": "Q1328906"}, "src": "src-wikidata", "gateway": {"type": "airport", "scope": "domestic"} },
     { "id": "lm-q11273042", "name": "ときわ公園", "genre": "zoo_aquarium", "kind": "LM", "area": "宇部市", "region": "yamaguchi-35202", "lat": 33.94578, "lon": 131.28308, "level": 1, "value": 1, "adj": ["st-008641"], "codes": {"wikidata": "Q11273042"}, "src": "src-wikidata" },
@@ -160,8 +161,9 @@
     { "id": "lm-q11547697", "name": "毛利邸", "genre": "museum", "kind": "LM", "area": "防府市", "region": "yamaguchi-35206", "lat": 34.06337, "lon": 131.58746, "level": 1, "value": 1, "adj": ["st-008527"], "codes": {"wikidata": "Q11547697"}, "src": "src-wikidata" },
     { "id": "lm-q11416957", "name": "周防国衙跡", "genre": "heritage", "kind": "LM", "area": "防府市", "region": "yamaguchi-35206", "lat": 34.05764, "lon": 131.58636, "level": 1, "value": 1, "adj": ["st-008527"], "codes": {"wikidata": "Q11416957"}, "src": "src-wikidata" },
     { "id": "lm-q704898", "name": "防府天満宮", "genre": "shrine_temple", "kind": "LM", "area": "防府市", "region": "yamaguchi-35206", "lat": 34.06328, "lon": 131.57406, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q704898"}, "src": "src-wikidata" },
+    { "id": "pt-q11356697", "name": "三田尻中関港", "genre": "port", "kind": "GW", "lat": 34.00325, "lon": 131.55873, "level": 3, "value": 3, "codes": {"wikidata": "Q11356697", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "山口/三田尻中関"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "防府市", "region": "yamaguchi-35206", "adj": ["st-008527"] },
     { "id": "st-008526", "name": "大道駅", "genre": "station", "kind": "HUB", "area": "防府市", "region": "yamaguchi-35206", "lat": 34.05255, "lon": 131.48972, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["st-008486", "st-008527"] },
-    { "id": "st-008527", "name": "防府駅", "genre": "station", "kind": "HUB", "area": "防府市", "region": "yamaguchi-35206", "lat": 34.05318, "lon": 131.56998, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["lm-q11416957", "lm-q11547697", "st-008526", "st-008533"] },
+    { "id": "st-008527", "name": "防府駅", "genre": "station", "kind": "HUB", "area": "防府市", "region": "yamaguchi-35206", "lat": 34.05318, "lon": 131.56998, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["lm-q11416957", "lm-q11547697", "pt-q11356697", "st-008526", "st-008533"] },
     { "id": "st-008533", "name": "富海駅", "genre": "station", "kind": "HUB", "area": "防府市", "region": "yamaguchi-35206", "lat": 34.04847, "lon": 131.63873, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["st-008527"] },
 
     { "id": "st-008547", "name": "周防花岡駅", "genre": "station", "kind": "HUB", "area": "下松市", "region": "yamaguchi-35207", "lat": 34.03581, "lon": 131.8671, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 岩徳線"], "adj": ["st-008549", "st-008557"] },
@@ -220,9 +222,10 @@
     { "id": "st-008245", "name": "渋木駅", "genre": "station", "kind": "HUB", "area": "長門市", "region": "yamaguchi-35211", "lat": 34.31166, "lon": 131.19709, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 美祢線"], "adj": ["lm-q11615261", "st-008205", "st-008356"] },
 
     { "id": "isl-q11483589", "name": "平郡島", "genre": "nature", "kind": "GW", "area": "柳井市", "region": "yamaguchi-35212", "lat": 33.79556, "lon": 132.22222, "level": 1, "value": 1, "adj": ["isl-q11390868", "lm-q7106619"], "codes": {"wikidata": "Q11483589"}, "src": "src-wikidata" },
-    { "id": "st-008613", "name": "柳井駅", "genre": "station", "kind": "HUB", "area": "柳井市", "region": "yamaguchi-35212", "lat": 33.96503, "lon": 132.10769, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["st-008619", "st-008621"] },
-    { "id": "st-008615", "name": "大畠駅", "genre": "station", "kind": "HUB", "area": "柳井市", "region": "yamaguchi-35212", "lat": 33.96347, "lon": 132.17955, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["lm-q7106619", "st-008586", "st-008621"] },
-    { "id": "st-008621", "name": "柳井港駅", "genre": "station", "kind": "HUB", "area": "柳井市", "region": "yamaguchi-35212", "lat": 33.95858, "lon": 132.13274, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["st-008613", "st-008615"] },
+    { "id": "pt-q11534082", "name": "柳井港", "genre": "port", "kind": "GW", "lat": 33.95692, "lon": 132.13342, "level": 3, "value": 3, "codes": {"wikidata": "Q11534082", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "山口/柳井"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "柳井市", "region": "yamaguchi-35212", "adj": ["st-008613", "st-008615", "st-008621"] },
+    { "id": "st-008613", "name": "柳井駅", "genre": "station", "kind": "HUB", "area": "柳井市", "region": "yamaguchi-35212", "lat": 33.96503, "lon": 132.10769, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["pt-q11534082", "st-008619", "st-008621"] },
+    { "id": "st-008615", "name": "大畠駅", "genre": "station", "kind": "HUB", "area": "柳井市", "region": "yamaguchi-35212", "lat": 33.96347, "lon": 132.17955, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["lm-q7106619", "pt-q11534082", "st-008586", "st-008621"] },
+    { "id": "st-008621", "name": "柳井港駅", "genre": "station", "kind": "HUB", "area": "柳井市", "region": "yamaguchi-35212", "lat": 33.95858, "lon": 132.13274, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["pt-q11534082", "st-008613", "st-008615"] },
 
     { "id": "st-008356", "name": "於福駅", "genre": "station", "kind": "HUB", "area": "美祢市", "region": "yamaguchi-35213", "lat": 34.23579, "lon": 131.20772, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 美祢線"], "adj": ["st-008245", "st-008406"] },
     { "id": "st-008406", "name": "重安駅", "genre": "station", "kind": "HUB", "area": "美祢市", "region": "yamaguchi-35213", "lat": 34.19377, "lon": 131.20863, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 美祢線"], "adj": ["st-008356", "st-008425"] },
@@ -232,15 +235,17 @@
     { "id": "st-008465", "name": "厚保駅", "genre": "station", "kind": "HUB", "area": "美祢市", "region": "yamaguchi-35213", "lat": 34.11374, "lon": 131.15479, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 美祢線"], "adj": ["st-008454", "st-008482"] },
 
     { "id": "lm-q7813780", "name": "周南公立大学", "genre": "university", "kind": "EDU", "area": "周南市", "region": "yamaguchi-35215", "lat": 34.0475, "lon": 131.844, "level": 1, "value": 1, "adj": ["st-008557"], "codes": {"wikidata": "Q7813780"}, "src": "src-wikidata" },
-    { "id": "lm-q11420194", "name": "回天記念館", "genre": "museum", "kind": "LM", "area": "周南市", "region": "yamaguchi-35215", "lat": 33.99333, "lon": 131.71739, "level": 1, "value": 1, "adj": ["st-008499"], "codes": {"wikidata": "Q11420194"}, "src": "src-wikidata" },
-    { "id": "st-008499", "name": "戸田駅", "genre": "station", "kind": "HUB", "area": "周南市", "region": "yamaguchi-35215", "lat": 34.07174, "lon": 131.70415, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["lm-q11420194", "st-008501"] },
+    { "id": "lm-q11420194", "name": "回天記念館", "genre": "museum", "kind": "LM", "area": "周南市", "region": "yamaguchi-35215", "lat": 33.99333, "lon": 131.71739, "level": 1, "value": 1, "adj": ["pt-s0c33d309e1"], "codes": {"wikidata": "Q11420194"}, "src": "src-wikidata" },
+    { "id": "pt-sf6520c337b", "name": "徳山下松港", "genre": "port", "kind": "GW", "lat": 34.00395, "lon": 131.77999, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "山口/徳山下松"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "周南市", "region": "yamaguchi-35215", "adj": ["pt-s0c33d309e1", "st-008557"] },
+    { "id": "pt-s0c33d309e1", "name": "馬島港", "genre": "port", "kind": "GW", "lat": 33.9916, "lon": 131.72181, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "山口/馬島"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "周南市", "region": "yamaguchi-35215", "adj": ["lm-q11420194", "pt-sf6520c337b"] },
+    { "id": "st-008499", "name": "戸田駅", "genre": "station", "kind": "HUB", "area": "周南市", "region": "yamaguchi-35215", "lat": 34.07174, "lon": 131.70415, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["st-008501"] },
     { "id": "st-008501", "name": "福川駅", "genre": "station", "kind": "HUB", "area": "周南市", "region": "yamaguchi-35215", "lat": 34.07194, "lon": 131.73718, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["st-008499", "st-008504"] },
     { "id": "st-008504", "name": "新南陽駅", "genre": "station", "kind": "HUB", "area": "周南市", "region": "yamaguchi-35215", "lat": 34.06977, "lon": 131.76827, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["st-008501", "st-008529"] },
     { "id": "st-008519", "name": "高水駅", "genre": "station", "kind": "HUB", "area": "周南市", "region": "yamaguchi-35215", "lat": 34.05473, "lon": 131.97156, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 岩徳線"], "adj": ["st-008492", "st-008539"] },
     { "id": "st-008529", "name": "徳山駅", "genre": "station", "kind": "HUB", "area": "周南市", "region": "yamaguchi-35215", "lat": 34.05133, "lon": 131.80217, "level": 2, "value": 2, "lines": ["西日本旅客鉄道 山陽新幹線", "西日本旅客鉄道 山陽線"], "adj": ["st-008430", "st-008476", "st-008504", "st-008557"] },
     { "id": "st-008539", "name": "勝間駅", "genre": "station", "kind": "HUB", "area": "周南市", "region": "yamaguchi-35215", "lat": 34.04188, "lon": 131.95413, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 岩徳線"], "adj": ["st-008519", "st-008556"] },
     { "id": "st-008556", "name": "大河内駅", "genre": "station", "kind": "HUB", "area": "周南市", "region": "yamaguchi-35215", "lat": 34.03095, "lon": 131.93395, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 岩徳線"], "adj": ["st-008539", "st-008560"] },
-    { "id": "st-008557", "name": "櫛ヶ浜駅", "genre": "station", "kind": "HUB", "area": "周南市", "region": "yamaguchi-35215", "lat": 34.03168, "lon": 131.82843, "level": 2, "value": 2, "lines": ["西日本旅客鉄道 山陽線", "西日本旅客鉄道 岩徳線"], "adj": ["lm-q7813780", "st-008529", "st-008547", "st-008574"] },
+    { "id": "st-008557", "name": "櫛ヶ浜駅", "genre": "station", "kind": "HUB", "area": "周南市", "region": "yamaguchi-35215", "lat": 34.03168, "lon": 131.82843, "level": 2, "value": 2, "lines": ["西日本旅客鉄道 山陽線", "西日本旅客鉄道 岩徳線"], "adj": ["lm-q7813780", "pt-sf6520c337b", "st-008529", "st-008547", "st-008574"] },
 
     { "id": "lm-q382711", "name": "山陽小野田市立山口東京理科大学", "genre": "university", "kind": "EDU", "area": "山陽小野田市", "region": "yamaguchi-35216", "lat": 33.9569, "lon": 131.188, "level": 1, "value": 1, "adj": ["st-008616"], "codes": {"wikidata": "Q382711"}, "src": "src-wikidata" },
     { "id": "st-008482", "name": "湯ノ峠駅", "genre": "station", "kind": "HUB", "area": "山陽小野田市", "region": "yamaguchi-35216", "lat": 34.08466, "lon": 131.17226, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 美祢線"], "adj": ["st-008465", "st-008524"] },
@@ -257,7 +262,7 @@
 
     { "id": "lm-q7106619", "name": "大島商船高等専門学校", "genre": "university", "kind": "EDU", "area": "周防大島町", "region": "yamaguchi-35305", "lat": 33.9375, "lon": 132.19056, "level": 1, "value": 1, "adj": ["isl-q11483589", "st-008615"], "codes": {"wikidata": "Q7106619"}, "src": "src-wikidata" },
 
-    { "id": "st-008401", "name": "和木駅", "genre": "station", "kind": "HUB", "area": "和木町", "region": "yamaguchi-35321", "lat": 34.20424, "lon": 132.22758, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["isl-q11657359", "st-008381", "st-008419"] },
+    { "id": "st-008401", "name": "和木駅", "genre": "station", "kind": "HUB", "area": "和木町", "region": "yamaguchi-35321", "lat": 34.20424, "lon": 132.22758, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陽線"], "adj": ["isl-q11657359", "pt-sb9fdec098b", "st-008381", "st-008419"] },
 
     { "id": "isl-q6100326", "name": "祝島", "genre": "nature", "kind": "GW", "area": "上関町", "region": "yamaguchi-35341", "lat": 33.78111, "lon": 131.9725, "level": 1, "value": 1, "adj": ["lm-q22119041"], "codes": {"wikidata": "Q6100326"}, "src": "src-wikidata" },
     { "id": "isl-q11390868", "name": "八島", "genre": "nature", "kind": "GW", "area": "上関町", "region": "yamaguchi-35341", "lat": 33.72333, "lon": 132.14097, "level": 1, "value": 1, "adj": ["isl-q11483589"], "codes": {"wikidata": "Q11390868"}, "src": "src-wikidata" },

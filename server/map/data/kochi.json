@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "kochi",
   "name": "高知県",
-  "version": 20,
+  "version": 21,
   "updatedAt": "2026-10-19",
   "note": "高知県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {

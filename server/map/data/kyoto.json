@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "kyoto",
   "name": "京都府",
-  "version": 20,
+  "version": 21,
   "updatedAt": "2026-10-19",
   "note": "京都府の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -330,7 +330,8 @@
     { "id": "st-005114", "name": "石原駅", "genre": "station", "kind": "HUB", "area": "福知山市", "region": "kyoto-26201", "lat": 35.30059, "lon": 135.17921, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-005102", "st-005124"] },
     { "id": "st-005124", "name": "福知山駅", "genre": "station", "kind": "HUB", "area": "福知山市", "region": "kyoto-26201", "lat": 35.29689, "lon": 135.11753, "level": 2, "value": 2, "lines": ["WILLER　TRAINS 宮福線", "西日本旅客鉄道 山陰線", "西日本旅客鉄道 福知山線"], "adj": ["lm-q2969288", "st-005028", "st-005097", "st-005114", "st-005252"] },
 
-    { "id": "st-004507", "name": "丹後神崎駅", "genre": "station", "kind": "HUB", "area": "舞鶴市", "region": "kyoto-26202", "lat": 35.50611, "lon": 135.29366, "level": 1, "value": 1, "lines": ["WILLER　TRAINS 宮津線"], "adj": ["st-004469", "st-004606"] },
+    { "id": "pt-q11613721", "name": "舞鶴港", "genre": "port", "kind": "GW", "lat": 35.5, "lon": 135.35, "level": 3, "value": 3, "codes": {"unlocode": "JPMAI", "wikidata": "Q11613721", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "京都/舞鶴"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "舞鶴市", "region": "kyoto-26202", "adj": ["st-004507"] },
+    { "id": "st-004507", "name": "丹後神崎駅", "genre": "station", "kind": "HUB", "area": "舞鶴市", "region": "kyoto-26202", "lat": 35.50611, "lon": 135.29366, "level": 1, "value": 1, "lines": ["WILLER　TRAINS 宮津線"], "adj": ["pt-q11613721", "st-004469", "st-004606"] },
     { "id": "st-004565", "name": "松尾寺駅", "genre": "station", "kind": "HUB", "area": "舞鶴市", "region": "kyoto-26202", "lat": 35.4859, "lon": 135.44925, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 小浜線"], "adj": ["st-004578", "st-004621"] },
     { "id": "st-004606", "name": "東雲駅", "genre": "station", "kind": "HUB", "area": "舞鶴市", "region": "kyoto-26202", "lat": 35.4743, "lon": 135.28513, "level": 1, "value": 1, "lines": ["WILLER　TRAINS 宮津線"], "adj": ["st-004507", "st-004689"] },
     { "id": "st-004621", "name": "東舞鶴駅", "genre": "station", "kind": "HUB", "area": "舞鶴市", "region": "kyoto-26202", "lat": 35.46855, "lon": 135.39479, "level": 2, "value": 2, "lines": ["西日本旅客鉄道 小浜線", "西日本旅客鉄道 舞鶴線"], "adj": ["st-004565", "st-004705"] },

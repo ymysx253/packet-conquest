@@ -80,7 +80,7 @@ assert.deepStrictEqual(to('c'), ['air:a', 'sea:b']);
 assert.deepStrictEqual(to('st'), []);
 assert.deepStrictEqual(to('ng'), []);
 assert.strictEqual(byNode.get('a')[0].name, 'B', '行き先の名前と座標を添える');
-assert.deepStrictEqual(byNode.get('a')[0].metrics, { year: 2024, passengers: 1500, flights: 10 }, '規模はいちばん新しい年の合計(往復の記録を足す)');
+assert.deepStrictEqual(byNode.get('a')[0].metrics, { year: 2024, passengers: 1500, flights: 10, basis: 'actual' }, '規模はいちばん新しい年の合計(往復の記録を足す)');
 assert.deepStrictEqual(byNode.get('b')[0].metrics, byNode.get('a')[0].metrics, '規模は両端で同じ');
 assert.ok(!JSON.stringify([...byNode.values()]).includes('テスト航空'), '運航者の名前は要約に入れない(画面に出さない)');
 // 設定 directed を true にしたときだけ片道を区別する
@@ -101,6 +101,9 @@ assert.throws(bad((d, r) => { r.mode = 'cable'; r.id = routeId({ src: r.src, mod
 assert.throws(bad((d, r) => { r.metrics = { passengers: 1 }; }), /metrics は/);
 assert.throws(bad((d, r) => { r.metrics = { year: 2024, seats: 1 }; }), /決まった名前でない/);
 assert.throws(bad((d, r) => { r.metrics = { year: 2024, passengers: -1 }; }), /0 以上/);
+assert.throws(bad((d, r) => { r.metrics = { year: 2024, basis: 'guess' }; }), /basis/);
+assert.doesNotThrow(bad((d, r) => { r.metrics = { year: 2016, basis: 'schedule', flights: 364 }; r.serviceTypes = ['ferry', 'ro-ro']; }), '時刻表からの見込みと船の種類');
+assert.throws(bad((d, r) => { r.serviceTypes = ['bus']; }), /serviceTypes/);
 assert.throws(bad((d, r) => { r.carriers = [{ name: '名前だけ' }]; }), /carriers/);
 assert.doesNotThrow(bad((d, r) => { r.carriers = [{ scheme: 'iata-airline', code: 'ZZ', name: 'x', sponsorId: 'sp-1' }]; r.id = routeId({ src: r.src, mode: r.mode, from: r.from, to: r.to, carrier: 'ZZ' }); }), 'スポンサーになった運航者は sponsorId で結ぶ');
 assert.throws(bad((d, r) => { r.status = 'open'; }), /status/);

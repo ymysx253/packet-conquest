@@ -137,8 +137,9 @@
 | `carriers` | | 運航者 `[{ scheme: "iata-airline" \| "imo" \| "<出典 id>", code, name, sponsorId? }]`。**画面には出さない**(2026-10-19 決定)。運航者がスポンサーになったときだけ、`sponsorId`(`sponsors` コンテナーの id)で結び、スポンサーのしくみ(DESIGN.md 3.8)で出す。記録には残す(照合と監査に使う) |
 | `status` | ○ | `active`(運航中)/ `seasonal`(季節運航)/ `suspended`(運休)/ `planned`(予定)/ `ended`(廃止) |
 | `periods` | | 運航の期間 `[{ from: "2026-04-01", to: "2026-10-31", perWeek: 14, days: "1234567" }]`(`days` は月曜 1 〜日曜 7) |
-| `metrics` | | 規模の実績 `{ year, passengers?, flights?, cargoTons? }`。どれも **1 年間(暦年)** の値で、`passengers` は旅客数(人)、`flights` は運航回数(便。往復なら往と復の合計)、`cargoTons` は貨物(トン)。**航路の価値は規模で変える**(2026-10-19 決定。式は未決、DESIGN.md 第 6 章 #17)。項目名は決まったものだけ |
-| `distanceKm` | | 端点の大円距離(取り込み時に計算) |
+| `metrics` | | 規模 `{ year, basis?, passengers?, flights?, cargoTons? }`。`basis` は `actual`(統計の実績。既定)か `schedule`(時刻表からの見込み。週の便数 × 52 など)。どれも **1 年間(暦年)** の値で、`passengers` は旅客数(人)、`flights` は運航回数(便。往復なら往と復の合計)、`cargoTons` は貨物(トン)。**航路の価値は規模で変える**(2026-10-19 決定。式は未決、DESIGN.md 第 6 章 #17)。項目名は決まったものだけ |
+| `distanceKm` | | 端点の距離(出典にあればその値、無ければ大円距離) |
+| `serviceTypes` | | 便・船の種類 `passenger`(旅客)/ `ferry`(フェリー)/ `passenger-cargo`(貨客)/ `ro-ro`(RORO)/ `cargo`(貨物)/ `other`。海路の出典が持っていれば入れる |
 | `src` | ○ | 出典 id(ファイルの `source` と同じ。混ぜたファイルを作らない) |
 | `sourceRecordId` | | 出典側の記録の id(差分の照合に使う) |
 | `retrievedAt` | ○ | 取得日 |
@@ -257,7 +258,7 @@ port,unlocode,JPOSM,元町港,Motomachi Port,元町港,34.75114,139.35147,JP,dom
 
 ---
 
-## 11. 実装の状況(2026-10-19)
+## 11. 実装の状況(2026-10-18)
 
 この形式は、読み込みとテストで機械的に守らせている。形式に合わないデータがあると、サーバーは起動しない。テストも落ちる。
 
@@ -278,15 +279,28 @@ port,unlocode,JPOSM,元町港,Motomachi Port,元町港,34.75114,139.35147,JP,dom
 - `tools/migrate-nodes-v1.js`: 旧形式から `pc.nodes/1` へ移す(実施済み。何度実行しても同じ結果)
 - `tools/fetch-codes.js`: 空港・港に IATA・ICAO・UN/LOCODE を Wikidata から付ける。値が割れているものは書かずに一覧に出す
 - `tools/import-stations.js`、`import-landmarks.js`、`import-islands.js`: 取り込みの時点で `codes`・`src`・`gateway` を書く
+- `tools/import-gateways.js`: 航路の端点になる空港・港を拠点にする(id は `ap-` / `pt-`)。既にある港には出典のコード(`codes.ext`)を付ける
+- `tools/import-routes.js`: 航路の記録を出典ごとに書き直す(`server/map/data/routes/<出典 id>.json`)。照合できなかった端点は `docs/routes/README.md` に出す
+- `tools/route-sources.js`(出典の読み取りと、統計表の空港名 → IATA / ICAO の表)、`tools/xlsx.js`(依存なしの xlsx 読み取り)
+
+**取り込みの順番**(前の道具は自分の拠点を入れ直すので、この順に流す):
+
+```
+import-stations → import-landmarks → import-islands → import-gateways → fetch-codes → import-links → import-routes → db-setup --force
+```
 
 **今のデータ**
 
 | 項目 | 件数 |
 |---|---|
-| 空港・港(すべて `gateway` あり) | 115 |
-| IATA コードのある空港 | 78 |
-| ICAO コードのある空港 | 83 |
-| UN/LOCODE のある港・空港 | 5 |
-| 航路の記録 | 0(海路・空路の取り込みは、ダウンロードの許可を待っている) |
+| 空港・港(すべて `gateway` あり) | 348 |
+| IATA コードのある空港 | 82 |
+| ICAO コードのある空港 | 88 |
+| UN/LOCODE のある港・空港 | 30 |
+| 空路の記録(2025 年の実績、向きごと) | 470(空港の組 237) |
+| 海路の記録(2016 年の定期便、向きごと) | 418(港の組 229) |
+| 航路を持つ空港・港 | 308 |
+
+照合できなかった端点は `docs/routes/README.md`。自衛隊・米軍と共用の飛行場 6 か所(小松・美保・岩国・百里・丘珠・名古屋)は拠点にしていないので、その航路は入っていない(DESIGN.md 第 6 章 #18)。
 
 UN/LOCODE は Wikidata にほとんど入っていない。世界展開の前に、国連欧州経済委員会(UNECE)が公開する UN/LOCODE の一覧から港に付け直す。

@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "kumamoto",
   "name": "熊本県",
-  "version": 20,
+  "version": 21,
   "updatedAt": "2026-10-19",
   "note": "熊本県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -98,6 +98,7 @@
     { "id": "lm-q11615318", "name": "花岡山", "genre": "nature", "kind": "LM", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.79647, "lon": 130.68555, "level": 1, "value": 1, "adj": ["st-009785"], "codes": {"wikidata": "Q11615318"}, "src": "src-wikidata" },
     { "id": "lm-q6443426", "name": "熊本県立総合体育館", "genre": "stadium", "kind": "LM", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.81429, "lon": 130.70172, "level": 1, "value": 1, "adj": ["st-009742"], "codes": {"wikidata": "Q6443426"}, "src": "src-wikidata" },
     { "id": "lm-q17213009", "name": "島田美術館", "genre": "museum", "kind": "LM", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.80975, "lon": 130.68606, "level": 1, "value": 1, "adj": ["lm-q11647034", "st-009748"], "codes": {"wikidata": "Q17213009"}, "src": "src-wikidata" },
+    { "id": "pt-q11568205", "name": "熊本港", "genre": "port", "kind": "GW", "lat": 32.76347, "lon": 130.59019, "level": 3, "value": 3, "codes": {"wikidata": "Q11568205", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "熊本/熊本"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "熊本市西区", "region": "kumamoto-43103", "adj": ["st-009849"] },
     { "id": "st-009719", "name": "崇城大学前駅", "genre": "station", "kind": "HUB", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.83047, "lon": 130.69499, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["lm-q24866261", "st-009690", "st-009740"] },
     { "id": "st-009724", "name": "池田駅", "genre": "station", "kind": "HUB", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.82718, "lon": 130.70598, "level": 1, "value": 1, "lines": ["熊本電気鉄道 菊池線"], "adj": ["st-009725", "st-009726"] },
     { "id": "st-009725", "name": "韓々坂駅", "genre": "station", "kind": "HUB", "area": "熊本市西区", "region": "kumamoto-43103", "lat": 32.82385, "lon": 130.7017, "level": 1, "value": 1, "lines": ["熊本電気鉄道 菊池線"], "adj": ["st-009724", "st-009740"] },
@@ -156,7 +157,7 @@
     { "id": "st-009928", "name": "矢岳駅", "genre": "station", "kind": "HUB", "area": "人吉市", "region": "kumamoto-43203", "lat": 32.10477, "lon": 130.76995, "level": 1, "value": 1, "lines": ["九州旅客鉄道 肥薩線"], "adj": ["st-009916", "st-009925", "st-009932", "st-009944"] },
 
     { "id": "st-009619", "name": "荒尾駅", "genre": "station", "kind": "HUB", "area": "荒尾市", "region": "kumamoto-43204", "lat": 32.99574, "lon": 130.43488, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["st-009609", "st-009632"] },
-    { "id": "st-009632", "name": "南荒尾駅", "genre": "station", "kind": "HUB", "area": "荒尾市", "region": "kumamoto-43204", "lat": 32.96681, "lon": 130.43311, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["st-009619", "st-009645"] },
+    { "id": "st-009632", "name": "南荒尾駅", "genre": "station", "kind": "HUB", "area": "荒尾市", "region": "kumamoto-43204", "lat": 32.96681, "lon": 130.43311, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["pt-q11653259", "st-009619", "st-009645"] },
 
     { "id": "st-009918", "name": "新水俣駅", "genre": "station", "kind": "HUB", "area": "水俣市", "region": "kumamoto-43205", "lat": 32.21094, "lon": 130.4293, "level": 2, "value": 2, "lines": ["九州旅客鉄道 九州新幹線", "肥薩おれんじ鉄道 肥薩おれんじ鉄道線"], "adj": ["st-009869", "st-009910", "st-009921", "st-009929"] },
     { "id": "st-009921", "name": "水俣駅", "genre": "station", "kind": "HUB", "area": "水俣市", "region": "kumamoto-43205", "lat": 32.20427, "lon": 130.39521, "level": 1, "value": 1, "lines": ["肥薩おれんじ鉄道 肥薩おれんじ鉄道線"], "adj": ["st-009918", "st-009924"] },
@@ -173,12 +174,14 @@
     { "id": "lm-q94317", "name": "菊池神社", "genre": "shrine_temple", "kind": "LM", "area": "菊池市", "region": "kumamoto-43210", "lat": 32.98778, "lon": 130.81611, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q94317"}, "src": "src-wikidata" },
 
     { "id": "lm-q166976", "name": "宇土城", "genre": "heritage", "kind": "LM", "area": "宇土市", "region": "kumamoto-43211", "lat": 32.67944, "lon": 130.64639, "level": 1, "value": 1, "adj": ["st-009852"], "codes": {"wikidata": "Q166976"}, "src": "src-wikidata" },
-    { "id": "st-009849", "name": "住吉駅", "genre": "station", "kind": "HUB", "area": "宇土市", "region": "kumamoto-43211", "lat": 32.70231, "lon": 130.59709, "level": 1, "value": 1, "lines": ["九州旅客鉄道 三角線"], "adj": ["st-009852", "st-009853"] },
+    { "id": "st-009849", "name": "住吉駅", "genre": "station", "kind": "HUB", "area": "宇土市", "region": "kumamoto-43211", "lat": 32.70231, "lon": 130.59709, "level": 1, "value": 1, "lines": ["九州旅客鉄道 三角線"], "adj": ["pt-q11568205", "st-009852", "st-009853"] },
     { "id": "st-009850", "name": "宇土駅", "genre": "station", "kind": "HUB", "area": "宇土市", "region": "kumamoto-43211", "lat": 32.69383, "lon": 130.66899, "level": 2, "value": 2, "lines": ["九州旅客鉄道 三角線", "九州旅客鉄道 鹿児島線"], "adj": ["lm-q55532800", "st-009848", "st-009852", "st-009858"] },
     { "id": "st-009852", "name": "緑川駅", "genre": "station", "kind": "HUB", "area": "宇土市", "region": "kumamoto-43211", "lat": 32.69402, "lon": 130.63095, "level": 1, "value": 1, "lines": ["九州旅客鉄道 三角線"], "adj": ["lm-q166976", "st-009849", "st-009850"] },
     { "id": "st-009853", "name": "肥後長浜駅", "genre": "station", "kind": "HUB", "area": "宇土市", "region": "kumamoto-43211", "lat": 32.69106, "lon": 130.5611, "level": 1, "value": 1, "lines": ["九州旅客鉄道 三角線"], "adj": ["st-009849", "st-009855"] },
     { "id": "st-009855", "name": "網田駅", "genre": "station", "kind": "HUB", "area": "宇土市", "region": "kumamoto-43211", "lat": 32.66735, "lon": 130.54658, "level": 1, "value": 1, "lines": ["九州旅客鉄道 三角線"], "adj": ["st-009853", "st-009857"] },
     { "id": "st-009857", "name": "赤瀬駅", "genre": "station", "kind": "HUB", "area": "宇土市", "region": "kumamoto-43211", "lat": 32.65295, "lon": 130.51004, "level": 1, "value": 1, "lines": ["九州旅客鉄道 三角線"], "adj": ["st-009855", "st-009859"] },
+
+    { "id": "pt-sa65d8dda43", "name": "大道港", "genre": "port", "kind": "GW", "lat": 32.38396, "lon": 130.34575, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "熊本/大道"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "上天草市", "region": "kumamoto-43212", "adj": ["pt-s0665edf10f", "pt-s6e1181a72d"] },
 
     { "id": "st-009858", "name": "松橋駅", "genre": "station", "kind": "HUB", "area": "宇城市", "region": "kumamoto-43213", "lat": 32.65148, "lon": 130.67011, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["st-009850", "st-009863"] },
     { "id": "st-009859", "name": "石打ダム駅", "genre": "station", "kind": "HUB", "area": "宇城市", "region": "kumamoto-43213", "lat": 32.64225, "lon": 130.50663, "level": 1, "value": 1, "lines": ["九州旅客鉄道 三角線"], "adj": ["st-009857", "st-009861"] },
@@ -198,9 +201,15 @@
     { "id": "st-009652", "name": "市ノ川駅", "genre": "station", "kind": "HUB", "area": "阿蘇市", "region": "kumamoto-43214", "lat": 32.92791, "lon": 131.00725, "level": 1, "value": 1, "lines": ["九州旅客鉄道 豊肥線"], "adj": ["st-009639", "st-009661"] },
     { "id": "st-009661", "name": "赤水駅", "genre": "station", "kind": "HUB", "area": "阿蘇市", "region": "kumamoto-43214", "lat": 32.91284, "lon": 130.99284, "level": 1, "value": 1, "lines": ["九州旅客鉄道 豊肥線"], "adj": ["lm-q11657619", "st-009652", "st-009672", "st-009676"] },
 
-    { "id": "lm-q11443445", "name": "天草キリシタン館", "genre": "museum", "kind": "LM", "area": "天草市", "region": "kumamoto-43215", "lat": 32.4599, "lon": 130.184, "level": 2, "value": 2, "adj": ["lm-q11489072"], "codes": {"wikidata": "Q11443445"}, "src": "src-wikidata" },
-    { "id": "lm-q11489072", "name": "御所浦白亜紀資料館", "genre": "museum", "kind": "LM", "area": "天草市", "region": "kumamoto-43215", "lat": 32.33756, "lon": 130.33794, "level": 1, "value": 1, "adj": ["lm-q11443445", "st-009892"], "codes": {"wikidata": "Q11489072"}, "src": "src-wikidata" },
+    { "id": "lm-q11443445", "name": "天草キリシタン館", "genre": "museum", "kind": "LM", "area": "天草市", "region": "kumamoto-43215", "lat": 32.4599, "lon": 130.184, "level": 2, "value": 2, "adj": ["ap-q1073798", "pt-s10813e15df"], "codes": {"wikidata": "Q11443445"}, "src": "src-wikidata" },
+    { "id": "lm-q11489072", "name": "御所浦白亜紀資料館", "genre": "museum", "kind": "LM", "area": "天草市", "region": "kumamoto-43215", "lat": 32.33756, "lon": 130.33794, "level": 1, "value": 1, "adj": ["pt-s6e1181a72d", "pt-seaa08beb69", "st-009892"], "codes": {"wikidata": "Q11489072"}, "src": "src-wikidata" },
     { "id": "lm-q109567644", "name": "崎津天主堂", "genre": "shrine_temple", "kind": "LM", "area": "天草市", "region": "kumamoto-43215", "lat": 32.31237, "lon": 130.0258, "level": 1, "value": 1, "hackable": false, "codes": {"wikidata": "Q109567644"}, "src": "src-wikidata" },
+    { "id": "ap-q1073798", "name": "天草飛行場", "genre": "airport", "kind": "GW", "lat": 32.48222, "lon": 130.15889, "level": 5, "value": 5, "codes": {"iata": "AXJ", "icao": "RJDA", "wikidata": "Q1073798"}, "src": "src-wikidata", "gateway": {"type": "airport", "scope": "domestic"}, "area": "天草市", "region": "kumamoto-43215", "adj": ["lm-q11443445", "pt-q11673500"] },
+    { "id": "pt-q11673500", "name": "鬼池港", "genre": "port", "kind": "GW", "lat": 32.54606, "lon": 130.18761, "level": 3, "value": 3, "codes": {"wikidata": "Q11673500", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "熊本/鬼池"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "天草市", "region": "kumamoto-43215", "adj": ["ap-q1073798", "pt-q11410742"] },
+    { "id": "pt-q30930692", "name": "牛深港", "genre": "port", "kind": "GW", "lat": 32.19228, "lon": 130.02767, "level": 3, "value": 3, "codes": {"wikidata": "Q30930692", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "熊本/牛深"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "天草市", "region": "kumamoto-43215", "adj": ["pt-s286ae36900"] },
+    { "id": "pt-s6e1181a72d", "name": "御所浦港", "genre": "port", "kind": "GW", "lat": 32.34285, "lon": 130.33575, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "熊本/御所浦"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "天草市", "region": "kumamoto-43215", "adj": ["lm-q11489072", "pt-sa65d8dda43"] },
+    { "id": "pt-s0665edf10f", "name": "棚底港", "genre": "port", "kind": "GW", "lat": 32.40156, "lon": 130.33786, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "熊本/棚底"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "天草市", "region": "kumamoto-43215", "adj": ["pt-sa65d8dda43"] },
+    { "id": "pt-s10813e15df", "name": "中田港", "genre": "port", "kind": "GW", "lat": 32.33355, "lon": 130.15947, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "熊本/中田"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "天草市", "region": "kumamoto-43215", "adj": ["lm-q11443445", "pt-seaa08beb69"] },
 
     { "id": "st-009668", "name": "御代志駅", "genre": "station", "kind": "HUB", "area": "合志市", "region": "kumamoto-43216", "lat": 32.88348, "lon": 130.75002, "level": 1, "value": 1, "lines": ["熊本電気鉄道 菊池線"], "adj": ["st-009669"] },
     { "id": "st-009669", "name": "再春医療センター前駅", "genre": "station", "kind": "HUB", "area": "合志市", "region": "kumamoto-43216", "lat": 32.88053, "lon": 130.74826, "level": 1, "value": 1, "lines": ["熊本電気鉄道 菊池線"], "adj": ["st-009668", "st-009671"] },
@@ -212,7 +221,8 @@
 
     { "id": "st-009658", "name": "木葉駅", "genre": "station", "kind": "HUB", "area": "玉東町", "region": "kumamoto-43364", "lat": 32.91686, "lon": 130.62547, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["st-009660", "st-009664"] },
 
-    { "id": "st-009645", "name": "長洲駅", "genre": "station", "kind": "HUB", "area": "長洲町", "region": "kumamoto-43368", "lat": 32.93556, "lon": 130.45448, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["st-009632", "st-009657"] },
+    { "id": "pt-q11653259", "name": "長洲港", "genre": "port", "kind": "GW", "lat": 32.92558, "lon": 130.43997, "level": 3, "value": 3, "codes": {"wikidata": "Q11653259", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "熊本/長洲"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "長洲町", "region": "kumamoto-43368", "adj": ["st-009632", "st-009645"] },
+    { "id": "st-009645", "name": "長洲駅", "genre": "station", "kind": "HUB", "area": "長洲町", "region": "kumamoto-43368", "lat": 32.93556, "lon": 130.45448, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["pt-q11653259", "st-009632", "st-009657"] },
 
     { "id": "lm-q11259227", "name": "江田船山古墳", "genre": "monument", "kind": "LM", "area": "和水町", "region": "kumamoto-43369", "lat": 32.97129, "lon": 130.60001, "level": 1, "value": 1, "adj": ["st-009638"], "codes": {"wikidata": "Q11259227"}, "src": "src-wikidata" },
     { "id": "lm-q7821526", "name": "トンカラリン", "genre": "heritage", "kind": "LM", "area": "和水町", "region": "kumamoto-43369", "lat": 32.96825, "lon": 130.60344, "level": 1, "value": 1, "adj": ["st-009638"], "codes": {"wikidata": "Q7821526"}, "src": "src-wikidata" },
