@@ -2,7 +2,7 @@
 // 永続ワールドの検証(タイル方式): シード、範囲の読み込み、参加で拠点が生まれる、隣だけ攻撃できる、初心者保護、
 // 回数制の奪取(回数 = つながりの本数)、強化とその減衰、地域の支配(3/4)、集計値、復帰コード、再起動後の復元、配信に答えが含まれないこと
 const assert = require('assert');
-const { World, PROTECT_MS, DECAY_MS, NEWBIE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, weekKeyOf } = require('../server/world');
+const { World, DEFAULT_START_ID, PROTECT_MS, DECAY_MS, NEWBIE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, weekKeyOf } = require('../server/world');
 const { MemoryStore } = require('../server/store');
 const { EventLog, dayOf } = require('../server/events');
 const { tilesAround, tileOf, distanceKm } = require('../server/map/geo');
@@ -26,7 +26,7 @@ async function solve(world, p, nodeId) {
   assert.strictEqual(await store.countNodes(), NODES.length, 'シードで全拠点が保存される');
   assert.strictEqual(w.nodes.size, 0, '起動時にはまとめて読まない');
 
-  // 参加: 自分の拠点が東京駅の近くに生まれ、近い 2 拠点とつながる。周辺のタイルだけ読まれる
+  // 参加: 自分の拠点が既定の開始地点(丸の内)の近くに生まれ、近い 2 拠点とつながる。周辺のタイルだけ読まれる
   const wsA = fakeWs(); wsA.ip = '203.0.113.5'; // 接続元(出来事の記録ではハッシュになる)
   const a = await w.join(wsA, 'あき', null);
   const home = w.nodes.get(a.homeNodeId);
@@ -214,7 +214,7 @@ async function solve(world, p, nodeId) {
   assert.ok(rk.weekPoints.some((x) => x.id === a.id && x.weekPoints > 0), '週間ランキングに今週の獲得点');
   assert.strictEqual(weekKeyOf(Date.UTC(2026, 9, 14, 3)), '2026-10-12', '週の鍵は日本時間の月曜(2026-10-14 水 → 10-12)');
   assert.strictEqual(weekKeyOf(Date.UTC(2026, 9, 11, 16)), '2026-10-12', '日曜 16 時 UTC は日本時間の月曜 1 時 → 10-12');
-  const tokyoSt0 = NODES.find((n) => n.name === '東京駅');
+  const tokyoSt0 = NODES.find((n) => n.id === DEFAULT_START_ID); // 既定の開始地点(丸の内)
   // チーム: 作成 / 参加 / 脱退、所属中は作れない、回数はチームで合算、チームランキング
   const team1 = await w.createTeam(a, 'あかチーム', 3);
   assert.ok(a.team === team1.id && team1.maxMembers === 3);
@@ -269,32 +269,40 @@ async function solve(world, p, nodeId) {
   assert.strictEqual(a.team, null);
 
   // 開始地点(第 3.1 節): 名前で検索でき、選んだ駅のまわりに拠点が生まれ、その駅とつながる。指定が無ければ東京駅
-  const tokyoSt = NODES.find((n) => n.name === '東京駅');
-  assert.strictEqual(a.startNodeId, tokyoSt.id, '指定が無ければ東京駅');
-  assert.ok(distanceKm(home, tokyoSt) <= 1.05 && w.adj.get(home.id).has(tokyoSt.id), '東京駅のまわりに生まれ、東京駅とつながる');
+  const tokyoSt = NODES.find((n) => n.id === DEFAULT_START_ID); // 既定の開始地点: 東京駅の隣の町・字「丸の内」(2026-10-19)
+  assert.ok(tokyoSt.name === '丸の内' && tokyoSt.genre === 'town' && tokyoSt.level === 1, '既定の開始地点は丸の内');
+  assert.strictEqual(a.startNodeId, tokyoSt.id, '指定が無ければ丸の内');
+  assert.ok(distanceKm(home, tokyoSt) <= 1.05 && w.adj.get(home.id).has(tokyoSt.id), '丸の内のまわりに生まれ、丸の内とつながる');
   const found = await w.search('japan', '高尾');
   assert.ok(found.some((r) => r.name === '高尾駅') && found.every((r) => typeof r.starters === 'number'), '名前の一部で検索できる');
   assert.strictEqual((await w.search('japan', '浅草寺')).length, 0, 'ハック不可の寺社は開始地点にできない');
-  const takao = NODES.find((n) => n.name === '高尾駅' && n.region.startsWith('tokyo-'));
+  const takao = NODES.find((n) => n.name === '高尾山口駅' && n.region.startsWith('tokyo-')); // Lv1 の駅(開始地点にできる)
   const t1 = await w.join(fakeWs(), 'たかお', null, takao.id);
   const tHome = w.nodes.get(t1.homeNodeId);
   assert.ok(distanceKm(tHome, takao) <= 1.05, '選んだ駅のまわりに生まれる');
   assert.ok(w.adj.get(tHome.id).has(takao.id), '選んだ駅とつながる');
-  assert.strictEqual((await w.search('japan', '高尾駅')).find((r) => r.id === takao.id).starters, 1, 'ここから始めた人数が付く(全国に同名の駅があるので id で引く)');
+  assert.strictEqual((await w.search('japan', '高尾山口駅')).find((r) => r.id === takao.id).starters, 1, 'ここから始めた人数が付く(全国に同名の駅があるので id で引く)');
   const temple = NODES.find((n) => n.hackable === false);
   await assert.rejects(() => w.join(fakeWs(), 'だめ', null, temple.id), /選べません/);
   await assert.rejects(() => w.join(fakeWs(), 'だめ', null, 'st-nope'), /選べません/);
+  // 開始地点にできるのは Lv1 の駅と町・字だけ(2026-10-19)。大きな駅(東京駅 Lv4)からは始められず、検索では近くの候補が付く
+  const bigSt = NODES.find((n) => n.name === '東京駅');
+  assert.ok(bigSt.level > 1);
+  await assert.rejects(() => w.join(fakeWs(), 'おおきい', null, bigSt.id), /始められません/, 'Lv1 でない駅からは始められない');
+  const sr = (await w.search('japan', '東京駅')).find((r) => r.id === bigSt.id);
+  assert.ok(sr && sr.startable === false && sr.near.length >= 1 && sr.near.every((x) => x.level === 1 && ['station', 'town'].includes(x.genre)), '検索では選べない理由と近くの候補');
+  assert.ok((await w.search('japan', '丸の内')).some((r) => r.id === DEFAULT_START_ID && r.startable), '丸の内は選べる');
   const before2 = w.players.size;
   await assert.rejects(() => w.join(fakeWs(), 'だめ', null, tHome.id), /選べません/, 'プレイヤーの拠点からは始められない');
   assert.strictEqual(w.players.size, before2, '失敗した参加はプレイヤーを残さない');
   // 自然に広がる: 同じ駅から大勢が始めても、間隔を守って半径が広がる(1 km まで)
-  const okutama = NODES.find((n) => n.name === '奥多摩駅');
+  const okutama = NODES.find((n) => n.name === '白丸駅' && n.region.startsWith('tokyo-')); // 奥多摩の Lv1 の駅
   const homes = [];
   for (let i = 0; i < 25; i++) homes.push(w.nodes.get((await w.join(fakeWs(), `人${i}`, null, okutama.id)).homeNodeId));
   assert.ok(homes.every((h) => distanceKm(h, okutama) <= 1.05), '全員 1 km 以内');
   for (let i = 0; i < homes.length; i++) for (let j = i + 1; j < homes.length; j++) assert.ok(distanceKm(homes[i], homes[j]) >= 0.15 - 1e-6, '間隔 150 m を守る');
   assert.ok(Math.max(...homes.map((h) => distanceKm(h, okutama))) > 0.3, '混むと半径が広がる');
-  assert.strictEqual((await w.search('japan', '奥多摩')).find((r) => r.name === '奥多摩駅').starters, 25);
+  assert.strictEqual((await w.search('japan', '白丸駅')).find((r) => r.id === okutama.id).starters, 25);
   // 復帰コードの再発行: 新しいコードで戻れ、古いコードでは戻れない
   const oldToken = a.token;
   const newToken = await w.rekey(a);
@@ -339,6 +347,7 @@ async function solve(world, p, nodeId) {
   const beyond = [...w.adj.get(mTarget.id)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false);
   assert.ok(await w.canAttack(mover.id, beyond.id), '線がつながっている所有拠点からは広げられる');
   await assert.rejects(() => w.move(mover, tokyoSt.id), /違う開始地点/);
+  await assert.rejects(() => w.move(mover, bigSt.id), /始められません/, '引っ越し先も Lv1 の駅か町・字だけ');
   await w.setView(mover, tilesAround(takao.t0, 1), 0); // 画面で行き先の駅を選んだ(そのタイルは送り済み)
   const newHome = await w.move(mover, takao.id);
   // 画面は引っ越しで拠点を全部消して取り直す。選んだ駅と新しい拠点がもう一度届くこと(2026-10-19 の不具合)

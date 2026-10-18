@@ -23,7 +23,7 @@
     bounds: new Map(), // 区・市の境界(地域 id → { polys })。public/data/bounds/<都道府県>.json を見えている分だけ読む
     boundsLoaded: new Set(), coarse: null, // 読み込み済みの都道府県 / 縮小時の粗い全国版(japan.json)
   };
-  const TOKYO = { lat: 35.68124, lon: 139.76712 }; // 参加前に地図から選ぶときの初期位置(東京駅)
+  const TOKYO = { lat: 35.68124, lon: 139.76712 }; // 参加前に地図から選ぶときの初期位置(東京駅のあたり。既定の開始地点「丸の内」の隣)
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch { return null; } },
     set(k, v) { try { localStorage.setItem(k, v); } catch { /* 保存できなくても遊べる */ } },
@@ -157,9 +157,9 @@
   function ensureConnected() { if (!S.ws || S.ws.readyState > 1) connect(); }
   $('startInput').addEventListener('input', () => {
     const q = $('startInput').value.trim();
-    S.start = null; $('startPicked').textContent = '開始地点: 東京駅(未選択)';
+    S.start = null; $('startPicked').textContent = '開始地点: 丸の内(未選択)';
     clearTimeout(S.searchTimer);
-    if (!q) { $('startResults').hidden = true; $('startPicked').textContent = '開始地点: 東京駅'; return; }
+    if (!q) { $('startResults').hidden = true; $('startPicked').textContent = '開始地点: 丸の内'; return; }
     ensureConnected();
     S.searchTimer = setTimeout(() => { if (S.ws && S.ws.readyState === 1) send({ t: 'search', q }); else S.pendingSearch = q; }, 250);
   });
@@ -167,8 +167,23 @@
     if (m.q !== $('startInput').value.trim()) return;
     const ul = $('startResults');
     ul.replaceChildren(...m.results.map((r) => {
-      const li = document.createElement('li'); li.tabIndex = 0;
+      const li = document.createElement('li');
       const name = document.createElement('span'); name.textContent = `${r.name}(${r.area || ''} Lv${r.level})`;
+      if (r.startable === false) {
+        // 開始地点にできない(Lv1 でない駅・名所)。理由と、近くの開始地点にできるものを出す(2026-10-19)
+        li.className = 'disabled';
+        const sm = document.createElement('small');
+        sm.textContent = `Lv${r.level} の${r.genre === 'station' ? '駅' : '場所'}からは始められません。` + (r.near && r.near.length ? '近くなら:' : 'Lv1 の駅か町・字を選んでください');
+        li.append(name, sm);
+        for (const x of r.near || []) {
+          const b = document.createElement('button'); b.type = 'button'; b.className = 'near';
+          b.textContent = `${x.name}(${x.genre === 'town' ? '町・字' : '駅'})`;
+          b.onclick = (e) => { e.stopPropagation(); setStart(x); ul.hidden = true; };
+          li.append(b);
+        }
+        return li;
+      }
+      li.tabIndex = 0;
       const sm = document.createElement('small'); sm.textContent = r.starters ? `ここから ${r.starters} 人` : 'まだ誰もいません';
       li.append(name, sm);
       const choose = () => { setStart(r); ul.hidden = true; };
@@ -178,6 +193,11 @@
     if (!m.results.length) { const li = document.createElement('li'); li.textContent = '見つかりません(駅名は「駅」なしでも探せます)'; ul.replaceChildren(li); }
     ul.hidden = false;
   }
+  // 開始地点にできるもの(2026-10-19 決定): Lv1 の駅と町・字だけ。サーバーの startable と同じ
+  const startableNode = (n) => !!n && !n.isPlayerNode && n.hackable !== false && (n.genre === 'station' || n.genre === 'town') && n.level === 1;
+  const startRefusal = (n) => (n.isPlayerNode || n.hackable === false)
+    ? 'そこは開始地点にできません。Lv1 の駅か町・字を選んでください'
+    : `${n.name}(Lv${n.level})からは始められません。Lv1 の駅か町・字を選んでください(町・字は地図を拡大すると出ます)`;
   function setStart(r) {
     S.start = { id: r.id, name: r.name };
     $('startInput').value = r.name;
@@ -195,7 +215,7 @@
   $('moveBtn').onclick = () => {
     if (!S.joined) return;
     if (S.movedAt && now() - S.movedAt < 24 * 3600 * 1000) { toast(`引っ越しは 1 日に 1 回までです(あと ${Math.ceil((24 * 3600 * 1000 - (now() - S.movedAt)) / 3600000)} 時間)`); return; }
-    S.moving = true; $('pickBarText').textContent = '引っ越し先の駅か名所をタップしてください(所有拠点は残りますが、線がつながるまで広げられません)'; $('pickBar').hidden = false;
+    S.moving = true; $('pickBarText').textContent = '引っ越し先の Lv1 の駅か町・字をタップしてください(町・字は拡大すると出ます。所有拠点は残りますが、線がつながるまで広げられません)'; $('pickBar').hidden = false;
   };
 
   // ---------- 参加 ----------
@@ -410,14 +430,14 @@
     const n = nodeAt(pt);
     if (S.moving) {
       if (!n) return;
-      if (n.isPlayerNode || n.hackable === false) { toast('そこは開始地点にできません。駅か名所を選んでください'); return; }
+      if (!startableNode(n)) { toast(startRefusal(n)); return; }
       if (window.confirm(`${n.name} のそばへ引っ越しますか?\n今の自分の拠点は消え、所有している拠点は新しい拠点と線がつながるまで広げられません。1 日 1 回までです。`)) send({ t: 'move', startNodeId: n.id });
       return;
     }
     if (S.picking) {
-      // 開始地点を地図から選ぶ: ハック可の固定拠点だけ
+      // 開始地点を地図から選ぶ: Lv1 の駅と町・字だけ(2026-10-19。判定はサーバーでもする)
       if (!n) return;
-      if (n.isPlayerNode || n.hackable === false) { toast('そこは開始地点にできません。駅か名所を選んでください'); return; }
+      if (!startableNode(n)) { toast(startRefusal(n)); return; }
       setStart({ id: n.id, name: n.name, area: n.area }); endPick();
       return;
     }

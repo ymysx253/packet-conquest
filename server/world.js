@@ -42,7 +42,10 @@ const TICK_CAP_MS = 5 * 60 * 1000;          // 稼働時計: 1 回の刻みで�
 const HOME_LINKS = 2;                   // プレイヤーの拠点がつながる近隣拠点の数(開始地点 + 近い 1 つ)
 const SPAWN_RINGS_KM = [0.3, 0.6, 1.0];  // 開始地点のまわりに置く半径。空きがなければ広げ、1 km でも無ければ満員(第 3.1 節)
 const SPAWN_TRIES = 80;                 // 半径ごとの試行回数
-const DEFAULT_START_ID = (TOKYO_MASTER.nodes.find((n) => n.name === '東京駅') || TOKYO_MASTER.nodes[0]).id; // 指定が無いときの開始地点
+// 開始地点にできるもの(2026-10-19 決定): Lv1 の駅と町・字だけ。大きな駅・空港・名所からは始めない(誰でも同じ条件で始める)
+const startable = (n) => !!n && !n.isPlayerNode && n.hackable !== false && (n.status || 'public') === 'public' && (n.genre === 'station' || n.genre === 'town') && n.level === 1;
+// 指定が無いときの開始地点: 東京駅の隣の町・字「丸の内」(東京駅は Lv4 なので開始地点にできない)
+const DEFAULT_START_ID = (TOKYO_MASTER.nodes.find((n) => n.name === '丸の内' && n.genre === 'town') || TOKYO_MASTER.nodes.find((n) => startable(n)) || TOKYO_MASTER.nodes[0]).id;
 const MIN_GAP_KM = 0.15;                // 拠点どうしの最小距離
 const LOG_MAX = 60;
 const MAX_VIEW_TILES = 80;              // 1 人が一度に見られるタイル数
@@ -390,20 +393,39 @@ class World {
     return ws.guest;
   }
   // 開始地点の検索(名前の一部。ハック可の公開の固定拠点だけ)。各拠点から始めた人数を添える
+  // 検索結果のうち開始地点にできないもの(Lv1 でない駅・名所など)には、近くの開始地点にできるもの(最大 3 件)を添える
   async search(country, q) {
     const text = String(q || '').trim().slice(0, 20);
     if (!text) return [];
     const rows = await this.store.searchNodes(country, text, 10);
     const starters = await this.store.countStarters(rows.map((r) => r.id));
-    return rows.map((r) => ({ id: r.id, name: r.name, area: r.area || null, level: r.level, genre: r.genre || null, lat: r.lat, lon: r.lon, starters: starters[r.id] || 0 }));
+    const out = [];
+    for (const r of rows) {
+      const ok = startable(r);
+      out.push({ id: r.id, name: r.name, area: r.area || null, level: r.level, genre: r.genre || null, lat: r.lat, lon: r.lon, starters: starters[r.id] || 0,
+        startable: ok, ...(ok ? {} : { near: await this.nearStartable(r, 3) }) });
+    }
+    return out;
   }
-  // 開始地点の拠点を確かめて返す(読み込まれていなければ 1 件読む)
-  async startNode(p) {
+  // 近くの開始地点にできる拠点(周囲のタイルを読み、近い順)
+  async nearStartable(p, limit) {
+    await this.ensureTiles(tilesAround(tileOf(p.lat, p.lon, 0), 1));
+    return [...this.nodes.values()].filter((n) => startable(n) && n.id !== p.id && Math.abs(n.lat - p.lat) < 0.03 && Math.abs(n.lon - p.lon) < 0.04)
+      .map((n) => ({ n, d: distanceKm(n, p) })).sort((a, b) => a.d - b.d).slice(0, limit)
+      .map(({ n }) => ({ id: n.id, name: n.name, area: n.area || null, level: n.level, genre: n.genre }));
+  }
+  // 開始地点の拠点を確かめて返す(読み込まれていなければ 1 件読む)。
+  // strict(参加と引っ越しで選ぶとき)は「Lv1 の駅か町・字」だけ(2026-10-19 決定)。前から使っている開始地点(再生成・表示)はそのまま認める
+  async startNode(p, strict = false) {
     const id = p.startNodeId || DEFAULT_START_ID;
     let n = this.nodes.get(id);
     if (!n) { const d = await this.store.loadNode(id); if (d) n = this.adopt(d); }
     if (!n || n.isPlayerNode || n.hackable === false || n.status !== 'public' || n.country !== (p.country || this.country)) {
-      throw new Error('その開始地点は選べません。駅か名所を選んでください');
+      throw new Error('その開始地点は選べません。Lv1 の駅か町・字を選んでください');
+    }
+    if (strict && !startable(n)) {
+      const near = await this.nearStartable(n, 3);
+      throw new Error(`${n.name}(Lv${n.level})からは始められません。開始地点にできるのは Lv1 の駅か町・字です${near.length ? `(近くなら ${near.map((x) => x.name).join('、')})` : ''}`);
     }
     return n;
   }
@@ -435,7 +457,7 @@ class World {
     });
     p.ws = ws; p.online = true; p.connectedAt = now();
     let home;
-    try { home = await this.spawnHome(p); } catch (e) { this.players.delete(p.id); throw e; }
+    try { await this.startNode(p, true); home = await this.spawnHome(p); } catch (e) { this.players.delete(p.id); throw e; }
     this.addLog(`${p.name} が東京に参加しました`);
     await this.persistPlayer(p);
     this.events.add('join', { playerId: p.id, nodeId: home.id, regionId: home.region, ip: ws.ip, detail: { startNodeId: p.startNodeId, name: p.name } });
@@ -469,7 +491,7 @@ class World {
     const old = p.homeNodeId ? (this.nodes.get(p.homeNodeId) || await this.store.loadNode(p.homeNodeId)) : null;
     const prevStart = p.startNodeId;
     p.startNodeId = startNodeId;
-    try { await this.startNode(p); } catch (e) { p.startNodeId = prevStart; throw e; }
+    try { await this.startNode(p, true); } catch (e) { p.startNodeId = prevStart; throw e; } // 引っ越し先も Lv1 の駅か町・字だけ
     if (old) {
       await this.store.deleteNode(old.id);
       this.dropNode(old);
@@ -937,4 +959,4 @@ class World {
   }
 }
 
-module.exports = { World, PROTECT_MS, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, TEAM_MAX_MEMBERS, TEAM_ICONS, weekKeyOf };
+module.exports = { startable, DEFAULT_START_ID, World, PROTECT_MS, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, TEAM_MAX_MEMBERS, TEAM_ICONS, weekKeyOf };
