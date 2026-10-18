@@ -1,7 +1,7 @@
 {
   "region": "okinawa",
   "name": "沖縄県",
-  "version": 18,
+  "version": 20,
   "updatedAt": "2026-10-19",
   "note": "沖縄県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -45,7 +45,7 @@
   ],
   "nodes": [
     { "id": "lm-q907052", "name": "首里城", "genre": "museum", "kind": "LM", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21703, "lon": 127.71948, "level": 5, "value": 5, "wikidata": "Q907052", "adj": ["st-010128", "st-010129", "st-010130", "st-010131", "st-010132"] },
-    { "id": "lm-q1197455", "name": "那覇空港", "genre": "airport", "kind": "GW", "area": "那覇市", "region": "okinawa-47201", "lat": 26.19583, "lon": 127.64583, "level": 8, "value": 8, "wikidata": "Q1197455", "adj": ["isl-q4519202", "st-010133", "st-010136", "st-010137", "st-010138", "st-010139", "st-010140", "st-010141", "st-010142"] },
+    { "id": "lm-q1197455", "name": "那覇空港", "genre": "airport", "kind": "GW", "area": "那覇市", "region": "okinawa-47201", "lat": 26.19583, "lon": 127.64583, "level": 10, "value": 10, "wikidata": "Q1197455", "adj": ["isl-q4519202", "st-010133", "st-010136", "st-010137", "st-010138", "st-010139", "st-010140", "st-010141", "st-010142"] },
     { "id": "lm-q4617100", "name": "沖縄県立博物館・美術館", "genre": "museum", "kind": "LM", "area": "那覇市", "region": "okinawa-47201", "lat": 26.22659, "lon": 127.6941, "level": 2, "value": 2, "wikidata": "Q4617100", "adj": ["st-010127", "st-010131"] },
     { "id": "lm-q1053962", "name": "園比屋武御嶽", "genre": "monument", "kind": "LM", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21807, "lon": 127.71735, "level": 2, "value": 2, "wikidata": "Q1053962", "adj": ["st-010130", "st-010132"] },
     { "id": "lm-q3551843", "name": "沖縄県立芸術大学", "genre": "university", "kind": "EDU", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21935, "lon": 127.71894, "level": 2, "value": 2, "wikidata": "Q3551843", "adj": ["st-010130", "st-010132"] },
@@ -103,8 +103,8 @@
     { "id": "isl-q4518764", "name": "浜比嘉島", "genre": "nature", "kind": "GW", "area": "うるま市", "region": "okinawa-47213", "lat": 26.31944, "lon": 127.95806, "level": 1, "value": 1, "wikidata": "Q4518764", "adj": ["isl-q4518364"] },
     { "id": "isl-q4518364", "name": "津堅島", "genre": "nature", "kind": "GW", "area": "うるま市", "region": "okinawa-47213", "lat": 26.25056, "lon": 127.94194, "level": 1, "value": 1, "wikidata": "Q4518364", "adj": ["isl-q4518764", "lm-q7082016"] },
 
-    { "id": "lm-q116725", "name": "宮古空港", "genre": "airport", "kind": "GW", "area": "宮古島市", "region": "okinawa-47214", "lat": 24.78278, "lon": 125.295, "level": 3, "value": 3, "wikidata": "Q116725", "adj": ["lm-q5753922", "lm-q654922"] },
-    { "id": "lm-q654922", "name": "下地島空港", "genre": "airport", "kind": "GW", "area": "宮古島市", "region": "okinawa-47214", "lat": 24.82667, "lon": 125.14472, "level": 3, "value": 3, "wikidata": "Q654922", "adj": ["isl-q702436", "isl-q709813", "lm-q116725"] },
+    { "id": "lm-q116725", "name": "宮古空港", "genre": "airport", "kind": "GW", "area": "宮古島市", "region": "okinawa-47214", "lat": 24.78278, "lon": 125.295, "level": 5, "value": 5, "wikidata": "Q116725", "adj": ["lm-q5753922", "lm-q654922"] },
+    { "id": "lm-q654922", "name": "下地島空港", "genre": "airport", "kind": "GW", "area": "宮古島市", "region": "okinawa-47214", "lat": 24.82667, "lon": 125.14472, "level": 5, "value": 5, "wikidata": "Q654922", "adj": ["isl-q702436", "isl-q709813", "lm-q116725"] },
     { "id": "lm-q5753922", "name": "東平安名岬", "genre": "nature", "kind": "LM", "area": "宮古島市", "region": "okinawa-47214", "lat": 24.71889, "lon": 125.46889, "level": 1, "value": 1, "wikidata": "Q5753922", "adj": ["lm-q116725"] },
     { "id": "lm-q10947551", "name": "うえのドイツ文化村", "genre": "park", "kind": "LM", "area": "宮古島市", "region": "okinawa-47214", "lat": 24.71934, "lon": 125.32265, "level": 1, "value": 1, "hackable": false, "wikidata": "Q10947551" },
     { "id": "isl-q702436", "name": "池間島", "genre": "nature", "kind": "GW", "area": "宮古島市", "region": "okinawa-47214", "lat": 24.93222, "lon": 125.24194, "level": 3, "value": 3, "wikidata": "Q702436", "adj": ["lm-q3235075", "lm-q654922"] },
@@ -124,51 +124,52 @@
     { "id": "lm-q16896199", "name": "恩納岳", "genre": "nature", "kind": "LM", "area": "恩納村", "region": "okinawa-47311", "lat": 26.47944, "lon": 127.87472, "level": 1, "value": 1, "wikidata": "Q16896199", "adj": ["lm-q11552684", "lm-q7082022"] },
     { "id": "lm-q25112734", "name": "琉球村", "genre": "park", "kind": "LM", "area": "恩納村", "region": "okinawa-47311", "lat": 26.42947, "lon": 127.77526, "level": 1, "value": 1, "hackable": false, "wikidata": "Q25112734" },
 
-    { "id": "lm-q4521310", "name": "城山", "genre": "nature", "kind": "LM", "area": "伊江村", "region": "okinawa-47315", "lat": 26.71972, "lon": 127.80722, "level": 2, "value": 2, "wikidata": "Q4521310", "adj": ["isl-q1676132", "lm-q1445750"] },
+    { "id": "lm-q1368593", "name": "伊江島空港", "genre": "airport", "kind": "GW", "area": "伊江村", "region": "okinawa-47315", "lat": 26.7225, "lon": 127.78694, "level": 5, "value": 5, "wikidata": "Q1368593", "adj": ["lm-q4521310"] },
+    { "id": "lm-q4521310", "name": "城山", "genre": "nature", "kind": "LM", "area": "伊江村", "region": "okinawa-47315", "lat": 26.71972, "lon": 127.80722, "level": 2, "value": 2, "wikidata": "Q4521310", "adj": ["isl-q1676132", "lm-q1368593", "lm-q1445750"] },
 
     { "id": "lm-q65248639", "name": "伊礼原遺跡", "genre": "heritage", "kind": "LM", "area": "北谷町", "region": "okinawa-47326", "lat": 26.32417, "lon": 127.75861, "level": 1, "value": 1, "wikidata": "Q65248639", "adj": ["lm-q11552605", "lm-q48989310"] },
     { "id": "lm-q11609171", "name": "美浜タウンリゾート・アメリカンビレッジ", "genre": "park", "kind": "LM", "area": "北谷町", "region": "okinawa-47326", "lat": 26.31618, "lon": 127.75667, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11609171" },
 
     { "id": "lm-q1195900", "name": "琉球大学", "genre": "university", "kind": "EDU", "area": "西原町", "region": "okinawa-47329", "lat": 26.25083, "lon": 127.765, "level": 2, "value": 2, "wikidata": "Q1195900", "adj": ["lm-q3087076", "st-010124", "st-010125"] },
 
-    { "id": "isl-q48752138", "name": "渡嘉敷港", "genre": "port", "kind": "GW", "area": "渡嘉敷村", "region": "okinawa-47353", "lat": 26.19892, "lon": 127.36847, "level": 1, "value": 1, "wikidata": "Q48752138", "adj": ["isl-q4519202", "isl-q48752236"] },
+    { "id": "isl-q48752138", "name": "渡嘉敷港", "genre": "port", "kind": "GW", "area": "渡嘉敷村", "region": "okinawa-47353", "lat": 26.19892, "lon": 127.36847, "level": 3, "value": 3, "wikidata": "Q48752138", "adj": ["isl-q4519202", "isl-q48752236"] },
     { "id": "isl-q4519202", "name": "前島", "genre": "nature", "kind": "GW", "area": "渡嘉敷村", "region": "okinawa-47353", "lat": 26.21111, "lon": 127.44639, "level": 2, "value": 2, "wikidata": "Q4519202", "adj": ["isl-q48752138", "lm-q1197455"] },
 
-    { "id": "isl-q3273378", "name": "慶良間空港", "genre": "airport", "kind": "GW", "area": "座間味村", "region": "okinawa-47354", "lat": 26.16833, "lon": 127.29333, "level": 2, "value": 2, "wikidata": "Q3273378", "adj": ["isl-q11369263", "isl-q48752236"] },
-    { "id": "isl-q48752236", "name": "座間味港", "genre": "port", "kind": "GW", "area": "座間味村", "region": "okinawa-47354", "lat": 26.22544, "lon": 127.3015, "level": 1, "value": 1, "wikidata": "Q48752236", "adj": ["isl-q1803811", "isl-q3273378", "isl-q48752138"] },
+    { "id": "isl-q3273378", "name": "慶良間空港", "genre": "airport", "kind": "GW", "area": "座間味村", "region": "okinawa-47354", "lat": 26.16833, "lon": 127.29333, "level": 5, "value": 5, "wikidata": "Q3273378", "adj": ["isl-q11369263", "isl-q48752236"] },
+    { "id": "isl-q48752236", "name": "座間味港", "genre": "port", "kind": "GW", "area": "座間味村", "region": "okinawa-47354", "lat": 26.22544, "lon": 127.3015, "level": 3, "value": 3, "wikidata": "Q48752236", "adj": ["isl-q1803811", "isl-q3273378", "isl-q48752138"] },
     { "id": "isl-q11369263", "name": "久場島", "genre": "nature", "kind": "GW", "area": "座間味村", "region": "okinawa-47354", "lat": 26.17194, "lon": 127.23778, "level": 1, "value": 1, "wikidata": "Q11369263", "adj": ["isl-q3273378"] },
 
-    { "id": "isl-q252768", "name": "粟国空港", "genre": "airport", "kind": "GW", "area": "粟国村", "region": "okinawa-47355", "lat": 26.59278, "lon": 127.24028, "level": 3, "value": 3, "wikidata": "Q252768", "adj": ["isl-q48751955"] },
-    { "id": "isl-q48751955", "name": "粟国港", "genre": "port", "kind": "GW", "area": "粟国村", "region": "okinawa-47355", "lat": 26.57839, "lon": 127.23425, "level": 1, "value": 1, "wikidata": "Q48751955", "adj": ["isl-q1803811", "isl-q252768"] },
+    { "id": "isl-q252768", "name": "粟国空港", "genre": "airport", "kind": "GW", "area": "粟国村", "region": "okinawa-47355", "lat": 26.59278, "lon": 127.24028, "level": 5, "value": 5, "wikidata": "Q252768", "adj": ["isl-q48751955"] },
+    { "id": "isl-q48751955", "name": "粟国港", "genre": "port", "kind": "GW", "area": "粟国村", "region": "okinawa-47355", "lat": 26.57839, "lon": 127.23425, "level": 3, "value": 3, "wikidata": "Q48751955", "adj": ["isl-q1803811", "isl-q252768"] },
 
     { "id": "isl-q1803811", "name": "渡名喜島", "genre": "nature", "kind": "GW", "area": "渡名喜村", "region": "okinawa-47356", "lat": 26.36528, "lon": 127.14417, "level": 1, "value": 1, "wikidata": "Q1803811", "adj": ["isl-q48751955", "isl-q48752236", "lm-q3235075"] },
 
-    { "id": "isl-q1057877", "name": "南大東空港", "genre": "airport", "kind": "GW", "area": "南大東村", "region": "okinawa-47357", "lat": 25.84667, "lon": 131.26361, "level": 2, "value": 2, "wikidata": "Q1057877", "adj": ["isl-q30929293", "isl-q30929327"] },
-    { "id": "isl-q30929327", "name": "南大東港", "genre": "port", "kind": "GW", "area": "南大東村", "region": "okinawa-47357", "lat": 25.84231, "lon": 131.21731, "level": 1, "value": 1, "wikidata": "Q30929327", "adj": ["isl-q1057877"] },
+    { "id": "isl-q1057877", "name": "南大東空港", "genre": "airport", "kind": "GW", "area": "南大東村", "region": "okinawa-47357", "lat": 25.84667, "lon": 131.26361, "level": 5, "value": 5, "wikidata": "Q1057877", "adj": ["isl-q30929293", "isl-q30929327"] },
+    { "id": "isl-q30929327", "name": "南大東港", "genre": "port", "kind": "GW", "area": "南大東村", "region": "okinawa-47357", "lat": 25.84231, "lon": 131.21731, "level": 3, "value": 3, "wikidata": "Q30929327", "adj": ["isl-q1057877"] },
 
-    { "id": "isl-q1930831", "name": "北大東空港", "genre": "airport", "kind": "GW", "area": "北大東村", "region": "okinawa-47358", "lat": 25.94472, "lon": 131.32694, "level": 2, "value": 2, "wikidata": "Q1930831", "adj": ["isl-q30929293"] },
-    { "id": "isl-q30929293", "name": "北大東港", "genre": "port", "kind": "GW", "area": "北大東村", "region": "okinawa-47358", "lat": 25.95225, "lon": 131.28486, "level": 1, "value": 1, "wikidata": "Q30929293", "adj": ["isl-q1057877", "isl-q1930831", "lm-q1927346"] },
+    { "id": "isl-q1930831", "name": "北大東空港", "genre": "airport", "kind": "GW", "area": "北大東村", "region": "okinawa-47358", "lat": 25.94472, "lon": 131.32694, "level": 5, "value": 5, "wikidata": "Q1930831", "adj": ["isl-q30929293"] },
+    { "id": "isl-q30929293", "name": "北大東港", "genre": "port", "kind": "GW", "area": "北大東村", "region": "okinawa-47358", "lat": 25.95225, "lon": 131.28486, "level": 3, "value": 3, "wikidata": "Q30929293", "adj": ["isl-q1057877", "isl-q1930831", "lm-q1927346"] },
 
     { "id": "isl-q4518946", "name": "伊平屋島", "genre": "nature", "kind": "GW", "area": "伊平屋村", "region": "okinawa-47359", "lat": 27.0392, "lon": 127.969, "level": 2, "value": 2, "wikidata": "Q4518946", "adj": ["lm-q4519060"] },
 
     { "id": "lm-q4519060", "name": "具志川島", "genre": "heritage", "kind": "LM", "area": "伊是名村", "region": "okinawa-47360", "lat": 26.97528, "lon": 127.95056, "level": 1, "value": 1, "wikidata": "Q4519060", "adj": ["isl-q1676132", "isl-q4518946"] },
     { "id": "isl-q1676132", "name": "伊是名島", "genre": "nature", "kind": "GW", "area": "伊是名村", "region": "okinawa-47360", "lat": 26.93389, "lon": 127.93639, "level": 2, "value": 2, "wikidata": "Q1676132", "adj": ["lm-q4519060", "lm-q4521310"] },
 
-    { "id": "lm-q3235075", "name": "久米島空港", "genre": "airport", "kind": "GW", "area": "久米島町", "region": "okinawa-47361", "lat": 26.36361, "lon": 126.71389, "level": 3, "value": 3, "wikidata": "Q3235075", "adj": ["isl-q1803811", "isl-q702436"] },
+    { "id": "lm-q3235075", "name": "久米島空港", "genre": "airport", "kind": "GW", "area": "久米島町", "region": "okinawa-47361", "lat": 26.36361, "lon": 126.71389, "level": 5, "value": 5, "wikidata": "Q3235075", "adj": ["isl-q1803811", "isl-q702436"] },
     { "id": "isl-q250462", "name": "硫黄鳥島", "genre": "nature", "kind": "GW", "area": "久米島町", "region": "okinawa-47361", "lat": 27.87417, "lon": 128.22639, "level": 2, "value": 2, "wikidata": "Q250462", "adj": ["isl-q1141847"] },
 
-    { "id": "isl-q2233042", "name": "多良間空港", "genre": "airport", "kind": "GW", "area": "多良間村", "region": "okinawa-47375", "lat": 24.65389, "lon": 124.67528, "level": 2, "value": 2, "wikidata": "Q2233042", "adj": ["isl-q709813", "lm-q7498236"] },
+    { "id": "isl-q2233042", "name": "多良間空港", "genre": "airport", "kind": "GW", "area": "多良間村", "region": "okinawa-47375", "lat": 24.65389, "lon": 124.67528, "level": 5, "value": 5, "wikidata": "Q2233042", "adj": ["isl-q709813", "lm-q7498236"] },
     { "id": "isl-q709813", "name": "水納島", "genre": "nature", "kind": "GW", "area": "多良間村", "region": "okinawa-47375", "lat": 24.75472, "lon": 124.695, "level": 2, "value": 2, "wikidata": "Q709813", "adj": ["isl-q2233042", "lm-q654922"] },
 
     { "id": "lm-q700908", "name": "由布島", "genre": "zoo_aquarium", "kind": "LM", "area": "竹富町", "region": "okinawa-47381", "lat": 24.345, "lon": 123.935, "level": 3, "value": 3, "wikidata": "Q700908", "adj": ["isl-q20662194", "isl-q48751306", "lm-q11341090"] },
     { "id": "lm-q11341090", "name": "マリユドゥの滝", "genre": "nature", "kind": "LM", "area": "竹富町", "region": "okinawa-47381", "lat": 24.35719, "lon": 123.80319, "level": 1, "value": 1, "wikidata": "Q11341090", "adj": ["lm-q700908", "lm-q708517"] },
-    { "id": "isl-q713881", "name": "波照間空港", "genre": "airport", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.05833, "lon": 123.80389, "level": 3, "value": 3, "wikidata": "Q713881", "adj": ["isl-q11555576", "isl-q4419682"] },
-    { "id": "isl-q11555576", "name": "波照間港", "genre": "port", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.06778, "lon": 123.76667, "level": 1, "value": 1, "wikidata": "Q11555576", "adj": ["isl-q713881"] },
+    { "id": "isl-q713881", "name": "波照間空港", "genre": "airport", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.05833, "lon": 123.80389, "level": 5, "value": 5, "wikidata": "Q713881", "adj": ["isl-q11555576", "isl-q4419682"] },
+    { "id": "isl-q11555576", "name": "波照間港", "genre": "port", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.06778, "lon": 123.76667, "level": 3, "value": 3, "wikidata": "Q11555576", "adj": ["isl-q713881"] },
     { "id": "isl-q701089", "name": "黒島", "genre": "nature", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.23333, "lon": 124.01667, "level": 3, "value": 3, "wikidata": "Q701089", "adj": ["isl-q20662194"] },
-    { "id": "isl-q48751306", "name": "小浜港", "genre": "port", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.34494, "lon": 123.99169, "level": 1, "value": 1, "wikidata": "Q48751306", "adj": ["lm-q700908", "lm-q705909"] },
+    { "id": "isl-q48751306", "name": "小浜港", "genre": "port", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.34494, "lon": 123.99169, "level": 3, "value": 3, "wikidata": "Q48751306", "adj": ["lm-q700908", "lm-q705909"] },
     { "id": "isl-q20662194", "name": "上地島", "genre": "nature", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.23405, "lon": 123.94466, "level": 1, "value": 1, "wikidata": "Q20662194", "adj": ["isl-q4419682", "isl-q701089", "lm-q700908"] },
     { "id": "isl-q4419682", "name": "下地島", "genre": "nature", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.21028, "lon": 123.93222, "level": 1, "value": 1, "wikidata": "Q4419682", "adj": ["isl-q20662194", "isl-q713881"] },
 
-    { "id": "lm-q708517", "name": "与那国空港", "genre": "airport", "kind": "GW", "area": "与那国町", "region": "okinawa-47382", "lat": 24.4675, "lon": 122.97972, "level": 3, "value": 3, "wikidata": "Q708517", "adj": ["lm-q11341090"] }
+    { "id": "lm-q708517", "name": "与那国空港", "genre": "airport", "kind": "GW", "area": "与那国町", "region": "okinawa-47382", "lat": 24.4675, "lon": 122.97972, "level": 5, "value": 5, "wikidata": "Q708517", "adj": ["lm-q11341090"] }
   ]
 }

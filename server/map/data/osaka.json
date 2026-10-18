@@ -1,7 +1,7 @@
 {
   "region": "osaka",
   "name": "大阪府",
-  "version": 18,
+  "version": 20,
   "updatedAt": "2026-10-19",
   "note": "大阪府の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -477,7 +477,7 @@
     { "id": "st-006612", "name": "南茨木駅", "genre": "station", "kind": "HUB", "area": "茨木市", "region": "osaka-27211", "lat": 34.80311, "lon": 135.56489, "level": 2, "value": 2, "lines": ["大阪モノレール 大阪モノレール線", "阪急電鉄 京都線"], "adj": ["st-006562", "st-006596", "st-006662", "st-006695"] },
     { "id": "st-006662", "name": "沢良宜駅", "genre": "station", "kind": "HUB", "area": "茨木市", "region": "osaka-27211", "lat": 34.79444, "lon": 135.56609, "level": 1, "value": 1, "lines": ["大阪モノレール 大阪モノレール線"], "adj": ["st-006612", "st-006713"] },
 
-    { "id": "lm-q1366065", "name": "八尾空港", "genre": "airport", "kind": "GW", "area": "八尾市", "region": "osaka-27212", "lat": 34.59611, "lon": 135.60278, "level": 3, "value": 3, "wikidata": "Q1366065", "adj": ["st-007606", "st-007618", "st-007636"] },
+    { "id": "lm-q1366065", "name": "八尾空港", "genre": "airport", "kind": "GW", "area": "八尾市", "region": "osaka-27212", "lat": 34.59611, "lon": 135.60278, "level": 5, "value": 5, "wikidata": "Q1366065", "adj": ["st-007606", "st-007618", "st-007621", "st-007633", "st-007636"] },
     { "id": "lm-q11499468", "name": "教興寺", "genre": "shrine_temple", "kind": "LM", "area": "八尾市", "region": "osaka-27212", "lat": 34.61895, "lon": 135.63639, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11499468" },
     { "id": "lm-q25248064", "name": "常光寺", "genre": "shrine_temple", "kind": "LM", "area": "八尾市", "region": "osaka-27212", "lat": 34.6303, "lon": 135.5981, "level": 1, "value": 1, "hackable": false, "wikidata": "Q25248064" },
     { "id": "st-007491", "name": "久宝寺口駅", "genre": "station", "kind": "HUB", "area": "八尾市", "region": "osaka-27212", "lat": 34.63481, "lon": 135.59017, "level": 1, "value": 1, "lines": ["近畿日本鉄道 大阪線"], "adj": ["st-007468", "st-007510"] },
@@ -549,8 +549,8 @@
     { "id": "st-010183", "name": "箕面萱野駅", "genre": "station", "kind": "HUB", "area": "箕面市", "region": "osaka-27220", "lat": 34.83253, "lon": 135.489, "level": 1, "value": 1, "lines": ["北大阪急行電鉄 南北線"], "adj": ["st-010184"] },
     { "id": "st-010184", "name": "箕面船場阪大前駅", "genre": "station", "kind": "HUB", "area": "箕面市", "region": "osaka-27220", "lat": 34.82254, "lon": 135.48993, "level": 1, "value": 1, "lines": ["北大阪急行電鉄 南北線"], "adj": ["st-006598", "st-010183"] },
 
-    { "id": "st-007621", "name": "法善寺駅", "genre": "station", "kind": "HUB", "area": "柏原市", "region": "osaka-27221", "lat": 34.59475, "lon": 135.62635, "level": 1, "value": 1, "lines": ["近畿日本鉄道 大阪線"], "adj": ["st-007578", "st-007633"] },
-    { "id": "st-007633", "name": "堅下駅", "genre": "station", "kind": "HUB", "area": "柏原市", "region": "osaka-27221", "lat": 34.58782, "lon": 135.6274, "level": 1, "value": 1, "lines": ["近畿日本鉄道 大阪線"], "adj": ["st-007621", "st-007653"] },
+    { "id": "st-007621", "name": "法善寺駅", "genre": "station", "kind": "HUB", "area": "柏原市", "region": "osaka-27221", "lat": 34.59475, "lon": 135.62635, "level": 1, "value": 1, "lines": ["近畿日本鉄道 大阪線"], "adj": ["lm-q1366065", "st-007578", "st-007633"] },
+    { "id": "st-007633", "name": "堅下駅", "genre": "station", "kind": "HUB", "area": "柏原市", "region": "osaka-27221", "lat": 34.58782, "lon": 135.6274, "level": 1, "value": 1, "lines": ["近畿日本鉄道 大阪線"], "adj": ["lm-q1366065", "st-007621", "st-007653"] },
     { "id": "st-007636", "name": "柏原駅", "genre": "station", "kind": "HUB", "area": "柏原市", "region": "osaka-27221", "lat": 34.5872, "lon": 135.62288, "level": 2, "value": 2, "lines": ["西日本旅客鉄道 関西線", "近畿日本鉄道 道明寺線"], "adj": ["lm-q1366065", "st-007606", "st-007652", "st-007680"] },
     { "id": "st-007652", "name": "柏原南口駅", "genre": "station", "kind": "HUB", "area": "柏原市", "region": "osaka-27221", "lat": 34.58128, "lon": 135.62495, "level": 1, "value": 1, "lines": ["近畿日本鉄道 道明寺線"], "adj": ["st-007636", "st-007688"] },
     { "id": "st-007653", "name": "安堂駅", "genre": "station", "kind": "HUB", "area": "柏原市", "region": "osaka-27221", "lat": 34.5799, "lon": 135.62928, "level": 1, "value": 1, "lines": ["近畿日本鉄道 大阪線"], "adj": ["st-007633", "st-007692"] },
@@ -662,7 +662,7 @@
 
     { "id": "st-008008", "name": "熊取駅", "genre": "station", "kind": "HUB", "area": "熊取町", "region": "osaka-27361", "lat": 34.407, "lon": 135.3418, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 阪和線"], "adj": ["st-007989", "st-008072"] },
 
-    { "id": "lm-q193682", "name": "関西国際空港", "genre": "airport", "kind": "GW", "area": "田尻町", "region": "osaka-27362", "lat": 34.43056, "lon": 135.23028, "level": 8, "value": 8, "wikidata": "Q193682", "adj": ["st-007958"] },
+    { "id": "lm-q193682", "name": "関西国際空港", "genre": "airport", "kind": "GW", "area": "田尻町", "region": "osaka-27362", "lat": 34.43056, "lon": 135.23028, "level": 10, "value": 10, "wikidata": "Q193682", "adj": ["st-007958"] },
     { "id": "st-007958", "name": "関西空港駅", "genre": "station", "kind": "GW", "area": "田尻町", "region": "osaka-27362", "lat": 34.43597, "lon": 135.24349, "level": 3, "value": 3, "lines": ["南海電気鉄道 空港線", "西日本旅客鉄道 関西空港線"], "adj": ["lm-q193682", "st-007996"] },
     { "id": "st-008069", "name": "吉見ノ里駅", "genre": "station", "kind": "HUB", "area": "田尻町", "region": "osaka-27362", "lat": 34.39186, "lon": 135.2903, "level": 1, "value": 1, "lines": ["南海電気鉄道 南海本線"], "adj": ["st-008022", "st-008091"] },
 

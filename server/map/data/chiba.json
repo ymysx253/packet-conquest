@@ -1,7 +1,7 @@
 {
   "region": "chiba",
   "name": "千葉県",
-  "version": 20,
+  "version": 22,
   "updatedAt": "2026-10-19",
   "note": "千葉県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -235,7 +235,7 @@
     { "id": "st-004683", "name": "新茂原駅", "genre": "station", "kind": "HUB", "area": "茂原市", "region": "chiba-12210", "lat": 35.45041, "lon": 140.29998, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 外房線"], "adj": ["st-004575", "st-004751"] },
     { "id": "st-004751", "name": "茂原駅", "genre": "station", "kind": "HUB", "area": "茂原市", "region": "chiba-12210", "lat": 35.42766, "lon": 140.30259, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 外房線"], "adj": ["st-004683", "st-004803"] },
 
-    { "id": "lm-q36454", "name": "成田国際空港", "genre": "airport", "kind": "GW", "area": "成田市", "region": "chiba-12211", "lat": 35.7649, "lon": 140.38845, "level": 8, "value": 8, "wikidata": "Q36454", "adj": ["st-003173", "st-003189", "st-003203", "st-003237"] },
+    { "id": "lm-q36454", "name": "成田国際空港", "genre": "airport", "kind": "GW", "area": "成田市", "region": "chiba-12211", "lat": 35.7649, "lon": 140.38845, "level": 10, "value": 10, "wikidata": "Q36454", "adj": ["st-003173", "st-003189", "st-003203", "st-003237"] },
     { "id": "lm-q52733229", "name": "羅須地人鉄道協会まきば線", "genre": "museum", "kind": "LM", "area": "成田市", "region": "chiba-12211", "lat": 35.86744, "lon": 140.39511, "level": 1, "value": 1, "wikidata": "Q52733229", "adj": ["st-002932"] },
     { "id": "lm-q3083875", "name": "成田山新勝寺", "genre": "shrine_temple", "kind": "LM", "area": "成田市", "region": "chiba-12211", "lat": 35.78608, "lon": 140.31831, "level": 2, "value": 2, "hackable": false, "wikidata": "Q3083875" },
     { "id": "st-002954", "name": "滑河駅", "genre": "station", "kind": "HUB", "area": "成田市", "region": "chiba-12211", "lat": 35.87766, "lon": 140.34845, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 成田線"], "adj": ["st-002932", "st-003034"] },

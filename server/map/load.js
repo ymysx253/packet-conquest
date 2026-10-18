@@ -140,6 +140,12 @@ function validate(region, data) {
   }
   // adj のつながり先が別のファイル(隣の都県)にあることがあるので、ここでは形だけ見る。全体での存在は loadAll が確かめる
   for (const n of data.nodes) for (const m of n.adj || []) if (!/^[a-z0-9-]+$/.test(m)) fail(region, `${n.id}: adj の ${m} が不正`);
+  // 航路(空路・海路。2026-10-19): 空港・港だけが持つ。行き先は別のファイルにあってよい(全体での存在は loadAll が確かめる)
+  for (const n of data.nodes) {
+    if (n.routes === undefined) continue;
+    if (!Array.isArray(n.routes) || n.routes.some((r) => !r || typeof r.to !== 'string' || !/^[a-z0-9-]+$/.test(r.to) || !['air', 'sea'].includes(r.mode))) fail(region, `${n.id}: routes は { to, mode: air|sea } の配列`);
+    if (!['airport', 'port'].includes(n.genre)) fail(region, `${n.id}: 航路を持てるのは空港と港だけ`);
+  }
 }
 
 function readRegionFile(region) {
@@ -168,6 +174,8 @@ function loadRegion(region) {
     ...addrOf(n.id),
     adj: Array.isArray(n.adj) ? [...n.adj] : [],
     adjMaster: Array.isArray(n.adj) ? [...n.adj] : [], // マスターの原文(別のファイルの拠点への線を含む。loadAll が使う)
+    routesMaster: Array.isArray(n.routes) ? n.routes.map((r) => ({ to: r.to, mode: r.mode })) : [], // 航路の原文(loadAll が両向きにそろえる)
+    routes: [],
   }));
 
   // つながり(設計書 第 14 章): マスターの adj を両向きにそろえる。adj が無い地域(古いマスター)は近い 3 拠点で代用
@@ -208,6 +216,17 @@ function loadAll() {
   const ADJ = Object.fromEntries(NODES.map((n) => [n.id, new Set()]));
   for (const n of NODES) for (const m of n.adjMaster || n.adj || []) if (byId[m] && n.hackable && byId[m].hackable) { ADJ[n.id].add(m); ADJ[m].add(n.id); }
   for (const n of NODES) { n.adj = [...ADJ[n.id]].sort(); ADJ[n.id] = n.adj; n.hits = Math.max(1, n.adj.length); delete n.adjMaster; }
+  // 航路: 両向きにそろえ、行き先の名前と座標を添える(画面が遠くの行き先へ線を引くため)。突破回数(つながりの本数)には数えない
+  const ROUTES = new Map(NODES.map((n) => [n.id, new Map()]));
+  for (const n of NODES) for (const r of n.routesMaster || []) {
+    const o = byId[r.to];
+    if (!o || o.id === n.id || n.hackable === false || o.hackable === false) continue;
+    ROUTES.get(n.id).set(o.id, r.mode); ROUTES.get(o.id).set(n.id, r.mode);
+  }
+  for (const n of NODES) {
+    n.routes = [...ROUTES.get(n.id)].map(([to, mode]) => ({ to, mode, name: byId[to].name, lat: byId[to].lat, lon: byId[to].lon })).sort((a, b) => a.to.localeCompare(b.to));
+    delete n.routesMaster;
+  }
   const EDGES = [];
   for (const n of NODES) for (const m of n.adj) if (n.id < m) EDGES.push({ a: n.id, b: m });
   const KINDS = Object.assign({}, ...parts.map((p) => p.KINDS));
@@ -231,6 +250,7 @@ function nodeDocs(nodes, now = Date.now()) {
     level: m.level, value: m.value, hackable: m.hackable !== false, lines: m.lines || [], tags: m.tags || [],
     company: m.company || null, wikidata: m.wikidata || null,
     adj: m.adj || [], hits: m.hits || Math.max(1, (m.adj || []).length), // つながりと、突破に必要な正解の回数(第 14 章)
+    routes: m.routes || [], // 航路(空路・海路)。行き先 { to, mode, name, lat, lon }。占領した空港・港から行き先を攻撃できる
     subnet: m.subnet, base: m.base, span: m.span,
     status: 'public', isPlayerNode: false, registeredBy: null, sponsorId: null,
     owner: null, defense: 0, fortifiedAt: null, progress: {}, protectedUntil: 0, createdAt: now, updatedAt: now,

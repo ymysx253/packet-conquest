@@ -1,7 +1,7 @@
 {
   "region": "hyogo",
   "name": "兵庫県",
-  "version": 18,
+  "version": 20,
   "updatedAt": "2026-10-19",
   "note": "兵庫県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -157,7 +157,7 @@
     { "id": "st-006946", "name": "西鈴蘭台駅", "genre": "station", "kind": "HUB", "area": "神戸市北区", "region": "hyogo-28109", "lat": 34.72576, "lon": 135.13536, "level": 1, "value": 1, "lines": ["神戸電鉄 粟生線"], "adj": ["st-006915", "st-006943"] },
     { "id": "st-006957", "name": "鈴蘭台駅", "genre": "station", "kind": "HUB", "area": "神戸市北区", "region": "hyogo-28109", "lat": 34.72317, "lon": 135.14593, "level": 2, "value": 2, "lines": ["神戸電鉄 有馬線", "神戸電鉄 粟生線"], "adj": ["st-006875", "st-006943", "st-007127"] },
 
-    { "id": "lm-q741372", "name": "神戸空港", "genre": "airport", "kind": "GW", "area": "神戸市中央区", "region": "hyogo-28110", "lat": 34.63278, "lon": 135.22389, "level": 4, "value": 4, "wikidata": "Q741372", "adj": ["st-007343", "st-007381", "st-007403", "st-007482"] },
+    { "id": "lm-q741372", "name": "神戸空港", "genre": "airport", "kind": "GW", "area": "神戸市中央区", "region": "hyogo-28110", "lat": 34.63278, "lon": 135.22389, "level": 5, "value": 5, "wikidata": "Q741372", "adj": ["st-007340", "st-007343", "st-007381", "st-007403", "st-007482"] },
     { "id": "lm-q798766", "name": "神戸ポートタワー", "genre": "tower", "kind": "LM", "area": "神戸市中央区", "region": "hyogo-28110", "lat": 34.6825, "lon": 135.18667, "level": 3, "value": 3, "wikidata": "Q798766", "adj": ["st-007166", "st-007170", "st-007182"] },
     { "id": "lm-q3329607", "name": "兵庫県立美術館", "genre": "museum", "kind": "LM", "area": "神戸市中央区", "region": "hyogo-28110", "lat": 34.69919, "lon": 135.21801, "level": 2, "value": 2, "wikidata": "Q3329607", "adj": ["st-007046", "st-007058"] },
     { "id": "lm-q6922072", "name": "摩耶山", "genre": "nature", "kind": "LM", "area": "神戸市中央区", "region": "hyogo-28110", "lat": 34.71667, "lon": 135.2, "level": 2, "value": 2, "wikidata": "Q6922072", "adj": ["st-006971", "st-007054"] },
@@ -193,7 +193,7 @@
     { "id": "st-007276", "name": "中公園駅", "genre": "station", "kind": "HUB", "area": "神戸市中央区", "region": "hyogo-28110", "lat": 34.67281, "lon": 135.20769, "level": 1, "value": 1, "lines": ["神戸新交通 ポートアイランド線"], "adj": ["st-007203", "st-007271"] },
     { "id": "st-007288", "name": "中埠頭駅", "genre": "station", "kind": "HUB", "area": "神戸市中央区", "region": "hyogo-28110", "lat": 34.66901, "lon": 135.21734, "level": 1, "value": 1, "lines": ["神戸新交通 ポートアイランド線"], "adj": ["st-007271", "st-007343"] },
     { "id": "st-007289", "name": "みなとじま駅", "genre": "station", "kind": "HUB", "area": "神戸市中央区", "region": "hyogo-28110", "lat": 34.66937, "lon": 135.20981, "level": 1, "value": 1, "lines": ["神戸新交通 ポートアイランド線"], "adj": ["st-007340"] },
-    { "id": "st-007340", "name": "市民広場駅", "genre": "station", "kind": "HUB", "area": "神戸市中央区", "region": "hyogo-28110", "lat": 34.66521, "lon": 135.21226, "level": 1, "value": 1, "lines": ["神戸新交通 ポートアイランド線"], "adj": ["st-007289", "st-007343", "st-007381"] },
+    { "id": "st-007340", "name": "市民広場駅", "genre": "station", "kind": "HUB", "area": "神戸市中央区", "region": "hyogo-28110", "lat": 34.66521, "lon": 135.21226, "level": 1, "value": 1, "lines": ["神戸新交通 ポートアイランド線"], "adj": ["lm-q741372", "st-007289", "st-007343", "st-007381"] },
     { "id": "st-007343", "name": "南公園駅", "genre": "station", "kind": "HUB", "area": "神戸市中央区", "region": "hyogo-28110", "lat": 34.66454, "lon": 135.21676, "level": 1, "value": 1, "lines": ["神戸新交通 ポートアイランド線"], "adj": ["lm-q741372", "st-007288", "st-007340"] },
     { "id": "st-007381", "name": "医療センター駅", "genre": "station", "kind": "HUB", "area": "神戸市中央区", "region": "hyogo-28110", "lat": 34.6583, "lon": 135.21655, "level": 1, "value": 1, "lines": ["神戸新交通 ポートアイランド線"], "adj": ["lm-q741372", "st-007340", "st-007403"] },
     { "id": "st-007403", "name": "計算科学センター駅", "genre": "station", "kind": "HUB", "area": "神戸市中央区", "region": "hyogo-28110", "lat": 34.65494, "lon": 135.22183, "level": 1, "value": 1, "lines": ["神戸新交通 ポートアイランド線"], "adj": ["lm-q6424313", "lm-q741372", "st-007381", "st-007482"] },
@@ -216,7 +216,7 @@
     { "id": "lm-q188754", "name": "姫路城", "genre": "heritage", "kind": "LM", "area": "姫路市", "region": "hyogo-28201", "lat": 34.83944, "lon": 134.69361, "level": 10, "value": 10, "wikidata": "Q188754", "adj": ["st-006421", "st-006462", "st-006477", "st-006497", "st-006509", "st-006523", "st-006541", "st-006583"] },
     { "id": "lm-q8525239", "name": "雪彦山", "genre": "nature", "kind": "LM", "area": "姫路市", "region": "hyogo-28201", "lat": 35.06667, "lon": 134.65, "level": 2, "value": 2, "wikidata": "Q8525239", "adj": ["st-005783"] },
     { "id": "lm-q3054354", "name": "圓教寺", "genre": "shrine_temple", "kind": "LM", "area": "姫路市", "region": "hyogo-28201", "lat": 34.89114, "lon": 134.65814, "level": 2, "value": 2, "hackable": false, "wikidata": "Q3054354" },
-    { "id": "isl-q11455413", "name": "家島港", "genre": "port", "kind": "GW", "area": "姫路市", "region": "hyogo-28201", "lat": 34.67858, "lon": 134.53197, "level": 1, "value": 1, "wikidata": "Q11455413", "adj": ["isl-q11578192", "st-006691"] },
+    { "id": "isl-q11455413", "name": "家島港", "genre": "port", "kind": "GW", "area": "姫路市", "region": "hyogo-28201", "lat": 34.67858, "lon": 134.53197, "level": 3, "value": 3, "wikidata": "Q11455413", "adj": ["isl-q11578192", "st-006691"] },
     { "id": "isl-q11578192", "name": "男鹿島", "genre": "nature", "kind": "GW", "area": "姫路市", "region": "hyogo-28201", "lat": 34.66483, "lon": 134.57494, "level": 1, "value": 1, "wikidata": "Q11578192", "adj": ["isl-q11455413"] },
     { "id": "st-006242", "name": "溝口駅", "genre": "station", "kind": "HUB", "area": "姫路市", "region": "hyogo-28201", "lat": 34.92756, "lon": 134.74208, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 播但線"], "adj": ["st-006164", "st-006283"] },
     { "id": "st-006283", "name": "香呂駅", "genre": "station", "kind": "HUB", "area": "姫路市", "region": "hyogo-28201", "lat": 34.912, "lon": 134.7361, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 播但線"], "adj": ["st-006242", "st-006349"] },

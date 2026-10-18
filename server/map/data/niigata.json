@@ -1,7 +1,7 @@
 {
   "region": "niigata",
   "name": "新潟県",
-  "version": 18,
+  "version": 20,
   "updatedAt": "2026-10-19",
   "note": "新潟県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -258,7 +258,7 @@
     { "id": "st-001329", "name": "水原駅", "genre": "station", "kind": "HUB", "area": "阿賀野市", "region": "niigata-15223", "lat": 37.83631, "lon": 139.21683, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["lm-q3214939", "st-001320", "st-001336"] },
     { "id": "st-001336", "name": "京ヶ瀬駅", "genre": "station", "kind": "HUB", "area": "阿賀野市", "region": "niigata-15223", "lat": 37.81741, "lon": 139.17772, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["lm-q11246368", "st-001329", "st-001349"] },
 
-    { "id": "lm-q1019284", "name": "佐渡空港", "genre": "airport", "kind": "GW", "area": "佐渡市", "region": "niigata-15224", "lat": 38.06111, "lon": 138.41417, "level": 2, "value": 2, "wikidata": "Q1019284", "adj": ["lm-q11398862", "lm-q85159020"] },
+    { "id": "lm-q1019284", "name": "佐渡空港", "genre": "airport", "kind": "GW", "area": "佐渡市", "region": "niigata-15224", "lat": 38.06111, "lon": 138.41417, "level": 5, "value": 5, "wikidata": "Q1019284", "adj": ["lm-q11398862", "lm-q85159020"] },
     { "id": "lm-q11398862", "name": "加茂湖", "genre": "nature", "kind": "LM", "area": "佐渡市", "region": "niigata-15224", "lat": 38.0638, "lon": 138.4368, "level": 1, "value": 1, "wikidata": "Q11398862", "adj": ["lm-q1019284", "lm-q20982992", "st-001324"] },
     { "id": "lm-q20982992", "name": "金剛山", "genre": "nature", "kind": "LM", "area": "佐渡市", "region": "niigata-15224", "lat": 38.1723, "lon": 138.4193, "level": 1, "value": 1, "wikidata": "Q20982992", "adj": ["lm-q11398862"] },
     { "id": "lm-q127378385", "name": "佐渡島の金山", "genre": "monument", "kind": "LM", "area": "佐渡市", "region": "niigata-15224", "lat": 38.04083, "lon": 138.25778, "level": 1, "value": 1, "wikidata": "Q127378385", "adj": ["lm-q85159020"] },

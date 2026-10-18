@@ -137,6 +137,8 @@ if (LM.length) {
 assert.ok(!NODES.some((n) => /DC$|IX$/.test(n.name)), '架空名の DC / IX は使わない');
 assert.throws(broken((d) => { d.nodes[0].region = 'tokyo-chuo'; }), /食い違います/);
 assert.throws(broken((d) => { d.nodes[0].id = 'Bad_ID'; }), /英小文字/);
+assert.throws(broken((d) => { d.nodes.find((n) => n.genre === 'station').routes = [{ to: 'haneda', mode: 'air' }]; }), /空港と港だけ/, '航路は空港と港だけ');
+assert.throws(broken((d) => { d.nodes.find((n) => n.genre === 'airport').routes = [{ to: 'haneda', mode: 'bus' }]; }), /routes は/, '航路の種類は air か sea');
 assert.throws(broken((d) => { d.nodes.find((n) => n.adj && n.adj.length).adj.push('ST NOPE'); }), /不正/, 'adj の id の形を検査(別ファイルの拠点への線は許す)');
 assert.throws(broken((d) => { const n = d.nodes.find((x) => x.hackable === false); n.adj = ['st-003766']; }), /ハック不可の拠点に adj/);
 assert.doesNotThrow(broken(() => {}));

@@ -1,7 +1,7 @@
 {
   "region": "aichi",
   "name": "愛知県",
-  "version": 18,
+  "version": 20,
   "updatedAt": "2026-10-19",
   "note": "愛知県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -462,7 +462,7 @@
     { "id": "st-004965", "name": "羽黒駅", "genre": "station", "kind": "HUB", "area": "犬山市", "region": "aichi-23215", "lat": 35.35113, "lon": 136.95261, "level": 1, "value": 1, "lines": ["名古屋鉄道 小牧線"], "adj": ["lm-q927013", "lm-q985290", "st-004888", "st-005027"] },
     { "id": "st-005027", "name": "楽田駅", "genre": "station", "kind": "HUB", "area": "犬山市", "region": "aichi-23215", "lat": 35.33024, "lon": 136.94997, "level": 1, "value": 1, "lines": ["名古屋鉄道 小牧線"], "adj": ["lm-q927013", "lm-q985290", "st-004965", "st-005061"] },
 
-    { "id": "lm-q679345", "name": "中部国際空港", "genre": "airport", "kind": "GW", "area": "常滑市", "region": "aichi-23216", "lat": 34.85833, "lon": 136.80528, "level": 8, "value": 8, "wikidata": "Q679345", "adj": ["st-006314", "st-006332", "st-006362", "st-006409"] },
+    { "id": "lm-q679345", "name": "中部国際空港", "genre": "airport", "kind": "GW", "area": "常滑市", "region": "aichi-23216", "lat": 34.85833, "lon": 136.80528, "level": 10, "value": 10, "wikidata": "Q679345", "adj": ["st-006314", "st-006332", "st-006362", "st-006409"] },
     { "id": "lm-q65228337", "name": "FLIGHT OF DREAMS", "genre": "museum", "kind": "LM", "area": "常滑市", "region": "aichi-23216", "lat": 34.85522, "lon": 136.81717, "level": 1, "value": 1, "hackable": false, "wikidata": "Q65228337" },
     { "id": "st-006222", "name": "大野町駅", "genre": "station", "kind": "HUB", "area": "常滑市", "region": "aichi-23216", "lat": 34.93574, "lon": 136.82761, "level": 1, "value": 1, "lines": ["名古屋鉄道 常滑線"], "adj": ["st-006194", "st-006255"] },
     { "id": "st-006255", "name": "西ノ口駅", "genre": "station", "kind": "HUB", "area": "常滑市", "region": "aichi-23216", "lat": 34.92416, "lon": 136.82678, "level": 1, "value": 1, "lines": ["名古屋鉄道 常滑線"], "adj": ["st-006222", "st-006273"] },

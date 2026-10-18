@@ -1,7 +1,7 @@
 {
   "region": "shimane",
   "name": "島根県",
-  "version": 18,
+  "version": 20,
   "updatedAt": "2026-10-19",
   "note": "島根県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -129,14 +129,14 @@
     { "id": "st-005148", "name": "小田駅", "genre": "station", "kind": "HUB", "area": "出雲市", "region": "shimane-32203", "lat": 35.28533, "lon": 132.63111, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-005070", "st-005171"] },
     { "id": "st-005171", "name": "田儀駅", "genre": "station", "kind": "HUB", "area": "出雲市", "region": "shimane-32203", "lat": 35.27502, "lon": 132.58929, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-005148", "st-005259"] },
 
-    { "id": "lm-q1431559", "name": "石見空港", "genre": "airport", "kind": "GW", "area": "益田市", "region": "shimane-32204", "lat": 34.67639, "lon": 131.79028, "level": 2, "value": 2, "wikidata": "Q1431559", "adj": ["st-007236", "st-007414"] },
+    { "id": "lm-q1431559", "name": "石見空港", "genre": "airport", "kind": "GW", "area": "益田市", "region": "shimane-32204", "lat": 34.67639, "lon": 131.79028, "level": 5, "value": 5, "wikidata": "Q1431559", "adj": ["st-007236", "st-007278", "st-007414"] },
     { "id": "lm-q132396562", "name": "島根県立石見美術館", "genre": "museum", "kind": "LM", "area": "益田市", "region": "shimane-32204", "lat": 34.67298, "lon": 131.84808, "level": 1, "value": 1, "wikidata": "Q132396562", "adj": ["st-007236"] },
     { "id": "lm-q11311482", "name": "スクモ塚古墳", "genre": "monument", "kind": "LM", "area": "益田市", "region": "shimane-32204", "lat": 34.70114, "lon": 131.84839, "level": 1, "value": 1, "wikidata": "Q11311482", "adj": ["st-007236"] },
     { "id": "lm-q17222556", "name": "益田市立雪舟の郷記念館", "genre": "museum", "kind": "LM", "area": "益田市", "region": "shimane-32204", "lat": 34.68503, "lon": 131.8475, "level": 1, "value": 1, "wikidata": "Q17222556", "adj": ["st-007236"] },
     { "id": "st-006829", "name": "鎌手駅", "genre": "station", "kind": "HUB", "area": "益田市", "region": "shimane-32204", "lat": 34.75168, "lon": 131.87844, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-006738", "st-006962"] },
     { "id": "st-006962", "name": "石見津田駅", "genre": "station", "kind": "HUB", "area": "益田市", "region": "shimane-32204", "lat": 34.7226, "lon": 131.86405, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-006829", "st-007236"] },
     { "id": "st-007236", "name": "益田駅", "genre": "station", "kind": "HUB", "area": "益田市", "region": "shimane-32204", "lat": 34.67851, "lon": 131.8384, "level": 2, "value": 2, "lines": ["西日本旅客鉄道 山口線", "西日本旅客鉄道 山陰線"], "adj": ["lm-q11311482", "lm-q132396562", "lm-q1431559", "lm-q17222556", "st-006962", "st-007278", "st-007414"] },
-    { "id": "st-007278", "name": "戸田小浜駅", "genre": "station", "kind": "HUB", "area": "益田市", "region": "shimane-32204", "lat": 34.67308, "lon": 131.73697, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-007236", "st-007290"] },
+    { "id": "st-007278", "name": "戸田小浜駅", "genre": "station", "kind": "HUB", "area": "益田市", "region": "shimane-32204", "lat": 34.67308, "lon": 131.73697, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["lm-q1431559", "st-007236", "st-007290"] },
     { "id": "st-007290", "name": "飯浦駅", "genre": "station", "kind": "HUB", "area": "益田市", "region": "shimane-32204", "lat": 34.66869, "lon": 131.70212, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-007278", "st-007478"] },
     { "id": "st-007414", "name": "本俣賀駅", "genre": "station", "kind": "HUB", "area": "益田市", "region": "shimane-32204", "lat": 34.65222, "lon": 131.82721, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山口線"], "adj": ["lm-q1431559", "st-007236", "st-007555"] },
     { "id": "st-007555", "name": "石見横田駅", "genre": "station", "kind": "HUB", "area": "益田市", "region": "shimane-32204", "lat": 34.61756, "lon": 131.80406, "level": 1, "value": 1, "lines": ["西日本旅客鉄道 山口線"], "adj": ["st-007414", "st-007643"] },
@@ -202,7 +202,7 @@
 
     { "id": "lm-q11567667", "name": "焼火山", "genre": "nature", "kind": "LM", "area": "西ノ島町", "region": "shimane-32526", "lat": 36.07472, "lon": 133.03194, "level": 1, "value": 1, "wikidata": "Q11567667", "adj": ["lm-q11548750", "lm-q55529473"] },
 
-    { "id": "lm-q1148447", "name": "隠岐空港", "genre": "airport", "kind": "GW", "area": "隠岐の島町", "region": "shimane-32528", "lat": 36.17833, "lon": 133.32333, "level": 2, "value": 2, "wikidata": "Q1148447", "adj": ["lm-q11437553", "lm-q55529473"] },
+    { "id": "lm-q1148447", "name": "隠岐空港", "genre": "airport", "kind": "GW", "area": "隠岐の島町", "region": "shimane-32528", "lat": 36.17833, "lon": 133.32333, "level": 5, "value": 5, "wikidata": "Q1148447", "adj": ["lm-q11437553", "lm-q55529473"] },
     { "id": "lm-q11437553", "name": "大満寺山", "genre": "nature", "kind": "LM", "area": "隠岐の島町", "region": "shimane-32528", "lat": 36.25675, "lon": 133.33053, "level": 1, "value": 1, "wikidata": "Q11437553", "adj": ["lm-q1148447"] }
   ]
 }

@@ -126,6 +126,8 @@ body {
 .qtext { font-size: 17px; font-weight: 700; margin: 10px 0 12px; word-break: auto-phrase; text-wrap: pretty; }
 .qtext .ip { font-family: var(--font-mono); font-weight: 600; }
 .options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.np-routes li { cursor: pointer; text-decoration: underline dotted; }
+.np-routes li:hover { color: var(--accent); }
 .fields { display: grid; gap: 8px; margin: 6px 0 10px; }
 .field { display: grid; gap: 4px; }
 .field label { font-size: 13px; font-weight: 700; }

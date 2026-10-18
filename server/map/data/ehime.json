@@ -1,7 +1,7 @@
 {
   "region": "ehime",
   "name": "愛媛県",
-  "version": 18,
+  "version": 20,
   "updatedAt": "2026-10-19",
   "note": "愛媛県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -136,8 +136,8 @@
     { "id": "lm-q11315898", "name": "タオル美術館ICHIHIRO", "genre": "museum", "kind": "LM", "area": "今治市", "region": "ehime-38202", "lat": 33.96906, "lon": 133.03244, "level": 1, "value": 1, "wikidata": "Q11315898", "adj": ["st-008625"] },
     { "id": "lm-q116686629", "name": "今治里山スタジアム", "genre": "stadium", "kind": "LM", "area": "今治市", "region": "ehime-38202", "lat": 34.04056, "lon": 132.95867, "level": 1, "value": 1, "wikidata": "Q116686629", "adj": ["st-008509"] },
     { "id": "lm-q703904", "name": "大山祇神社", "genre": "shrine_temple", "kind": "LM", "area": "今治市", "region": "ehime-38202", "lat": 34.24789, "lon": 133.00571, "level": 1, "value": 1, "hackable": false, "wikidata": "Q703904" },
-    { "id": "isl-q11473317", "name": "岡村港", "genre": "port", "kind": "GW", "area": "今治市", "region": "ehime-38202", "lat": 34.18372, "lon": 132.88583, "level": 1, "value": 1, "wikidata": "Q11473317", "adj": ["isl-q11489096", "lm-q11377188"] },
-    { "id": "isl-q11489096", "name": "御手洗港", "genre": "port", "kind": "GW", "area": "今治市", "region": "ehime-38202", "lat": 34.18003, "lon": 132.86681, "level": 1, "value": 1, "wikidata": "Q11489096", "adj": ["isl-q11473317"] },
+    { "id": "isl-q11473317", "name": "岡村港", "genre": "port", "kind": "GW", "area": "今治市", "region": "ehime-38202", "lat": 34.18372, "lon": 132.88583, "level": 3, "value": 3, "wikidata": "Q11473317", "adj": ["isl-q11489096", "lm-q11377188"] },
+    { "id": "isl-q11489096", "name": "御手洗港", "genre": "port", "kind": "GW", "area": "今治市", "region": "ehime-38202", "lat": 34.18003, "lon": 132.86681, "level": 3, "value": 3, "wikidata": "Q11489096", "adj": ["isl-q11473317"] },
     { "id": "st-008473", "name": "波止浜駅", "genre": "station", "kind": "HUB", "area": "今治市", "region": "ehime-38202", "lat": 34.09795, "lon": 132.9693, "level": 1, "value": 1, "lines": ["四国旅客鉄道 予讃線"], "adj": ["lm-q11371022", "st-008475", "st-008511"] },
     { "id": "st-008475", "name": "波方駅", "genre": "station", "kind": "HUB", "area": "今治市", "region": "ehime-38202", "lat": 34.09526, "lon": 132.94298, "level": 1, "value": 1, "lines": ["四国旅客鉄道 予讃線"], "adj": ["st-008473", "st-008509"] },
     { "id": "st-008509", "name": "大西駅", "genre": "station", "kind": "HUB", "area": "今治市", "region": "ehime-38202", "lat": 34.06635, "lon": 132.92963, "level": 1, "value": 1, "lines": ["四国旅客鉄道 予讃線"], "adj": ["lm-q116686629", "lm-q24869364", "st-008475", "st-008523"] },

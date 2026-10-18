@@ -1,7 +1,7 @@
 {
   "region": "nagasaki",
   "name": "長崎県",
-  "version": 18,
+  "version": 20,
   "updatedAt": "2026-10-19",
   "note": "長崎県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -214,18 +214,18 @@
     { "id": "st-009357", "name": "松浦発電所前駅", "genre": "station", "kind": "HUB", "area": "松浦市", "region": "nagasaki-42208", "lat": 33.3472, "lon": 129.68595, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009337", "st-009363"] },
     { "id": "st-009363", "name": "松浦駅", "genre": "station", "kind": "HUB", "area": "松浦市", "region": "nagasaki-42208", "lat": 33.34412, "lon": 129.70731, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009350", "st-009357"] },
 
-    { "id": "lm-q1134491", "name": "対馬空港", "genre": "airport", "kind": "GW", "area": "対馬市", "region": "nagasaki-42209", "lat": 34.285, "lon": 129.33056, "level": 2, "value": 2, "wikidata": "Q1134491", "adj": ["lm-q22119911", "lm-q38278109"] },
+    { "id": "lm-q1134491", "name": "対馬空港", "genre": "airport", "kind": "GW", "area": "対馬市", "region": "nagasaki-42209", "lat": 34.285, "lon": 129.33056, "level": 5, "value": 5, "wikidata": "Q1134491", "adj": ["lm-q22119911", "lm-q38278109"] },
     { "id": "lm-q10854965", "name": "金石城", "genre": "heritage", "kind": "LM", "area": "対馬市", "region": "nagasaki-42209", "lat": 34.20419, "lon": 129.28611, "level": 1, "value": 1, "wikidata": "Q10854965", "adj": ["lm-q11400349", "lm-q11560933"] },
     { "id": "lm-q22119911", "name": "根曽古墳群", "genre": "monument", "kind": "LM", "area": "対馬市", "region": "nagasaki-42209", "lat": 34.26378, "lon": 129.32408, "level": 1, "value": 1, "wikidata": "Q22119911", "adj": ["lm-q1134491", "lm-q11560933"] },
     { "id": "lm-q11560933", "name": "清水山城", "genre": "heritage", "kind": "LM", "area": "対馬市", "region": "nagasaki-42209", "lat": 34.20889, "lon": 129.28383, "level": 1, "value": 1, "wikidata": "Q11560933", "adj": ["lm-q10854965", "lm-q22119911"] },
     { "id": "lm-q38278109", "name": "対馬野生生物保護センター", "genre": "zoo_aquarium", "kind": "LM", "area": "対馬市", "region": "nagasaki-42209", "lat": 34.64361, "lon": 129.32303, "level": 1, "value": 1, "wikidata": "Q38278109", "adj": ["lm-q1134491"] },
 
-    { "id": "lm-q1038664", "name": "壱岐空港", "genre": "airport", "kind": "GW", "area": "壱岐市", "region": "nagasaki-42210", "lat": 33.74917, "lon": 129.78583, "level": 3, "value": 3, "wikidata": "Q1038664", "adj": ["isl-q11398556", "lm-q11409340"] },
+    { "id": "lm-q1038664", "name": "壱岐空港", "genre": "airport", "kind": "GW", "area": "壱岐市", "region": "nagasaki-42210", "lat": 33.74917, "lon": 129.78583, "level": 5, "value": 5, "wikidata": "Q1038664", "adj": ["isl-q11398556", "lm-q11409340"] },
     { "id": "lm-q11409340", "name": "原の辻遺跡", "genre": "heritage", "kind": "LM", "area": "壱岐市", "region": "nagasaki-42210", "lat": 33.75944, "lon": 129.75322, "level": 1, "value": 1, "wikidata": "Q11409340", "adj": ["lm-q1038664", "lm-q11429588"] },
     { "id": "lm-q11429588", "name": "壱岐市立一支国博物館", "genre": "museum", "kind": "LM", "area": "壱岐市", "region": "nagasaki-42210", "lat": 33.76761, "lon": 129.75536, "level": 1, "value": 1, "wikidata": "Q11429588", "adj": ["lm-q11400349", "lm-q11409340"] },
     { "id": "lm-q11400349", "name": "勝本城", "genre": "heritage", "kind": "LM", "area": "壱岐市", "region": "nagasaki-42210", "lat": 33.84931, "lon": 129.69106, "level": 1, "value": 1, "wikidata": "Q11400349", "adj": ["lm-q10854965", "lm-q11429588"] },
 
-    { "id": "lm-q1431393", "name": "福江空港", "genre": "airport", "kind": "GW", "area": "五島市", "region": "nagasaki-42211", "lat": 32.66639, "lon": 128.83278, "level": 3, "value": 3, "wikidata": "Q1431393", "adj": ["isl-q17225029", "lm-q11586952", "lm-q20043582"] },
+    { "id": "lm-q1431393", "name": "福江空港", "genre": "airport", "kind": "GW", "area": "五島市", "region": "nagasaki-42211", "lat": 32.66639, "lon": 128.83278, "level": 5, "value": 5, "wikidata": "Q1431393", "adj": ["isl-q17225029", "lm-q11586952", "lm-q20043582"] },
     { "id": "lm-q11586952", "name": "石田城", "genre": "heritage", "kind": "LM", "area": "五島市", "region": "nagasaki-42211", "lat": 32.69347, "lon": 128.84653, "level": 1, "value": 1, "wikidata": "Q11586952", "adj": ["isl-q15231937", "lm-q1431393"] },
     { "id": "lm-q20043582", "name": "五島市鬼岳天文台", "genre": "observatory", "kind": "EDU", "area": "五島市", "region": "nagasaki-42211", "lat": 32.66278, "lon": 128.85167, "level": 1, "value": 1, "wikidata": "Q20043582", "adj": ["lm-q1431393"] },
     { "id": "lm-q11550607", "name": "江上天主堂", "genre": "shrine_temple", "kind": "LM", "area": "五島市", "region": "nagasaki-42211", "lat": 32.85517, "lon": 128.90408, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11550607" },
@@ -261,14 +261,14 @@
     { "id": "st-009593", "name": "川棚駅", "genre": "station", "kind": "HUB", "area": "川棚町", "region": "nagasaki-42322", "lat": 33.06831, "lon": 129.86313, "level": 1, "value": 1, "lines": ["九州旅客鉄道 大村線"], "adj": ["st-009596", "st-009605"] },
     { "id": "st-009596", "name": "小串郷駅", "genre": "station", "kind": "HUB", "area": "川棚町", "region": "nagasaki-42322", "lat": 33.06401, "lon": 129.83413, "level": 1, "value": 1, "lines": ["九州旅客鉄道 大村線"], "adj": ["st-009584", "st-009593"] },
 
-    { "id": "isl-q1018757", "name": "小値賀空港", "genre": "airport", "kind": "GW", "area": "小値賀町", "region": "nagasaki-42383", "lat": 33.19083, "lon": 129.09028, "level": 2, "value": 2, "wikidata": "Q1018757", "adj": ["isl-q11449014", "lm-q3276359"] },
+    { "id": "isl-q1018757", "name": "小値賀空港", "genre": "airport", "kind": "GW", "area": "小値賀町", "region": "nagasaki-42383", "lat": 33.19083, "lon": 129.09028, "level": 5, "value": 5, "wikidata": "Q1018757", "adj": ["isl-q11449014", "lm-q3276359"] },
 
     { "id": "st-009449", "name": "神田駅", "genre": "station", "kind": "HUB", "area": "佐々町", "region": "nagasaki-42391", "lat": 33.26149, "lon": 129.67149, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009443", "st-009461"] },
     { "id": "st-009461", "name": "清峰高校前駅", "genre": "station", "kind": "HUB", "area": "佐々町", "region": "nagasaki-42391", "lat": 33.24755, "lon": 129.65623, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009449", "st-009476"] },
     { "id": "st-009476", "name": "佐々駅", "genre": "station", "kind": "HUB", "area": "佐々町", "region": "nagasaki-42391", "lat": 33.23649, "lon": 129.64662, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["st-009461", "st-009490"] },
     { "id": "st-009490", "name": "小浦駅", "genre": "station", "kind": "HUB", "area": "佐々町", "region": "nagasaki-42391", "lat": 33.22225, "lon": 129.64155, "level": 1, "value": 1, "lines": ["松浦鉄道 西九州線"], "adj": ["lm-q6455346", "st-009476", "st-009512"] },
 
-    { "id": "lm-q3276359", "name": "上五島空港", "genre": "airport", "kind": "GW", "area": "新上五島町", "region": "nagasaki-42411", "lat": 33.01361, "lon": 129.1925, "level": 2, "value": 2, "wikidata": "Q3276359", "adj": ["isl-q1018757", "isl-q11482669", "isl-q15231937"] },
+    { "id": "lm-q3276359", "name": "上五島空港", "genre": "airport", "kind": "GW", "area": "新上五島町", "region": "nagasaki-42411", "lat": 33.01361, "lon": 129.1925, "level": 5, "value": 5, "wikidata": "Q3276359", "adj": ["isl-q1018757", "isl-q11482669", "isl-q15231937"] },
     { "id": "lm-q11664924", "name": "頭ヶ島天主堂", "genre": "shrine_temple", "kind": "LM", "area": "新上五島町", "region": "nagasaki-42411", "lat": 33.0124, "lon": 129.18286, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11664924" }
   ]
 }

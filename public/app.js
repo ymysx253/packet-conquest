@@ -19,6 +19,7 @@
     start: null, picking: false, searchTimer: null, // 開始地点(選んだ駅・名所)と、地図から選ぶモード
     moving: false, movedAt: null, reach: new Set(), // 引っ越しの選択中 / 最後の引っ越し / 自分の拠点から線でつながっている所有拠点
     rankings: null, me2: null, team: null, cooldownMs: 4000, // ランキング / 自分の集計 / 所属チーム / いまの待ち時間の長さ
+    mine: new Map(), // 自分が占領している空港・港(航路を持つもの)。画面の外に出ても覚えておき、航路の線を引く
     bounds: new Map(), // 区・市の境界(地域 id → { polys })。public/data/bounds/<都道府県>.json を見えている分だけ読む
     boundsLoaded: new Set(), coarse: null, // 読み込み済みの都道府県 / 縮小時の粗い全国版(japan.json)
   };
@@ -69,7 +70,7 @@
   function onMessage(m) {
     switch (m.t) {
       case 'welcome':
-        S.me = m.id; S.token = m.token; S.joined = true; S.home = m.home; S.spawn = m.spawn; S.movedAt = m.movedAt || null;
+        S.me = m.id; S.token = m.token; S.joined = true; S.home = m.home; S.spawn = m.spawn; S.movedAt = m.movedAt || null; S.mine.clear();
         $('areaChip').textContent = m.area || '日本';
         S.team = m.team ? { id: m.team, name: m.teamName } : null; S.cooldownUntil = m.cooldownUntil || 0; S.cooldownMs = Math.max(4000, S.cooldownUntil - Date.now());
         $('teamPanel').hidden = false; renderTeam();
@@ -99,6 +100,7 @@
         for (const n of m.nodes) {
           if (n.status === 'gone') { S.nodes.delete(n.id); if (S.selected === n.id) S.selected = null; continue; }
           if (S.nodes.has(n.id) || S.tiles.has(n.t0)) S.nodes.set(n.id, n);
+          rememberRoutes(n);
         }
         computeReach();
         renderSelected();
@@ -142,7 +144,7 @@
       for (const [id, n] of S.nodes) if (n.t0 === t && !(S.home && id === S.home.id)) S.nodes.delete(id);
     }
     for (const t of m.added) S.tiles.add(t);
-    for (const n of m.nodes) S.nodes.set(n.id, n);
+    for (const n of m.nodes) { S.nodes.set(n.id, n); rememberRoutes(n); }
     for (const e of m.edges) S.edges.set(e.a < e.b ? `${e.a}|${e.b}` : `${e.b}|${e.a}`, e);
     for (const [k, e] of S.edges) if (!S.nodes.has(e.a) && !S.nodes.has(e.b)) S.edges.delete(k);
     computeReach();
@@ -434,6 +436,11 @@
     }
     S.reach = set;
   }
+  // 航路を持つ自分の空港・港を覚える(占領が外れたら忘れる)
+  function rememberRoutes(n) {
+    if (n.owner === S.me && Array.isArray(n.routes) && n.routes.length) S.mine.set(n.id, { id: n.id, name: n.name, lat: n.lat, lon: n.lon, routes: n.routes });
+    else S.mine.delete(n.id);
+  }
   // サーバーの canAttack と同じ条件(表示用。判定はサーバーが行う)
   function canAttack(id) {
     const n = nodeById(id);
@@ -442,7 +449,9 @@
     if (n.isPlayerNode) return false; // プレイヤー自身の拠点は占領禁止
     if (n.protectedUntil > now()) return false;
     if (n.owner) { const o = playerById(n.owner); if (o && o.nodes <= 3 && o.newbie) return false; }
-    return adjacent(id).some((a) => ownerOf(a) === S.me && S.reach.has(a));
+    if (adjacent(id).some((a) => ownerOf(a) === S.me && S.reach.has(a))) return true;
+    // 航路の先: 自分が占領している空港・港から航路がある(画面の外の空港でもよい。最終の判定はサーバー)
+    return (n.routes || []).some((r) => S.mine.has(r.to) && (S.reach.has(r.to) || !S.nodes.has(r.to)));
   }
 
   // ---------- 描画: パネル ----------
@@ -513,6 +522,15 @@
     const lines = Array.isArray(n.lines) ? n.lines : [];
     $('npLines').hidden = !lines.length;
     $('npLinesList').replaceChildren(...lines.map((l) => { const li = document.createElement('li'); li.textContent = l; return li; }));
+    const routes = Array.isArray(n.routes) ? n.routes : [];
+    $('npRoutes').hidden = !routes.length;
+    $('npRoutesList').replaceChildren(...routes.map((r) => {
+      const li = document.createElement('li'); li.tabIndex = 0;
+      li.textContent = `${r.mode === 'air' ? '✈ 空路' : '⚓ 海路'} → ${r.name}`;
+      const go = () => { centerOn(worldOf(r.lat, r.lon), Math.max(9, zoomRatio())); requestView(true); };
+      li.onclick = go; li.onkeydown = (e) => { if (e.key === 'Enter') go(); };
+      return li;
+    }));
     let status;
     if (S.overview) status = '拡大すると攻撃や強化ができます';
     else if (n.hackable === false) status = 'ネットワークにつながっていない場所です(ハック不可)';
@@ -692,6 +710,22 @@
         if (fillCol) { ctx.fillStyle = fillCol; ctx.globalAlpha = S.overview ? 0.32 : 0.12; ctx.fill(); ctx.globalAlpha = 1; }
         ctx.strokeStyle = frameCol || C.line; ctx.lineWidth = S.overview ? (c ? 2 : 1.5) : 1; ctx.globalAlpha = S.overview ? 0.9 : 0.5; ctx.stroke(); ctx.globalAlpha = 1;
       }
+    }
+
+    // 航路: 自分が占領している空港・港から行き先へ点線(空路は青系、海路は水色系)
+    if (S.mine.size) {
+      ctx.save(); ctx.setLineDash([8, 6]); ctx.lineWidth = 2.5; ctx.globalAlpha = 0.85;
+      for (const o of S.mine.values()) {
+        const a = toScreen(worldOf(o.lat, o.lon));
+        for (const r of o.routes) {
+          const b = toScreen(worldOf(r.lat, r.lon));
+          ctx.strokeStyle = r.mode === 'air' ? '#3b82f6' : '#14b8a6';
+          // ゆるい弧にする(真っすぐだと線路と見分けにくい)
+          const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, dx = b.x - a.x, dy = b.y - a.y;
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.quadraticCurveTo(mx - dy * 0.15, my + dx * 0.15, b.x, b.y); ctx.stroke();
+        }
+      }
+      ctx.restore();
     }
 
     // 線路(リンク)

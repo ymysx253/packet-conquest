@@ -1,7 +1,7 @@
 {
   "region": "hokkaido",
   "name": "北海道",
-  "version": 18,
+  "version": 20,
   "updatedAt": "2026-10-19",
   "note": "北海道の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -167,7 +167,7 @@
     { "id": "st-000192", "name": "手稲駅", "genre": "station", "kind": "HUB", "area": "札幌市手稲区", "region": "hokkaido-01109", "lat": 43.12072, "lon": 141.24286, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 函館線"], "adj": ["st-000187", "st-000195"] },
     { "id": "st-000195", "name": "稲積公園駅", "genre": "station", "kind": "HUB", "area": "札幌市手稲区", "region": "hokkaido-01109", "lat": 43.11272, "lon": 141.25609, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 函館線"], "adj": ["st-000192", "st-000201"] },
 
-    { "id": "lm-q1155685", "name": "函館空港", "genre": "airport", "kind": "GW", "area": "函館市", "region": "hokkaido-01202", "lat": 41.77, "lon": 140.82194, "level": 4, "value": 4, "wikidata": "Q1155685", "adj": ["lm-q10938344", "st-000448", "st-000449", "st-000450", "st-000452"] },
+    { "id": "lm-q1155685", "name": "函館空港", "genre": "airport", "kind": "GW", "area": "函館市", "region": "hokkaido-01202", "lat": 41.77, "lon": 140.82194, "level": 5, "value": 5, "wikidata": "Q1155685", "adj": ["lm-q10938344", "st-000446", "st-000448", "st-000449", "st-000450", "st-000452"] },
     { "id": "lm-q1196357", "name": "五稜郭", "genre": "heritage", "kind": "LM", "area": "函館市", "region": "hokkaido-01202", "lat": 41.79694, "lon": 140.75694, "level": 10, "value": 10, "wikidata": "Q1196357", "adj": ["st-000441", "st-000442", "st-000443", "st-000444", "st-000445", "st-000446", "st-000447", "st-000451"] },
     { "id": "lm-q835738", "name": "公立はこだて未来大学", "genre": "university", "kind": "EDU", "area": "函館市", "region": "hokkaido-01202", "lat": 41.84181, "lon": 140.767, "level": 2, "value": 2, "wikidata": "Q835738", "adj": ["st-000433", "st-000439"] },
     { "id": "lm-q2688247", "name": "四稜郭", "genre": "heritage", "kind": "LM", "area": "函館市", "region": "hokkaido-01202", "lat": 41.82569, "lon": 140.77069, "level": 1, "value": 1, "wikidata": "Q2688247", "adj": ["st-000439"] },
@@ -180,7 +180,7 @@
     { "id": "st-000443", "name": "柏木町駅", "genre": "station", "kind": "HUB", "area": "函館市", "region": "hokkaido-01202", "lat": 41.78788, "lon": 140.76569, "level": 1, "value": 1, "lines": ["函館市 湯の川線"], "adj": ["lm-q1196357", "st-000442", "st-000444"] },
     { "id": "st-000444", "name": "深堀町駅", "genre": "station", "kind": "HUB", "area": "函館市", "region": "hokkaido-01202", "lat": 41.78703, "lon": 140.77017, "level": 1, "value": 1, "lines": ["函館市 湯の川線"], "adj": ["lm-q1196357", "st-000443", "st-000446"] },
     { "id": "st-000445", "name": "中央病院前駅", "genre": "station", "kind": "HUB", "area": "函館市", "region": "hokkaido-01202", "lat": 41.78721, "lon": 140.75112, "level": 1, "value": 1, "lines": ["函館市 湯の川線"], "adj": ["lm-q1196357", "st-000441", "st-000447"] },
-    { "id": "st-000446", "name": "競馬場前駅", "genre": "station", "kind": "HUB", "area": "函館市", "region": "hokkaido-01202", "lat": 41.78445, "lon": 140.77587, "level": 1, "value": 1, "lines": ["函館市 湯の川線"], "adj": ["lm-q1196357", "st-000444", "st-000448"] },
+    { "id": "st-000446", "name": "競馬場前駅", "genre": "station", "kind": "HUB", "area": "函館市", "region": "hokkaido-01202", "lat": 41.78445, "lon": 140.77587, "level": 1, "value": 1, "lines": ["函館市 湯の川線"], "adj": ["lm-q1155685", "lm-q1196357", "st-000444", "st-000448"] },
     { "id": "st-000447", "name": "千代台駅", "genre": "station", "kind": "HUB", "area": "函館市", "region": "hokkaido-01202", "lat": 41.78425, "lon": 140.74886, "level": 1, "value": 1, "lines": ["函館市 湯の川線"], "adj": ["lm-q1196357", "st-000445", "st-000451"] },
     { "id": "st-000448", "name": "駒場車庫前駅", "genre": "station", "kind": "HUB", "area": "函館市", "region": "hokkaido-01202", "lat": 41.78313, "lon": 140.77942, "level": 1, "value": 1, "lines": ["函館市 湯の川線"], "adj": ["lm-q1155685", "st-000446", "st-000449"] },
     { "id": "st-000449", "name": "函館アリーナ前駅", "genre": "station", "kind": "HUB", "area": "函館市", "region": "hokkaido-01202", "lat": 41.78189, "lon": 140.78249, "level": 1, "value": 1, "lines": ["函館市 湯の川線"], "adj": ["lm-q1155685", "st-000448", "st-000452"] },
@@ -243,7 +243,7 @@
     { "id": "st-000410", "name": "母恋駅", "genre": "station", "kind": "HUB", "area": "室蘭市", "region": "hokkaido-01205", "lat": 42.3173, "lon": 140.98975, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 室蘭線"], "adj": ["st-000408", "st-000409"] },
 
     { "id": "lm-q429402", "name": "阿寒湖", "genre": "nature", "kind": "LM", "area": "釧路市", "region": "hokkaido-01206", "lat": 43.45167, "lon": 144.09861, "level": 3, "value": 3, "wikidata": "Q429402", "adj": ["lm-q1329458"] },
-    { "id": "lm-q1333925", "name": "釧路空港", "genre": "airport", "kind": "GW", "area": "釧路市", "region": "hokkaido-01206", "lat": 43.04083, "lon": 144.19306, "level": 3, "value": 3, "wikidata": "Q1333925", "adj": ["st-000316"] },
+    { "id": "lm-q1333925", "name": "釧路空港", "genre": "airport", "kind": "GW", "area": "釧路市", "region": "hokkaido-01206", "lat": 43.04083, "lon": 144.19306, "level": 5, "value": 5, "wikidata": "Q1333925", "adj": ["st-000316"] },
     { "id": "st-000305", "name": "新大楽毛駅", "genre": "station", "kind": "HUB", "area": "釧路市", "region": "hokkaido-01206", "lat": 43.00935, "lon": 144.29417, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 根室線"], "adj": ["st-000306", "st-000308"] },
     { "id": "st-000306", "name": "大楽毛駅", "genre": "station", "kind": "HUB", "area": "釧路市", "region": "hokkaido-01206", "lat": 43.0091, "lon": 144.273, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 根室線"], "adj": ["st-000305", "st-000316"] },
     { "id": "st-000308", "name": "新富士駅", "genre": "station", "kind": "HUB", "area": "釧路市", "region": "hokkaido-01206", "lat": 43.00185, "lon": 144.34995, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 根室線"], "adj": ["st-000305", "st-000315"] },
@@ -252,7 +252,7 @@
     { "id": "st-000315", "name": "釧路駅", "genre": "station", "kind": "HUB", "area": "釧路市", "region": "hokkaido-01206", "lat": 42.99007, "lon": 144.38362, "level": 3, "value": 3, "lines": ["北海道旅客鉄道 根室線"], "adj": ["st-000308", "st-000309"] },
     { "id": "st-000339", "name": "音別駅", "genre": "station", "kind": "HUB", "area": "釧路市", "region": "hokkaido-01206", "lat": 42.88918, "lon": 143.93333, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 根室線"], "adj": ["st-000321", "st-000351"] },
 
-    { "id": "lm-q1332254", "name": "帯広空港", "genre": "airport", "kind": "GW", "area": "帯広市", "region": "hokkaido-01207", "lat": 42.73333, "lon": 143.21722, "level": 3, "value": 3, "wikidata": "Q1332254", "adj": ["lm-q1135937"] },
+    { "id": "lm-q1332254", "name": "帯広空港", "genre": "airport", "kind": "GW", "area": "帯広市", "region": "hokkaido-01207", "lat": 42.73333, "lon": 143.21722, "level": 5, "value": 5, "wikidata": "Q1332254", "adj": ["lm-q1135937"] },
     { "id": "lm-q1135937", "name": "帯広畜産大学", "genre": "university", "kind": "EDU", "area": "帯広市", "region": "hokkaido-01207", "lat": 42.87537, "lon": 143.17537, "level": 1, "value": 1, "wikidata": "Q1135937", "adj": ["lm-q1332254", "st-000330"] },
     { "id": "st-000326", "name": "柏林台駅", "genre": "station", "kind": "HUB", "area": "帯広市", "region": "hokkaido-01207", "lat": 42.92885, "lon": 143.16361, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 根室線"], "adj": ["st-000327", "st-000330"] },
     { "id": "st-000327", "name": "西帯広駅", "genre": "station", "kind": "HUB", "area": "帯広市", "region": "hokkaido-01207", "lat": 42.92386, "lon": 143.12517, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 根室線"], "adj": ["st-000326", "st-000331"] },
@@ -296,7 +296,7 @@
     { "id": "st-000373", "name": "錦岡駅", "genre": "station", "kind": "HUB", "area": "苫小牧市", "region": "hokkaido-01213", "lat": 42.60237, "lon": 141.48669, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 室蘭線"], "adj": ["st-000371", "st-000380"] },
 
     { "id": "lm-q389239", "name": "宗谷岬", "genre": "nature", "kind": "LM", "area": "稚内市", "region": "hokkaido-01214", "lat": 45.52277, "lon": 141.93665, "level": 3, "value": 3, "wikidata": "Q389239", "adj": ["lm-q1368344"] },
-    { "id": "lm-q1368344", "name": "稚内空港", "genre": "airport", "kind": "GW", "area": "稚内市", "region": "hokkaido-01214", "lat": 45.40444, "lon": 141.80222, "level": 3, "value": 3, "wikidata": "Q1368344", "adj": ["lm-q389239", "st-000002"] },
+    { "id": "lm-q1368344", "name": "稚内空港", "genre": "airport", "kind": "GW", "area": "稚内市", "region": "hokkaido-01214", "lat": 45.40444, "lon": 141.80222, "level": 5, "value": 5, "wikidata": "Q1368344", "adj": ["lm-q389239", "st-000002"] },
     { "id": "st-000001", "name": "稚内駅", "genre": "station", "kind": "HUB", "area": "稚内市", "region": "hokkaido-01214", "lat": 45.41581, "lon": 141.67729, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 宗谷線"], "adj": ["st-000002"] },
     { "id": "st-000002", "name": "南稚内駅", "genre": "station", "kind": "HUB", "area": "稚内市", "region": "hokkaido-01214", "lat": 45.39775, "lon": 141.68335, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 宗谷線"], "adj": ["lm-q1368344", "st-000001", "st-000004"] },
     { "id": "st-000004", "name": "勇知駅", "genre": "station", "kind": "HUB", "area": "稚内市", "region": "hokkaido-01214", "lat": 45.25895, "lon": 141.68544, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 宗谷線"], "adj": ["lm-q2154758", "st-000002", "st-000005"] },
@@ -321,7 +321,7 @@
     { "id": "st-000120", "name": "平岸駅(北海道旅客鉄道)", "genre": "station", "kind": "HUB", "area": "赤平市", "region": "hokkaido-01218", "lat": 43.54125, "lon": 142.12408, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 根室線"], "adj": ["st-000122", "st-000123"] },
     { "id": "st-000122", "name": "茂尻駅", "genre": "station", "kind": "HUB", "area": "赤平市", "region": "hokkaido-01218", "lat": 43.5372, "lon": 142.08098, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 根室線"], "adj": ["st-000119", "st-000120"] },
 
-    { "id": "lm-q1432054", "name": "紋別空港", "genre": "airport", "kind": "GW", "area": "紋別市", "region": "hokkaido-01219", "lat": 44.30417, "lon": 143.40417, "level": 2, "value": 2, "wikidata": "Q1432054", "adj": ["st-000032"] },
+    { "id": "lm-q1432054", "name": "紋別空港", "genre": "airport", "kind": "GW", "area": "紋別市", "region": "hokkaido-01219", "lat": 44.30417, "lon": 143.40417, "level": 5, "value": 5, "wikidata": "Q1432054", "adj": ["st-000032"] },
 
     { "id": "st-000028", "name": "瑞穂駅", "genre": "station", "kind": "HUB", "area": "士別市", "region": "hokkaido-01220", "lat": 44.2668, "lon": 142.39638, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 宗谷線"], "adj": ["st-000027", "st-000029"] },
     { "id": "st-000029", "name": "多寄駅", "genre": "station", "kind": "HUB", "area": "士別市", "region": "hokkaido-01220", "lat": 44.24074, "lon": 142.39636, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 宗谷線"], "adj": ["st-000028", "st-000030", "st-000031"] },
@@ -341,7 +341,7 @@
     { "id": "st-000152", "name": "別当賀駅", "genre": "station", "kind": "HUB", "area": "根室市", "region": "hokkaido-01223", "lat": 43.21833, "lon": 145.42295, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 根室線"], "adj": ["st-000150", "st-000157"] },
     { "id": "st-000157", "name": "落石駅", "genre": "station", "kind": "HUB", "area": "根室市", "region": "hokkaido-01223", "lat": 43.19771, "lon": 145.51908, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 根室線"], "adj": ["st-000149", "st-000152"] },
 
-    { "id": "lm-q908296", "name": "新千歳空港", "genre": "airport", "kind": "GW", "area": "千歳市", "region": "hokkaido-01224", "lat": 42.7752, "lon": 141.69228, "level": 8, "value": 8, "wikidata": "Q908296", "adj": ["st-000353", "st-000357"] },
+    { "id": "lm-q908296", "name": "新千歳空港", "genre": "airport", "kind": "GW", "area": "千歳市", "region": "hokkaido-01224", "lat": 42.7752, "lon": 141.69228, "level": 10, "value": 10, "wikidata": "Q908296", "adj": ["st-000353", "st-000357"] },
     { "id": "lm-q1196295", "name": "支笏湖", "genre": "nature", "kind": "LM", "area": "千歳市", "region": "hokkaido-01224", "lat": 42.75, "lon": 141.33333, "level": 3, "value": 3, "wikidata": "Q1196295", "adj": ["st-000380"] },
     { "id": "st-000345", "name": "長都駅", "genre": "station", "kind": "HUB", "area": "千歳市", "region": "hokkaido-01224", "lat": 42.85191, "lon": 141.62331, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 千歳線"], "adj": ["st-000343", "st-000347"] },
     { "id": "st-000347", "name": "千歳駅", "genre": "station", "kind": "HUB", "area": "千歳市", "region": "hokkaido-01224", "lat": 42.82826, "lon": 141.65187, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 千歳線"], "adj": ["st-000345", "st-000353"] },
@@ -432,8 +432,8 @@
     { "id": "st-000387", "name": "長万部駅", "genre": "station", "kind": "HUB", "area": "長万部町", "region": "hokkaido-01347", "lat": 42.513, "lon": 140.3755, "level": 2, "value": 2, "lines": ["北海道旅客鉄道 函館線", "北海道旅客鉄道 室蘭線"], "adj": ["st-000377", "st-000382", "st-000398"] },
     { "id": "st-000398", "name": "国縫駅", "genre": "station", "kind": "HUB", "area": "長万部町", "region": "hokkaido-01347", "lat": 42.43914, "lon": 140.32068, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 函館線"], "adj": ["st-000387", "st-000403"] },
 
-    { "id": "isl-q1432227", "name": "奥尻空港", "genre": "airport", "kind": "GW", "area": "奥尻町", "region": "hokkaido-01367", "lat": 42.07167, "lon": 139.43278, "level": 3, "value": 3, "wikidata": "Q1432227", "adj": ["isl-q11445671"] },
-    { "id": "isl-q11445671", "name": "奥尻港", "genre": "port", "kind": "GW", "area": "奥尻町", "region": "hokkaido-01367", "lat": 42.17778, "lon": 139.52, "level": 1, "value": 1, "wikidata": "Q11445671", "adj": ["isl-q1432227", "st-000412"] },
+    { "id": "isl-q1432227", "name": "奥尻空港", "genre": "airport", "kind": "GW", "area": "奥尻町", "region": "hokkaido-01367", "lat": 42.07167, "lon": 139.43278, "level": 5, "value": 5, "wikidata": "Q1432227", "adj": ["isl-q11445671"] },
+    { "id": "isl-q11445671", "name": "奥尻港", "genre": "port", "kind": "GW", "area": "奥尻町", "region": "hokkaido-01367", "lat": 42.17778, "lon": 139.52, "level": 3, "value": 3, "wikidata": "Q11445671", "adj": ["isl-q1432227", "st-000412"] },
 
     { "id": "st-000363", "name": "熱郛駅", "genre": "station", "kind": "HUB", "area": "黒松内町", "region": "hokkaido-01393", "lat": 42.67566, "lon": 140.37556, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 函館線"], "adj": ["st-000360", "st-000366"] },
     { "id": "st-000366", "name": "黒松内駅", "genre": "station", "kind": "HUB", "area": "黒松内町", "region": "hokkaido-01393", "lat": 42.66927, "lon": 140.30576, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 函館線"], "adj": ["st-000363", "st-000382"] },
@@ -473,7 +473,7 @@
 
     { "id": "st-000078", "name": "石狩沼田駅", "genre": "station", "kind": "HUB", "area": "沼田町", "region": "hokkaido-01438", "lat": 43.81053, "lon": 141.93328, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 留萌線"], "adj": ["st-000084"] },
 
-    { "id": "lm-q387048", "name": "旭川空港", "genre": "airport", "kind": "GW", "area": "東神楽町", "region": "hokkaido-01453", "lat": 43.67083, "lon": 142.4475, "level": 3, "value": 3, "wikidata": "Q387048", "adj": ["st-000108", "st-000109", "st-000110"] },
+    { "id": "lm-q387048", "name": "旭川空港", "genre": "airport", "kind": "GW", "area": "東神楽町", "region": "hokkaido-01453", "lat": 43.67083, "lon": 142.4475, "level": 5, "value": 5, "wikidata": "Q387048", "adj": ["st-000108", "st-000109", "st-000110"] },
 
     { "id": "st-000060", "name": "伊香牛駅", "genre": "station", "kind": "HUB", "area": "当麻町", "region": "hokkaido-01454", "lat": 43.87638, "lon": 142.52548, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 石北線"], "adj": ["st-000054", "st-000075"] },
     { "id": "st-000075", "name": "当麻駅", "genre": "station", "kind": "HUB", "area": "当麻町", "region": "hokkaido-01454", "lat": 43.82611, "lon": 142.51711, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 石北線"], "adj": ["st-000060", "st-000082"] },
@@ -518,14 +518,14 @@
     { "id": "st-000013", "name": "天塩中川駅", "genre": "station", "kind": "HUB", "area": "中川町", "region": "hokkaido-01471", "lat": 44.81229, "lon": 142.07548, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 宗谷線"], "adj": ["st-000011", "st-000014"] },
     { "id": "st-000014", "name": "佐久駅", "genre": "station", "kind": "HUB", "area": "中川町", "region": "hokkaido-01471", "lat": 44.74437, "lon": 142.04879, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 宗谷線"], "adj": ["isl-q59760746", "st-000013", "st-000015"] },
 
-    { "id": "isl-q59761069", "name": "天売港", "genre": "port", "kind": "GW", "area": "羽幌町", "region": "hokkaido-01484", "lat": 44.43917, "lon": 141.32917, "level": 1, "value": 1, "wikidata": "Q59761069", "adj": ["isl-q59760746"] },
-    { "id": "isl-q59760746", "name": "焼尻港", "genre": "port", "kind": "GW", "area": "羽幌町", "region": "hokkaido-01484", "lat": 44.44111, "lon": 141.42889, "level": 1, "value": 1, "wikidata": "Q59760746", "adj": ["isl-q59761069", "st-000014"] },
+    { "id": "isl-q59761069", "name": "天売港", "genre": "port", "kind": "GW", "area": "羽幌町", "region": "hokkaido-01484", "lat": 44.43917, "lon": 141.32917, "level": 3, "value": 3, "wikidata": "Q59761069", "adj": ["isl-q59760746"] },
+    { "id": "isl-q59760746", "name": "焼尻港", "genre": "port", "kind": "GW", "area": "羽幌町", "region": "hokkaido-01484", "lat": 44.44111, "lon": 141.42889, "level": 3, "value": 3, "wikidata": "Q59760746", "adj": ["isl-q59761069", "st-000014"] },
 
     { "id": "st-000005", "name": "兜沼駅", "genre": "station", "kind": "HUB", "area": "豊富町", "region": "hokkaido-01516", "lat": 45.22019, "lon": 141.69791, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 宗谷線"], "adj": ["st-000004", "st-000006"] },
     { "id": "st-000006", "name": "豊富駅", "genre": "station", "kind": "HUB", "area": "豊富町", "region": "hokkaido-01516", "lat": 45.10437, "lon": 141.77241, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 宗谷線"], "adj": ["st-000005", "st-000007"] },
 
-    { "id": "isl-q3275961", "name": "礼文空港", "genre": "airport", "kind": "GW", "area": "礼文町", "region": "hokkaido-01517", "lat": 45.455, "lon": 141.03917, "level": 2, "value": 2, "wikidata": "Q3275961", "adj": ["isl-q11667665"] },
-    { "id": "isl-q11667665", "name": "香深港", "genre": "port", "kind": "GW", "area": "礼文町", "region": "hokkaido-01517", "lat": 45.29972, "lon": 141.05306, "level": 1, "value": 1, "wikidata": "Q11667665", "adj": ["isl-q3275961", "lm-q2154758"] },
+    { "id": "isl-q3275961", "name": "礼文空港", "genre": "airport", "kind": "GW", "area": "礼文町", "region": "hokkaido-01517", "lat": 45.455, "lon": 141.03917, "level": 5, "value": 5, "wikidata": "Q3275961", "adj": ["isl-q11667665"] },
+    { "id": "isl-q11667665", "name": "香深港", "genre": "port", "kind": "GW", "area": "礼文町", "region": "hokkaido-01517", "lat": 45.29972, "lon": 141.05306, "level": 3, "value": 3, "wikidata": "Q11667665", "adj": ["isl-q3275961", "lm-q2154758"] },
 
     { "id": "lm-q2154758", "name": "利尻山", "genre": "nature", "kind": "LM", "area": "利尻町", "region": "hokkaido-01518", "lat": 45.17865, "lon": 141.24192, "level": 3, "value": 3, "wikidata": "Q2154758", "adj": ["isl-q11667665", "st-000004"] },
 
@@ -557,7 +557,7 @@
     { "id": "lm-q1329031", "name": "サロマ湖", "genre": "nature", "kind": "LM", "area": "湧別町", "region": "hokkaido-01559", "lat": 44.16667, "lon": 143.71667, "level": 3, "value": 3, "wikidata": "Q1329031", "adj": ["st-000032"] },
     { "id": "lm-q11641304", "name": "道の駅愛ランド湧別", "genre": "park", "kind": "LM", "area": "湧別町", "region": "hokkaido-01559", "lat": 44.13075, "lon": 143.71922, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11641304" },
 
-    { "id": "lm-q651482", "name": "女満別空港", "genre": "airport", "kind": "GW", "area": "大空町", "region": "hokkaido-01564", "lat": 43.88056, "lon": 144.16417, "level": 3, "value": 3, "wikidata": "Q651482", "adj": ["st-000051", "st-000059"] },
+    { "id": "lm-q651482", "name": "女満別空港", "genre": "airport", "kind": "GW", "area": "大空町", "region": "hokkaido-01564", "lat": 43.88056, "lon": 144.16417, "level": 5, "value": 5, "wikidata": "Q651482", "adj": ["st-000051", "st-000059"] },
     { "id": "st-000051", "name": "女満別駅", "genre": "station", "kind": "HUB", "area": "大空町", "region": "hokkaido-01564", "lat": 43.91561, "lon": 144.16999, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 石北線"], "adj": ["lm-q651482", "st-000043", "st-000059"] },
     { "id": "st-000059", "name": "西女満別駅", "genre": "station", "kind": "HUB", "area": "大空町", "region": "hokkaido-01564", "lat": 43.87981, "lon": 144.14794, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 石北線"], "adj": ["lm-q651482", "st-000051", "st-000072"] },
 
@@ -638,7 +638,7 @@
     { "id": "st-000318", "name": "西庶路駅", "genre": "station", "kind": "HUB", "area": "白糠町", "region": "hokkaido-01668", "lat": 42.97669, "lon": 144.13033, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 根室線"], "adj": ["st-000316", "st-000321"] },
     { "id": "st-000321", "name": "白糠駅", "genre": "station", "kind": "HUB", "area": "白糠町", "region": "hokkaido-01668", "lat": 42.95624, "lon": 144.07606, "level": 1, "value": 1, "lines": ["北海道旅客鉄道 根室線"], "adj": ["st-000318", "st-000339"] },
 
-    { "id": "lm-q1432123", "name": "中標津空港", "genre": "airport", "kind": "GW", "area": "中標津町", "region": "hokkaido-01692", "lat": 43.5775, "lon": 144.96, "level": 3, "value": 3, "wikidata": "Q1432123", "adj": ["lm-q1194619"] },
+    { "id": "lm-q1432123", "name": "中標津空港", "genre": "airport", "kind": "GW", "area": "中標津町", "region": "hokkaido-01692", "lat": 43.5775, "lon": 144.96, "level": 5, "value": 5, "wikidata": "Q1432123", "adj": ["lm-q1194619"] },
 
     { "id": "lm-q714555", "name": "羅臼岳", "genre": "nature", "kind": "LM", "area": "羅臼町", "region": "hokkaido-01694", "lat": 44.07583, "lon": 145.1225, "level": 3, "value": 3, "wikidata": "Q714555", "adj": ["st-000053"] }
   ]

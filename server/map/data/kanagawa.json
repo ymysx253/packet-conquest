@@ -1,7 +1,7 @@
 {
   "region": "kanagawa",
   "name": "神奈川県",
-  "version": 20,
+  "version": 22,
   "updatedAt": "2026-10-19",
   "note": "神奈川県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -101,7 +101,7 @@
     { "id": "lm-q5372158", "name": "山下公園", "genre": "park", "kind": "LM", "area": "横浜市中区", "region": "kanagawa-14104", "lat": 35.44578, "lon": 139.64975, "level": 2, "value": 2, "wikidata": "Q5372158", "adj": ["st-004686", "st-004704"] },
     { "id": "lm-q11257362", "name": "安藤百福発明記念館横浜", "genre": "museum", "kind": "LM", "area": "横浜市中区", "region": "kanagawa-14104", "lat": 35.45547, "lon": 139.63886, "level": 2, "value": 2, "wikidata": "Q11257362", "adj": ["st-004656", "st-004679"] },
     { "id": "lm-q6156562", "name": "海上保安資料館横浜館", "genre": "museum", "kind": "LM", "area": "横浜市中区", "region": "kanagawa-14104", "lat": 35.45431, "lon": 139.64431, "level": 2, "value": 2, "wikidata": "Q6156562", "adj": ["st-004679", "st-004686"] },
-    { "id": "lm-q3518430", "name": "大さん橋", "genre": "port", "kind": "GW", "area": "横浜市中区", "region": "kanagawa-14104", "lat": 35.4517, "lon": 139.648, "level": 2, "value": 2, "wikidata": "Q3518430", "adj": ["st-004679", "st-004686"] },
+    { "id": "lm-q3518430", "name": "大さん橋", "genre": "port", "kind": "GW", "area": "横浜市中区", "region": "kanagawa-14104", "lat": 35.4517, "lon": 139.648, "level": 3, "value": 3, "wikidata": "Q3518430", "adj": ["st-004679", "st-004686", "st-004704"] },
     { "id": "lm-q11121603", "name": "横浜文化体育館", "genre": "stadium", "kind": "LM", "area": "横浜市中区", "region": "kanagawa-14104", "lat": 35.441, "lon": 139.637, "level": 1, "value": 1, "wikidata": "Q11121603", "adj": ["st-004708"] },
     { "id": "lm-q4383788", "name": "カトリック山手教会", "genre": "shrine_temple", "kind": "LM", "area": "横浜市中区", "region": "kanagawa-14104", "lat": 35.43639, "lon": 139.64722, "level": 2, "value": 2, "hackable": false, "wikidata": "Q4383788" },
     { "id": "lm-q11262875", "name": "よこはまコスモワールド", "genre": "park", "kind": "LM", "area": "横浜市中区", "region": "kanagawa-14104", "lat": 35.4552, "lon": 139.63668, "level": 2, "value": 2, "hackable": false, "wikidata": "Q11262875" },
@@ -112,7 +112,7 @@
     { "id": "st-004686", "name": "日本大通り駅", "genre": "station", "kind": "HUB", "area": "横浜市中区", "region": "kanagawa-14104", "lat": 35.44624, "lon": 139.6437, "level": 1, "value": 1, "lines": ["横浜高速鉄道 みなとみらい21線"], "adj": ["lm-q1148681", "lm-q1207989", "lm-q3518430", "lm-q5372158", "lm-q6156562", "lm-q942479", "st-004679", "st-004704"] },
     { "id": "st-004691", "name": "関内駅", "genre": "station", "kind": "HUB", "area": "横浜市中区", "region": "kanagawa-14104", "lat": 35.44558, "lon": 139.63545, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 根岸線", "横浜市 1号線", "横浜市 3号線"], "adj": ["lm-q1057482", "lm-q1148681", "lm-q5365233", "st-004675", "st-004708", "st-004716"] },
     { "id": "st-004696", "name": "日ノ出町駅", "genre": "station", "kind": "HUB", "area": "横浜市中区", "region": "kanagawa-14104", "lat": 35.44556, "lon": 139.6267, "level": 1, "value": 1, "lines": ["京浜急行電鉄 本線"], "adj": ["lm-q861318", "st-004660", "st-004712"] },
-    { "id": "st-004704", "name": "元町・中華街駅", "genre": "station", "kind": "HUB", "area": "横浜市中区", "region": "kanagawa-14104", "lat": 35.44165, "lon": 139.65171, "level": 1, "value": 1, "lines": ["横浜高速鉄道 みなとみらい21線"], "adj": ["lm-q1207989", "lm-q5372158", "st-004686"] },
+    { "id": "st-004704", "name": "元町・中華街駅", "genre": "station", "kind": "HUB", "area": "横浜市中区", "region": "kanagawa-14104", "lat": 35.44165, "lon": 139.65171, "level": 1, "value": 1, "lines": ["横浜高速鉄道 みなとみらい21線"], "adj": ["lm-q1207989", "lm-q3518430", "lm-q5372158", "st-004686"] },
     { "id": "st-004708", "name": "伊勢佐木長者町駅", "genre": "station", "kind": "HUB", "area": "横浜市中区", "region": "kanagawa-14104", "lat": 35.44103, "lon": 139.63285, "level": 1, "value": 1, "lines": ["横浜市 1号線"], "adj": ["lm-q1057482", "lm-q11121603", "st-004691", "st-004718"] },
     { "id": "st-004716", "name": "石川町駅", "genre": "station", "kind": "HUB", "area": "横浜市中区", "region": "kanagawa-14104", "lat": 35.43925, "lon": 139.64276, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 根岸線"], "adj": ["lm-q1148681", "lm-q1207989", "st-004691", "st-004752"] },
     { "id": "st-004752", "name": "山手駅", "genre": "station", "kind": "HUB", "area": "横浜市中区", "region": "kanagawa-14104", "lat": 35.42769, "lon": 139.64609, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 根岸線"], "adj": ["lm-q4249885", "st-004716", "st-004772"] },

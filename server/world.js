@@ -241,6 +241,7 @@ class World {
     if (!Array.isArray(n.adj)) n.adj = [];
     if (!n.hits) n.hits = n.isPlayerNode ? 1 : Math.max(1, n.adj.length);
     if (!n.progress || typeof n.progress !== 'object') n.progress = {};
+    if (!Array.isArray(n.routes)) n.routes = []; // 航路(空港・港だけ)
     const t = n.t0 || tileOf(n.lat, n.lon, 0);
     n.t0 = t;
     this.tile(t).nodes.set(n.id, n);
@@ -292,6 +293,7 @@ class World {
       isPlayerNode: !!n.isPlayerNode, protectedUntil: n.protectedUntil || 0, hackable: n.hackable !== false, lines: n.lines || [],
       hits: n.hits || 1, progress: n.progress || {}, // 突破に必要な回数と、攻め手ごとの正解回数(第 14 章)
       company: n.company || null, // 命名権など企業名の施設の企業名
+      routes: n.routes && n.routes.length ? n.routes : undefined, // 航路(空港・港)。行き先 { to, mode, name, lat, lon }
     };
   }
   send(p, msg) { if (p.ws && p.ws.readyState === 1) p.ws.send(JSON.stringify(msg)); }
@@ -622,7 +624,8 @@ class World {
       const stack = [home.id]; set.add(home.id);
       while (stack.length) {
         const cur = byId.get(stack.pop());
-        const nb = new Set([...(cur.adj || []), ...(this.adj.get(cur.id) || [])]);
+        // 線(adj)と、航路(空路・海路)でつながった所有拠点をたどる
+        const nb = new Set([...(cur.adj || []), ...(this.adj.get(cur.id) || []), ...(cur.routes || []).map((r) => r.to)]);
         for (const m of nb) if (byId.has(m) && !set.has(m)) { set.add(m); stack.push(m); }
       }
     }
@@ -641,11 +644,13 @@ class World {
     if (n.owner) { const o = await this.getPlayer(n.owner); if (o && (o.nodesOwned || 0) <= PROTECT_MAX_NODES && this.isNewbie(o)) return false; }
     const nb = this.adj.get(nodeId) || new Set();
     const mine = [...nb].filter((id) => { const m = this.nodes.get(id); return m && m.owner === pid; });
-    if (!mine.length) return false;
+    // 航路(2026-10-19): 自分の拠点からたどれる空港・港を占領していれば、その航路の先の空港・港を攻撃できる(行き先は遠くてよい)
+    const viaRoute = (n.routes || []).map((r) => r.to);
+    if (!mine.length && !viaRoute.length) return false;
     const p = await this.getPlayer(pid);
     if (!p) return false;
     const reach = await this.reach(p);
-    return mine.some((id) => reach.has(id));
+    return mine.some((id) => reach.has(id)) || viaRoute.some((id) => reach.has(id));
   }
 
   // 出題レベル。難しさはレベルだけで決める(設計書 3.2)。突破に必要な回数は hits(つながりの本数)で別に決まる

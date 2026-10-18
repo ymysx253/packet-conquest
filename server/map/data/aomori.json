@@ -1,7 +1,7 @@
 {
   "region": "aomori",
   "name": "青森県",
-  "version": 18,
+  "version": 20,
   "updatedAt": "2026-10-19",
   "note": "青森県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -144,7 +144,7 @@
     { "id": "lm-q11532270", "name": "松見の滝", "genre": "nature", "kind": "LM", "area": "十和田市", "region": "aomori-02206", "lat": 40.55833, "lon": 140.90639, "level": 1, "value": 1, "wikidata": "Q11532270", "adj": ["lm-q1196132"] },
     { "id": "lm-q1168847", "name": "十和田火山", "genre": "nature", "kind": "LM", "area": "十和田市", "region": "aomori-02206", "lat": 40.45889, "lon": 140.91194, "level": 1, "value": 1, "wikidata": "Q1168847", "adj": ["lm-q1196132"] },
 
-    { "id": "lm-q3566938", "name": "三沢空港", "genre": "airport", "kind": "GW", "area": "三沢市", "region": "aomori-02207", "lat": 40.70528, "lon": 141.37194, "level": 1, "value": 1, "wikidata": "Q3566938", "adj": ["lm-q11662211", "st-000570"] },
+    { "id": "lm-q3566938", "name": "三沢空港", "genre": "airport", "kind": "GW", "area": "三沢市", "region": "aomori-02207", "lat": 40.70528, "lon": 141.37194, "level": 5, "value": 5, "wikidata": "Q3566938", "adj": ["lm-q11662211", "st-000570"] },
     { "id": "lm-q11662211", "name": "青森県立三沢航空科学館", "genre": "museum", "kind": "LM", "area": "三沢市", "region": "aomori-02207", "lat": 40.70825, "lon": 141.39036, "level": 1, "value": 1, "wikidata": "Q11662211", "adj": ["lm-q3566938"] },
     { "id": "st-000570", "name": "三沢駅", "genre": "station", "kind": "HUB", "area": "三沢市", "region": "aomori-02207", "lat": 40.67061, "lon": 141.35334, "level": 1, "value": 1, "lines": ["青い森鉄道 青い森鉄道線"], "adj": ["lm-q3566938", "st-000563", "st-000579"] },
 

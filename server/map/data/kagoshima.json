@@ -1,7 +1,7 @@
 {
   "region": "kagoshima",
   "name": "鹿児島県",
-  "version": 18,
+  "version": 20,
   "updatedAt": "2026-10-19",
   "note": "鹿児島県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -149,7 +149,7 @@
     { "id": "st-010122", "name": "薩摩川尻駅", "genre": "station", "kind": "HUB", "area": "指宿市", "region": "kagoshima-46210", "lat": 31.19495, "lon": 130.5652, "level": 1, "value": 1, "lines": ["九州旅客鉄道 指宿枕崎線"], "adj": ["lm-q3214941", "st-010120", "st-010123"] },
     { "id": "st-010123", "name": "西大山駅", "genre": "station", "kind": "HUB", "area": "指宿市", "region": "kagoshima-46210", "lat": 31.1903, "lon": 130.57606, "level": 1, "value": 1, "lines": ["九州旅客鉄道 指宿枕崎線"], "adj": ["lm-q11283335", "st-010121", "st-010122"] },
 
-    { "id": "isl-q30922113", "name": "里港", "genre": "port", "kind": "GW", "area": "薩摩川内市", "region": "kagoshima-46215", "lat": 31.84392, "lon": 129.92158, "level": 1, "value": 1, "wikidata": "Q30922113", "adj": ["st-009962"] },
+    { "id": "isl-q30922113", "name": "里港", "genre": "port", "kind": "GW", "area": "薩摩川内市", "region": "kagoshima-46215", "lat": 31.84392, "lon": 129.92158, "level": 3, "value": 3, "wikidata": "Q30922113", "adj": ["st-009962"] },
     { "id": "st-009956", "name": "西方駅", "genre": "station", "kind": "HUB", "area": "薩摩川内市", "region": "kagoshima-46215", "lat": 31.91708, "lon": 130.22355, "level": 1, "value": 1, "lines": ["肥薩おれんじ鉄道 肥薩おれんじ鉄道線"], "adj": ["st-009953", "st-009962"] },
     { "id": "st-009962", "name": "薩摩高城駅", "genre": "station", "kind": "HUB", "area": "薩摩川内市", "region": "kagoshima-46215", "lat": 31.89285, "lon": 130.22059, "level": 1, "value": 1, "lines": ["肥薩おれんじ鉄道 肥薩おれんじ鉄道線"], "adj": ["isl-q30922113", "st-009956", "st-009972"] },
     { "id": "st-009972", "name": "草道駅", "genre": "station", "kind": "HUB", "area": "薩摩川内市", "region": "kagoshima-46215", "lat": 31.85462, "lon": 130.23326, "level": 1, "value": 1, "lines": ["肥薩おれんじ鉄道 肥薩おれんじ鉄道線"], "adj": ["st-009962", "st-009976"] },
@@ -197,7 +197,7 @@
     { "id": "st-010091", "name": "志布志駅", "genre": "station", "kind": "HUB", "area": "志布志市", "region": "kagoshima-46221", "lat": 31.47285, "lon": 131.09804, "level": 1, "value": 1, "lines": ["九州旅客鉄道 日南線"], "adj": ["lm-q11490876", "lm-q11543317", "st-010092"] },
     { "id": "st-010092", "name": "大隅夏井駅", "genre": "station", "kind": "HUB", "area": "志布志市", "region": "kagoshima-46221", "lat": 31.47003, "lon": 131.13616, "level": 1, "value": 1, "lines": ["九州旅客鉄道 日南線"], "adj": ["st-010091", "st-010094"] },
 
-    { "id": "lm-q1430769", "name": "奄美空港", "genre": "airport", "kind": "GW", "area": "奄美市", "region": "kagoshima-46222", "lat": 28.43083, "lon": 129.7125, "level": 3, "value": 3, "wikidata": "Q1430769", "adj": ["isl-q38266931", "isl-q702676", "lm-q1927346"] },
+    { "id": "lm-q1430769", "name": "奄美空港", "genre": "airport", "kind": "GW", "area": "奄美市", "region": "kagoshima-46222", "lat": 28.43083, "lon": 129.7125, "level": 5, "value": 5, "wikidata": "Q1430769", "adj": ["isl-q38266931", "isl-q702676", "lm-q1927346"] },
     { "id": "lm-q11444846", "name": "奄美パーク", "genre": "park", "kind": "LM", "area": "奄美市", "region": "kagoshima-46222", "lat": 28.41667, "lon": 129.69444, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11444846" },
 
     { "id": "lm-q4458048", "name": "知覧特攻平和会館", "genre": "museum", "kind": "LM", "area": "南九州市", "region": "kagoshima-46223", "lat": 31.36333, "lon": 130.43444, "level": 1, "value": 1, "wikidata": "Q4458048", "adj": ["st-010099"] },
@@ -220,12 +220,12 @@
     { "id": "isl-q705894", "name": "硫黄島", "genre": "nature", "kind": "GW", "area": "三島村", "region": "kagoshima-46303", "lat": 30.79083, "lon": 130.29611, "level": 2, "value": 2, "wikidata": "Q705894", "adj": ["isl-q4520623", "isl-q4520676", "lm-q19960462"] },
     { "id": "isl-q4520623", "name": "竹島", "genre": "nature", "kind": "GW", "area": "三島村", "region": "kagoshima-46303", "lat": 30.81389, "lon": 130.41725, "level": 2, "value": 2, "wikidata": "Q4520623", "adj": ["isl-q705894", "lm-q431595"] },
 
-    { "id": "isl-q38266930", "name": "中之島港", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.84008, "lon": 129.84878, "level": 1, "value": 1, "wikidata": "Q38266930", "adj": ["isl-q38266928", "isl-q94738"] },
-    { "id": "isl-q38266928", "name": "切石港", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.61147, "lon": 129.71311, "level": 1, "value": 1, "wikidata": "Q38266928", "adj": ["isl-q38266929", "isl-q38266930"] },
-    { "id": "isl-q38266929", "name": "元浦港", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.61006, "lon": 129.6965, "level": 1, "value": 1, "wikidata": "Q38266929", "adj": ["isl-q38266927", "isl-q38266928", "isl-q4520501"] },
+    { "id": "isl-q38266930", "name": "中之島港", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.84008, "lon": 129.84878, "level": 3, "value": 3, "wikidata": "Q38266930", "adj": ["isl-q38266928", "isl-q94738"] },
+    { "id": "isl-q38266928", "name": "切石港", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.61147, "lon": 129.71311, "level": 3, "value": 3, "wikidata": "Q38266928", "adj": ["isl-q38266929", "isl-q38266930"] },
+    { "id": "isl-q38266929", "name": "元浦港", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.61006, "lon": 129.6965, "level": 3, "value": 3, "wikidata": "Q38266929", "adj": ["isl-q38266927", "isl-q38266928", "isl-q4520501"] },
     { "id": "isl-q94738", "name": "口之島", "genre": "nature", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.96667, "lon": 129.91667, "level": 2, "value": 2, "wikidata": "Q94738", "adj": ["isl-q38266930", "lm-q19960462"] },
-    { "id": "isl-q38266927", "name": "やすら浜港", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.45592, "lon": 129.59397, "level": 1, "value": 1, "wikidata": "Q38266927", "adj": ["isl-q38266929", "isl-q38266931"] },
-    { "id": "isl-q38266931", "name": "宝島港", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.14692, "lon": 129.21875, "level": 1, "value": 1, "wikidata": "Q38266931", "adj": ["isl-q38266927", "lm-q1430769"] },
+    { "id": "isl-q38266927", "name": "やすら浜港", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.45592, "lon": 129.59397, "level": 3, "value": 3, "wikidata": "Q38266927", "adj": ["isl-q38266929", "isl-q38266931"] },
+    { "id": "isl-q38266931", "name": "宝島港", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.14692, "lon": 129.21875, "level": 3, "value": 3, "wikidata": "Q38266931", "adj": ["isl-q38266927", "lm-q1430769"] },
     { "id": "isl-q4520552", "name": "臥蛇島", "genre": "nature", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.9, "lon": 129.53333, "level": 2, "value": 2, "wikidata": "Q4520552", "adj": ["isl-q4520501"] },
     { "id": "isl-q4520501", "name": "平島", "genre": "nature", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.68781, "lon": 129.52836, "level": 2, "value": 2, "wikidata": "Q4520501", "adj": ["isl-q38266929", "isl-q4520552"] },
 
@@ -241,12 +241,12 @@
 
     { "id": "lm-q11669344", "name": "高山城", "genre": "heritage", "kind": "LM", "area": "肝付町", "region": "kagoshima-46492", "lat": 31.31744, "lon": 130.96567, "level": 1, "value": 1, "wikidata": "Q11669344", "adj": ["lm-q11543317", "lm-q836530"] },
 
-    { "id": "lm-q1432159", "name": "種子島空港", "genre": "airport", "kind": "GW", "area": "中種子町", "region": "kagoshima-46501", "lat": 30.605, "lon": 130.99167, "level": 2, "value": 2, "wikidata": "Q1432159", "adj": ["lm-q11485695"] },
+    { "id": "lm-q1432159", "name": "種子島空港", "genre": "airport", "kind": "GW", "area": "中種子町", "region": "kagoshima-46501", "lat": 30.605, "lon": 130.99167, "level": 5, "value": 5, "wikidata": "Q1432159", "adj": ["lm-q11485695"] },
 
     { "id": "lm-q11542680", "name": "横峯遺跡", "genre": "heritage", "kind": "LM", "area": "南種子町", "region": "kagoshima-46502", "lat": 30.44331, "lon": 130.87356, "level": 1, "value": 1, "wikidata": "Q11542680", "adj": ["lm-q11485695", "lm-q1433247"] },
     { "id": "lm-q11485695", "name": "広田遺跡", "genre": "heritage", "kind": "LM", "area": "南種子町", "region": "kagoshima-46502", "lat": 30.42486, "lon": 130.96728, "level": 1, "value": 1, "wikidata": "Q11485695", "adj": ["lm-q11542680", "lm-q1432159"] },
 
-    { "id": "lm-q1433247", "name": "屋久島空港", "genre": "airport", "kind": "GW", "area": "屋久島町", "region": "kagoshima-46505", "lat": 30.38556, "lon": 130.65917, "level": 2, "value": 2, "wikidata": "Q1433247", "adj": ["lm-q10950373", "lm-q11542680"] },
+    { "id": "lm-q1433247", "name": "屋久島空港", "genre": "airport", "kind": "GW", "area": "屋久島町", "region": "kagoshima-46505", "lat": 30.38556, "lon": 130.65917, "level": 5, "value": 5, "wikidata": "Q1433247", "adj": ["lm-q10950373", "lm-q11542680"] },
     { "id": "lm-q10950373", "name": "宮之浦岳", "genre": "nature", "kind": "LM", "area": "屋久島町", "region": "kagoshima-46505", "lat": 30.33333, "lon": 130.51667, "level": 1, "value": 1, "wikidata": "Q10950373", "adj": ["lm-q11344357", "lm-q11550240", "lm-q1433247"] },
     { "id": "lm-q11550240", "name": "永田岳", "genre": "nature", "kind": "LM", "area": "屋久島町", "region": "kagoshima-46505", "lat": 30.34278, "lon": 130.4925, "level": 1, "value": 1, "wikidata": "Q11550240", "adj": ["lm-q10950373", "lm-q19960462"] },
     { "id": "lm-q11344357", "name": "モッチョム岳", "genre": "nature", "kind": "LM", "area": "屋久島町", "region": "kagoshima-46505", "lat": 30.26056, "lon": 130.56472, "level": 1, "value": 1, "wikidata": "Q11344357", "adj": ["lm-q10950373"] },
@@ -254,15 +254,15 @@
 
     { "id": "isl-q702676", "name": "請島", "genre": "nature", "kind": "GW", "area": "瀬戸内町", "region": "kagoshima-46525", "lat": 28.02972, "lon": 129.23694, "level": 2, "value": 2, "wikidata": "Q702676", "adj": ["isl-q34954359", "lm-q1430769"] },
 
-    { "id": "lm-q1927346", "name": "喜界空港", "genre": "airport", "kind": "GW", "area": "喜界町", "region": "kagoshima-46529", "lat": 28.32139, "lon": 129.92806, "level": 2, "value": 2, "wikidata": "Q1927346", "adj": ["isl-q30929293", "lm-q1430769"] },
+    { "id": "lm-q1927346", "name": "喜界空港", "genre": "airport", "kind": "GW", "area": "喜界町", "region": "kagoshima-46529", "lat": 28.32139, "lon": 129.92806, "level": 5, "value": 5, "wikidata": "Q1927346", "adj": ["isl-q30929293", "lm-q1430769"] },
 
-    { "id": "isl-q34954359", "name": "亀徳港", "genre": "port", "kind": "GW", "area": "徳之島町", "region": "kagoshima-46530", "lat": 27.73812, "lon": 129.02365, "level": 1, "value": 1, "wikidata": "Q34954359", "adj": ["isl-q1141847", "isl-q2901234", "isl-q702676"] },
+    { "id": "isl-q34954359", "name": "亀徳港", "genre": "port", "kind": "GW", "area": "徳之島町", "region": "kagoshima-46530", "lat": 27.73812, "lon": 129.02365, "level": 3, "value": 3, "wikidata": "Q34954359", "adj": ["isl-q1141847", "isl-q2901234", "isl-q702676"] },
 
-    { "id": "isl-q1141847", "name": "徳之島空港", "genre": "airport", "kind": "GW", "area": "天城町", "region": "kagoshima-46531", "lat": 27.83639, "lon": 128.88139, "level": 2, "value": 2, "wikidata": "Q1141847", "adj": ["isl-q250462", "isl-q34954359"] },
+    { "id": "isl-q1141847", "name": "徳之島空港", "genre": "airport", "kind": "GW", "area": "天城町", "region": "kagoshima-46531", "lat": 27.83639, "lon": 128.88139, "level": 5, "value": 5, "wikidata": "Q1141847", "adj": ["isl-q250462", "isl-q34954359"] },
 
-    { "id": "isl-q2901234", "name": "沖永良部空港", "genre": "airport", "kind": "GW", "area": "和泊町", "region": "kagoshima-46533", "lat": 27.43167, "lon": 128.70556, "level": 2, "value": 2, "wikidata": "Q2901234", "adj": ["isl-q34954359", "isl-q34966953"] },
-    { "id": "isl-q34966953", "name": "和泊港", "genre": "port", "kind": "GW", "area": "和泊町", "region": "kagoshima-46533", "lat": 27.39821, "lon": 128.66449, "level": 1, "value": 1, "wikidata": "Q34966953", "adj": ["isl-q2901234", "lm-q1927310"] },
+    { "id": "isl-q2901234", "name": "沖永良部空港", "genre": "airport", "kind": "GW", "area": "和泊町", "region": "kagoshima-46533", "lat": 27.43167, "lon": 128.70556, "level": 5, "value": 5, "wikidata": "Q2901234", "adj": ["isl-q34954359", "isl-q34966953"] },
+    { "id": "isl-q34966953", "name": "和泊港", "genre": "port", "kind": "GW", "area": "和泊町", "region": "kagoshima-46533", "lat": 27.39821, "lon": 128.66449, "level": 3, "value": 3, "wikidata": "Q34966953", "adj": ["isl-q2901234", "lm-q1927310"] },
 
-    { "id": "lm-q1927310", "name": "与論空港", "genre": "airport", "kind": "GW", "area": "与論町", "region": "kagoshima-46535", "lat": 27.04389, "lon": 128.40167, "level": 2, "value": 2, "wikidata": "Q1927310", "adj": ["isl-q34966953", "lm-q4521065"] }
+    { "id": "lm-q1927310", "name": "与論空港", "genre": "airport", "kind": "GW", "area": "与論町", "region": "kagoshima-46535", "lat": 27.04389, "lon": 128.40167, "level": 5, "value": 5, "wikidata": "Q1927310", "adj": ["isl-q34966953", "lm-q4521065"] }
   ]
 }

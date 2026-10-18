@@ -1,7 +1,7 @@
 {
   "region": "yamagata",
   "name": "山形県",
-  "version": 18,
+  "version": 20,
   "updatedAt": "2026-10-19",
   "note": "山形県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -105,7 +105,7 @@
     { "id": "st-001048", "name": "小岩川駅", "genre": "station", "kind": "HUB", "area": "鶴岡市", "region": "yamagata-06203", "lat": 38.59041, "lon": 139.566, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-001042", "st-001056"] },
     { "id": "st-001056", "name": "鼠ヶ関駅", "genre": "station", "kind": "HUB", "area": "鶴岡市", "region": "yamagata-06203", "lat": 38.55559, "lon": 139.54876, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-001048", "st-001065"] },
 
-    { "id": "lm-q1927323", "name": "庄内空港", "genre": "airport", "kind": "GW", "area": "酒田市", "region": "yamagata-06204", "lat": 38.81222, "lon": 139.78722, "level": 2, "value": 2, "wikidata": "Q1927323", "adj": ["lm-q11675955"] },
+    { "id": "lm-q1927323", "name": "庄内空港", "genre": "airport", "kind": "GW", "area": "酒田市", "region": "yamagata-06204", "lat": 38.81222, "lon": 139.78722, "level": 5, "value": 5, "wikidata": "Q1927323", "adj": ["lm-q11675955"] },
     { "id": "lm-q3539675", "name": "土門拳記念館", "genre": "museum", "kind": "LM", "area": "酒田市", "region": "yamagata-06204", "lat": 38.8913, "lon": 139.82372, "level": 1, "value": 1, "wikidata": "Q3539675", "adj": ["st-000979"] },
     { "id": "lm-q11521018", "name": "本間美術館", "genre": "museum", "kind": "LM", "area": "酒田市", "region": "yamagata-06204", "lat": 38.92339, "lon": 139.84206, "level": 1, "value": 1, "wikidata": "Q11521018", "adj": ["st-000979"] },
     { "id": "lm-q22118833", "name": "酒田市美術館", "genre": "museum", "kind": "LM", "area": "酒田市", "region": "yamagata-06204", "lat": 38.89306, "lon": 139.81583, "level": 1, "value": 1, "wikidata": "Q22118833", "adj": ["st-000979"] },

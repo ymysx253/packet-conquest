@@ -1,7 +1,7 @@
 {
   "region": "tokyo",
   "name": "東京",
-  "version": 29,
+  "version": 31,
   "updatedAt": "2026-10-19",
   "note": "東京の拠点マスター。名前は地名ではなく正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。genre は名所のジャンル、kind はゲーム内の役割。hackable: false は存在するがハック不可(寺社など)。位置は緯度・経度(おおよそ)。ゲーム内のネットワークと機器はすべて架空。level は 1〜999(東京は 1〜5)。Cosmos DB の nodes コンテナーと同じ項目(設計書 8.7)。",
   "sources": [
@@ -370,7 +370,7 @@
     { "id": "st-004196", "name": "自由が丘駅", "genre": "station", "kind": "LM", "area": "目黒区", "region": "tokyo-meguro", "lat": 35.60731, "lon": 139.66851, "level": 2, "value": 2, "lines": ["東急電鉄 大井町線", "東急電鉄 東横線"], "adj": ["st-004143", "st-004210", "st-004216", "st-004245"] },
     { "id": "st-004210", "name": "緑が丘駅", "genre": "station", "kind": "HUB", "area": "目黒区", "region": "tokyo-meguro", "lat": 35.60658, "lon": 139.67875, "level": 1, "value": 1, "lines": ["東急電鉄 大井町線"], "adj": ["lm-q116264906", "st-004196", "st-004200"] },
 
-    { "id": "haneda", "name": "羽田空港", "genre": "airport", "kind": "GW", "area": "大田区", "region": "tokyo-ota", "lat": 35.5494, "lon": 139.7798, "level": 8, "value": 8, "adj": ["st-004348", "st-004361", "st-004364", "st-004368", "st-004372", "st-004373", "st-004382", "st-004393"] },
+    { "id": "haneda", "name": "羽田空港", "genre": "airport", "kind": "GW", "area": "大田区", "region": "tokyo-ota", "lat": 35.5494, "lon": 139.7798, "level": 10, "value": 10, "adj": ["st-004348", "st-004361", "st-004364", "st-004368", "st-004372", "st-004373", "st-004382", "st-004393"] },
     { "id": "ikegami", "name": "池上本門寺", "genre": "shrine_temple", "kind": "LM", "area": "大田区", "region": "tokyo-ota", "lat": 35.5778, "lon": 139.7049, "level": 1, "value": 1, "hackable": false },
     { "id": "st-004200", "name": "大岡山駅", "genre": "station", "kind": "HUB", "area": "大田区", "region": "tokyo-ota", "lat": 35.60719, "lon": 139.68502, "level": 2, "value": 2, "lines": ["東急電鉄 大井町線", "東急電鉄 目黒線"], "adj": ["lm-q116264906", "st-004180", "st-004210", "st-004212", "st-004223"] },
     { "id": "st-004212", "name": "北千束駅", "genre": "station", "kind": "HUB", "area": "大田区", "region": "tokyo-ota", "lat": 35.60641, "lon": 139.69288, "level": 1, "value": 1, "lines": ["東急電鉄 大井町線"], "adj": ["lm-q116264906", "st-004200", "st-004219"] },
@@ -908,28 +908,28 @@
     { "id": "st-003065", "name": "白丸駅", "genre": "station", "kind": "HUB", "area": "奥多摩町", "region": "tokyo-okutama", "lat": 35.81197, "lon": 139.11508, "level": 1, "value": 1, "lines": ["東日本旅客鉄道 青梅線"], "adj": ["st-003058", "st-003069"] },
     { "id": "st-003069", "name": "奥多摩駅", "genre": "station", "kind": "HUB", "area": "奥多摩町", "region": "tokyo-okutama", "lat": 35.8093, "lon": 139.097, "level": 2, "value": 2, "lines": ["東日本旅客鉄道 青梅線"], "adj": ["lm-q1754449", "st-003065"] },
 
-    { "id": "isl-q1196909", "name": "大島空港", "genre": "airport", "kind": "GW", "area": "大島町", "region": "tokyo-13361", "lat": 34.78194, "lon": 139.36028, "level": 3, "value": 3, "wikidata": "Q1196909", "adj": ["isl-q48755564", "st-006336"] },
-    { "id": "isl-q48755564", "name": "元町港", "genre": "port", "kind": "GW", "area": "大島町", "region": "tokyo-13361", "lat": 34.75114, "lon": 139.35147, "level": 1, "value": 1, "wikidata": "Q48755564", "adj": ["isl-q11555565", "isl-q1196909"] },
-    { "id": "isl-q11555565", "name": "波浮港", "genre": "port", "kind": "GW", "area": "大島町", "region": "tokyo-13361", "lat": 34.68756, "lon": 139.43756, "level": 1, "value": 1, "wikidata": "Q11555565", "adj": ["isl-q26721546", "isl-q48755564"] },
+    { "id": "isl-q1196909", "name": "大島空港", "genre": "airport", "kind": "GW", "area": "大島町", "region": "tokyo-13361", "lat": 34.78194, "lon": 139.36028, "level": 5, "value": 5, "wikidata": "Q1196909", "adj": ["isl-q48755564", "st-006336"] },
+    { "id": "isl-q48755564", "name": "元町港", "genre": "port", "kind": "GW", "area": "大島町", "region": "tokyo-13361", "lat": 34.75114, "lon": 139.35147, "level": 3, "value": 3, "wikidata": "Q48755564", "adj": ["isl-q11555565", "isl-q1196909"] },
+    { "id": "isl-q11555565", "name": "波浮港", "genre": "port", "kind": "GW", "area": "大島町", "region": "tokyo-13361", "lat": 34.68756, "lon": 139.43756, "level": 3, "value": 3, "wikidata": "Q11555565", "adj": ["isl-q26721546", "isl-q48755564"] },
 
     { "id": "isl-q26721546", "name": "利島", "genre": "nature", "kind": "GW", "area": "利島村", "region": "tokyo-13362", "lat": 34.52306, "lon": 139.28028, "level": 2, "value": 2, "wikidata": "Q26721546", "adj": ["isl-q11555565", "isl-q2248108"] },
 
-    { "id": "isl-q2248108", "name": "新島空港", "genre": "airport", "kind": "GW", "area": "新島村", "region": "tokyo-13363", "lat": 34.36944, "lon": 139.26861, "level": 2, "value": 2, "wikidata": "Q2248108", "adj": ["isl-q11645056", "isl-q26721546"] },
-    { "id": "isl-q11645056", "name": "野伏港", "genre": "port", "kind": "GW", "area": "新島村", "region": "tokyo-13363", "lat": 34.33444, "lon": 139.21528, "level": 1, "value": 1, "wikidata": "Q11645056", "adj": ["isl-q11487036", "isl-q2248108"] },
-    { "id": "isl-q11487036", "name": "式根島港", "genre": "port", "kind": "GW", "area": "新島村", "region": "tokyo-13363", "lat": 34.32, "lon": 139.21944, "level": 1, "value": 1, "wikidata": "Q11487036", "adj": ["isl-q11645056", "isl-q2235009"] },
+    { "id": "isl-q2248108", "name": "新島空港", "genre": "airport", "kind": "GW", "area": "新島村", "region": "tokyo-13363", "lat": 34.36944, "lon": 139.26861, "level": 5, "value": 5, "wikidata": "Q2248108", "adj": ["isl-q11645056", "isl-q26721546"] },
+    { "id": "isl-q11645056", "name": "野伏港", "genre": "port", "kind": "GW", "area": "新島村", "region": "tokyo-13363", "lat": 34.33444, "lon": 139.21528, "level": 3, "value": 3, "wikidata": "Q11645056", "adj": ["isl-q11487036", "isl-q2248108"] },
+    { "id": "isl-q11487036", "name": "式根島港", "genre": "port", "kind": "GW", "area": "新島村", "region": "tokyo-13363", "lat": 34.32, "lon": 139.21944, "level": 3, "value": 3, "wikidata": "Q11487036", "adj": ["isl-q11645056", "isl-q2235009"] },
 
-    { "id": "isl-q2235009", "name": "神津島空港", "genre": "airport", "kind": "GW", "area": "神津島村", "region": "tokyo-13364", "lat": 34.18944, "lon": 139.13361, "level": 2, "value": 2, "wikidata": "Q2235009", "adj": ["isl-q11487036", "isl-q2234528"] },
+    { "id": "isl-q2235009", "name": "神津島空港", "genre": "airport", "kind": "GW", "area": "神津島村", "region": "tokyo-13364", "lat": 34.18944, "lon": 139.13361, "level": 5, "value": 5, "wikidata": "Q2235009", "adj": ["isl-q11487036", "isl-q2234528"] },
 
-    { "id": "isl-q2234528", "name": "三宅島空港", "genre": "airport", "kind": "GW", "area": "三宅村", "region": "tokyo-13381", "lat": 34.07361, "lon": 139.56028, "level": 2, "value": 2, "wikidata": "Q2234528", "adj": ["isl-q1197235", "isl-q2235009"] },
+    { "id": "isl-q2234528", "name": "三宅島空港", "genre": "airport", "kind": "GW", "area": "三宅村", "region": "tokyo-13381", "lat": 34.07361, "lon": 139.56028, "level": 5, "value": 5, "wikidata": "Q2234528", "adj": ["isl-q1197235", "isl-q2235009"] },
 
     { "id": "isl-q1197235", "name": "御蔵島", "genre": "nature", "kind": "GW", "area": "御蔵島村", "region": "tokyo-13382", "lat": 33.875, "lon": 139.6, "level": 4, "value": 4, "wikidata": "Q1197235", "adj": ["isl-q1039445", "isl-q2234528"] },
 
-    { "id": "isl-q2512004", "name": "八丈島空港", "genre": "airport", "kind": "GW", "area": "八丈町", "region": "tokyo-13401", "lat": 33.115, "lon": 139.78583, "level": 3, "value": 3, "wikidata": "Q2512004", "adj": ["isl-q1039445", "isl-q615578"] },
+    { "id": "isl-q2512004", "name": "八丈島空港", "genre": "airport", "kind": "GW", "area": "八丈町", "region": "tokyo-13401", "lat": 33.115, "lon": 139.78583, "level": 5, "value": 5, "wikidata": "Q2512004", "adj": ["isl-q1039445", "isl-q615578"] },
     { "id": "isl-q1039445", "name": "八丈小島", "genre": "nature", "kind": "GW", "area": "八丈町", "region": "tokyo-13401", "lat": 33.12528, "lon": 139.68833, "level": 2, "value": 2, "wikidata": "Q1039445", "adj": ["isl-q1197235", "isl-q2512004"] },
 
     { "id": "isl-q615578", "name": "青ヶ島", "genre": "nature", "kind": "GW", "area": "青ヶ島村", "region": "tokyo-13402", "lat": 32.45778, "lon": 139.75917, "level": 4, "value": 4, "wikidata": "Q615578", "adj": ["isl-q2512004", "isl-q475743"] },
 
-    { "id": "isl-q115034784", "name": "二見港", "genre": "port", "kind": "GW", "area": "小笠原村", "region": "tokyo-13421", "lat": 27.09602, "lon": 142.19776, "level": 1, "value": 1, "wikidata": "Q115034784", "adj": ["isl-q1187278", "isl-q1414691", "isl-q473472"] },
+    { "id": "isl-q115034784", "name": "二見港", "genre": "port", "kind": "GW", "area": "小笠原村", "region": "tokyo-13421", "lat": 27.09602, "lon": 142.19776, "level": 3, "value": 3, "wikidata": "Q115034784", "adj": ["isl-q1187278", "isl-q1414691", "isl-q473472"] },
     { "id": "isl-q473472", "name": "母島", "genre": "nature", "kind": "GW", "area": "小笠原村", "region": "tokyo-13421", "lat": 26.65, "lon": 142.16667, "level": 3, "value": 3, "wikidata": "Q473472", "adj": ["isl-q10943140", "isl-q115034784"] },
     { "id": "isl-q1151821", "name": "北硫黄島", "genre": "nature", "kind": "GW", "area": "小笠原村", "region": "tokyo-13421", "lat": 25.43306, "lon": 141.28167, "level": 4, "value": 4, "wikidata": "Q1151821", "adj": ["isl-q10943140"] },
     { "id": "isl-q1187278", "name": "西之島", "genre": "nature", "kind": "GW", "area": "小笠原村", "region": "tokyo-13421", "lat": 27.24694, "lon": 140.87444, "level": 4, "value": 4, "wikidata": "Q1187278", "adj": ["isl-q115034784"] },

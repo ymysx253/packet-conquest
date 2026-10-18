@@ -14,6 +14,7 @@
 //   - 同じ都道府県に同じ名前があれば「(市区町村名)」を付ける
 const fs = require('fs');
 const path = require('path');
+const { gatewayLevel } = require('./gateway');
 
 const ROOT = path.join(__dirname, '..');
 const DATA = path.join(ROOT, 'server/map/data');
@@ -97,6 +98,8 @@ for (const list of byPref.values()) {
   for (const c of list.filter((x) => x.hackable && x.genre === 'government' && x.sub === '都道府県庁舎')) c.level = 15;
   const castle = top(list, (x) => x.hackable && x.genre === 'heritage' && x.sub === '城'); if (castle) castle.level = Math.max(castle.level, 10);
   const airport = top(list, (x) => x.hackable && x.genre === 'airport'); if (airport) airport.level = Math.max(airport.level, 8);
+  // 空港・港(玄関口)は最低レベルを上げる(空港 5・国際線の拠点 10、港 3。tools/gateway.js)
+  for (const c of list) if (c.hackable) c.level = gatewayLevel(c.genre, c.name, c.level);
 }
 
 // ---------- 書き込む ----------

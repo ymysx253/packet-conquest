@@ -19,6 +19,7 @@
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
+const { gatewayLevel } = require('./gateway');
 
 const [, , n03Dir, workDir = path.join(require('os').tmpdir(), 'pc-landmarks')] = process.argv;
 if (!n03Dir) { console.error('使い方: node tools/import-islands.js <N03 フォルダ> [作業フォルダ]'); process.exit(1); }
@@ -214,7 +215,7 @@ const hackableNodes = allNodes.filter((n) => n.hackable !== false);
       if (allNodes.some((nd) => distKm(nd, c) < 0.025)) continue; // 同じ場所の二重登録を避ける
       const taken = new Set(f.T.nodes.map((nd) => nd.name));
       let name = c.name; if (taken.has(name)) name = `${c.name}(${region.name})`; if (taken.has(name)) name = `${c.name}(${c.qid})`;
-      const level = c.genre === 'airport' ? Math.max(2, levelOf(c.sitelinks)) : levelOf(c.sitelinks);
+      const level = gatewayLevel(c.genre, c.name, levelOf(c.sitelinks)); // 空港・港は最低レベルを上げる(tools/gateway.js)
       const node = { id: `isl-${c.qid.toLowerCase()}`, name, genre: c.genre, kind: 'GW', area: region.name, region: region.id, lat: Number(c.lat.toFixed(5)), lon: Number(c.lon.toFixed(5)), level, value: level, wikidata: c.qid };
       f.T.nodes.push(node); allNodes.push(node); added++; names.push(name);
     }

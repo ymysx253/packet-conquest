@@ -1,7 +1,7 @@
 {
   "region": "fukuoka",
   "name": "福岡県",
-  "version": 18,
+  "version": 20,
   "updatedAt": "2026-10-19",
   "note": "福岡県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -76,7 +76,7 @@
     { "id": "st-008698", "name": "南小倉駅", "genre": "station", "kind": "HUB", "area": "北九州市小倉北区", "region": "fukuoka-40106", "lat": 33.87009, "lon": 130.86476, "level": 1, "value": 1, "lines": ["九州旅客鉄道 日豊線"], "adj": ["lm-q3540728", "lm-q581644", "st-008679", "st-008713"] },
     { "id": "st-008706", "name": "片野駅", "genre": "station", "kind": "HUB", "area": "北九州市小倉北区", "region": "fukuoka-40106", "lat": 33.86511, "lon": 130.88006, "level": 1, "value": 1, "lines": ["北九州高速鉄道 小倉線"], "adj": ["lm-q581644", "st-008696", "st-008713"] },
 
-    { "id": "lm-q594223", "name": "北九州空港", "genre": "airport", "kind": "GW", "area": "北九州市小倉南区", "region": "fukuoka-40107", "lat": 33.84556, "lon": 131.035, "level": 3, "value": 3, "wikidata": "Q594223", "adj": ["st-008830"] },
+    { "id": "lm-q594223", "name": "北九州空港", "genre": "airport", "kind": "GW", "area": "北九州市小倉南区", "region": "fukuoka-40107", "lat": 33.84556, "lon": 131.035, "level": 5, "value": 5, "wikidata": "Q594223", "adj": ["st-008830"] },
     { "id": "lm-q195546", "name": "北九州市立大学", "genre": "university", "kind": "EDU", "area": "北九州市小倉南区", "region": "fukuoka-40107", "lat": 33.84397, "lon": 130.87832, "level": 2, "value": 2, "wikidata": "Q195546", "adj": ["st-008731", "st-008752"] },
     { "id": "st-008713", "name": "城野駅", "genre": "station", "kind": "HUB", "area": "北九州市小倉南区", "region": "fukuoka-40107", "lat": 33.85859, "lon": 130.88326, "level": 2, "value": 2, "lines": ["九州旅客鉄道 日田彦山線", "九州旅客鉄道 日豊線", "北九州高速鉄道 小倉線"], "adj": ["lm-q581644", "st-008698", "st-008706", "st-008731", "st-008750", "st-008778"] },
     { "id": "st-008731", "name": "北方駅", "genre": "station", "kind": "HUB", "area": "北九州市小倉南区", "region": "fukuoka-40107", "lat": 33.84859, "lon": 130.878, "level": 1, "value": 1, "lines": ["北九州高速鉄道 小倉線"], "adj": ["lm-q195546", "st-008713", "st-008752"] },
@@ -154,7 +154,7 @@
     { "id": "st-008988", "name": "箱崎宮前駅", "genre": "station", "kind": "HUB", "area": "福岡市東区", "region": "fukuoka-40131", "lat": 33.61578, "lon": 130.41954, "level": 1, "value": 1, "lines": ["福岡市 2号線(箱崎線)"], "adj": ["st-008980", "st-009000"] },
     { "id": "st-009000", "name": "馬出九大病院前駅", "genre": "station", "kind": "HUB", "area": "福岡市東区", "region": "fukuoka-40131", "lat": 33.6093, "lon": 130.41941, "level": 1, "value": 1, "lines": ["福岡市 2号線(箱崎線)"], "adj": ["st-008988", "st-009011"] },
 
-    { "id": "lm-q1137465", "name": "福岡空港", "genre": "airport", "kind": "GW", "area": "福岡市博多区", "region": "fukuoka-40132", "lat": 33.58444, "lon": 130.45167, "level": 8, "value": 8, "wikidata": "Q1137465", "adj": ["st-008994", "st-008998", "st-009002", "st-009015", "st-009032", "st-009033", "st-009090", "st-009156"] },
+    { "id": "lm-q1137465", "name": "福岡空港", "genre": "airport", "kind": "GW", "area": "福岡市博多区", "region": "fukuoka-40132", "lat": 33.58444, "lon": 130.45167, "level": 10, "value": 10, "wikidata": "Q1137465", "adj": ["st-008994", "st-008998", "st-009002", "st-009015", "st-009032", "st-009033", "st-009090", "st-009156"] },
     { "id": "lm-q2607897", "name": "福岡コンベンションセンター", "genre": "convention", "kind": "LM", "area": "福岡市博多区", "region": "fukuoka-40132", "lat": 33.604, "lon": 130.40386, "level": 2, "value": 2, "wikidata": "Q2607897", "adj": ["st-009011", "st-009014"] },
     { "id": "lm-q1568000", "name": "博多ポートタワー", "genre": "tower", "kind": "LM", "area": "福岡市博多区", "region": "fukuoka-40132", "lat": 33.60444, "lon": 130.39778, "level": 2, "value": 2, "wikidata": "Q1568000", "adj": ["st-009014", "st-009019"] },
     { "id": "lm-q5640353", "name": "博多座", "genre": "theater", "kind": "LM", "area": "福岡市博多区", "region": "fukuoka-40132", "lat": 33.5957, "lon": 130.40648, "level": 1, "value": 1, "wikidata": "Q5640353", "adj": ["st-009019"] },
@@ -374,7 +374,7 @@
     { "id": "st-009228", "name": "水城駅", "genre": "station", "kind": "HUB", "area": "大野城市", "region": "fukuoka-40219", "lat": 33.51793, "lon": 130.48995, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["lm-q11548410", "st-009220", "st-009243"] },
 
     { "id": "lm-q704962", "name": "宗像大社", "genre": "shrine_temple", "kind": "LM", "area": "宗像市", "region": "fukuoka-40220", "lat": 33.83083, "lon": 130.51417, "level": 2, "value": 2, "hackable": false, "wikidata": "Q704962" },
-    { "id": "isl-q30933915", "name": "大島港", "genre": "port", "kind": "GW", "area": "宗像市", "region": "fukuoka-40220", "lat": 33.89561, "lon": 130.4345, "level": 1, "value": 1, "wikidata": "Q30933915", "adj": ["isl-q17992764"] },
+    { "id": "isl-q30933915", "name": "大島港", "genre": "port", "kind": "GW", "area": "宗像市", "region": "fukuoka-40220", "lat": 33.89561, "lon": 130.4345, "level": 3, "value": 3, "wikidata": "Q30933915", "adj": ["isl-q17992764"] },
     { "id": "isl-q17992764", "name": "地島", "genre": "nature", "kind": "GW", "area": "宗像市", "region": "fukuoka-40220", "lat": 33.90604, "lon": 130.49389, "level": 1, "value": 1, "wikidata": "Q17992764", "adj": ["isl-q30933915", "st-008807"] },
     { "id": "st-008807", "name": "赤間駅", "genre": "station", "kind": "HUB", "area": "宗像市", "region": "fukuoka-40220", "lat": 33.80832, "lon": 130.56797, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["isl-q17992764", "st-008808", "st-008822"] },
     { "id": "st-008808", "name": "教育大前駅", "genre": "station", "kind": "HUB", "area": "宗像市", "region": "fukuoka-40220", "lat": 33.80799, "lon": 130.58903, "level": 1, "value": 1, "lines": ["九州旅客鉄道 鹿児島線"], "adj": ["st-008763", "st-008807"] },

@@ -1,7 +1,7 @@
 {
   "region": "oita",
   "name": "大分県",
-  "version": 18,
+  "version": 20,
   "updatedAt": "2026-10-19",
   "note": "大分県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
@@ -187,7 +187,7 @@
     { "id": "lm-q1334587", "name": "大分空港", "genre": "airport", "kind": "GW", "area": "国東市", "region": "oita-44214", "lat": 33.47944, "lon": 131.73722, "level": 8, "value": 8, "wikidata": "Q1334587", "adj": ["lm-q11528831", "lm-q124296337"] },
     { "id": "lm-q124296337", "name": "安国寺集落遺跡", "genre": "heritage", "kind": "LM", "area": "国東市", "region": "oita-44214", "lat": 33.56628, "lon": 131.71617, "level": 1, "value": 1, "wikidata": "Q124296337", "adj": ["isl-q11447408", "lm-q1334587"] },
 
-    { "id": "isl-q11447408", "name": "姫島港", "genre": "port", "kind": "GW", "area": "姫島村", "region": "oita-44322", "lat": 33.72169, "lon": 131.649, "level": 1, "value": 1, "wikidata": "Q11447408", "adj": ["lm-q124296337"] },
+    { "id": "isl-q11447408", "name": "姫島港", "genre": "port", "kind": "GW", "area": "姫島村", "region": "oita-44322", "lat": 33.72169, "lon": 131.649, "level": 3, "value": 3, "wikidata": "Q11447408", "adj": ["lm-q124296337"] },
 
     { "id": "lm-q2969402", "name": "日出城", "genre": "heritage", "kind": "LM", "area": "日出町", "region": "oita-44341", "lat": 33.36681, "lon": 131.53167, "level": 1, "value": 1, "wikidata": "Q2969402", "adj": ["st-009332"] },
     { "id": "lm-q11327370", "name": "ハーモニーランド", "genre": "park", "kind": "LM", "area": "日出町", "region": "oita-44341", "lat": 33.40162, "lon": 131.54657, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11327370" },
