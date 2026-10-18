@@ -9,6 +9,8 @@
 //   loadQuestion(nodeId, level)           固定問題(フェーズ 2)
 //   countRegions() / seedRegions(docs) / loadRegions() / loadRegion(id) / saveRegion(doc) / loadRegionChildren(parent)
 //   countOwners(country, region)          区・市の中のハック可の固定拠点を所有者ごとに数える(地域の支配。第 14 章)
+//   searchNodes(country, text, limit)     開始地点の検索(名前の一部。ハック可の公開の固定拠点)
+//   countStarters(nodeIds)                各拠点から始めた人数(players.startNodeId)
 
 const { parseTile, distanceKm, tilesAround, tileOf } = require('./map/geo');
 
@@ -62,6 +64,16 @@ class MemoryStore {
   async loadRegion(id) { const r = this.regions.get(id); return r ? { ...r } : null; }
   async saveRegion(doc) { this.regions.set(doc.id, { ...doc }); }
   async loadRegionChildren(parent) { return [...this.regions.values()].filter((r) => r.parent === parent).map((r) => ({ ...r })); }
+  async searchNodes(country, text, limit = 10) {
+    return [...this.nodes.values()]
+      .filter((n) => n.country === country && !n.isPlayerNode && n.hackable !== false && n.status === 'public' && n.name.includes(text))
+      .sort((a, b) => b.level - a.level || a.name.localeCompare(b.name, 'ja')).slice(0, limit).map((n) => ({ ...n }));
+  }
+  async countStarters(nodeIds) {
+    const want = new Set(nodeIds); const out = {};
+    for (const p of this.players.values()) if (p.startNodeId && want.has(p.startNodeId)) out[p.startNodeId] = (out[p.startNodeId] || 0) + 1;
+    return out;
+  }
   async countOwners(country, region) {
     let total = 0; const byOwner = {};
     for (const n of this.nodes.values()) {

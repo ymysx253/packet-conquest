@@ -4,7 +4,7 @@
 const assert = require('assert');
 const { World, PROTECT_MS, DECAY_MS } = require('../server/world');
 const { MemoryStore } = require('../server/store');
-const { tilesAround, tileOf } = require('../server/map/geo');
+const { tilesAround, tileOf, distanceKm } = require('../server/map/geo');
 const { NODES } = require('../server/map/tokyo');
 
 const fakeWs = () => { const ws = { readyState: 1, sent: [], send(s) { this.sent.push(JSON.parse(s)); }, close() { this.readyState = 3; } }; return ws; };
@@ -186,6 +186,39 @@ async function solve(world, p, nodeId) {
   // ランキング
   const top = await store.topPlayers(5);
   assert.strictEqual(top[0].id, a.id);
+
+  // 開始地点(第 3.1 節): 名前で検索でき、選んだ駅のまわりに拠点が生まれ、その駅とつながる。指定が無ければ東京駅
+  const tokyoSt = NODES.find((n) => n.name === '東京駅');
+  assert.strictEqual(a.startNodeId, tokyoSt.id, '指定が無ければ東京駅');
+  assert.ok(distanceKm(home, tokyoSt) <= 1.05 && w.adj.get(home.id).has(tokyoSt.id), '東京駅のまわりに生まれ、東京駅とつながる');
+  const found = await w.search('japan', '高尾');
+  assert.ok(found.some((r) => r.name === '高尾駅') && found.every((r) => typeof r.starters === 'number'), '名前の一部で検索できる');
+  assert.strictEqual((await w.search('japan', '浅草寺')).length, 0, 'ハック不可の寺社は開始地点にできない');
+  const takao = NODES.find((n) => n.name === '高尾駅');
+  const t1 = await w.join(fakeWs(), 'たかお', null, takao.id);
+  const tHome = w.nodes.get(t1.homeNodeId);
+  assert.ok(distanceKm(tHome, takao) <= 1.05, '選んだ駅のまわりに生まれる');
+  assert.ok(w.adj.get(tHome.id).has(takao.id), '選んだ駅とつながる');
+  assert.strictEqual((await w.search('japan', '高尾駅')).find((r) => r.name === '高尾駅').starters, 1, 'ここから始めた人数が付く');
+  const temple = NODES.find((n) => n.hackable === false);
+  await assert.rejects(() => w.join(fakeWs(), 'だめ', null, temple.id), /選べません/);
+  await assert.rejects(() => w.join(fakeWs(), 'だめ', null, 'st-nope'), /選べません/);
+  const before2 = w.players.size;
+  await assert.rejects(() => w.join(fakeWs(), 'だめ', null, tHome.id), /選べません/, 'プレイヤーの拠点からは始められない');
+  assert.strictEqual(w.players.size, before2, '失敗した参加はプレイヤーを残さない');
+  // 自然に広がる: 同じ駅から大勢が始めても、間隔を守って半径が広がる(1 km まで)
+  const okutama = NODES.find((n) => n.name === '奥多摩駅');
+  const homes = [];
+  for (let i = 0; i < 25; i++) homes.push(w.nodes.get((await w.join(fakeWs(), `人${i}`, null, okutama.id)).homeNodeId));
+  assert.ok(homes.every((h) => distanceKm(h, okutama) <= 1.05), '全員 1 km 以内');
+  for (let i = 0; i < homes.length; i++) for (let j = i + 1; j < homes.length; j++) assert.ok(distanceKm(homes[i], homes[j]) >= 0.15 - 1e-6, '間隔 150 m を守る');
+  assert.ok(Math.max(...homes.map((h) => distanceKm(h, okutama))) > 0.3, '混むと半径が広がる');
+  assert.strictEqual((await w.search('japan', '奥多摩')).find((r) => r.name === '奥多摩駅').starters, 25);
+  // 参加前の人も地図を読める(開始地点を地図から選ぶため)。配信先にはならない
+  const gws = fakeWs();
+  await w.setView(w.guest(gws), tilesAround(tokyoSt.t0, 1), 0);
+  assert.ok(last(gws, 'tiles').nodes.some((n) => n.id === tokyoSt.id), '参加前でも範囲を読める');
+  assert.ok(!JSON.stringify(gws.sent).includes('answerIndex'));
 
   console.log(`world ok: ${w.nodes.size} nodes loaded of ${await store.countNodes()}, ${w.players.size} players, ${w.tiles.size} tiles`);
 })().catch((e) => { console.error(e); process.exit(1); });

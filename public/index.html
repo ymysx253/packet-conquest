@@ -33,6 +33,10 @@
         <button type="button" class="zbtn" id="zoomHome" aria-label="自分の拠点へ" title="自分の拠点へ">⌂</button>
       </div>
       <p class="map-hint">ホイールやピンチで拡大縮小、ドラッグで移動</p>
+      <div class="pick-bar" id="pickBar" hidden>
+        <span>開始地点にする駅か名所をタップしてください</span>
+        <button type="button" class="btn small" id="pickCancelBtn">やめる</button>
+      </div>
     </div>
     <ul class="legend" id="legend">
       <li><i class="lg home"></i>プレイヤーの拠点</li>
@@ -121,8 +125,17 @@
       <input id="nameInput" maxlength="12" placeholder="例: たろう" required>
       <label for="codeInput">復帰コード(前に遊んだことがある場合)</label>
       <input id="codeInput" class="mono" maxlength="24" placeholder="空欄なら新しく始めます">
-      <button type="submit" class="btn primary">東京に参加する</button>
-      <p class="hint">参加すると東京駅の近くにあなたの拠点が生まれます。拠点は生まれてから24時間、攻撃されません。</p>
+      <label for="countrySelect">登録国</label>
+      <select id="countrySelect"><option value="japan">日本</option></select>
+      <label for="startInput">開始地点(駅や名所の名前で検索。空欄なら東京駅)</label>
+      <div class="row2">
+        <input id="startInput" maxlength="20" placeholder="例: 新宿、高尾、東京タワー">
+        <button type="button" class="btn" id="pickMapBtn">地図から選ぶ</button>
+      </div>
+      <ul class="start-results" id="startResults" hidden></ul>
+      <p class="hint" id="startPicked">開始地点: 東京駅</p>
+      <button type="submit" class="btn primary">参加する</button>
+      <p class="hint">参加すると開始地点の近くにあなたの拠点が生まれます。あなた自身の拠点は誰にも占領されません。混んでいる駅では少し離れた場所に生まれます。</p>
     </form>
     <p class="error" id="lobbyError" role="alert"></p>
   </div>

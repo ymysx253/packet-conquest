@@ -16,7 +16,9 @@
     players: [], log: [], offset: 0,
     question: null, result: null, chosen: null, cooldownUntil: 0,
     selected: null, centerPending: false,
+    start: null, picking: false, searchTimer: null, // 開始地点(選んだ駅・名所)と、地図から選ぶモード
   };
+  const TOKYO = { lat: 35.68124, lon: 139.76712 }; // 参加前に地図から選ぶときの初期位置(東京駅)
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch { return null; } },
     set(k, v) { try { localStorage.setItem(k, v); } catch { /* 保存できなくても遊べる */ } },
@@ -42,12 +44,12 @@
     const proto = location.protocol === 'https:' ? 'wss' : 'ws';
     const ws = new WebSocket(`${proto}://${location.host}/ws`);
     S.ws = ws;
-    ws.onopen = () => { setConn(true); S.retry = 0; if (S.wantJoin) sendJoin(); };
+    ws.onopen = () => { setConn(true); S.retry = 0; if (S.wantJoin) sendJoin(); if (S.pendingSearch) { send({ t: 'search', q: S.pendingSearch }); S.pendingSearch = null; } if (S.picking) requestView(true); };
     ws.onmessage = (e) => { let m; try { m = JSON.parse(e.data); } catch { return; } onMessage(m); };
     ws.onclose = () => {
       setConn(false);
-      if (!S.joined) { $('lobbyError').textContent = SERVER_HINT; setJoining(false); }
-      S.tiles.clear(); // 再接続後にタイルを取り直す
+      if (!S.joined && S.wantJoin) { $('lobbyError').textContent = SERVER_HINT; setJoining(false); }
+      S.tiles.clear(); lastViewKey = ''; // 再接続後にタイルを取り直す
       if (S.wantJoin) setTimeout(connect, Math.min(8000, 1000 * 2 ** S.retry++));
     };
   }
@@ -56,7 +58,7 @@
     btn.disabled = on; btn.textContent = on ? '接続中…' : '東京に参加する';
   }
   function send(msg) { if (S.ws && S.ws.readyState === 1) S.ws.send(JSON.stringify(msg)); }
-  function sendJoin() { send({ t: 'join', name: $('nameInput').value.trim(), token: S.token || undefined }); }
+  function sendJoin() { send({ t: 'join', name: $('nameInput').value.trim(), token: S.token || undefined, startNodeId: S.start ? S.start.id : undefined, country: $('countrySelect').value }); }
   function setConn(on) { $('conn').dataset.state = on ? 'on' : 'off'; $('conn').textContent = on ? '接続中' : '再接続中…'; }
 
   function onMessage(m) {
@@ -72,6 +74,7 @@
         requestView(true);
         break;
       case 'tiles': onTiles(m); break;
+      case 'search': renderSearch(m); break;
       case 'nodes':
         for (const n of m.nodes) if (S.nodes.has(n.id) || S.tiles.has(n.t0)) { S.nodes.set(n.id, n); }
         renderSelected();
@@ -109,6 +112,45 @@
     for (const [k, e] of S.edges) if (!S.nodes.has(e.a) && !S.nodes.has(e.b)) S.edges.delete(k);
     renderSelected();
   }
+
+  // ---------- 開始地点: 名前で検索、または地図から選ぶ ----------
+  function ensureConnected() { if (!S.ws || S.ws.readyState > 1) connect(); }
+  $('startInput').addEventListener('input', () => {
+    const q = $('startInput').value.trim();
+    S.start = null; $('startPicked').textContent = '開始地点: 東京駅(未選択)';
+    clearTimeout(S.searchTimer);
+    if (!q) { $('startResults').hidden = true; $('startPicked').textContent = '開始地点: 東京駅'; return; }
+    ensureConnected();
+    S.searchTimer = setTimeout(() => { if (S.ws && S.ws.readyState === 1) send({ t: 'search', q }); else S.pendingSearch = q; }, 250);
+  });
+  function renderSearch(m) {
+    if (m.q !== $('startInput').value.trim()) return;
+    const ul = $('startResults');
+    ul.replaceChildren(...m.results.map((r) => {
+      const li = document.createElement('li'); li.tabIndex = 0;
+      const name = document.createElement('span'); name.textContent = `${r.name}(${r.area || ''} Lv${r.level})`;
+      const sm = document.createElement('small'); sm.textContent = r.starters ? `ここから ${r.starters} 人` : 'まだ誰もいません';
+      li.append(name, sm);
+      const choose = () => { setStart(r); ul.hidden = true; };
+      li.onclick = choose; li.onkeydown = (e) => { if (e.key === 'Enter') choose(); };
+      return li;
+    }));
+    if (!m.results.length) { const li = document.createElement('li'); li.textContent = '見つかりません(駅名は「駅」なしでも探せます)'; ul.replaceChildren(li); }
+    ul.hidden = false;
+  }
+  function setStart(r) {
+    S.start = { id: r.id, name: r.name };
+    $('startInput').value = r.name;
+    $('startPicked').textContent = `開始地点: ${r.name}${r.area ? '(' + r.area + ')' : ''}`;
+  }
+  $('pickMapBtn').onclick = () => {
+    S.picking = true; $('lobby').hidden = true; $('pickBar').hidden = false; $('startResults').hidden = true;
+    ensureConnected(); resize();
+    centerOn(worldOf(TOKYO.lat, TOKYO.lon), 9);
+    requestView(true);
+  };
+  function endPick() { S.picking = false; $('pickBar').hidden = true; $('lobby').hidden = false; }
+  $('pickCancelBtn').onclick = endPick;
 
   // ---------- 参加 ----------
   $('joinForm').addEventListener('submit', (e) => {
@@ -206,7 +248,7 @@
   }
   let viewTimer = null, lastViewKey = '';
   function requestView(force) {
-    if (!S.joined) return;
+    if (!S.joined && !S.picking) return;
     clearTimeout(viewTimer);
     viewTimer = setTimeout(() => {
       let z = zoomTier();
@@ -267,6 +309,13 @@
   // 拠点を選ぶ: どの拠点でも情報パネルに出す。攻撃・強化できる拠点なら出題も求める
   function tapAt(pt) {
     const n = nodeAt(pt);
+    if (S.picking) {
+      // 開始地点を地図から選ぶ: ハック可の固定拠点だけ
+      if (!n) return;
+      if (n.isPlayerNode || n.hackable === false) { toast('そこは開始地点にできません。駅か名所を選んでください'); return; }
+      setStart({ id: n.id, name: n.name, area: n.area }); endPick();
+      return;
+    }
     if (!S.joined) return;
     if (!n) { S.selected = null; renderSelected(); return; }
     S.selected = n.id;
@@ -447,7 +496,7 @@
     const tok = (n) => css.getPropertyValue(n).trim();
     const C = { surface: tok('--surface'), ink: tok('--ink'), muted: tok('--muted'), line: tok('--line'), strong: tok('--line-strong'), accent: tok('--accent') };
     ctx.clearRect(0, 0, V.w, V.h);
-    if (!S.joined) return;
+    if (!S.joined && !S.picking) return;
     const ratio = zoomRatio();
     const grow = V.w < 600 ? 1.15 : 1;
 

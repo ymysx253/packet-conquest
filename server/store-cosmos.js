@@ -102,6 +102,22 @@ class CosmosStore {
     const rows = await this.query('regions', { query: 'SELECT * FROM c WHERE c.parent = @p', parameters: [{ name: '@p', value: parent }] }, { partitionKey: parent });
     return rows.map((r) => this.strip(r));
   }
+  // 開始地点の検索(名前の一部)。country は WHERE 句で絞る(階層キーの前半だけを options に渡すと 400 になる)
+  async searchNodes(country, text, limit = 10) {
+    const rows = await this.query('nodes', {
+      query: 'SELECT TOP @n c.id, c.name, c.area, c.level, c.genre, c.lat, c.lon FROM c WHERE c.country = @c AND c.isPlayerNode = false AND c.hackable = true AND c.status = "public" AND CONTAINS(c.name, @q) ORDER BY c.level DESC',
+      parameters: [{ name: '@n', value: limit }, { name: '@c', value: country }, { name: '@q', value: text }],
+    });
+    return rows;
+  }
+  async countStarters(nodeIds) {
+    if (!nodeIds.length) return {};
+    const rows = await this.query('players', {
+      query: 'SELECT c.startNodeId, COUNT(1) AS n FROM c WHERE ARRAY_CONTAINS(@ids, c.startNodeId) GROUP BY c.startNodeId',
+      parameters: [{ name: '@ids', value: nodeIds }],
+    });
+    const out = {}; for (const r of rows) out[r.startNodeId] = r.n; return out;
+  }
   // 区・市の中のハック可の固定拠点を所有者ごとに数える(地域の支配。第 14 章)
   async countOwners(country, region) {
     const rows = await this.query('nodes', {

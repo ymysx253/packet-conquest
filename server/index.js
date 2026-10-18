@@ -62,8 +62,19 @@ wss.on('connection', (ws) => {
 });
 
 async function handle(ws, msg) {
+  // 参加前でも使えるもの: 開始地点の検索と、地図から選ぶための範囲の読み込み
+  if (msg.t === 'search') {
+    const q = typeof msg.q === 'string' ? msg.q : '';
+    send(ws, { t: 'search', q, results: await world.search('japan', q) });
+    return;
+  }
+  if (msg.t === 'view' && !ws.player) {
+    await world.setView(world.guest(ws), Array.isArray(msg.tiles) ? msg.tiles : [], msg.z);
+    return;
+  }
   if (msg.t === 'join') {
-    const player = await world.join(ws, cleanName(msg.name), typeof msg.token === 'string' ? msg.token.trim() : null);
+    const player = await world.join(ws, cleanName(msg.name), typeof msg.token === 'string' ? msg.token.trim() : null,
+      typeof msg.startNodeId === 'string' && msg.startNodeId ? msg.startNodeId.slice(0, 40) : null);
     ws.player = player;
     send(ws, world.welcome(player));
     await world.emitPlayers();

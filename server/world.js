@@ -17,7 +17,10 @@ const COOLDOWN_MS = 4000;               // 不正解のあと操作できない�
 const MAX_LEVEL = 999;                  // 出題レベルの上限(強化はここまで)
 const PROTECT_MS = 24 * 60 * 60 * 1000; // 初心者保護: 生まれた拠点は 24 時間攻撃されない
 const PROTECT_MAX_NODES = 3;            // 初心者保護: 所持拠点がこの数以下の人は攻撃されない
-const HOME_LINKS = 2;                   // プレイヤーの拠点がつながる近隣拠点の数
+const HOME_LINKS = 2;                   // プレイヤーの拠点がつながる近隣拠点の数(開始地点 + 近い 1 つ)
+const SPAWN_RINGS_KM = [0.3, 0.6, 1.0];  // 開始地点のまわりに置く半径。空きがなければ広げ、1 km でも無ければ満員(第 3.1 節)
+const SPAWN_TRIES = 80;                 // 半径ごとの試行回数
+const DEFAULT_START_ID = (tokyo.NODES.find((n) => n.name === '東京駅') || tokyo.NODES[0]).id; // 指定が無いときの開始地点
 const MIN_GAP_KM = 0.15;                // 拠点どうしの最小距離
 const LOG_MAX = 60;
 const MAX_VIEW_TILES = 80;              // 1 人が一度に見られるタイル数
@@ -194,7 +197,30 @@ class World {
   }
 
   // ---------- 参加・復帰 ----------
-  async join(ws, name, token) {
+  // 参加前の人(開始地点を地図から選ぶ)にも範囲の読み込みを許す。配信先にはならない
+  guest(ws) {
+    if (!ws.guest) ws.guest = { id: 'guest', ws, online: true, guest: true, view: new Set(), viewZ: 0 };
+    return ws.guest;
+  }
+  // 開始地点の検索(名前の一部。ハック可の公開の固定拠点だけ)。各拠点から始めた人数を添える
+  async search(country, q) {
+    const text = String(q || '').trim().slice(0, 20);
+    if (!text) return [];
+    const rows = await this.store.searchNodes(country, text, 10);
+    const starters = await this.store.countStarters(rows.map((r) => r.id));
+    return rows.map((r) => ({ id: r.id, name: r.name, area: r.area || null, level: r.level, genre: r.genre || null, lat: r.lat, lon: r.lon, starters: starters[r.id] || 0 }));
+  }
+  // 開始地点の拠点を確かめて返す(読み込まれていなければ 1 件読む)
+  async startNode(p) {
+    const id = p.startNodeId || DEFAULT_START_ID;
+    let n = this.nodes.get(id);
+    if (!n) { const d = await this.store.loadNode(id); if (d) n = this.adopt(d); }
+    if (!n || n.isPlayerNode || n.hackable === false || n.status !== 'public' || n.country !== (p.country || this.country)) {
+      throw new Error('その開始地点は選べません。駅か名所を選んでください');
+    }
+    return n;
+  }
+  async join(ws, name, token, startNodeId = null) {
     if (token) {
       let p = [...this.players.values()].find((x) => x.token === token);
       if (!p) { const doc = await this.store.findPlayerByToken(token); if (doc) p = this.attach(doc); }
@@ -209,10 +235,11 @@ class World {
     }
     const p = this.attach({
       id: newId(), token: newId(), name, color: await this.pickColor(),
+      country: this.country, startNodeId: startNodeId || DEFAULT_START_ID, // 登録国と開始地点(第 3.1 節)
       points: 0, score: 0, nodesOwned: 0, homeNodeId: null, team: null, sponsorId: null, createdAt: now(), lastSeen: now(),
     });
     p.ws = ws; p.online = true;
-    await this.spawnHome(p);
+    try { await this.spawnHome(p); } catch (e) { this.players.delete(p.id); throw e; }
     this.addLog(`${p.name} が東京に参加しました`);
     await this.persistPlayer(p);
     return p;
@@ -246,25 +273,31 @@ class World {
     try { await this.store.saveNode({ ...n, type: 'node' }); } catch (e) { console.error('拠点の保存に失敗:', e.message); }
   }
 
-  // 東京駅周辺の空いている場所に、プレイヤー専用の拠点を生み、近い固定拠点とつなぐ
+  // 開始地点(選んだ駅・名所)のまわりの空いている場所に、プレイヤー専用の拠点を生み、開始地点と近い固定拠点につなぐ。
+  // 人数の上限は置かず、間隔(MIN_GAP_KM)を守って半径を広げる。1 km まで空きが無ければ満員(第 3.1 節)
   async spawnHome(p) {
-    const c = tokyo.SPAWN_CENTER;
+    const start = await this.startNode(p);
+    const c = { lat: start.lat, lon: start.lon, name: start.area, region: start.region };
     await this.ensureTiles(tilesAround(tileOf(c.lat, c.lon, 0), 1));
-    let lat = c.lat, lon = c.lon;
-    for (let tries = 0; tries < 60; tries++) {
-      const ang = Math.random() * Math.PI * 2;
-      const r = c.radiusKm * Math.sqrt(Math.random());
-      const la = c.lat + (r / 111) * Math.cos(ang);
-      const lo = c.lon + (r / (111 * Math.cos((c.lat * Math.PI) / 180))) * Math.sin(ang);
-      const near = [...this.nodes.values()].filter((n) => Math.abs(n.lat - la) < 0.01 && Math.abs(n.lon - lo) < 0.012);
-      if (near.every((n) => distanceKm(n, { lat: la, lon: lo }) >= MIN_GAP_KM)) { lat = la; lon = lo; break; }
+    let lat = null, lon = null;
+    for (const radius of SPAWN_RINGS_KM) {
+      for (let tries = 0; tries < SPAWN_TRIES && lat === null; tries++) {
+        const ang = Math.random() * Math.PI * 2;
+        const r = radius * Math.sqrt(Math.random());
+        const la = c.lat + (r / 111) * Math.cos(ang);
+        const lo = c.lon + (r / (111 * Math.cos((c.lat * Math.PI) / 180))) * Math.sin(ang);
+        const near = [...this.nodes.values()].filter((n) => Math.abs(n.lat - la) < 0.01 && Math.abs(n.lon - lo) < 0.012);
+        if (near.every((n) => distanceKm(n, { lat: la, lon: lo }) >= MIN_GAP_KM)) { lat = la; lon = lo; }
+      }
+      if (lat !== null) break;
     }
+    if (lat === null) throw new Error(`${start.name} のまわりは満員です。近くの別の駅を選んでください`);
     const k = this.homeSeq++;
     const a = 16 + ((k >> 8) % 16), b = k & 255;
     const id = `home-${newId()}`;
     const node = {
       id, type: 'node', name: `${p.name}の拠点`, genre: null, kind: 'HOME', kindLabel: 'プレイヤーの拠点',
-      area: c.name, country: this.country, region: c.region || 'tokyo-chiyoda',
+      area: c.name, country: this.country, region: c.region || 'tokyo-chiyoda', startNodeId: start.id,
       lat: Number(lat.toFixed(5)), lon: Number(lon.toFixed(5)), location: { type: 'Point', coordinates: [Number(lon.toFixed(5)), Number(lat.toFixed(5))] },
       ...tileFields(lat, lon),
       level: 1, value: 1, hackable: true, lines: [], tags: [],
@@ -273,9 +306,12 @@ class World {
       owner: p.id, defense: 0, protectedUntil: now() + PROTECT_MS, createdAt: now(), updatedAt: now(),
     };
     const n = this.adopt(node);
+    // 開始地点と必ずつなぎ、残りは近い固定拠点
+    this.addEdge(n.id, start.id, n.t0);
     const cands = tilesAround(n.t0, 1).flatMap((u) => (this.tiles.has(u) ? [...this.tiles.get(u).nodes.values()] : []))
-      .filter((m) => m.status === 'public' && m.hackable !== false && !m.isPlayerNode);
-    this.linkHome(n, cands);
+      .filter((m) => m.status === 'public' && m.hackable !== false && !m.isPlayerNode && m.id !== start.id);
+    const near = cands.map((m) => ({ m, d: distanceKm(n, m) })).sort((a, b) => a.d - b.d).slice(0, HOME_LINKS - 1);
+    for (const { m } of near) this.addEdge(n.id, m.id, n.t0);
     p.homeNodeId = n.id;
     p.nodesOwned = (p.nodesOwned || 0) + 1;
     p.score = (p.score || 0) + this.valueOf(n);
@@ -302,6 +338,8 @@ class World {
   score(pid) { const p = this.players.get(pid); return p ? p.score || 0 : 0; }
   ownedCount(pid) { const p = this.players.get(pid); return p ? p.nodesOwned || 0 : 0; }
 
+  // 攻撃できる条件は「自分の拠点とつながっていること」。チームの拠点とつながっているだけでは攻撃できない(2026-10-18 決定)。
+  // チームの陣地の近くから始めれば、そこまで自力で進む部分を省略できる
   async canAttack(pid, nodeId) {
     const n = this.nodes.get(nodeId);
     if (!n || n.status !== 'public' || n.owner === pid) return false;
@@ -483,7 +521,7 @@ class World {
   // 参加直後に送る自分の情報
   welcome(p) {
     const home = p.homeNodeId ? this.nodes.get(p.homeNodeId) : null;
-    return { t: 'welcome', id: p.id, token: p.token, name: p.name, home: home ? { id: home.id, lat: home.lat, lon: home.lon } : null, spawn: tokyo.SPAWN_CENTER };
+    return { t: 'welcome', id: p.id, token: p.token, name: p.name, country: p.country || this.country, startNodeId: p.startNodeId || null, home: home ? { id: home.id, lat: home.lat, lon: home.lon } : null, spawn: tokyo.SPAWN_CENTER };
   }
 }
 
