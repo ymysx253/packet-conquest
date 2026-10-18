@@ -52,6 +52,8 @@ const SECURITY_HEADERS = {
 // ---------- HTTP ----------
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, 'http://localhost');
+  // HTTPS で来たとき(Azure の前段が X-Forwarded-Proto を付ける)は HSTS も返す
+  if (req.headers['x-forwarded-proto'] === 'https') res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   if (url.pathname === '/healthz') {
     res.writeHead(200, { 'Content-Type': 'text/plain', ...SECURITY_HEADERS });
     return res.end(`ok players=${world.players.size} tiles=${world.tiles.size} nodes=${world.nodes.size}`);
