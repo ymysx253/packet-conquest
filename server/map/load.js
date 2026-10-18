@@ -125,6 +125,9 @@ function validate(region, data) {
     if (!Number.isInteger(n.level) || n.level < LEVEL_MIN || n.level > LEVEL_MAX) fail(region, `${n.id}: level は ${LEVEL_MIN}〜${LEVEL_MAX}`);
     if (!Number.isInteger(n.value) || n.value < VALUE_MIN || n.value > VALUE_MAX) fail(region, `${n.id}: value は ${VALUE_MIN}〜${VALUE_MAX}`);
     if (n.hackable !== undefined && typeof n.hackable !== 'boolean') fail(region, `${n.id}: hackable は true/false`);
+    // 企業名の施設(命名権など)はハック不可(2026-10-19 決定)。企業名は画面に出す
+    if (n.company !== undefined && (typeof n.company !== 'string' || !n.company)) fail(region, `${n.id}: company は企業名の文字列`);
+    if (n.company && n.hackable !== false) fail(region, `${n.id}: 企業名の施設はハック不可(hackable: false)にする`);
     // 名所のジャンル(docs/PLACES.md 第2章)。地名ではなく名所であることの担保
     if (typeof n.genre !== 'string' || !GENRES.has(n.genre)) fail(region, `${n.id}: genre が不正 ${n.genre}(PLACES.md のジャンルから選ぶ)`);
     if (n.genre !== 'station' && /[0-9０-９一二三四五六七八九十]+丁目/.test(n.name)) fail(region, `${n.id}: 丁目を含む名前は使わない(名所の名前にする。駅名は除く)`);
@@ -158,6 +161,8 @@ function loadRegion(region) {
     hackable: n.hackable !== false,
     lines: Array.isArray(n.lines) ? n.lines : [], // 駅の路線(事業者 路線名)。取り込み元: 国土数値情報
     tags: Array.isArray(n.tags) ? n.tags : [],
+    company: n.company || null, // 命名権など企業名の施設の企業名(画面に出す)
+    wikidata: n.wikidata || null, // 名所の出どころ(Wikidata の id)
     // 問題生成に使う架空のネットワーク 10.(i+1).0.0/16(順番で決まる。DB 化したら項目として持つ)
     // 問題生成に使う架空のネットワーク。拠点 id から決定的に決める(上限なし。DESIGN.md 第 13 章)
     ...addrOf(n.id),
@@ -224,6 +229,7 @@ function nodeDocs(nodes, now = Date.now()) {
     location: { type: 'Point', coordinates: [m.lon, m.lat] },
     t0: m.t0, t1: m.t1, t2: m.t2, t3: m.t3, t4: m.t4,
     level: m.level, value: m.value, hackable: m.hackable !== false, lines: m.lines || [], tags: m.tags || [],
+    company: m.company || null, wikidata: m.wikidata || null,
     adj: m.adj || [], hits: m.hits || Math.max(1, (m.adj || []).length), // つながりと、突破に必要な正解の回数(第 14 章)
     subnet: m.subnet, base: m.base, span: m.span,
     status: 'public', isPlayerNode: false, registeredBy: null, sponsorId: null,

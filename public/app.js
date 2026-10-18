@@ -497,6 +497,8 @@
     $('npMeta').textContent = [n.isPlayerNode ? 'プレイヤーの拠点' : GENRE_LABELS[n.genre] || '', n.area || ''].filter(Boolean).join(' ・ ');
     $('npLevel').textContent = `Lv${n.level}${n.defense ? `(+${n.defense} 強化 → 出題 Lv${n.level + n.defense})` : ''}`;
     $('npValue').textContent = `${n.value}点`;
+    $('npCompany').hidden = $('npCompanyLabel').hidden = !n.company;
+    if (n.company) $('npCompany').textContent = `${n.company}(命名権など。ハック不可)`;
     $('npOwner').textContent = owner ? `${owner.name}${owner.id === S.me ? '(あなた)' : ''}` : (n.owner ? '他のプレイヤー' : '中立');
     // 突破に必要な回数 = つながりの本数。自分(チーム)の進捗と、他の攻め手の最大進捗
     const hits = n.hits || 1, prog = n.progress || {};

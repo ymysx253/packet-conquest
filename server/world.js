@@ -291,6 +291,7 @@ class World {
       level: n.level, value: this.valueOf(n), baseValue: n.value, subnet: n.subnet, owner: n.owner, defense: this.settle(n).defense,
       isPlayerNode: !!n.isPlayerNode, protectedUntil: n.protectedUntil || 0, hackable: n.hackable !== false, lines: n.lines || [],
       hits: n.hits || 1, progress: n.progress || {}, // 突破に必要な回数と、攻め手ごとの正解回数(第 14 章)
+      company: n.company || null, // 命名権など企業名の施設の企業名
     };
   }
   send(p, msg) { if (p.ws && p.ws.readyState === 1) p.ws.send(JSON.stringify(msg)); }

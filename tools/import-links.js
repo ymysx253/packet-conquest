@@ -116,12 +116,22 @@ for (const [line, sts] of stByLine) {
   });
 }
 
-// ---------- 名所: 近い駅をレベルと同じ数だけ ----------
+// ---------- 名所: 5 km 以内の近い駅をレベルと同じ数だけ(2026-10-19) ----------
+// 駅の少ない県で、離島や山の名所が遠くの駅に集まって結ばれないよう距離に上限を置く。
+// 5 km 以内に駅が無い名所は結ばず、下の「分断の橋渡し」で近い名所どうし → 最も近い所へ 1 本でつながる
+const LANDMARK_MAX_KM = 5;
 const hackableStations = stations.filter((s) => s.hackable !== false);
-let landmarkEdges = 0;
+const sGrid = new Map();
+const sCell = (p) => `${Math.floor(p.lat * 20)}:${Math.floor(p.lon * 20)}`; // 約 5 km のます目
+for (const s of hackableStations) { const k = sCell(s); if (!sGrid.has(k)) sGrid.set(k, []); sGrid.get(k).push(s); }
+let landmarkEdges = 0, landmarkAlone = 0;
 for (const n of nodes) {
   if (n.genre === 'station' || n.hackable === false) continue;
-  const near = hackableStations.map((s) => ({ s, d: distKm(n, s) })).sort((a, b) => a.d - b.d).slice(0, Math.min(LANDMARK_MAX_LINKS, Math.max(1, n.level)));
+  const cy = Math.floor(n.lat * 20), cx = Math.floor(n.lon * 20);
+  const cands = [];
+  for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) for (const s of sGrid.get(`${cy + dy}:${cx + dx}`) || []) { const d = distKm(n, s); if (d <= LANDMARK_MAX_KM) cands.push({ s, d }); }
+  const near = cands.sort((a, b) => a.d - b.d).slice(0, Math.min(LANDMARK_MAX_LINKS, Math.max(1, n.level)));
+  if (!near.length) landmarkAlone++;
   for (const { s } of near) { link(n.id, s.id); landmarkEdges++; }
 }
 
@@ -171,7 +181,7 @@ for (const { file, T } of FILES) {
 
 const deg = {}; for (const n of hackable) { const d = adj.get(n.id).size; deg[d] = (deg[d] || 0) + 1; }
 const top = hackable.map((n) => ({ name: n.name, d: adj.get(n.id).size })).sort((a, b) => b.d - a.d).slice(0, 8);
-console.log(`対象 ${FILES.length} ファイル ${nodes.length} 拠点。路線のつながり ${lineEdges / 2} 本、名所のつながり ${landmarkEdges} 本、橋 ${bridges.length} 本。拠点に結びつかなかった N02 の駅 ${unmapped} 件(対象外の都道府県など)`);
+console.log(`対象 ${FILES.length} ファイル ${nodes.length} 拠点。路線のつながり ${lineEdges / 2} 本、名所のつながり ${landmarkEdges} 本(5 km 以内に駅が無い名所 ${landmarkAlone})、橋 ${bridges.length} 本。拠点に結びつかなかった N02 の駅 ${unmapped} 件(対象外の都道府県など)`);
 console.log('つながりの本数 → 拠点数', JSON.stringify(deg));
 console.log('多い順', top.map((t) => `${t.name} ${t.d}`).join(' / '));
 if (bridges.length) console.log('橋:', bridges.join(' / '));

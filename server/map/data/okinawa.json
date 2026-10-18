@@ -1,12 +1,13 @@
 {
   "region": "okinawa",
   "name": "沖縄県",
-  "version": 9,
+  "version": 13,
   "updatedAt": "2026-10-19",
   "note": "沖縄県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "sources": [
     "「国土数値情報(鉄道データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N02-2025.html)を加工して作成",
-    "「国土数値情報(行政区域データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-2026.html)を加工して作成"
+    "「国土数値情報(行政区域データ)」(国土交通省)(https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-2026.html)を加工して作成",
+    "名所の名前と位置の一部は Wikidata(CC0)による(tools/import-landmarks.js)"
   ],
   "kinds": {
     "IX": "相互接続点",
@@ -43,25 +44,104 @@
     "ix"
   ],
   "nodes": [
-    { "id": "st-010127", "name": "古島駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.23093, "lon": 127.70309, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010128", "st-010131"] },
-    { "id": "st-010128", "name": "市立病院前駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.22715, "lon": 127.71052, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010127", "st-010130"] },
-    { "id": "st-010129", "name": "石嶺駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.22734, "lon": 127.72916, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010126", "st-010132"] },
-    { "id": "st-010130", "name": "儀保駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.22422, "lon": 127.7196, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010128", "st-010132"] },
-    { "id": "st-010131", "name": "おもろまち駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.22289, "lon": 127.69848, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010127", "st-010135"] },
-    { "id": "st-010132", "name": "首里駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21899, "lon": 127.72518, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010129", "st-010130"] },
-    { "id": "st-010133", "name": "美栄橋駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21905, "lon": 127.68419, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010134", "st-010136"] },
-    { "id": "st-010134", "name": "牧志駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21693, "lon": 127.69266, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010133", "st-010135"] },
-    { "id": "st-010135", "name": "安里駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21649, "lon": 127.69559, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010131", "st-010134"] },
-    { "id": "st-010136", "name": "県庁前駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21454, "lon": 127.67948, "level": 3, "value": 3, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010133", "st-010137"] },
-    { "id": "st-010137", "name": "旭橋駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21228, "lon": 127.67556, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010136", "st-010139"] },
-    { "id": "st-010138", "name": "那覇空港駅", "genre": "station", "kind": "GW", "area": "那覇市", "region": "okinawa-47201", "lat": 26.20636, "lon": 127.65229, "level": 3, "value": 3, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010142"] },
-    { "id": "st-010139", "name": "壺川駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.20547, "lon": 127.67855, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010137", "st-010140"] },
-    { "id": "st-010140", "name": "奥武山公園駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.20054, "lon": 127.67494, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010139", "st-010141"] },
-    { "id": "st-010141", "name": "小禄駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.19635, "lon": 127.66679, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010140", "st-010142"] },
-    { "id": "st-010142", "name": "赤嶺駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.19334, "lon": 127.66102, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010138", "st-010141"] },
+    { "id": "lm-q907052", "name": "首里城", "genre": "museum", "kind": "LM", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21703, "lon": 127.71948, "level": 5, "value": 5, "wikidata": "Q907052", "adj": ["st-010128", "st-010129", "st-010130", "st-010131", "st-010132"] },
+    { "id": "lm-q1197455", "name": "那覇空港", "genre": "airport", "kind": "GW", "area": "那覇市", "region": "okinawa-47201", "lat": 26.19583, "lon": 127.64583, "level": 8, "value": 8, "wikidata": "Q1197455", "adj": ["lm-q3273378", "st-010133", "st-010136", "st-010137", "st-010138", "st-010139", "st-010140", "st-010141", "st-010142"] },
+    { "id": "lm-q4617100", "name": "沖縄県立博物館・美術館", "genre": "museum", "kind": "LM", "area": "那覇市", "region": "okinawa-47201", "lat": 26.22659, "lon": 127.6941, "level": 2, "value": 2, "wikidata": "Q4617100", "adj": ["st-010127", "st-010131"] },
+    { "id": "lm-q1053962", "name": "園比屋武御嶽", "genre": "monument", "kind": "LM", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21807, "lon": 127.71735, "level": 2, "value": 2, "wikidata": "Q1053962", "adj": ["st-010130", "st-010132"] },
+    { "id": "lm-q3551843", "name": "沖縄県立芸術大学", "genre": "university", "kind": "EDU", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21935, "lon": 127.71894, "level": 2, "value": 2, "wikidata": "Q3551843", "adj": ["st-010130", "st-010132"] },
+    { "id": "lm-q3133545", "name": "識名園", "genre": "park", "kind": "LM", "area": "那覇市", "region": "okinawa-47201", "lat": 26.20417, "lon": 127.71528, "level": 2, "value": 2, "wikidata": "Q3133545", "adj": ["st-010130", "st-010132"] },
+    { "id": "lm-q713275", "name": "守礼門", "genre": "monument", "kind": "LM", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21814, "lon": 127.71689, "level": 2, "value": 2, "wikidata": "Q713275", "adj": ["st-010130", "st-010132"] },
+    { "id": "lm-q22952141", "name": "那覇市歴史博物館", "genre": "museum", "kind": "LM", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21378, "lon": 127.67925, "level": 1, "value": 1, "wikidata": "Q22952141", "adj": ["st-010136"] },
+    { "id": "lm-q5507745", "name": "福州園", "genre": "park", "kind": "LM", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21797, "lon": 127.67594, "level": 1, "value": 1, "wikidata": "Q5507745", "adj": ["st-010136"] },
+    { "id": "lm-q4617404", "name": "沖縄県立看護大学", "genre": "university", "kind": "EDU", "area": "那覇市", "region": "okinawa-47201", "lat": 26.20575, "lon": 127.69511, "level": 1, "value": 1, "wikidata": "Q4617404", "adj": ["st-010135"] },
+    { "id": "lm-q4617521", "name": "沖縄大学", "genre": "university", "kind": "EDU", "area": "那覇市", "region": "okinawa-47201", "lat": 26.20061, "lon": 127.69966, "level": 1, "value": 1, "wikidata": "Q4617521", "adj": ["st-010135"] },
+    { "id": "lm-q7082034", "name": "沖縄県庁舎", "genre": "government", "kind": "GOV", "area": "那覇市", "region": "okinawa-47201", "lat": 26.2124, "lon": 127.681, "level": 15, "value": 15, "wikidata": "Q7082034", "adj": ["st-010131", "st-010133", "st-010134", "st-010135", "st-010136", "st-010137", "st-010139", "st-010140"] },
+    { "id": "lm-q704636", "name": "波上宮", "genre": "shrine_temple", "kind": "LM", "area": "那覇市", "region": "okinawa-47201", "lat": 26.22064, "lon": 127.67135, "level": 1, "value": 1, "hackable": false, "wikidata": "Q704636" },
+    { "id": "st-010127", "name": "古島駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.23093, "lon": 127.70309, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q4617100", "st-010128", "st-010131"] },
+    { "id": "st-010128", "name": "市立病院前駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.22715, "lon": 127.71052, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q907052", "st-010127", "st-010130"] },
+    { "id": "st-010129", "name": "石嶺駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.22734, "lon": 127.72916, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q907052", "st-010126", "st-010132"] },
+    { "id": "st-010130", "name": "儀保駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.22422, "lon": 127.7196, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q1053962", "lm-q3133545", "lm-q3551843", "lm-q713275", "lm-q907052", "st-010128", "st-010132"] },
+    { "id": "st-010131", "name": "おもろまち駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.22289, "lon": 127.69848, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q4617100", "lm-q7082034", "lm-q907052", "st-010127", "st-010135"] },
+    { "id": "st-010132", "name": "首里駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21899, "lon": 127.72518, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q1053962", "lm-q3133545", "lm-q3551843", "lm-q713275", "lm-q907052", "st-010129", "st-010130"] },
+    { "id": "st-010133", "name": "美栄橋駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21905, "lon": 127.68419, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q1197455", "lm-q7082034", "st-010134", "st-010136"] },
+    { "id": "st-010134", "name": "牧志駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21693, "lon": 127.69266, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q7082034", "st-010133", "st-010135"] },
+    { "id": "st-010135", "name": "安里駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21649, "lon": 127.69559, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q4617404", "lm-q4617521", "lm-q7082034", "st-010131", "st-010134"] },
+    { "id": "st-010136", "name": "県庁前駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21454, "lon": 127.67948, "level": 3, "value": 3, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q1197455", "lm-q22952141", "lm-q5507745", "lm-q7082034", "st-010133", "st-010137"] },
+    { "id": "st-010137", "name": "旭橋駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.21228, "lon": 127.67556, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q1197455", "lm-q7082034", "st-010136", "st-010139"] },
+    { "id": "st-010138", "name": "那覇空港駅", "genre": "station", "kind": "GW", "area": "那覇市", "region": "okinawa-47201", "lat": 26.20636, "lon": 127.65229, "level": 3, "value": 3, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q1197455", "st-010142"] },
+    { "id": "st-010139", "name": "壺川駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.20547, "lon": 127.67855, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q1197455", "lm-q3070222", "lm-q7082034", "st-010137", "st-010140"] },
+    { "id": "st-010140", "name": "奥武山公園駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.20054, "lon": 127.67494, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q1197455", "lm-q3070222", "lm-q7082034", "st-010139", "st-010141"] },
+    { "id": "st-010141", "name": "小禄駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.19635, "lon": 127.66679, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q11559258", "lm-q1197455", "st-010140", "st-010142"] },
+    { "id": "st-010142", "name": "赤嶺駅", "genre": "station", "kind": "HUB", "area": "那覇市", "region": "okinawa-47201", "lat": 26.19334, "lon": 127.66102, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q1197455", "st-010138", "st-010141"] },
 
-    { "id": "st-010124", "name": "浦添前田駅", "genre": "station", "kind": "HUB", "area": "浦添市", "region": "okinawa-47208", "lat": 26.24371, "lon": 127.73268, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010125", "st-010126"] },
-    { "id": "st-010125", "name": "てだこ浦西駅", "genre": "station", "kind": "HUB", "area": "浦添市", "region": "okinawa-47208", "lat": 26.24161, "lon": 127.74229, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010104", "st-010124"] },
-    { "id": "st-010126", "name": "経塚駅", "genre": "station", "kind": "HUB", "area": "浦添市", "region": "okinawa-47208", "lat": 26.2369, "lon": 127.72886, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010124", "st-010129"] }
+    { "id": "lm-q2160579", "name": "沖縄国際大学", "genre": "university", "kind": "EDU", "area": "宜野湾市", "region": "okinawa-47205", "lat": 26.26194, "lon": 127.75361, "level": 1, "value": 1, "wikidata": "Q2160579", "adj": ["st-010125"] },
+    { "id": "lm-q11552605", "name": "沖縄コンベンションセンター", "genre": "convention", "kind": "LM", "area": "宜野湾市", "region": "okinawa-47205", "lat": 26.27972, "lon": 127.73296, "level": 1, "value": 1, "wikidata": "Q11552605", "adj": ["lm-q65248639", "st-010124"] },
+
+    { "id": "lm-q4521182", "name": "於茂登岳", "genre": "nature", "kind": "LM", "area": "石垣市", "region": "okinawa-47207", "lat": 24.42722, "lon": 124.18333, "level": 2, "value": 2, "wikidata": "Q4521182", "adj": ["lm-q705909", "lm-q7498236"] },
+    { "id": "lm-q7498236", "name": "白保竿根田原洞穴遺跡", "genre": "heritage", "kind": "LM", "area": "石垣市", "region": "okinawa-47207", "lat": 24.40019, "lon": 124.24581, "level": 1, "value": 1, "wikidata": "Q7498236", "adj": ["lm-q4521182", "lm-q654922"] },
+    { "id": "lm-q705909", "name": "宮良殿内", "genre": "monument", "kind": "LM", "area": "石垣市", "region": "okinawa-47207", "lat": 24.34111, "lon": 124.15972, "level": 1, "value": 1, "wikidata": "Q705909", "adj": ["lm-q4521182", "lm-q700908"] },
+    { "id": "lm-q17225173", "name": "ユーグレナモール", "genre": "market", "kind": "LM", "area": "石垣市", "region": "okinawa-47207", "lat": 24.33947, "lon": 124.15797, "level": 1, "value": 1, "hackable": false, "company": "ユーグレナ", "wikidata": "Q17225173" },
+    { "id": "lm-q11585382", "name": "石垣やいま村", "genre": "museum", "kind": "LM", "area": "石垣市", "region": "okinawa-47207", "lat": 24.40433, "lon": 124.14436, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11585382" },
+
+    { "id": "lm-q2037226", "name": "浦添ようどれ", "genre": "monument", "kind": "LM", "area": "浦添市", "region": "okinawa-47208", "lat": 26.24753, "lon": 127.73172, "level": 1, "value": 1, "wikidata": "Q2037226", "adj": ["st-010124"] },
+    { "id": "lm-q11558303", "name": "浦添市美術館", "genre": "museum", "kind": "LM", "area": "浦添市", "region": "okinawa-47208", "lat": 26.24992, "lon": 127.71947, "level": 1, "value": 1, "wikidata": "Q11558303", "adj": ["st-010124"] },
+    { "id": "st-010124", "name": "浦添前田駅", "genre": "station", "kind": "HUB", "area": "浦添市", "region": "okinawa-47208", "lat": 26.24371, "lon": 127.73268, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q11552605", "lm-q11558303", "lm-q1195900", "lm-q2037226", "st-010125", "st-010126"] },
+    { "id": "st-010125", "name": "てだこ浦西駅", "genre": "station", "kind": "HUB", "area": "浦添市", "region": "okinawa-47208", "lat": 26.24161, "lon": 127.74229, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["lm-q1195900", "lm-q2160579", "st-010124"] },
+    { "id": "st-010126", "name": "経塚駅", "genre": "station", "kind": "HUB", "area": "浦添市", "region": "okinawa-47208", "lat": 26.2369, "lon": 127.72886, "level": 1, "value": 1, "lines": ["沖縄都市モノレール 沖縄都市モノレール線"], "adj": ["st-010124", "st-010129"] },
+
+    { "id": "lm-q3551441", "name": "名桜大学", "genre": "university", "kind": "EDU", "area": "名護市", "region": "okinawa-47209", "lat": 26.625, "lon": 127.975, "level": 1, "value": 1, "wikidata": "Q3551441", "adj": ["lm-q11552684", "lm-q4521100", "lm-q4521260"] },
+    { "id": "lm-q11552684", "name": "沖縄工業高等専門学校", "genre": "university", "kind": "EDU", "area": "名護市", "region": "okinawa-47209", "lat": 26.5265, "lon": 128.03, "level": 1, "value": 1, "wikidata": "Q11552684", "adj": ["lm-q3551441", "lm-q7082022"] },
+
+    { "id": "lm-q22245432", "name": "平和の礎", "genre": "monument", "kind": "LM", "area": "糸満市", "region": "okinawa-47210", "lat": 26.09519, "lon": 127.72503, "level": 2, "value": 2, "wikidata": "Q22245432", "adj": ["lm-q1619055"] },
+    { "id": "lm-q1619055", "name": "ひめゆりの塔", "genre": "monument", "kind": "LM", "area": "糸満市", "region": "okinawa-47210", "lat": 26.09635, "lon": 127.69034, "level": 1, "value": 1, "wikidata": "Q1619055", "adj": ["lm-q11559258", "lm-q22245432"] },
+
+    { "id": "lm-q48989310", "name": "沖縄サントリーアリーナ", "genre": "stadium", "kind": "LM", "area": "沖縄市", "region": "okinawa-47211", "lat": 26.33278, "lon": 127.78364, "level": 2, "value": 2, "wikidata": "Q48989310", "adj": ["lm-q16895460", "lm-q65248639", "lm-q7082016"] },
+    { "id": "lm-q7082016", "name": "沖縄県総合運動公園陸上競技場", "genre": "stadium", "kind": "LM", "area": "沖縄市", "region": "okinawa-47211", "lat": 26.30861, "lon": 127.82099, "level": 2, "value": 2, "wikidata": "Q7082016", "adj": ["lm-q48989310"] },
+
+    { "id": "lm-q3070222", "name": "漫湖", "genre": "nature", "kind": "LM", "area": "豊見城市", "region": "okinawa-47212", "lat": 26.19667, "lon": 127.68361, "level": 2, "value": 2, "wikidata": "Q3070222", "adj": ["st-010139", "st-010140"] },
+    { "id": "lm-q11559258", "name": "海軍司令部壕", "genre": "park", "kind": "LM", "area": "豊見城市", "region": "okinawa-47212", "lat": 26.18611, "lon": 127.67639, "level": 1, "value": 1, "wikidata": "Q11559258", "adj": ["lm-q1619055", "st-010141"] },
+
+    { "id": "lm-q116725", "name": "宮古空港", "genre": "airport", "kind": "GW", "area": "宮古島市", "region": "okinawa-47214", "lat": 24.78278, "lon": 125.295, "level": 3, "value": 3, "wikidata": "Q116725", "adj": ["lm-q5753922", "lm-q654922"] },
+    { "id": "lm-q654922", "name": "下地島空港", "genre": "airport", "kind": "GW", "area": "宮古島市", "region": "okinawa-47214", "lat": 24.82667, "lon": 125.14472, "level": 3, "value": 3, "wikidata": "Q654922", "adj": ["lm-q116725", "lm-q7498236"] },
+    { "id": "lm-q5753922", "name": "東平安名岬", "genre": "nature", "kind": "LM", "area": "宮古島市", "region": "okinawa-47214", "lat": 24.71889, "lon": 125.46889, "level": 1, "value": 1, "wikidata": "Q5753922", "adj": ["lm-q116725", "lm-q3235075"] },
+    { "id": "lm-q10947551", "name": "うえのドイツ文化村", "genre": "park", "kind": "LM", "area": "宮古島市", "region": "okinawa-47214", "lat": 24.71934, "lon": 125.32265, "level": 1, "value": 1, "hackable": false, "wikidata": "Q10947551" },
+
+    { "id": "lm-q3087076", "name": "斎場御嶽", "genre": "monument", "kind": "LM", "area": "南城市", "region": "okinawa-47215", "lat": 26.17333, "lon": 127.82667, "level": 2, "value": 2, "wikidata": "Q3087076", "adj": ["lm-q1195900"] },
+
+    { "id": "lm-q4521100", "name": "与那覇岳", "genre": "nature", "kind": "LM", "area": "国頭村", "region": "okinawa-47301", "lat": 26.717, "lon": 128.21867, "level": 2, "value": 2, "wikidata": "Q4521100", "adj": ["lm-q3551441", "lm-q4521065"] },
+    { "id": "lm-q4521065", "name": "辺戸岬", "genre": "nature", "kind": "LM", "area": "国頭村", "region": "okinawa-47301", "lat": 26.87278, "lon": 128.26389, "level": 2, "value": 2, "wikidata": "Q4521065", "adj": ["lm-q1927310", "lm-q4521100"] },
+
+    { "id": "lm-q133878783", "name": "ジャングリア沖縄", "genre": "park", "kind": "LM", "area": "今帰仁村", "region": "okinawa-47306", "lat": 26.64224, "lon": 127.97362, "level": 1, "value": 1, "hackable": false, "wikidata": "Q133878783" },
+
+    { "id": "lm-q1445750", "name": "沖縄美ら海水族館", "genre": "zoo_aquarium", "kind": "LM", "area": "本部町", "region": "okinawa-47308", "lat": 26.69439, "lon": 127.87794, "level": 3, "value": 3, "wikidata": "Q1445750", "adj": ["lm-q4521260", "lm-q4521310"] },
+    { "id": "lm-q4521260", "name": "八重岳", "genre": "park", "kind": "LM", "area": "本部町", "region": "okinawa-47308", "lat": 26.6355, "lon": 127.92836, "level": 2, "value": 2, "wikidata": "Q4521260", "adj": ["lm-q1445750", "lm-q3551441"] },
+
+    { "id": "lm-q7082022", "name": "沖縄科学技術大学院大学", "genre": "university", "kind": "EDU", "area": "恩納村", "region": "okinawa-47311", "lat": 26.46195, "lon": 127.83106, "level": 2, "value": 2, "wikidata": "Q7082022", "adj": ["lm-q11552684", "lm-q16895460"] },
+    { "id": "lm-q16895460", "name": "石川岳", "genre": "nature", "kind": "LM", "area": "恩納村", "region": "okinawa-47311", "lat": 26.4495, "lon": 127.835, "level": 2, "value": 2, "wikidata": "Q16895460", "adj": ["lm-q48989310", "lm-q7082022"] },
+    { "id": "lm-q25112734", "name": "琉球村", "genre": "park", "kind": "LM", "area": "恩納村", "region": "okinawa-47311", "lat": 26.42947, "lon": 127.77526, "level": 1, "value": 1, "hackable": false, "wikidata": "Q25112734" },
+
+    { "id": "lm-q1368593", "name": "伊江島空港", "genre": "airport", "kind": "GW", "area": "伊江村", "region": "okinawa-47315", "lat": 26.7225, "lon": 127.78694, "level": 3, "value": 3, "wikidata": "Q1368593", "adj": ["lm-q4521310"] },
+    { "id": "lm-q4521310", "name": "城山", "genre": "nature", "kind": "LM", "area": "伊江村", "region": "okinawa-47315", "lat": 26.71972, "lon": 127.80722, "level": 2, "value": 2, "wikidata": "Q4521310", "adj": ["lm-q1368593", "lm-q1445750", "lm-q4519060"] },
+
+    { "id": "lm-q65248639", "name": "伊礼原遺跡", "genre": "heritage", "kind": "LM", "area": "北谷町", "region": "okinawa-47326", "lat": 26.32417, "lon": 127.75861, "level": 1, "value": 1, "wikidata": "Q65248639", "adj": ["lm-q11552605", "lm-q48989310"] },
+    { "id": "lm-q11609171", "name": "美浜タウンリゾート・アメリカンビレッジ", "genre": "park", "kind": "LM", "area": "北谷町", "region": "okinawa-47326", "lat": 26.31618, "lon": 127.75667, "level": 1, "value": 1, "hackable": false, "wikidata": "Q11609171" },
+
+    { "id": "lm-q1195900", "name": "琉球大学", "genre": "university", "kind": "EDU", "area": "西原町", "region": "okinawa-47329", "lat": 26.25083, "lon": 127.765, "level": 2, "value": 2, "wikidata": "Q1195900", "adj": ["lm-q3087076", "st-010124", "st-010125"] },
+
+    { "id": "lm-q3273378", "name": "慶良間空港", "genre": "airport", "kind": "GW", "area": "座間味村", "region": "okinawa-47354", "lat": 26.16833, "lon": 127.29333, "level": 2, "value": 2, "wikidata": "Q3273378", "adj": ["lm-q1197455", "lm-q252768"] },
+
+    { "id": "lm-q252768", "name": "粟国空港", "genre": "airport", "kind": "GW", "area": "粟国村", "region": "okinawa-47355", "lat": 26.59278, "lon": 127.24028, "level": 3, "value": 3, "wikidata": "Q252768", "adj": ["lm-q3235075", "lm-q3273378"] },
+
+    { "id": "lm-q1057877", "name": "南大東空港", "genre": "airport", "kind": "GW", "area": "南大東村", "region": "okinawa-47357", "lat": 25.84667, "lon": 131.26361, "level": 2, "value": 2, "wikidata": "Q1057877", "adj": ["lm-q1927346"] },
+
+    { "id": "lm-q4519060", "name": "具志川島", "genre": "heritage", "kind": "LM", "area": "伊是名村", "region": "okinawa-47360", "lat": 26.97528, "lon": 127.95056, "level": 1, "value": 1, "wikidata": "Q4519060", "adj": ["lm-q4521310"] },
+
+    { "id": "lm-q3235075", "name": "久米島空港", "genre": "airport", "kind": "GW", "area": "久米島町", "region": "okinawa-47361", "lat": 26.36361, "lon": 126.71389, "level": 3, "value": 3, "wikidata": "Q3235075", "adj": ["lm-q252768", "lm-q5753922"] },
+
+    { "id": "lm-q713881", "name": "波照間空港", "genre": "airport", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.05833, "lon": 123.80389, "level": 3, "value": 3, "wikidata": "Q713881", "adj": ["lm-q11341090"] },
+    { "id": "lm-q700908", "name": "由布島", "genre": "zoo_aquarium", "kind": "LM", "area": "竹富町", "region": "okinawa-47381", "lat": 24.345, "lon": 123.935, "level": 3, "value": 3, "wikidata": "Q700908", "adj": ["lm-q11341090", "lm-q705909"] },
+    { "id": "lm-q11341090", "name": "マリユドゥの滝", "genre": "nature", "kind": "LM", "area": "竹富町", "region": "okinawa-47381", "lat": 24.35719, "lon": 123.80319, "level": 1, "value": 1, "wikidata": "Q11341090", "adj": ["lm-q700908", "lm-q708517", "lm-q713881"] },
+
+    { "id": "lm-q708517", "name": "与那国空港", "genre": "airport", "kind": "GW", "area": "与那国町", "region": "okinawa-47382", "lat": 24.4675, "lon": 122.97972, "level": 3, "value": 3, "wikidata": "Q708517", "adj": ["lm-q11341090"] }
   ]
 }

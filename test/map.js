@@ -50,9 +50,10 @@ assert.strictEqual(seen.size, HACKABLE.length, '地図が分断されていま�
 for (const e of EDGES) assert.ok(ADJ[e.a] && ADJ[e.b] && e.a !== e.b, 'リンクの端点が不正');
 // つながりは路線に沿う(第 14 章): 新宿駅がいちばん多く、末端の駅は 1 本。名所は近い駅をレベルと同じ数だけ
 const byName = Object.fromEntries(NODES.filter((n) => n.region.startsWith('tokyo-')).map((n) => [n.name, n])); // 全国に同名の駅があるので東京に限る
-assert.ok(byName['新宿駅'].hits >= 10 && byName['新宿駅'].hits === Math.max(...NODES.map((n) => n.hits)), '新宿駅のつながりが最多');
+const railLinks = (n) => n.adj.filter((id) => id.startsWith('st-')).length; // 名所を除いた路線のつながり
+assert.ok(railLinks(byName['新宿駅']) >= 10 && railLinks(byName['新宿駅']) === Math.max(...NODES.filter((n) => n.genre === 'station').map(railLinks)), '路線のつながりは新宿駅が最多(名所が集まる駅は名所の線ぶん本数が増える)');
 assert.ok(byName['東京駅'].adj.includes(byName['神田駅'].id) && byName['東京駅'].adj.includes(byName['有楽町駅'].id), '東京駅は山手線の前後とつながる');
-assert.strictEqual(byName['奥多摩駅'].hits, 1, '終点は 1 本');
+assert.strictEqual(railLinks(byName['奥多摩駅']), 1, '終点は路線のつながりが 1 本');
 assert.strictEqual(byName['東京タワー'].adj.length, 8, '名所は近い駅をレベルの数だけ(上限 8)');
 assert.strictEqual(byName['国会議事堂'].level, 30); assert.strictEqual(byName['東京都庁'].level, 15); assert.strictEqual(byName['国会議事堂'].adj.length, 8, '象徴拠点も 8 本まで');
 assert.ok(byName['東京タワー'].adj.every((id) => NODES.find((n) => n.id === id).genre === 'station'), '名所は駅とだけつながる');
@@ -111,6 +112,18 @@ for (const n of NODES) {
   if (n.genre === 'shrine_temple') assert.strictEqual(n.hackable, false, `${n.name}: 寺社はハック不可`);
 }
 assert.ok(NODES.filter((n) => n.genre === 'station').length >= 50, '駅が主な拠点');
+// 全国の名所(2026-10-19): Wikidata から取り込んだもの(id が lm-)は出どころを持つ。企業名の施設はハック不可。各都道府県に名所がある
+const LM = NODES.filter((n) => n.id.startsWith('lm-'));
+for (const n of LM) {
+  assert.match(n.wikidata || '', /^Q[0-9]+$/, `${n.name}: Wikidata の id`);
+  assert.strictEqual(n.id, 'lm-' + n.wikidata.toLowerCase());
+}
+for (const n of NODES) if (n.company) assert.strictEqual(n.hackable, false, `${n.name}: 企業名の施設はハック不可`);
+if (LM.length) {
+  const prefsWithLm = new Set(LM.map(prefOf));
+  assert.strictEqual(prefsWithLm.size, 47, '47 都道府県すべてに名所がある');
+  assert.ok(LM.some((n) => n.level === 15 && n.genre === 'government'), '都道府県の庁舎は象徴(Lv15)');
+}
 assert.ok(!NODES.some((n) => /DC$|IX$/.test(n.name)), '架空名の DC / IX は使わない');
 assert.throws(broken((d) => { d.nodes[0].region = 'tokyo-chuo'; }), /食い違います/);
 assert.throws(broken((d) => { d.nodes[0].id = 'Bad_ID'; }), /英小文字/);

@@ -16,7 +16,9 @@
 //   3. 病院・学校・警察・軍・発電所などの分類を併せ持つものは除く(PLACES.md 第 3 章)
 //   4. 都道府県・市区町村は国土数値情報 N03 の境界で座標から決める。どこにも入らないもの(海上など)は除く
 //   5. 既存の拠点(駅と東京の名所)と同じ名前、または 80 m 以内のものは「既存と重複」に印を付ける
-//   6. 推奨: 各都道府県で知名度の高い順に最大 20 件(同じジャンルは 4 件まで)。重複・寺社は推奨に含めない
+//   6. 推奨: 各都道府県で知名度の高い順に最大 50 件(同じジャンルは 10 件まで)。重複・寺社・要確認・企業名の施設は推奨に含めない
+//   7. 取り込みの印(2026-10-19 決定): 推奨は「○」(ハック可)。寺社・テーマパーク・命名権など企業名の施設は全部「○(ハック不可)」(線をつなげない)。
+//      企業名は Wikidata の「名前の由来(P138)」「スポンサー(P859)」が企業(Q4830453 の下位)を指すもので判定し、その企業名を表示する
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
@@ -30,32 +32,34 @@ fs.mkdirSync(workDir, { recursive: true });
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
 // ジャンル(PLACES.md 第 2 章)→ Wikidata の分類と sitelinks の下限。complex(複合施設)と ix は企業名や判断が要るので自動では集めない
+// 下限は 2026-10-19 に下げた(各都道府県 50 件を選べるだけの候補を集めるため)。選ぶのは知名度の高い順なので、下限を下げても上位は変わらない。
+// 寺社は「全部取り込む(ハック不可)」と決めたので下限を据え置く(下げると数千件になる)
 const GENRES = [
-  { genre: 'airport', classes: ['Q1248784'], min: 3 },
-  { genre: 'port', classes: ['Q1478783', 'Q4303352'], min: 2 },
-  { genre: 'bus_terminal', classes: ['Q494829'], min: 2 },
-  { genre: 'bridge', classes: ['Q12280'], min: 4 },
-  { genre: 'tower', classes: ['Q12518', 'Q1440300'], min: 3 },
-  { genre: 'park', classes: ['Q22698', 'Q22746', 'Q1107656'], min: 4 },
-  { genre: 'nature', classes: ['Q8502'], min: 8, label: '山' },
-  { genre: 'nature', classes: ['Q34038', 'Q150784', 'Q185113', 'Q40080'], min: 4, label: '滝・峡谷・岬・浜' },
-  { genre: 'nature', classes: ['Q23397'], min: 5, label: '湖' },
-  { genre: 'zoo_aquarium', classes: ['Q43501', 'Q2281788', 'Q167346'], min: 2 },
-  { genre: 'museum', classes: ['Q33506', 'Q207694'], min: 4 },
-  { genre: 'library', classes: ['Q7075'], min: 4 },
-  { genre: 'theater', classes: ['Q24354', 'Q1060829'], min: 3 },
-  { genre: 'stadium', classes: ['Q483110', 'Q641226'], min: 3 },
-  { genre: 'heritage', classes: ['Q92026'], min: 3, label: '城' },
-  { genre: 'heritage', classes: ['Q839954'], min: 4, label: '遺跡' },
-  { genre: 'monument', classes: ['Q4989906'], min: 3 },
+  { genre: 'airport', classes: ['Q1248784'], min: 2 },
+  { genre: 'port', classes: ['Q1478783', 'Q4303352'], min: 1 },
+  { genre: 'bus_terminal', classes: ['Q494829'], min: 1 },
+  { genre: 'bridge', classes: ['Q12280'], min: 2 },
+  { genre: 'tower', classes: ['Q12518', 'Q1440300'], min: 2 },
+  { genre: 'park', classes: ['Q22698', 'Q22746', 'Q1107656'], min: 2 },
+  { genre: 'nature', classes: ['Q8502'], min: 4, label: '山' },
+  { genre: 'nature', classes: ['Q34038', 'Q150784', 'Q185113', 'Q40080'], min: 2, label: '滝・峡谷・岬・浜' },
+  { genre: 'nature', classes: ['Q23397'], min: 3, label: '湖' },
+  { genre: 'zoo_aquarium', classes: ['Q43501', 'Q2281788', 'Q167346'], min: 1 },
+  { genre: 'museum', classes: ['Q33506', 'Q207694'], min: 2 },
+  { genre: 'library', classes: ['Q7075'], min: 2 },
+  { genre: 'theater', classes: ['Q24354', 'Q1060829'], min: 2 },
+  { genre: 'stadium', classes: ['Q483110', 'Q641226'], min: 2 },
+  { genre: 'heritage', classes: ['Q92026'], min: 2, label: '城' },
+  { genre: 'heritage', classes: ['Q839954'], min: 2, label: '遺跡' },
+  { genre: 'monument', classes: ['Q4989906'], min: 2 },
   { genre: 'shrine_temple', classes: ['Q845945', 'Q5393308'], min: 6 },
   { genre: 'shrine_temple', classes: ['Q16970'], min: 4, label: '教会' },
   { genre: 'government', classes: ['Q100705206'], min: 1, label: '都道府県庁舎' },
-  { genre: 'government', classes: ['Q543654'], min: 3, label: '市庁舎' },
-  { genre: 'university', classes: ['Q3918'], min: 6 },
-  { genre: 'market', classes: ['Q37654', 'Q330284', 'Q21000333'], min: 2 },
-  { genre: 'convention', classes: ['Q1378975'], min: 2 },
-  { genre: 'observatory', classes: ['Q62832', 'Q148319'], min: 2 },
+  { genre: 'government', classes: ['Q543654'], min: 2, label: '市庁舎' },
+  { genre: 'university', classes: ['Q3918'], min: 3 },
+  { genre: 'market', classes: ['Q37654', 'Q330284', 'Q21000333'], min: 1 },
+  { genre: 'convention', classes: ['Q1378975'], min: 1 },
+  { genre: 'observatory', classes: ['Q62832', 'Q148319'], min: 1 },
 ];
 // 併せ持っていたら除く分類(PLACES.md 第 3 章「避けるジャンル」)
 const EXCLUDE = new Set([ // ID は Wikidata のラベルで確認済み(2026-10-19)
@@ -133,7 +137,12 @@ async function fetchClass(cls, min) {
       console.log(`  ${cls}: ${deep ? '下位の分類込み' : '直接の分類だけ'}で失敗(${e.message.slice(0, 50)})`);
     }
   }
-  if (!rows) { console.log(`  ${cls}: 取得できなかったので飛ばします(作業フォルダのキャッシュが無いので、次の実行で取り直します)`); return []; }
+  if (!rows) {
+    // 下限を変えて取り直したときなど、同じ分類の保存済みの結果があればそれを使う(下限が高い分、件数は少なめ)
+    const older = fs.readdirSync(workDir).filter((x) => x.startsWith(`${cls}-`) && x.endsWith('.json')).sort((x, y) => parseInt(x.split('-')[1], 10) - parseInt(y.split('-')[1], 10));
+    if (older.length) { console.log(`  ${cls}: 取得できなかったので、保存済みの ${older[0]} を使います`); return JSON.parse(fs.readFileSync(path.join(workDir, older[0]), 'utf8')); }
+    console.log(`  ${cls}: 取得できなかったので飛ばします(次の実行で取り直します)`); return [];
+  }
   const out = rows.map((r) => {
     const m = /Point\(([-\d.]+) ([-\d.]+)\)/.exec(r.coord.value);
     return { qid: r.item.value.split('/').pop(), name: r.ja.value, lon: Number(m[1]), lat: Number(m[2]), sitelinks: Number(r.sl.value), types: r.types.value.split('|') };
@@ -194,6 +203,26 @@ function existingNodes() {
   return out;
 }
 
+// 命名権など、名前が企業に由来する施設(P138 名前の由来 / P859 スポンサー が企業)。結果は作業フォルダに保存
+async function companiesOf(qids) {
+  const cache = path.join(workDir, 'companies.json');
+  const known = fs.existsSync(cache) ? JSON.parse(fs.readFileSync(cache, 'utf8')) : {};
+  const todo = qids.filter((q) => !(q in known));
+  for (let i = 0; i < todo.length; i += 150) {
+    const chunk = todo.slice(i, i + 150);
+    const q = `SELECT ?item ?co ?coja WHERE { VALUES ?item { ${chunk.map((x) => 'wd:' + x).join(' ')} }
+  ?item wdt:P138|wdt:P859 ?co. ?co wdt:P31/wdt:P279* wd:Q4830453.
+  OPTIONAL { ?co rdfs:label ?coja FILTER(LANG(?coja) = "ja") } }`;
+    let rows = [];
+    try { rows = await sparql(q); } catch (e) { console.log(`  企業の判定で失敗(${e.message.slice(0, 50)})。この 150 件は企業なしとして扱う`); }
+    for (const x of chunk) known[x] = known[x] || null;
+    for (const row of rows) { const id = row.item.value.split('/').pop(); known[id] = row.coja ? row.coja.value : row.co.value.split('/').pop(); }
+    fs.writeFileSync(cache, JSON.stringify(known));
+    await wait(1500);
+  }
+  return known;
+}
+
 (async () => {
   // 1. 集める
   const byQid = new Map();
@@ -249,8 +278,22 @@ function existingNodes() {
     if (!c.dup) { const same = nodes.find((n) => n.pref === c.pref && n.name === c.name); if (same) c.dup = same.name; }
   }
 
-  // 4. 推奨(都道府県ごとに知名度順で最大 20 件、同じジャンルは 4 件まで。重複・寺社は除く)
-  const PER_PREF = 20, PER_GENRE = 4;
+  // 3.5 企業名の施設(命名権など)
+  const companies = await companiesOf(located.filter((c) => c.genre !== 'shrine_temple').map((c) => c.qid));
+  // 採るのは「施設名に企業名が含まれる」か「スタジアム・アリーナ(命名権が一般的)」のときだけ。大学は対象外(創立者や前身の名前が企業扱いになっていることがある)。
+  // Wikidata の誤り(例: Bunkamura → 東映太秦映画村)を拾わないため
+  const coreOf = (co) => String(co).replace(/株式会社|有限会社|ホールディングス|グループ|カンパニー|・/g, '').trim();
+  const nameHas = (name, co) => { const k = coreOf(co); return k.length >= 2 && (name.includes(k) || name.includes(k.slice(0, Math.min(4, k.length)))); };
+  for (const c of located) {
+    const co = companies[c.qid];
+    if (!co || c.genre === 'university') continue;
+    if (!(nameHas(c.name, co) || c.genre === 'stadium')) continue;
+    c.company = co; c.review = [c.review, '命名権など企業名の施設'].filter(Boolean).join('・');
+  }
+  console.log(`企業名の施設: ${located.filter((c) => c.company).length} 件`);
+
+  // 4. 推奨(都道府県ごとに知名度順で最大 50 件、同じジャンルは 10 件まで。重複・寺社・要確認・企業名は除く)
+  const PER_PREF = 50, PER_GENRE = 10;
   const byPref = new Map();
   for (const c of located) { if (!byPref.has(c.pref)) byPref.set(c.pref, []); byPref.get(c.pref).push(c); }
   for (const list of byPref.values()) {
@@ -263,15 +306,21 @@ function existingNodes() {
       c.recommended = true; perGenre[c.genre] = (perGenre[c.genre] || 0) + 1; n++;
     }
   }
+  // 取り込みの印: 推奨はハック可。寺社・テーマパーク・企業名の施設は全部ハック不可(線をつなげない)。軍の飛行場の可能性があるものと重複は取り込まない
+  for (const c of located) {
+    const nonHack = !c.dup && (c.genre === 'shrine_temple' || c.company || /テーマパーク/.test(c.review || ''));
+    const military = /飛行場/.test(c.review || '');
+    c.take = c.recommended ? '○' : (nonHack && !military ? '○(ハック不可)' : '');
+  }
 
   // 5. 書き出し(都道府県コード順 → 推奨 → 知名度順)
   located.sort((a, b) => a.prefCode.localeCompare(b.prefCode) || (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0) || b.sitelinks - a.sitelinks || a.name.localeCompare(b.name, 'ja'));
   const esc = (v) => { const s = String(v ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
-  const header = ['都道府県', '市区町村', '名前', 'ジャンル', 'genre', '細分', 'ハック', '推奨', '既存と重複', '要確認', '知名度(言語版の数)', 'Wikidata', '緯度', '経度', '採否(確認用)'];
-  const lines = located.map((c) => [c.prefName, c.area, c.name, GENRE_JA[c.genre], c.genre, c.sub, c.genre === 'shrine_temple' ? '不可' : '可', c.recommended ? '○' : '', c.dup || '', c.review || '', c.sitelinks, c.qid, c.lat.toFixed(5), c.lon.toFixed(5), ''].map(esc).join(','));
+  const header = ['都道府県', '市区町村', '名前', 'ジャンル', 'genre', '細分', 'ハック', '推奨', '取り込み', '既存と重複', '要確認', '企業(命名権など)', '知名度(言語版の数)', 'Wikidata', '緯度', '経度', '採否(確認用)'];
+  const lines = located.map((c) => [c.prefName, c.area, c.name, GENRE_JA[c.genre], c.genre, c.sub, c.take === '○' ? '可' : (c.take ? '不可' : ''), c.recommended ? '○' : '', c.take, c.dup || '', c.review || '', c.company || '', c.sitelinks, c.qid, c.lat.toFixed(5), c.lon.toFixed(5), ''].map(esc).join(','));
   fs.writeFileSync(path.join(OUT_DIR, 'candidates.csv'), '﻿' + [header.join(','), ...lines].join('\r\n') + '\r\n');
 
-  const summary = { collectedAt: '2026-10-19', source: 'Wikidata(CC0)。座標の所属は「国土数値情報(行政区域データ)」(国土交通省)で判定', total: located.length, recommended: located.filter((c) => c.recommended).length, dup: located.filter((c) => c.dup).length, review: located.filter((c) => c.review).length, excluded, byGenre: {}, byPref: {} };
+  const summary = { collectedAt: '2026-10-19', source: 'Wikidata(CC0)。座標の所属は「国土数値情報(行政区域データ)」(国土交通省)で判定', total: located.length, recommended: located.filter((c) => c.recommended).length, dup: located.filter((c) => c.dup).length, review: located.filter((c) => c.review).length, company: located.filter((c) => c.company).length, take: located.filter((c) => c.take === '○').length, takeNonHack: located.filter((c) => c.take === '○(ハック不可)').length, excluded, byGenre: {}, byPref: {} };
   for (const c of located) {
     summary.byGenre[c.genre] = (summary.byGenre[c.genre] || 0) + 1;
     const p = (summary.byPref[c.prefName] ||= { code: c.prefCode, total: 0, recommended: 0, top: [] });
