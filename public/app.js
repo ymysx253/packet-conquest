@@ -244,8 +244,11 @@
   function endPick() { S.picking = false; $('pickBar').hidden = true; $('lobby').hidden = false; }
   $('pickCancelBtn').onclick = () => { if (S.moving) { S.moving = false; $('pickBar').hidden = true; } else endPick(); };
   // 引っ越し: 地図で新しい開始地点を選ぶ(1 日 1 回)
+  // 「あなた」は上の帯。復帰コード・引っ越しはダイアログで(2026-10-19)
+  $('meMenuBtn').onclick = () => { const d = $('meDialog'); if (d.showModal) d.showModal(); else d.setAttribute('open', ''); };
   $('moveBtn').onclick = () => {
     if (!S.joined) return;
+    if ($('meDialog').open) $('meDialog').close(); // 地図で選ぶのでダイアログは閉じる
     if (S.movedAt && now() - S.movedAt < 24 * 3600 * 1000) { toast(`引っ越しは 1 日に 1 回までです(あと ${Math.ceil((24 * 3600 * 1000 - (now() - S.movedAt)) / 3600000)} 時間)`); return; }
     S.moving = true; $('pickBarText').textContent = '引っ越し先の町・字か、ふつうの駅をタップしてください(町・字は拡大すると出ます。所有拠点は残りますが、線がつながるまで広げられません)'; $('pickBar').hidden = false;
   };

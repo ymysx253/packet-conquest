@@ -16,6 +16,14 @@
     <h1>パケット陣取り</h1>
     <span class="brand-en">Packet Conquest</span>
   </div>
+  <!-- あなた(2026-10-19 ユーザー指摘で右の欄から上の帯へ)。復帰コード・引っ越しはボタンで開くダイアログに -->
+  <div class="me-bar" id="mePanel" hidden aria-label="あなた">
+    <span class="swatch" id="meSwatch"></span>
+    <span class="pname" id="meName"></span>
+    <span class="pscore" id="meScore"></span>
+    <span class="hint me-stats"><span id="meNodes"></span> ・ 累計 <span id="mePoints"></span>点</span>
+    <button type="button" class="btn small" id="meMenuBtn" aria-haspopup="dialog">復帰コード・引っ越し</button>
+  </div>
   <div class="status">
     <span class="chip" id="areaChip">日本</span>
     <span class="chip" id="onlineChip" hidden>オンライン <b id="onlineCount">0</b></span>
@@ -50,26 +58,6 @@
   </section>
 
   <aside class="side">
-    <section class="panel me" id="mePanel" hidden aria-labelledby="meTitle">
-      <h2 id="meTitle" class="label">あなた</h2>
-      <div class="me-row">
-        <span class="swatch" id="meSwatch"></span>
-        <span class="pname" id="meName"></span>
-        <span class="pscore" id="meScore"></span>
-      </div>
-      <p class="hint me-stats"><span id="meNodes"></span> ・ 累計 <span id="mePoints"></span>点</p>
-      <div class="code-row">
-        <span class="hint">復帰コード</span>
-        <code class="code" id="meCode"></code>
-        <button type="button" class="btn small" id="copyCodeBtn">コピー</button>
-        <button type="button" class="btn small" id="rekeyBtn" title="コードが漏れたと思ったら新しいコードに替えます">再発行</button>
-      </div>
-      <div class="code-row">
-        <span class="hint">開始地点</span>
-        <button type="button" class="btn small" id="moveBtn" title="自分の拠点を別の駅のそばに作り直します(1 日 1 回)">引っ越し</button>
-      </div>
-      <p class="hint">別の端末やブラウザで続けるときに入力します。他の人には教えないでください。7 日間接続が無いと拠点はすべて中立に戻ります。</p>
-    </section>
 
     <section class="panel" id="teamPanel" hidden aria-labelledby="teamTitle">
       <h2 id="teamTitle" class="label">チーム</h2>
@@ -226,6 +214,22 @@
   <p class="hint"><a href="shapes.html" target="_blank" rel="noopener">形の一覧(Lv1〜999)を別の画面で開く</a></p>
   <h3 class="label">出典</h3>
   <p class="credit">地図は「国土数値情報(鉄道・行政区域・湖沼・港湾間流通量)」(国土交通省)、政府統計の総合窓口(e-Stat)「国勢調査 小地域境界」「航空輸送統計調査」(総務省統計局・国土交通省)を加工して作成。名所の一部は Wikidata による。記載の製品名・プロトコル名は各社の商標または登録商標です</p>
+  <form method="dialog" class="dlg-actions"><button class="btn primary">閉じる</button></form>
+</dialog>
+
+<dialog class="dlg" id="meDialog" aria-labelledby="meDialogTitle">
+  <h2 id="meDialogTitle" class="dlg-title">あなた</h2>
+  <div class="code-row">
+    <span class="hint">復帰コード</span>
+    <code class="code" id="meCode"></code>
+    <button type="button" class="btn small" id="copyCodeBtn">コピー</button>
+    <button type="button" class="btn small" id="rekeyBtn" title="コードが漏れたと思ったら新しいコードに替えます">再発行</button>
+  </div>
+  <p class="hint">別の端末やブラウザで続けるときに入力します。他の人には教えないでください。7 日間接続が無いと拠点はすべて中立に戻ります。</p>
+  <div class="code-row">
+    <span class="hint">開始地点</span>
+    <button type="button" class="btn small" id="moveBtn" title="自分の拠点を別の駅のそばに作り直します(1 日 1 回)">引っ越し</button>
+  </div>
   <form method="dialog" class="dlg-actions"><button class="btn primary">閉じる</button></form>
 </dialog>
 
