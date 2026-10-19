@@ -818,7 +818,10 @@
       };
       for (const o of S.mine.values()) for (const r of o.routes) add(o, r, 'one');
       if (ownShown('team')) for (const n of S.nodes.values()) if (n.routes && n.routes.length && relOf(n) === 'team') for (const r of n.routes) add(n, r, 'one');
-      const sel = S.selected && S.nodes.get(S.selected);
+      // 選んだ空港・港の航路は、その拠点が画面の外に出て読み込みから外れても出し続ける(選んだときの航路を覚えておく。2026-10-19)
+      const live = S.selected && S.nodes.get(S.selected);
+      if (live && live.routes && live.routes.length) S.selRoutes = { id: live.id, lat: live.lat, lon: live.lon, routes: live.routes };
+      const sel = live || (S.selected && S.selRoutes && S.selRoutes.id === S.selected ? S.selRoutes : null);
       if (sel && sel.routes) for (const r of sel.routes) add(sel, r, 'sel');
       if (pairs.size) {
         ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
