@@ -46,14 +46,15 @@ async function inChunks(items, fn) {
   // 拠点: 空なら全部入れる。--force のときはマスター項目だけ上書きし、ゲーム状態は保つ
   const count = await store.countNodes();
   // マスター項目の指紋(2026-10-19): 全国 11 万件を毎回書き直すと 1 時間半かかるので、中身が変わった拠点だけ書く
-  const masterHash = (d) => crypto.createHash('sha1').update(JSON.stringify({ ...d, createdAt: 0, updatedAt: 0 })).digest('hex').slice(0, 16);
+  // 開いている時間(hours)は DB で管理する設定なので指紋に入れない(設定画面で変えても、マスターの入れ直しで上書きしない。2026-10-19)
+  const masterHash = (d) => crypto.createHash('sha1').update(JSON.stringify({ ...d, hours: undefined, createdAt: 0, updatedAt: 0 })).digest('hex').slice(0, 16);
   const docs = nodeDocs(all.NODES).map((d) => ({ ...d, masterHash: masterHash(d) }));
   if (count === 0) {
     await inChunks(docs, (d) => store.c.nodes.items.upsert(d));
     console.log(`nodes: ${docs.length} 件を保存(初回)`);
   } else if (force) {
     const existing = new Map();
-    const it = store.c.nodes.items.query('SELECT c.id, c.country, c.region, c.isPlayerNode, c.owner, c.defense, c.fortifiedAt, c.progress, c.protectedUntil, c.createdAt, c.sponsorId, c.masterHash FROM c');
+    const it = store.c.nodes.items.query('SELECT c.id, c.country, c.region, c.isPlayerNode, c.owner, c.defense, c.fortifiedAt, c.progress, c.protectedUntil, c.createdAt, c.sponsorId, c.hours, c.masterHash FROM c');
     for (const { resources } of [await it.fetchAll()]) for (const r of resources) existing.set(r.id, r);
     const changed = docs.filter((d) => { const cur = existing.get(d.id); return !cur || cur.masterHash !== d.masterHash; });
     // 地域(パーティションキー)が変わった拠点は、上書きでは別の文書が増えるので、古い方を消してから入れる
@@ -61,7 +62,7 @@ async function inChunks(items, fn) {
     await inChunks(moved, (d) => { const cur = existing.get(d.id); return store.c.nodes.item(d.id, [cur.country, cur.region]).delete().catch((e) => { if (e.code !== 404) throw e; }); });
     const merged = changed.map((d) => {
       const cur = existing.get(d.id);
-      return cur ? { ...d, owner: cur.owner || null, defense: cur.defense || 0, fortifiedAt: cur.fortifiedAt || null, progress: cur.progress || {}, protectedUntil: cur.protectedUntil || 0, createdAt: cur.createdAt || d.createdAt, sponsorId: cur.sponsorId || null } : d;
+      return cur ? { ...d, hours: cur.hours || d.hours, owner: cur.owner || null, defense: cur.defense || 0, fortifiedAt: cur.fortifiedAt || null, progress: cur.progress || {}, protectedUntil: cur.protectedUntil || 0, createdAt: cur.createdAt || d.createdAt, sponsorId: cur.sponsorId || null } : d;
     });
     await inChunks(merged, (d) => store.c.nodes.items.upsert(d));
     console.log(`nodes: 変わらなかった ${docs.length - changed.length} 件は書かない。地域が変わった ${moved.length} 件は入れ直し`);

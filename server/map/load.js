@@ -298,6 +298,8 @@ function nodeDocs(nodes, now = Date.now()) {
     company: m.company || null, codes: m.codes || {}, src: m.src || null, gateway: m.gateway || null, names: m.names || null,
     adj: m.adj || [], hits: m.hits || Math.max(1, (m.adj || []).length), // つながりと、突破に必要な正解の回数(第 14 章)
     routes: m.routes || [], // 航路(空路・海路)。行き先 { to, mode, name, lat, lon }。占領した空港・港から行き先を攻撃できる
+    // 開いている時間(2026-10-19 ユーザー決定)。DB で管理する設定(設定画面で変える)。マスターの入れ直しでは上書きしない(tools/db-setup.js)。既定は 1 日中
+    hours: m.hours || [{ from: '00:00', to: '00:00' }],
     subnet: m.subnet, base: m.base, span: m.span,
     status: m.status || 'public', ...(m.hiddenReason ? { hiddenReason: m.hiddenReason } : {}), isPlayerNode: false, registeredBy: null, sponsorId: null,
     owner: null, defense: 0, fortifiedAt: null, progress: {}, protectedUntil: 0, createdAt: now, updatedAt: now,

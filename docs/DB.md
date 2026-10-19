@@ -110,6 +110,7 @@
   "gateway": null,
   "names": null,
   "routes": [],
+  "hours": [{ "from": "00:00", "to": "00:00" }],
   "subnet": "10.0.16.0/20",
   "base": 167776256,
   "span": 4094,
@@ -127,6 +128,7 @@
 }
 ```
 
+- **開いている時間**(`hours`。2026-10-19 ユーザー決定): その拠点を攻撃できる時間。`[{ from: "HH:MM", to: "HH:MM" }]` をサーバーの時計の UTC で見る。`00:00-00:00`(from と to が同じ)は 1 日中で、これが既定。**DB で管理する設定**(設定画面で変える)なので、マスターの入れ直し(`tools/db-setup.js --force`)では上書きしない(指紋 masterHash にも入れない)。時間の外は攻撃できない(持ち主の強化はできる)。既存の拠点には `tools/backfill-node-hours.js` で一度だけ足した
 - **マスターの項目**(登録・審査で決まる): name、genre、kind、area、country(地域マスターから引く。パーティションキーの 1 段目)、region、lat、lon、level、value、hackable、lines、alias、status、registeredBy、sponsorId
 - **つながり(2026-10-18、DESIGN.md 第 14 章)**: `adj` はつながっている拠点 id(駅は同じ路線の前後の駅、名所は近い駅をレベルと同じ数。`tools/import-links.js` が国土数値情報 N02 から作る)。`hits` は突破に必要な正解の回数 = `adj` の本数(1 以上)。どちらもマスターの項目
 - **ゲーム状態の項目**(遊びで変わる): owner、defense、fortifiedAt(最後に強化・奪取した時刻。強化は 24 時間ごとに 1 下がる)、progress(攻め手 → 正解回数。キーはプレイヤー id かチーム id。占領で空に戻る)、protectedUntil、updatedAt。`value` は基礎点で、画面に出す点数は `value + 減衰後の defense`

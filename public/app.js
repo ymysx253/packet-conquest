@@ -523,11 +523,13 @@
     S.reach = set;
   }
   // 季節航路(2026-10-19): サーバーの時計で使える時間かどうか。サーバーが配信のときに判定した open を使い、時間の決まりで今を見直す
-  const routeOpenNow = (r) => {
-    if (!r.hours) return true;
+  // 開いている時間(航路と拠点で共通): 00:00-00:00 のように from と to が同じなら 1 日中
+  const openNow = (hours) => {
+    if (!hours || !hours.length) return true;
     const d = new Date(now()); const m = d.getUTCHours() * 60 + d.getUTCMinutes();
-    return r.hours.some((h) => { const a = +h.from.slice(0, 2) * 60 + +h.from.slice(3), b = +h.to.slice(0, 2) * 60 + +h.to.slice(3); return a < b ? m >= a && m < b : m >= a || m < b; });
+    return hours.some((h) => { const a = +h.from.slice(0, 2) * 60 + +h.from.slice(3), b = +h.to.slice(0, 2) * 60 + +h.to.slice(3); return a === b || (a < b ? m >= a && m < b : m >= a || m < b); });
   };
+  const routeOpenNow = (r) => openNow(r.hours);
   const jstRange = (h) => { const f = (s) => { const x = (+s.slice(0, 2) + 9) % 24; return `${x}:${s.slice(3)}`; }; return `${f(h.from)}〜${f(h.to)}`; }; // UTC → 日本時間の表示
   // 航路を持つ自分の空港・港を覚える(占領が外れたら忘れる)
   function rememberRoutes(n) {
@@ -539,6 +541,7 @@
     const n = nodeById(id);
     if (!n || !S.me || n.owner === S.me) return false;
     if (n.hackable === false) return false;
+    if (!openNow(n.hours)) return false; // 開いている時間の外
     if (n.isPlayerNode) return false; // プレイヤー自身の拠点は占領禁止
     if (n.protectedUntil > now()) return false;
     if (n.owner) { const o = playerById(n.owner); if (o && o.nodes <= 3 && o.newbie) return false; }
@@ -601,6 +604,7 @@
     $('npMeta').textContent = [n.isPlayerNode ? 'プレイヤーの拠点' : genreLabel, n.tags && n.tags.length > 1 ? n.tags.slice(1).join('・') : '', n.area || ''].filter(Boolean).join(' ・ ');
     $('npLevel').textContent = `Lv${n.level}${n.defense ? `(+${n.defense} 強化 → 出題 Lv${n.level + n.defense})` : ''}` + (!n.isPlayerNode && n.hackable !== false && !hasQuestion(attackLevelOf(n)) ? '(このレベルの問題は準備中。まだ占領できません)' : '');
     $('npValue').textContent = `${n.value}点`;
+    if (n.hours) $('npValue').textContent += `(開いている時間: 毎日 ${n.hours.map(jstRange).join('・')} 日本時間)`; // 1 日中ではない拠点だけ
     $('npCompany').hidden = $('npCompanyLabel').hidden = !n.company;
     if (n.company) $('npCompany').textContent = `${n.company}(命名権など。ハック不可)`;
     $('npOwner').textContent = owner ? `${owner.name}${owner.id === S.me ? '(あなた)' : ''}` : (n.owner ? '他のプレイヤー' : '中立');
@@ -632,6 +636,7 @@
     else if (n.hackable === false) status = 'ネットワークにつながっていない場所です(ハック不可)';
     else if (n.owner === S.me) status = 'タップすると強化の問題が出ます';
     else if (n.isPlayerNode) status = 'プレイヤー自身の拠点は占領できません';
+    else if (n.hours && !openNow(n.hours) && n.owner !== S.me) status = `いまは閉じています(開いている時間: 毎日 ${n.hours.map(jstRange).join('・')} 日本時間)`;
     else if (n.protectedUntil > now() && (n.genre === 'airport' || n.genre === 'port')) status = `占領されたばかりで守られています(あと ${Math.ceil((n.protectedUntil - now()) / 60000)} 分)`; // 空港・港は占領から 5 分
     else if (n.protectedUntil > now()) status = `生まれたばかりで守られています(あと ${Math.ceil((n.protectedUntil - now()) / 3600000)} 時間)`;
     else if (n.owner && (playerById(n.owner) || {}).nodes <= 3 && (playerById(n.owner) || {}).newbie) status = '始めたばかりで拠点が少ないプレイヤーは守られています';

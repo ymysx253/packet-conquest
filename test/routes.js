@@ -2,6 +2,7 @@
 // 航路の記録と出典の台帳(docs/DATA-FORMAT.md 第 2 章・第 5 章)。小さな作り物のデータで規則を確かめる
 const assert = require('assert');
 const { routeId, validateRouteFile, deriveRoutes, readRouteFiles, ROUTE_RULES, routeOpen } = require('../server/map/routes');
+const { nodeDocs } = require('../server/map/load');
 const { validateSources, usableIn, loadSources } = require('../server/map/sources');
 
 const TODAY = '2026-10-19';
@@ -102,6 +103,7 @@ assert.deepStrictEqual(deriveRoutes(byId, files, sources, '2026-08-01').byNode.g
   assert.ok(!routeOpen(e, Date.UTC(2026, 9, 19, 10, 0)) && !routeOpen(e, Date.UTC(2026, 9, 19, 2, 59)), 'UTC 10:00 からと 3:00 より前は使えない');
   assert.ok(routeOpen({ hours: [{ from: '22:00', to: '02:00' }] }, Date.UTC(2026, 9, 19, 1, 0)), '日をまたぐ時間');
   assert.ok(routeOpen({}, 0), '時間の決まりが無ければいつでも');
+  assert.ok(routeOpen({ hours: [{ from: '00:00', to: '00:00' }] }, Date.UTC(2026, 9, 19, 13, 30)), '00:00-00:00 は 1 日中(拠点の既定。2026-10-19)');
   const both = [file('src-ok', [rec('src-ok', 'sea', 'a', 'c', { status: 'seasonal', hours: [{ from: '03:00', to: '10:00' }] }), rec('src-ok', 'sea', 'c', 'a')])];
   assert.ok(!deriveRoutes(byId, both, sources, TODAY).byNode.get('a').find((r) => r.to === 'c').hours, '同じ港の組にいつもの便があれば、いつでも使える');
 }
@@ -132,5 +134,8 @@ assert.throws(bad((d) => { d.routes.push(d.routes[0]); }), /重複/);
 
 // リポジトリの航路の記録(あれば)はすべて形式どおり
 for (const f of readRouteFiles()) validateRouteFile(f.name, f.data, S.byId);
+
+// 拠点の DB の形: 開いている時間の既定は 1 日中(00:00-00:00)
+assert.deepStrictEqual(nodeDocs([{ id: 'x', name: 'X', lat: 35, lon: 139, adj: [] }])[0].hours, [{ from: '00:00', to: '00:00' }], '拠点の開いている時間の既定は 00:00-00:00');
 
 console.log('routes ok');

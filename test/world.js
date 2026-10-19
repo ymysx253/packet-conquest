@@ -461,6 +461,22 @@ async function solve(world, p, nodeId) {
     I.owner = null; sp.reach = null;
   }
 
+  // 拠点の開いている時間(2026-10-19 ユーザー決定): 既定は 1 日中。時間の外は攻撃できない
+  {
+    const [nb0] = [...w.adj.get(home.id)].map((id) => w.nodes.get(id)).filter((n) => n && !n.owner && n.hackable !== false);
+    if (nb0) {
+      assert.deepStrictEqual(nb0.hours, [{ from: '00:00', to: '00:00' }], 'DB の拠点には開いている時間が入っている(既定は 1 日中)');
+      assert.ok(await w.canAttack(a.id, nb0.id), '1 日中開いている拠点は攻撃できる');
+      const h = new Date().getUTCHours(); const closed = (x) => String((h + x) % 24).padStart(2, '0') + ':00';
+      const saved = nb0.hours; nb0.hours = [{ from: closed(2), to: closed(3) }]; // いまから 2〜3 時間後だけ開く
+      assert.ok(!(await w.canAttack(a.id, nb0.id)), '開いている時間の外は攻撃できない');
+      await assert.rejects(() => w.ask(a, nb0.id), /閉じています/);
+      assert.ok(w.pub(nb0).hours && w.pub(nb0).open === false, '1 日中でない拠点は、時間といま開いているかを配信する');
+      nb0.hours = saved;
+      assert.ok(!('hours' in w.pub(nb0)), '1 日中の拠点は時間を配信しない');
+    }
+  }
+
   // 空港・港は占領されてから 5 分間は奪えない(2026-10-19 ユーザー決定)。問題のある Lv30 の港で確かめる
   {
     const portM = NODES.find((n) => n.genre === 'port' && n.level === 30 && n.hackable && n.status === 'public');

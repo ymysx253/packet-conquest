@@ -48,7 +48,7 @@ function validateRouteFile(name, data, sourcesById) {
     if (r.bidirectional !== undefined && typeof r.bidirectional !== 'boolean') fail(`${w}: bidirectional は true/false`);
     for (const p of r.periods || []) if (!DAY.test(p.from || '') || (p.to && !DAY.test(p.to))) fail(`${w}: periods の日付は YYYY-MM-DD`);
     // 使える時間(2026-10-19 ユーザー決定): 毎日この時間だけ使える。サーバーの時計の UTC で HH:MM。to が from より前なら日をまたぐ
-    if (r.hours !== undefined && (!Array.isArray(r.hours) || !r.hours.length || r.hours.some((h) => !h || !HHMM.test(h.from || '') || !HHMM.test(h.to || '') || h.from === h.to))) fail(`${w}: hours は [{ from: 'HH:MM', to: 'HH:MM' }](UTC)`);
+    if (r.hours !== undefined && (!Array.isArray(r.hours) || !validHours(r.hours))) fail(`${w}: hours は [{ from: 'HH:MM', to: 'HH:MM' }](UTC)`);
     if (r.hours !== undefined && r.status !== 'seasonal') fail(`${w}: hours は status が seasonal の航路だけ`);
     if (r.metrics !== undefined) {
       const m = r.metrics;
@@ -70,11 +70,16 @@ function readRouteFiles(dir = DIR) {
 
 // いまが使える時間の中か(hours。サーバーの時計の UTC。無ければいつでも)
 const minutesOf = (hhmm) => Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3, 5));
-function routeOpen(r, t = Date.now()) {
-  if (!r || !r.hours || !r.hours.length) return true;
+// 開いている時間(航路と拠点で共通。2026-10-19)。[{ from, to }] をサーバーの時計の UTC で見る。from と to が同じ(00:00-00:00 など)は 1 日中
+const ALWAYS_OPEN = Object.freeze([Object.freeze({ from: '00:00', to: '00:00' })]);
+function openAt(hours, t = Date.now()) {
+  if (!hours || !hours.length) return true;
   const d = new Date(t); const m = d.getUTCHours() * 60 + d.getUTCMinutes();
-  return r.hours.some((h) => { const a = minutesOf(h.from), b = minutesOf(h.to); return a < b ? m >= a && m < b : m >= a || m < b; });
+  return hours.some((h) => { const a = minutesOf(h.from), b = minutesOf(h.to); return a === b || (a < b ? m >= a && m < b : m >= a || m < b); });
 }
+const isAlwaysOpen = (hours) => !hours || !hours.length || hours.some((h) => h.from === h.to);
+function routeOpen(r, t = Date.now()) { return !r || openAt(r.hours, t); }
+const validHours = (hours) => Array.isArray(hours) && hours.length > 0 && hours.every((h) => h && HHMM.test(h.from || '') && HHMM.test(h.to || ''));
 
 // 今日が運航期間の中か(seasonal 用)
 const inPeriod = (r, today) => (r.periods || []).some((p) => p.from <= today && (!p.to || today <= p.to));
@@ -134,4 +139,4 @@ function deriveRoutes(byId, files, sources, today = new Date().toISOString().sli
   return { byNode: result, skipped };
 }
 
-module.exports = { routeId, validateRouteFile, readRouteFiles, deriveRoutes, routeOpen, MODES, MODES_RESERVED, ROUTE_RULES, METRIC_KEYS, METRIC_BASES, SERVICE_TYPES, DIR };
+module.exports = { routeId, validateRouteFile, readRouteFiles, deriveRoutes, routeOpen, openAt, isAlwaysOpen, validHours, ALWAYS_OPEN, MODES, MODES_RESERVED, ROUTE_RULES, METRIC_KEYS, METRIC_BASES, SERVICE_TYPES, DIR };

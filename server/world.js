@@ -17,7 +17,7 @@ const TOKYO_MASTER = JSON.parse(require('fs').readFileSync(require('path').join(
 const SPAWN_CENTER = TOKYO_MASTER.spawn ? { lat: TOKYO_MASTER.spawn.lat, lon: TOKYO_MASTER.spawn.lon, radiusKm: TOKYO_MASTER.spawn.radiusKm, name: TOKYO_MASTER.spawn.name } : null;
 const { nodeDocs, regionDocs } = require('./map/load');
 const { distanceKm, tilesAround, tileOf, tileFields, parseTile, tileSize, addrOf, MIN_LEVEL_BY_Z } = require('./map/geo');
-const { routeOpen } = require('./map/routes'); // 季節航路の使える時間(2026-10-19)
+const { routeOpen, openAt, isAlwaysOpen } = require('./map/routes'); // 季節航路と拠点の開いている時間(2026-10-19。サーバーの時計の UTC)
 const { getQuestion, hasGenerator, QUESTION_RANGES } = require('./questions');
 const { judge } = require('./questions/normalize');
 const { dayOf, noopEvents } = require('./events');
@@ -309,6 +309,7 @@ class World {
       company: n.company || null, // 命名権など企業名の施設の企業名
       tags: n.tags && n.tags.length ? n.tags : undefined, // 細分と指定(観光地の「温泉」「特別名勝」など)
       ...(n.owner ? this.ownerLook(n.owner) : {}), // 持ち主のチームと色(自分・チーム・ほかの人を見分ける。2026-10-19)
+      ...(isAlwaysOpen(n.hours) ? {} : { hours: n.hours, open: openAt(n.hours) }), // 開いている時間が決まっている拠点だけ(サーバーの時計で判定した結果つき)
       routes: n.routes && n.routes.length ? n.routes.map((r) => (r.hours ? { ...r, open: routeOpen(r) } : r)) : undefined, // 航路(空港・港)。行き先 { to, mode, name, lat, lon }。季節航路は hours と、いま使えるか(open。サーバーの時計)
     };
   }
@@ -726,6 +727,7 @@ class World {
     const n = this.nodes.get(nodeId);
     if (!n || n.status !== 'public' || n.owner === pid) return false;
     if (n.hackable === false) return false;
+    if (!openAt(n.hours)) return false; // 開いている時間の外は攻撃できない(2026-10-19)
     if (n.isPlayerNode) return false; // プレイヤー自身の拠点は占領禁止(2026-10-18 決定)
     if (n.protectedUntil > now()) return false;
     if (n.owner) { const o = await this.getPlayer(n.owner); if (o && (o.nodesOwned || 0) <= PROTECT_MAX_NODES && this.isNewbie(o)) return false; }
@@ -753,6 +755,7 @@ class World {
     if (!n || n.status !== 'public') throw new Error('その拠点は表示されていません。地図を動かして選び直してください');
     if (n.hackable === false) throw new Error('この場所はネットワークにつながっていません(ハックできません)');
     if (now() < p.cooldownUntil) throw new Error('通信が回復するまで少し待ってください');
+    if (n.owner !== p.id && !openAt(n.hours)) throw new Error('この拠点はいま閉じています(開いている時間の外です)');
     let mode;
     if (n.owner === p.id) {
       if (this.levelFor(n, 'fortify') >= MAX_LEVEL) throw new Error('この拠点の強化はすでに最大です');
