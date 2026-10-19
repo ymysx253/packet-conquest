@@ -101,7 +101,7 @@
         S.me = m.id; S.token = m.token; S.joined = true; S.home = m.home; S.spawn = m.spawn; S.questionRanges = m.questionRanges || null; S.movedAt = m.movedAt || null; S.mine.clear();
         $('areaChip').textContent = m.area || '日本';
         S.team = m.team ? { id: m.team, name: m.teamName } : null; S.cooldownUntil = m.cooldownUntil || 0; S.cooldownMs = Math.max(4000, S.cooldownUntil - Date.now());
-        $('teamPanel').hidden = false; renderTeam();
+        renderTeam();
         if (S.team) { S.infoOnly = true; send({ t: 'team', action: 'info' }); }
         store.set('pc-token', m.token); store.set('pc-name', m.name);
         $('codeInput').value = m.token;
@@ -275,6 +275,11 @@
   $('teamIcon').replaceChildren(...TEAM_ICONS.map((ic) => { const o = document.createElement('option'); o.value = ic; o.textContent = ic; return o; }));
   function renderTeam() {
     $('teamNone').hidden = !!S.team; $('teamMine').hidden = !S.team;
+    // 上の帯のチームのボタン: 所属していればチームのアイコンと名前を、チームの色で
+    const tb = $('teamBtn');
+    tb.textContent = S.team ? `${S.team.icon || ''} ${S.team.name || 'チーム'}`.trim() : 'チーム';
+    const ts = S.team && S.team.style;
+    tb.style.color = ts ? ts.text : ''; tb.style.background = ts ? ts.fill : ''; tb.style.borderColor = ts ? ts.frame : '';
     if (S.team) {
       $('teamName').textContent = `${S.team.icon || ''} ${S.team.name || '(名前なし)'}`.trim(); $('teamCode').textContent = S.team.id;
       const isLeader = S.team.ownerId === S.me;
@@ -285,6 +290,8 @@
       $('teamMeta').textContent = t ? `${t.members}人 ・ 合計 ${t.score}点 ・ ${t.nodes}拠点。同じ拠点への正解回数はチームで合算されます` : 'コードを仲間に伝えると参加できます';
     }
   }
+  // チームの作成・参加・見た目の変更はダイアログで(2026-10-20 ユーザー指摘)
+  $('teamBtn').onclick = () => { renderTeam(); const d = $('teamDialog'); if (d.showModal) d.showModal(); else d.setAttribute('open', ''); };
   $('teamStyleBtn').onclick = () => { S.styleSaving = true; send({ t: 'team', action: 'style', frame: $('teamFrame').value, fill: $('teamFill').value, text: $('teamText').value, icon: $('teamIcon').value }); };
   $('teamCreateBtn').onclick = () => { const name = $('teamNameInput').value.trim(); if (!name) { toast('チーム名を入れてください'); return; } send({ t: 'team', action: 'create', name, max: Number($('teamMaxInput').value) || 10 }); };
   $('teamJoinBtn').onclick = () => { const id = $('teamJoinInput').value.trim(); if (!id) { toast('チーム コードを入れてください'); return; } send({ t: 'team', action: 'join', teamId: id }); };

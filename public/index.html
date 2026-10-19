@@ -22,6 +22,7 @@
     <span class="pname" id="meName"></span>
     <span class="pscore" id="meScore"></span>
     <span class="hint me-stats"><span id="meNodes"></span> ・ 累計 <span id="mePoints"></span>点</span>
+    <button type="button" class="btn small team-btn" id="teamBtn" aria-haspopup="dialog">チーム</button>
     <button type="button" class="btn small" id="meMenuBtn" aria-haspopup="dialog">復帰コード・引っ越し</button>
   </div>
   <div class="status">
@@ -59,42 +60,6 @@
 
   <aside class="side">
 
-    <section class="panel" id="teamPanel" hidden aria-labelledby="teamTitle">
-      <h2 id="teamTitle" class="label">チーム</h2>
-      <div id="teamNone">
-        <p class="hint">同じ拠点への正解回数をチームで合算できます。所属中は新しいチームを作れません(脱退はいつでも可)。</p>
-        <div class="team-row">
-          <input id="teamNameInput" maxlength="16" placeholder="チーム名">
-          <input id="teamMaxInput" type="number" min="2" max="20" value="10" aria-label="人数の上限" title="人数の上限(2〜20)">
-          <button type="button" class="btn small" id="teamCreateBtn">作成</button>
-        </div>
-        <div class="team-row">
-          <input id="teamJoinInput" class="mono" maxlength="24" placeholder="チーム コード">
-          <button type="button" class="btn small" id="teamJoinBtn">参加</button>
-        </div>
-      </div>
-      <div id="teamMine" hidden>
-        <p class="np-name" id="teamName"></p>
-        <div class="code-row">
-          <span class="hint">チーム コード</span>
-          <code class="code" id="teamCode"></code>
-          <button type="button" class="btn small" id="teamCopyBtn">コピー</button>
-          <button type="button" class="btn small" id="teamLeaveBtn">脱退</button>
-        </div>
-        <p class="hint" id="teamMeta"></p>
-        <div id="teamStyle" hidden>
-          <p class="label">見た目(リーダーだけ変えられます)</p>
-          <div class="team-row team-colors">
-            <label>枠 <input type="color" id="teamFrame" value="#1F2937"></label>
-            <label>背景 <input type="color" id="teamFill" value="#FDE68A"></label>
-            <label>文字 <input type="color" id="teamText" value="#1F2937"></label>
-            <select id="teamIcon" aria-label="アイコン"></select>
-            <button type="button" class="btn small" id="teamStyleBtn">保存</button>
-          </div>
-          <p class="hint">地図で支配した区・市の塗りと名札、順位の表にこの色とアイコンが使われます。</p>
-        </div>
-      </div>
-    </section>
 
     <section class="panel" id="nodePanel" hidden aria-labelledby="npTitle">
       <h2 id="npTitle" class="label">拠点の情報</h2>
@@ -229,6 +194,45 @@
   <div class="code-row">
     <span class="hint">開始地点</span>
     <button type="button" class="btn small" id="moveBtn" title="自分の拠点を別の駅のそばに作り直します(1 日 1 回)">引っ越し</button>
+  </div>
+  <form method="dialog" class="dlg-actions"><button class="btn primary">閉じる</button></form>
+</dialog>
+
+<!-- チーム(2026-10-20 ユーザー指摘で右の欄からダイアログへ): 作成・参加・見た目の変更(リーダー)・脱退 -->
+<dialog class="dlg" id="teamDialog" aria-labelledby="teamTitle">
+  <h2 id="teamTitle" class="dlg-title">チーム</h2>
+  <div id="teamNone">
+    <p class="hint">同じ拠点への正解回数をチームで合算できます。所属中は新しいチームを作れません(脱退はいつでも可)。</p>
+    <div class="team-row">
+      <input id="teamNameInput" maxlength="16" placeholder="チーム名">
+      <input id="teamMaxInput" type="number" min="2" max="20" value="10" aria-label="人数の上限" title="人数の上限(2〜20)">
+      <button type="button" class="btn small" id="teamCreateBtn">作成</button>
+    </div>
+    <div class="team-row">
+      <input id="teamJoinInput" class="mono" maxlength="24" placeholder="チーム コード">
+      <button type="button" class="btn small" id="teamJoinBtn">参加</button>
+    </div>
+  </div>
+  <div id="teamMine" hidden>
+    <p class="np-name" id="teamName"></p>
+    <div class="code-row">
+      <span class="hint">チーム コード</span>
+      <code class="code" id="teamCode"></code>
+      <button type="button" class="btn small" id="teamCopyBtn">コピー</button>
+      <button type="button" class="btn small" id="teamLeaveBtn">脱退</button>
+    </div>
+    <p class="hint" id="teamMeta"></p>
+    <div id="teamStyle" hidden>
+      <p class="label">見た目(リーダーだけ変えられます)</p>
+      <div class="team-row team-colors">
+        <label>枠 <input type="color" id="teamFrame" value="#1F2937"></label>
+        <label>背景 <input type="color" id="teamFill" value="#FDE68A"></label>
+        <label>文字 <input type="color" id="teamText" value="#1F2937"></label>
+        <select id="teamIcon" aria-label="アイコン"></select>
+        <button type="button" class="btn small" id="teamStyleBtn">保存</button>
+      </div>
+      <p class="hint">地図で支配した区・市の塗りと名札、順位の表にこの色とアイコンが使われます。</p>
+    </div>
   </div>
   <form method="dialog" class="dlg-actions"><button class="btn primary">閉じる</button></form>
 </dialog>
