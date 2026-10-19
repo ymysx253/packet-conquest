@@ -1,7 +1,7 @@
 'use strict';
 // 航路の記録と出典の台帳(docs/DATA-FORMAT.md 第 2 章・第 5 章)。小さな作り物のデータで規則を確かめる
 const assert = require('assert');
-const { routeId, validateRouteFile, deriveRoutes, readRouteFiles, ROUTE_RULES } = require('../server/map/routes');
+const { routeId, validateRouteFile, deriveRoutes, readRouteFiles, ROUTE_RULES, routeOpen } = require('../server/map/routes');
 const { validateSources, usableIn, loadSources } = require('../server/map/sources');
 
 const TODAY = '2026-10-19';
@@ -93,10 +93,25 @@ for (const why of ['端点が非公開', '状態 ended', '状態 seasonal', '端
 // 季節の期間中は使う
 assert.deepStrictEqual(deriveRoutes(byId, files, sources, '2026-08-01').byNode.get('b').map((r) => `${r.mode}:${r.to}`), ['air:a', 'sea:c']);
 
+// 使える時間(hours。2026-10-19 ユーザー決定): 毎日 UTC 3〜10 時だけ。判定はサーバーの時計で使うときに行う
+{
+  const hf = [file('src-ok', [rec('src-ok', 'sea', 'a', 'c', { status: 'seasonal', hours: [{ from: '03:00', to: '10:00' }] })])];
+  const e = deriveRoutes(byId, hf, sources, TODAY).byNode.get('a').find((r) => r.to === 'c');
+  assert.deepStrictEqual(e.hours, [{ from: '03:00', to: '10:00' }], '使える時間が要約に付く');
+  assert.ok(routeOpen(e, Date.UTC(2026, 9, 19, 3, 0)) && routeOpen(e, Date.UTC(2026, 9, 19, 9, 59)), 'UTC 3:00〜9:59 は使える');
+  assert.ok(!routeOpen(e, Date.UTC(2026, 9, 19, 10, 0)) && !routeOpen(e, Date.UTC(2026, 9, 19, 2, 59)), 'UTC 10:00 からと 3:00 より前は使えない');
+  assert.ok(routeOpen({ hours: [{ from: '22:00', to: '02:00' }] }, Date.UTC(2026, 9, 19, 1, 0)), '日をまたぐ時間');
+  assert.ok(routeOpen({}, 0), '時間の決まりが無ければいつでも');
+  const both = [file('src-ok', [rec('src-ok', 'sea', 'a', 'c', { status: 'seasonal', hours: [{ from: '03:00', to: '10:00' }] }), rec('src-ok', 'sea', 'c', 'a')])];
+  assert.ok(!deriveRoutes(byId, both, sources, TODAY).byNode.get('a').find((r) => r.to === 'c').hours, '同じ港の組にいつもの便があれば、いつでも使える');
+}
+
 // 壊れた記録を拒む
 const bad = (mut) => { const f = file('src-ok', [rec('src-ok', 'air', 'a', 'b')]); mut(f.data, f.data.routes[0]); return () => validateRouteFile('t', f.data, byIdS); };
 assert.doesNotThrow(bad(() => {}));
 assert.throws(bad((d) => { d.schema = 'x'; }), /schema/);
+ assert.throws(bad((d, r) => { r.hours = [{ from: '3:00', to: '10:00' }]; r.status = 'seasonal'; }), /hours/);
+assert.throws(bad((d, r) => { r.hours = [{ from: '03:00', to: '10:00' }]; }), /seasonal/);
 assert.throws(bad((d) => { d.source = 'src-nope'; }), /台帳に無い/);
 assert.throws(bad((d, r) => { r.id = 'rt-000000000000'; }), /作った値と違う/);
 assert.throws(bad((d, r) => { r.mode = 'bus'; }), /mode/);

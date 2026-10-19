@@ -1,3 +1,5 @@
 id,名前,都道府県,地域,市区町村,緯度,経度,Wikidata,確認元,確認日
 hp-q65272702,熱海港,shizuoka,shizuoka-22205,熱海市,35.09019,139.0755,Q65272702,東海汽船「航路・所要時間」https://www.tokaikisen.co.jp/boarding/searoute/,2026-10-19
 hp-q11361207,下田港,shizuoka,shizuoka-22219,下田市,34.67,138.95,Q11361207,東海汽船「航路・所要時間」(神新汽船の航路)https://www.tokaikisen.co.jp/boarding/searoute/,2026-10-19
+hp-q30936866,伊東港,shizuoka,shizuoka-22208,伊東市,34.97272,139.10417,Q30936866,東海汽船「航路・所要時間」(季節航路)https://www.tokaikisen.co.jp/boarding/searoute/,2026-10-19
+hp-q30853703,館山港,chiba,chiba-12205,館山市,34.98613,139.84388,Q30853703,東海汽船「航路・所要時間」(季節航路)https://www.tokaikisen.co.jp/boarding/searoute/,2026-10-19

@@ -17,6 +17,7 @@ const TOKYO_MASTER = JSON.parse(require('fs').readFileSync(require('path').join(
 const SPAWN_CENTER = TOKYO_MASTER.spawn ? { lat: TOKYO_MASTER.spawn.lat, lon: TOKYO_MASTER.spawn.lon, radiusKm: TOKYO_MASTER.spawn.radiusKm, name: TOKYO_MASTER.spawn.name } : null;
 const { nodeDocs, regionDocs } = require('./map/load');
 const { distanceKm, tilesAround, tileOf, tileFields, parseTile, tileSize, addrOf, MIN_LEVEL_BY_Z } = require('./map/geo');
+const { routeOpen } = require('./map/routes'); // 季節航路の使える時間(2026-10-19)
 const { getQuestion, hasGenerator, QUESTION_RANGES } = require('./questions');
 const { judge } = require('./questions/normalize');
 const { dayOf, noopEvents } = require('./events');
@@ -308,7 +309,7 @@ class World {
       company: n.company || null, // 命名権など企業名の施設の企業名
       tags: n.tags && n.tags.length ? n.tags : undefined, // 細分と指定(観光地の「温泉」「特別名勝」など)
       ...(n.owner ? this.ownerLook(n.owner) : {}), // 持ち主のチームと色(自分・チーム・ほかの人を見分ける。2026-10-19)
-      routes: n.routes && n.routes.length ? n.routes : undefined, // 航路(空港・港)。行き先 { to, mode, name, lat, lon }
+      routes: n.routes && n.routes.length ? n.routes.map((r) => (r.hours ? { ...r, open: routeOpen(r) } : r)) : undefined, // 航路(空港・港)。行き先 { to, mode, name, lat, lon }。季節航路は hours と、いま使えるか(open。サーバーの時計)
     };
   }
   send(p, msg) { if (p.ws && p.ws.readyState === 1) p.ws.send(JSON.stringify(msg)); }
@@ -711,7 +712,7 @@ class World {
       while (stack.length) {
         const cur = byId.get(stack.pop());
         // 線(adj)と、航路(空路・海路)でつながった所有拠点をたどる
-        const nb = new Set([...(cur.adj || []), ...(this.adj.get(cur.id) || []), ...(cur.routes || []).map((r) => r.to)]);
+        const nb = new Set([...(cur.adj || []), ...(this.adj.get(cur.id) || []), ...(cur.routes || []).filter((r) => routeOpen(r)).map((r) => r.to)]); // 季節航路は使える時間だけ
         for (const m of nb) if (byId.has(m) && !set.has(m)) { set.add(m); stack.push(m); }
       }
     }
@@ -731,7 +732,7 @@ class World {
     const nb = this.adj.get(nodeId) || new Set();
     const mine = [...nb].filter((id) => { const m = this.nodes.get(id); return m && m.owner === pid; });
     // 航路(2026-10-19): 自分の拠点からたどれる空港・港を占領していれば、その航路の先の空港・港を攻撃できる(行き先は遠くてよい)
-    const viaRoute = (n.routes || []).map((r) => r.to);
+    const viaRoute = (n.routes || []).filter((r) => routeOpen(r)).map((r) => r.to); // 季節航路は使える時間(サーバーの時計の UTC)だけ
     if (!mine.length && !viaRoute.length) return false;
     const p = await this.getPlayer(pid);
     if (!p) return false;

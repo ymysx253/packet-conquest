@@ -6,7 +6,7 @@
 //   node tools/import-hand-routes.js
 // 読むもの:
 //   docs/routes/hand-ports.csv   手で足す港(id は hp-<Wikidata の id>。位置は Wikidata(CC0))
-//   docs/routes/hand-routes.csv  手で足す航路(港の id の組。確認元と確認日を必ず書く)
+//   docs/routes/hand-routes.csv  手で足す航路(港の id の組。確認元と確認日を必ず書く。季節航路は 状態 seasonal と 時間(UTC) 03:00-10:00)
 // 書くもの:
 //   都道府県の拠点マスター(hp- の拠点を入れ直す)、server/map/data/routes/src-internal.json(丸ごと書き直す)
 // 順番: … → import-gateways → **import-hand-routes** → import-tourism → import-towns → import-water → fetch-codes → import-links → build-sea-paths
@@ -73,6 +73,7 @@ const out = routes.map((r, i) => {
   const rec = {
     mode: r['種類'] || 'sea', from: r['港A'], to: r['港B'], fromRef: { scheme: 'internal', value: r['港A'] }, toRef: { scheme: 'internal', value: r['港B'] },
     bidirectional: true, scope: 'domestic', serviceTypes: ['passenger'], status: r['状態'] || 'active',
+    ...(r['時間(UTC)'] ? { hours: r['時間(UTC)'].split('/').map((x) => { const [from, to] = x.split('-'); return { from, to }; }) } : {}), // 季節航路の使える時間(サーバーの時計の UTC。例 03:00-10:00)
     src: SRC, sourceRecordId: `hand-routes-${i + 1}`, retrievedAt: r['確認日'], evidence: r['確認元'], ...(r['メモ'] ? { note: r['メモ'] } : {}),
   };
   rec.id = routeId({ src: rec.src, mode: rec.mode, from: rec.from, to: rec.to });

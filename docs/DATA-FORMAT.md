@@ -142,6 +142,7 @@
 | `scope` | | `domestic` / `international`(端点の国から決まる) |
 | `carriers` | | 運航者 `[{ scheme: "iata-airline" \| "imo" \| "<出典 id>", code, name, sponsorId? }]`。**画面には出さない**(2026-10-19 決定)。運航者がスポンサーになったときだけ、`sponsorId`(`sponsors` コンテナーの id)で結び、スポンサーのしくみ(DESIGN.md 3.8)で出す。記録には残す(照合と監査に使う) |
 | `status` | ○ | `active`(運航中)/ `seasonal`(季節運航)/ `suspended`(運休)/ `planned`(予定)/ `ended`(廃止) |
+| `hours` | | 使える時間 `[{ from: "03:00", to: "10:00" }]`(毎日。**サーバーの時計の UTC**。`to` が `from` より前なら日をまたぐ)。`status: seasonal` の航路だけ。`periods` が無く `hours` だけの季節航路は、毎日この時間に使える(2026-10-19 ユーザー決定) |
 | `periods` | | 運航の期間 `[{ from: "2026-04-01", to: "2026-10-31", perWeek: 14, days: "1234567" }]`(`days` は月曜 1 〜日曜 7) |
 | `metrics` | | 規模 `{ year, basis?, passengers?, flights?, cargoTons? }`。`basis` は `actual`(統計の実績。既定)か `schedule`(時刻表からの見込み。週の便数 × 52 など)。どれも **1 年間(暦年)** の値で、`passengers` は旅客数(人)、`flights` は運航回数(便。往復なら往と復の合計)、`cargoTons` は貨物(トン)。**航路の価値は規模で変える**(2026-10-19 決定。式は未決、DESIGN.md 第 6 章 #17)。項目名は決まったものだけ |
 | `distanceKm` | | 端点の距離(出典にあればその値、無ければ大円距離) |

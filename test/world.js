@@ -446,6 +446,21 @@ async function solve(world, p, nodeId) {
   H.owner = null; rp.reach = null;
   assert.ok(!(await w.canAttack(rp.id, C2.id)), '空港を手放すと航路の先は攻撃できない');
 
+  // 季節航路(使える時間 UTC 3〜10 時。2026-10-19 ユーザー決定): 時間の中だけ航路の先を攻撃できる。伊東港 → 元町港(大島)で確かめる
+  {
+    const { routeOpen } = require('../server/map/routes');
+    const ito = NODES.find((n) => n.name === '伊東港' && n.genre === 'port'), mot = NODES.find((n) => n.name === '元町港' && n.genre === 'port');
+    const r = ito.routes.find((x) => x.to === mot.id);
+    assert.ok(r && r.hours && r.hours[0].from === '03:00' && r.hours[0].to === '10:00', '伊東–大島は季節航路(UTC 3〜10 時)');
+    await w.ensureTiles(tilesAround(ito.t0, 1)); await w.ensureTiles(tilesAround(mot.t0, 1));
+    const sp = await w.join(fakeWs(), 'きせつ', null, tokyoSt.id);
+    const I = w.nodes.get(ito.id);
+    I.owner = sp.id; w.addEdge(sp.homeNodeId, I.id, w.nodes.get(sp.homeNodeId).t0); sp.reach = null;
+    assert.strictEqual(await w.canAttack(sp.id, mot.id), routeOpen(r, Date.now()), '季節航路はサーバーの時計で使える時間の中だけ攻撃に使える');
+    assert.ok(w.pub(I).routes.find((x) => x.to === mot.id).open === routeOpen(r, Date.now()), '配信に、いま使えるか(open)が付く');
+    I.owner = null; sp.reach = null;
+  }
+
   // 空港・港は占領されてから 5 分間は奪えない(2026-10-19 ユーザー決定)。問題のある Lv30 の港で確かめる
   {
     const portM = NODES.find((n) => n.genre === 'port' && n.level === 30 && n.hackable && n.status === 'public');

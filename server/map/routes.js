@@ -16,6 +16,7 @@ const ROUTE_RULES = Object.freeze({ directed: false });
 const METRIC_KEYS = ['passengers', 'flights', 'cargoTons'];
 const METRIC_BASES = new Set(['actual', 'schedule']); // 実績(統計)か、時刻表からの見込み(週の便数 × 52 など)
 const SERVICE_TYPES = new Set(['passenger', 'ferry', 'passenger-cargo', 'ro-ro', 'cargo', 'other']); // 船・便の種類(旅客、フェリー、貨客、RORO、貨物)
+const HHMM = /^([01][0-9]|2[0-3]):[0-5][0-9]$/; // 使える時間の書き方(UTC)
 const STATUSES = new Set(['active', 'seasonal', 'suspended', 'planned', 'ended']);
 const SCHEMES = new Set(['iata', 'icao', 'unlocode', 'wikidata', 'ksj', 'internal']);
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -46,6 +47,9 @@ function validateRouteFile(name, data, sourcesById) {
     if (typeof r.retrievedAt !== 'string' || !DAY.test(r.retrievedAt.slice(0, 10))) fail(`${w}: retrievedAt が要る`);
     if (r.bidirectional !== undefined && typeof r.bidirectional !== 'boolean') fail(`${w}: bidirectional は true/false`);
     for (const p of r.periods || []) if (!DAY.test(p.from || '') || (p.to && !DAY.test(p.to))) fail(`${w}: periods の日付は YYYY-MM-DD`);
+    // 使える時間(2026-10-19 ユーザー決定): 毎日この時間だけ使える。サーバーの時計の UTC で HH:MM。to が from より前なら日をまたぐ
+    if (r.hours !== undefined && (!Array.isArray(r.hours) || !r.hours.length || r.hours.some((h) => !h || !HHMM.test(h.from || '') || !HHMM.test(h.to || '') || h.from === h.to))) fail(`${w}: hours は [{ from: 'HH:MM', to: 'HH:MM' }](UTC)`);
+    if (r.hours !== undefined && r.status !== 'seasonal') fail(`${w}: hours は status が seasonal の航路だけ`);
     if (r.metrics !== undefined) {
       const m = r.metrics;
       if (!m || !Number.isInteger(m.year) || m.year < 1900) fail(`${w}: metrics は { year, passengers?, flights?, cargoTons? }(1 年間の値)`);
@@ -64,6 +68,14 @@ function readRouteFiles(dir = DIR) {
   return fs.readdirSync(dir).filter((f) => f.endsWith('.json')).sort().map((f) => ({ name: f, data: JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')) }));
 }
 
+// いまが使える時間の中か(hours。サーバーの時計の UTC。無ければいつでも)
+const minutesOf = (hhmm) => Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3, 5));
+function routeOpen(r, t = Date.now()) {
+  if (!r || !r.hours || !r.hours.length) return true;
+  const d = new Date(t); const m = d.getUTCHours() * 60 + d.getUTCMinutes();
+  return r.hours.some((h) => { const a = minutesOf(h.from), b = minutesOf(h.to); return a < b ? m >= a && m < b : m >= a || m < b; });
+}
+
 // 今日が運航期間の中か(seasonal 用)
 const inPeriod = (r, today) => (r.periods || []).some((p) => p.from <= today && (!p.to || today <= p.to));
 
@@ -74,12 +86,15 @@ function deriveRoutes(byId, files, sources, today = new Date().toISOString().sli
   const out = new Map();
   const skipped = {};
   const skip = (why) => { skipped[why] = (skipped[why] || 0) + 1; };
-  const add = (a, b, mode, metrics, key) => {
+  const add = (a, b, mode, metrics, key, hours) => {
     if (!out.has(a.id)) out.set(a.id, new Map());
     const m = out.get(a.id);
     const k = `${b.id}|${mode}`;
-    if (!m.has(k)) m.set(k, { to: b.id, mode, name: b.name, lat: b.lat, lon: b.lon, recs: new Map() });
-    if (metrics) m.get(k).recs.set(key, metrics); // 同じ記録を往復で 2 回数えない
+    if (!m.has(k)) m.set(k, { to: b.id, mode, name: b.name, lat: b.lat, lon: b.lon, recs: new Map(), hours: hours ? [] : null });
+    const e = m.get(k);
+    if (metrics) e.recs.set(key, metrics); // 同じ記録を往復で 2 回数えない
+    // 使える時間: 時間の決まりの無い記録が 1 つでもあればいつでも使える。全部に決まりがあれば、その時間を合わせたもの
+    if (!hours) e.hours = null; else if (e.hours) for (const h of hours) if (!e.hours.some((x) => x.from === h.from && x.to === h.to)) e.hours.push(h);
   };
   const sumLatest = (recs) => {
     const list = [...recs.values()];
@@ -98,23 +113,25 @@ function deriveRoutes(byId, files, sources, today = new Date().toISOString().sli
     if (!use.ok) { skip(`出典: ${use.reason}`); continue; }
     for (const r of data.routes) {
       if (!MODES.has(r.mode)) { skip(`予約の種類 ${r.mode}`); continue; }
-      if (!(r.status === 'active' || (r.status === 'seasonal' && inPeriod(r, today)))) { skip(`状態 ${r.status}`); continue; }
+      // 季節航路: 期間(periods)があればその中だけ。使える時間(hours)だけのものは毎日その時間に使う(判定は使うときにサーバーの時計で)
+      const seasonalOk = r.status === 'seasonal' && (r.periods && r.periods.length ? inPeriod(r, today) : !!(r.hours && r.hours.length));
+      if (!(r.status === 'active' || seasonalOk)) { skip(`状態 ${r.status}`); continue; }
       const a = byId[r.from], b = byId[r.to];
       if (!a || !b) { skip('端点が拠点に無い'); continue; }
       if ((a.status && a.status !== 'public') || (b.status && b.status !== 'public')) { skip('端点が非公開'); continue; } // 自衛隊・米軍の飛行場など。記録は残す
       if (a.hackable === false || b.hackable === false) { skip('端点がハック不可'); continue; }
       if (!a.gateway || !b.gateway) { skip('端点が玄関口(gateway)でない'); continue; }
       const key = `${data.source}|${r.id}`;
-      add(a, b, r.mode, r.metrics, key);
-      if (!rules.directed || r.bidirectional !== false) add(b, a, r.mode, r.metrics, key); // 航路は接続: 向きを区別しない(設定 directed)
+      add(a, b, r.mode, r.metrics, key, r.hours);
+      if (!rules.directed || r.bidirectional !== false) add(b, a, r.mode, r.metrics, key, r.hours); // 航路は接続: 向きを区別しない(設定 directed)
     }
   }
   const result = new Map();
   for (const [id, m] of out) {
-    result.set(id, [...m.values()].map(({ recs, ...x }) => { const metrics = sumLatest(recs); return metrics ? { ...x, metrics } : x; })
+    result.set(id, [...m.values()].map(({ recs, hours, ...x }) => { const metrics = sumLatest(recs); return { ...x, ...(metrics ? { metrics } : {}), ...(hours && hours.length ? { hours } : {}) }; })
       .sort((x, y) => x.to.localeCompare(y.to) || x.mode.localeCompare(y.mode)));
   }
   return { byNode: result, skipped };
 }
 
-module.exports = { routeId, validateRouteFile, readRouteFiles, deriveRoutes, MODES, MODES_RESERVED, ROUTE_RULES, METRIC_KEYS, METRIC_BASES, SERVICE_TYPES, DIR };
+module.exports = { routeId, validateRouteFile, readRouteFiles, deriveRoutes, routeOpen, MODES, MODES_RESERVED, ROUTE_RULES, METRIC_KEYS, METRIC_BASES, SERVICE_TYPES, DIR };

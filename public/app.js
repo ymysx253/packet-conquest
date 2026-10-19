@@ -515,6 +515,13 @@
     }
     S.reach = set;
   }
+  // 季節航路(2026-10-19): サーバーの時計で使える時間かどうか。サーバーが配信のときに判定した open を使い、時間の決まりで今を見直す
+  const routeOpenNow = (r) => {
+    if (!r.hours) return true;
+    const d = new Date(now()); const m = d.getUTCHours() * 60 + d.getUTCMinutes();
+    return r.hours.some((h) => { const a = +h.from.slice(0, 2) * 60 + +h.from.slice(3), b = +h.to.slice(0, 2) * 60 + +h.to.slice(3); return a < b ? m >= a && m < b : m >= a || m < b; });
+  };
+  const jstRange = (h) => { const f = (s) => { const x = (+s.slice(0, 2) + 9) % 24; return `${x}:${s.slice(3)}`; }; return `${f(h.from)}〜${f(h.to)}`; }; // UTC → 日本時間の表示
   // 航路を持つ自分の空港・港を覚える(占領が外れたら忘れる)
   function rememberRoutes(n) {
     if (n.owner === S.me && Array.isArray(n.routes) && n.routes.length) S.mine.set(n.id, { id: n.id, name: n.name, lat: n.lat, lon: n.lon, routes: n.routes });
@@ -530,7 +537,7 @@
     if (n.owner) { const o = playerById(n.owner); if (o && o.nodes <= 3 && o.newbie) return false; }
     if (adjacent(id).some((a) => ownerOf(a) === S.me && S.reach.has(a))) return true;
     // 航路の先: 自分が占領している空港・港から航路がある(画面の外の空港でもよい。最終の判定はサーバー)
-    return (n.routes || []).some((r) => S.mine.has(r.to) && (S.reach.has(r.to) || !S.nodes.has(r.to)));
+    return (n.routes || []).some((r) => routeOpenNow(r) && S.mine.has(r.to) && (S.reach.has(r.to) || !S.nodes.has(r.to)));
   }
 
   // ---------- 描画: パネル ----------
@@ -607,7 +614,8 @@
     $('npRoutes').hidden = !routes.length;
     $('npRoutesList').replaceChildren(...routes.map((r) => {
       const li = document.createElement('li'); li.tabIndex = 0;
-      li.textContent = `${r.mode === 'air' ? '✈ 空路' : '⚓ 海路'} → ${r.name}`;
+      li.textContent = `${r.mode === 'air' ? '✈ 空路' : '⚓ 海路'} → ${r.name}` + (r.hours ? `(季節航路: 毎日 ${r.hours.map(jstRange).join('・')} 日本時間${routeOpenNow(r) ? '' : '。いまは運航時間外'})` : '');
+      if (r.hours && !routeOpenNow(r)) li.style.opacity = '0.55';
       const go = () => { centerOn(worldOf(r.lat, r.lon), Math.max(9, zoomRatio())); requestView(true); };
       li.onclick = go; li.onkeydown = (e) => { if (e.key === 'Enter') go(); };
       return li;
@@ -817,6 +825,7 @@
       const rank = { sel: 1, one: 2, both: 3 };
       const ownedByUs = (id) => { if (S.mine.has(id)) return true; const m = S.nodes.get(id); return !!m && m.owner && (m.owner === S.me || (relOf(m) === 'team' && ownShown('team'))); };
       const add = (o, r, state) => {
+        if (!routeOpenNow(r)) return; // 季節航路は使える時間だけ線を出す
         const [x, y] = o.id < r.to ? [o.id, r.to] : [r.to, o.id];
         const key = `${x}|${y}`;
         const st = state === 'one' && ownedByUs(r.to) ? 'both' : state;
