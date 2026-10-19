@@ -48,6 +48,44 @@ function simplify(points, tol) {
 const ringArea = (ring) => { let s = 0; for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) s += (ring[j][0] + ring[i][0]) * (ring[j][1] - ring[i][1]); return Math.abs(s / 2); };
 const round = (c, d) => [Number(c[0].toFixed(d)), Number(c[1].toFixed(d))];
 
+// ---------- 境目を両側で同じ形に間引く(2026-10-19) ----------
+// 隣り合う市区町村の境界を別々に間引くと、境目に細いすき間ができ、海を水色にした画面で水色の筋に見えた(ユーザー指摘)。
+// N03 の隣り合う面は境目の点を共有しているので、点が何個の輪に使われているかを数え、数が変わる点と 3 つ以上の輪が会う点を
+// 動かさない点にする。その間の区間は、向きをそろえて(始点と終点の小さい方から)間引くので、両側でまったく同じ結果になる。
+// 数は都道府県をまたいで数える(県境も同じ形になる)。点の数が多いので Map を分けて持つ(1 つの Map の上限は約 1,600 万件)
+const SHARDS = 32;
+const counts = Array.from({ length: SHARDS }, () => new Map());
+const keyOf = (p) => p[0] + ',' + p[1];
+const shardOf = (k) => { let h = 0; for (let i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) | 0; return counts[(h >>> 0) % SHARDS]; };
+const countOf = (p) => { const k = keyOf(p); return shardOf(k).get(k) || 0; };
+const openRing = (ring) => (ring.length > 1 && ring[0][0] === ring[ring.length - 1][0] && ring[0][1] === ring[ring.length - 1][1] ? ring.slice(0, -1) : ring);
+function countRing(ring) { for (const p of openRing(ring)) { const k = keyOf(p); const m = shardOf(k); m.set(k, (m.get(k) || 0) + 1); } }
+function simplifyRun(run, tol) {
+  if (keyOf(run[0]) > keyOf(run[run.length - 1])) return simplify(run.slice().reverse(), tol).reverse(); // 向きをそろえる(反対側の輪と同じ結果にする)
+  return simplify(run, tol);
+}
+function simplifyTopo(ring, tol) {
+  const pts = openRing(ring);
+  const n = pts.length;
+  if (n < 3) return [];
+  const c = pts.map(countOf);
+  const fixed = c.map((v, i) => v >= 3 || v !== c[(i - 1 + n) % n] || v !== c[(i + 1) % n]);
+  const start = fixed.indexOf(true);
+  if (start < 0) return simplify([...pts, pts[0]], tol); // 誰とも接していない輪(島など)
+  const rot = [...pts.slice(start), ...pts.slice(0, start)], rf = [...fixed.slice(start), ...fixed.slice(0, start)];
+  const out = [];
+  for (let i = 0; i < n;) {
+    let j = i + 1;
+    while (j < n && !rf[j]) j++;
+    const run = j < n ? rot.slice(i, j + 1) : [...rot.slice(i), rot[0]];
+    const sr = simplifyRun(run, tol);
+    for (let k = 0; k < sr.length - 1; k++) out.push(sr[k]);
+    i = j;
+  }
+  out.push(out[0]);
+  return out;
+}
+
 function build(features, { tol, minArea }, digits) {
   const out = {}; let rings = 0;
   for (const f of features) {
@@ -58,7 +96,7 @@ function build(features, { tol, minArea }, digits) {
     for (const poly of polys) {
       const outer = poly[0];
       if (ringArea(outer) < minArea) continue;
-      const s = simplify(outer, tol).map((c) => round(c, digits));
+      const s = simplifyTopo(outer, tol).map((c) => round(c, digits));
       if (s.length >= 4) { o.polys.push(s); rings++; }
     }
   }
@@ -67,7 +105,15 @@ function build(features, { tol, minArea }, digits) {
 }
 const bboxOf = (out) => { let b = [180, 90, -180, -90]; for (const o of Object.values(out)) for (const r of o.polys) for (const [x, y] of r) { b = [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)]; } return b; };
 
-const files = fs.statSync(src).isDirectory() ? fs.readdirSync(src).filter((f) => /^N03-\d{8}_\d{2}\.geojson$/.test(f)).sort().map((f) => path.join(src, f)) : [src];
+const findAll = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? findAll(path.join(dir, e.name)) : /^N03-\d{8}_\d{2}\.geojson$/.test(e.name) ? [path.join(dir, e.name)] : []));
+// 都道府県ごとの下位フォルダも探す。同じファイル名が複数あれば 1 つだけ使う(同じ点を 2 回数えると境目の判定が狂う)
+const files = fs.statSync(src).isDirectory() ? [...new Map(findAll(src).map((f) => [path.basename(f), f])).values()].sort() : [src];
+// 1 回目: 全部の都道府県の点を数える(県境も両側で同じ形にするため。1 つのファイルだけ渡したときはその県の中だけ)
+for (const file of files) {
+  const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+  for (const f of data.features) { if (!f.geometry) continue; const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates; for (const poly of polys) countRing(poly[0]); }
+}
+console.log(`点を数えた: ${counts.reduce((t, m) => t + m.size, 0)} 点(${files.length} ファイル)`);
 fs.mkdirSync(OUT_DIR, { recursive: true });
 const indexFile = path.join(OUT_DIR, 'index.json');
 const index = fs.existsSync(indexFile) ? JSON.parse(fs.readFileSync(indexFile, 'utf8')) : { source: '', updatedAt: '', prefs: {} };
