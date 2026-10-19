@@ -88,29 +88,6 @@
         <p class="label">あなたの番</p>
         <p>黄色く光る拠点をタップすると<strong>攻撃</strong>。つながりの本数ぶん正解すると奪えます(末端は 1 回、乗換駅は多め)。自分の拠点をタップすると<strong>強化</strong>(攻める側の問題が難しくなります)。制限時間はありません。</p>
       </div>
-      <div id="qBox" hidden>
-        <div class="qhead">
-          <span class="mode" id="qMode"></span>
-          <span class="diff" id="qDiff"></span>
-        </div>
-        <p class="qtext" id="qText"></p>
-        <div class="qtable-wrap" id="qTables"><table class="qtable" id="qTable" hidden></table></div>
-        <div class="options" id="qOptions"></div>
-        <form class="fields" id="qFields" hidden autocomplete="off">
-          <div id="qFieldList"></div>
-          <div class="fields-foot">
-            <button type="submit" class="btn primary" id="qSubmit">答える</button>
-            <span class="hint">半角で入力。IPv6 の省略形、先頭の 0、大文字小文字は自動でそろえます。Enter でも送れます</span>
-          </div>
-        </form>
-        <div class="result" id="qResult" hidden>
-          <p class="verdict" id="qVerdict"></p>
-          <p class="answers" id="qAnswers" hidden></p>
-          <p class="explain" id="qExplain"></p>
-          <p class="defense" id="qDefense" hidden></p>
-          <p class="outcome" id="qOutcome"></p>
-        </div>
-      </div>
       <div class="cool" id="cool" hidden><div class="cool-bar" id="coolBar"></div></div>
     </section>
 
@@ -235,6 +212,38 @@
     </div>
   </div>
   <form method="dialog" class="dlg-actions"><button class="btn primary">閉じる</button></form>
+</dialog>
+
+<!-- 問題(2026-10-20 ユーザー指摘で右の欄からダイアログへ)。入れ物は 1 つで、中身を問題ごとに入れ替える。
+     答え方(answerKind)ごとに答えの欄を描き分け、大きさ(data-size)は中身で決める: normal / wide(表や長い入力)/ full(コマンド入力など。フェーズ 3) -->
+<dialog class="dlg qdlg" id="qDialog" aria-labelledby="qMode" data-size="normal">
+  <div id="qBox">
+    <div class="qhead">
+      <span class="mode" id="qMode"></span>
+      <span class="diff" id="qDiff"></span>
+    </div>
+    <p class="qtext" id="qText"></p>
+    <div class="qtable-wrap" id="qTables"><table class="qtable" id="qTable" hidden></table></div>
+    <div class="options" id="qOptions"></div>
+    <form class="fields" id="qFields" hidden autocomplete="off">
+      <div id="qFieldList"></div>
+      <div class="fields-foot">
+        <button type="submit" class="btn primary" id="qSubmit">答える</button>
+        <span class="hint">半角で入力。IPv6 の省略形、先頭の 0、大文字小文字は自動でそろえます。Enter でも送れます</span>
+      </div>
+    </form>
+    <div class="result" id="qResult" hidden>
+      <p class="verdict" id="qVerdict"></p>
+      <p class="answers" id="qAnswers" hidden></p>
+      <p class="explain" id="qExplain"></p>
+      <p class="defense" id="qDefense" hidden></p>
+      <p class="outcome" id="qOutcome"></p>
+    </div>
+  </div>
+  <div class="dlg-actions qactions">
+    <button type="button" class="btn" id="qNext" hidden>続けて解く</button>
+    <button type="button" class="btn primary" id="qClose">閉じる</button>
+  </div>
 </dialog>
 
 <div class="toast" id="toast" role="status" hidden></div>

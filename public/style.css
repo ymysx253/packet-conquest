@@ -144,7 +144,7 @@ body {
 .pscore { font: 600 15px var(--font-mono); }
 .scores li.offline { opacity: 0.45; }
 
-.qpanel { min-height: 240px; position: relative; }
+.qpanel { position: relative; padding-bottom: 20px; }
 .idle p:last-child { margin: 0; color: var(--muted); }
 .idle strong { color: var(--ink); }
 .qhead { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
@@ -275,6 +275,13 @@ body {
 @media (max-width: 880px) { .me-bar { order: 3; flex-basis: 100%; justify-content: flex-start; } .me-bar .me-stats { display: none; } }
 #meDialog .code-row { margin: 8px 0; }
 #teamDialog .team-row, #teamDialog .code-row { margin: 8px 0; }
+/* 問題のダイアログ: 大きさは中身で決める */
+.qdlg[data-size="normal"] { width: min(640px, calc(100vw - 32px)); }
+.qdlg[data-size="wide"] { width: min(960px, calc(100vw - 32px)); }
+.qdlg[data-size="full"] { width: calc(100vw - 32px); height: calc(100dvh - 32px); max-width: none; }
+.qdlg .qtable-wrap { overflow-x: auto; }
+.qactions { gap: 8px; }
+.qdlg .unsupported { color: var(--bad); font-weight: 700; }
 .team-btn { max-width: 14em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .me-row { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; align-items: center; gap: 10px; }
 .me-stats { margin: 4px 0 10px; }

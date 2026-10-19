@@ -666,10 +666,41 @@
   }
 
   // ---------- 描画: 問題 ----------
+  // ---------- 問題のダイアログ(2026-10-20 ユーザー指摘) ----------
+  // 入れ物は 1 つ。見出し・問題文・表・結果・解説は共通で、答えの欄だけを答え方(answerKind)ごとに描き分ける。
+  // 新しい答え方(フェーズ 3 のコマンド入力 command / 設定 config など)は ANSWER_VIEWS に描き方を足し、QUESTION_SIZE で大きさを決める
+  const ANSWER_VIEWS = {
+    choice: { size: () => 'normal' },
+    text: { size: (q) => (q.fields || []).some((f) => f.format === 'prefixplan') || (q.fields || []).length > 4 ? 'wide' : 'normal' },
+  };
+  const QUESTION_SIZE = (q) => {
+    const v = ANSWER_VIEWS[q.answerKind || 'choice'];
+    const tables = Array.isArray(q.tables) && q.tables.length ? q.tables : (q.table ? [q.table] : []);
+    const wideTable = tables.length > 1 || tables.some((t) => (t.headers || []).length > 4);
+    return v ? (wideTable && v.size(q) === 'normal' ? 'wide' : v.size(q)) : 'full';
+  };
+  let qClosing = false;
+  function openQuestionDialog(q) {
+    const d = $('qDialog');
+    d.dataset.size = QUESTION_SIZE(q);
+    if (!d.open) { if (d.showModal) d.showModal(); else d.setAttribute('open', ''); }
+  }
+  function closeQuestionDialog() { const d = $('qDialog'); if (d.open) { qClosing = true; d.close(); qClosing = false; } }
+  // 閉じる(Esc・閉じるボタン)と、出ていた問題もやめる(選択の解除と同じ扱い)。もう一度拠点を押せば新しい問題が出る
+  $('qDialog').addEventListener('close', () => { if (qClosing) return; S.question = null; S.result = null; S.chosen = null; renderQuestion(); });
+  $('qClose').onclick = () => $('qDialog').close();
+  // 続けて解く: 同じ拠点の次の問題を求める(突破には何回か正解が要るため)。できるかどうかはサーバーが決める
+  $('qNext').onclick = () => {
+    const q = S.question; if (!q) return;
+    if (now() < S.cooldownUntil) { toast('不正解のため通信が止まっています'); return; }
+    const n = nodeById(q.nodeId);
+    if (q.mode === 'attack' && n && n.owner === S.me) { toast(`${n.name} はもうあなたの拠点です`); $('qDialog').close(); return; } // 占領し終えたら続きは無い
+    send({ t: 'ask', nodeId: q.nodeId });
+  };
   function renderQuestion() {
     const q = S.question;
-    $('qIdle').hidden = !!q; $('qBox').hidden = !q;
-    if (!q) return;
+    if (!q) { closeQuestionDialog(); return; }
+    openQuestionDialog(q);
     const node = nodeById(q.nodeId);
     const tag = document.createElement('span');
     tag.className = q.mode === 'attack' ? 'tag' : 'tag def';
@@ -695,7 +726,9 @@
     wrap.replaceChildren(...tables.map(makeTable));
     const r = S.result && S.result.qid === q.qid ? S.result : null;
     const isText = q.answerKind === 'text' && Array.isArray(q.fields);
-    $('qOptions').hidden = isText; $('qFields').hidden = !isText;
+    const known = !q.answerKind || !!ANSWER_VIEWS[q.answerKind];
+    $('qOptions').hidden = isText || !known; $('qFields').hidden = !isText;
+    if (!known) { const p = document.createElement('p'); p.className = 'unsupported'; p.textContent = 'この形の問題は、まだ画面が対応していません'; $('qTables').append(p); }
     if (isText) renderFields(q, r);
     $('qOptions').replaceChildren(...(isText ? [] : (q.options || [])).map((o, i) => {
       const b = document.createElement('button');
@@ -707,6 +740,7 @@
       return b;
     }));
     $('qResult').hidden = !r;
+    $('qNext').hidden = !r; // 答えたあと、同じ拠点の次の問題へ
     if (r) {
       $('qVerdict').textContent = r.correct ? '正解' : '不正解';
       $('qVerdict').className = `verdict ${r.correct ? 'ok' : 'ng'}`;
