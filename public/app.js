@@ -341,7 +341,8 @@
   const toScreen = (p) => ({ x: (p.x - V.tx) * V.k, y: (p.y - V.ty) * V.k });
   const toWorld = (sx, sy) => ({ x: sx / V.k + V.tx, y: sy / V.k + V.ty });
   const zoomRatio = () => V.k / BASE_K;
-  const shrink = () => Math.min(1, Math.max(0.35, zoomRatio() / 6));
+  // 縮小するほど印を小さく。日本全体が見える倍率(段 3・4)では 0.2 倍まで(大きな印が細い陸地を覆い隠していた。2026-10-19)
+  const shrink = () => { const r = zoomRatio(); return Math.min(1, Math.max(r < 0.18 ? 0.2 : 0.35, r / 6)); };
   const radiusOf = (n) => shrink() * (n.isPlayerNode ? 8
     : (11 + Math.min(10, n.level) * 0.6 + Math.min(9, Math.floor((n.level - 1) / 10)) * 0.4 + Math.min(9, Math.floor((n.level - 1) / 100)) * 0.8) * (n.genre === 'town' ? 0.7 : 1)); // 町・字は小さめ
   // 町・字(2026-10-18)は数が多いので、ある程度拡大したときだけ描く。自分の拠点・選択中・攻撃できるものは縮小していても描く
@@ -832,7 +833,12 @@
         }
         const fillCol = c ? (c.style ? c.style.fill : c.color) : null, frameCol = c ? (c.style ? c.style.frame : c.color) : null;
         if (fillCol) { ctx.fillStyle = fillCol; ctx.globalAlpha = S.overview ? 0.32 : 0.12; ctx.fill(); ctx.globalAlpha = 1; }
-        ctx.strokeStyle = frameCol || C.line; ctx.lineWidth = S.overview ? (c ? 2 : 1.5) : 1; ctx.globalAlpha = S.overview ? 0.9 : 0.5; ctx.stroke(); ctx.globalAlpha = 1;
+        // 輪郭: 縮小するほど細く薄く(日本全体では 1,900 の区・市の輪郭が陸を覆い、陸まで水色に見えた。2026-10-19)。支配者がいる地域はその色ではっきり
+        const far = S.overview ? (S.viewZ >= 4 ? 2 : S.viewZ >= 3 ? 1 : 0) : 0;
+        ctx.strokeStyle = frameCol || C.line;
+        ctx.lineWidth = S.overview ? (c ? 2 : [1.5, 0.8, 0.5][far]) : 1;
+        ctx.globalAlpha = c ? 0.9 : S.overview ? [0.9, 0.45, 0.25][far] : 0.5;
+        ctx.stroke(); ctx.globalAlpha = 1;
       }
     }
 
@@ -961,11 +967,12 @@
     // 縮小表示: 画面の小さなます目(約 34 px)ごとに、いちばん重要な拠点だけを描く(倍率に対して印が多すぎないように)
     let drawList = sorted;
     if (S.overview) {
-      const cell = 34 * grow, best = new Map();
+      // ます目は地図に固定する(画面に固定するとドラッグのたびに残る拠点が入れ替わり、ちらついた。2026-10-19 ユーザー指摘)
+      const cell = 34 * grow, cw = cell / V.k, best = new Map();
       for (const n of sorted) {
         const p = toScreen(posOf(n));
         if (p.x < -60 || p.y < -60 || p.x > V.w + 60 || p.y > V.h + 60) continue;
-        const k = `${Math.floor(p.x / cell)}:${Math.floor(p.y / cell)}`;
+        const w = posOf(n); const k = `${Math.floor(w.x / cw)}:${Math.floor(w.y / cw)}`;
         const b = best.get(k);
         if (!b || prio(n) > prio(b)) best.set(k, n);
       }
@@ -981,7 +988,7 @@
       const r = radiusOf(n) * grow;
       const rel = relOf(n), shownOwn = ownShown(rel);
       const owner = n.owner && shownOwn ? ownerColorOf(n) || C.strong : null; // 切り替えで出さない持ち主は、持ち主なしと同じ見た目
-      const ring = n.isPlayerNode ? r : SH.outerRadius(n.level, r);
+      const ring = n.isPlayerNode || (S.overview && S.viewZ >= 3) ? r : SH.outerRadius(n.level, r);
       if (!S.overview && canAttack(n.id) && hasQuestion(attackLevelOf(n))) {
         ctx.strokeStyle = C.accent; ctx.globalAlpha = 0.45 + 0.55 * pulse; ctx.lineWidth = 5;
         ctx.beginPath(); ctx.arc(p.x, p.y, ring + 6, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1;
@@ -1009,7 +1016,9 @@
       ctx.fillStyle = filled || frame ? col : C.surface; ctx.strokeStyle = frame || col;
       ctx.lineWidth = frame ? 4 : owner ? (n.isPlayerNode ? 5 : 7) : (n.isPlayerNode ? 3 : 4); // チームの枠は細めにして、中の塗り(チームの色)を見せる
       shape(n, p, r); ctx.fill(); ctx.stroke();
-      if (!n.isPlayerNode) SH.extras(ctx, n.level, p, r, frame || col, frame ? col : C.surface);
+      // 外輪・外枠・札は、日本全体が見える倍率(段 3・4)では描かない(輪の間隔は縮まないので、細い陸地を覆い隠していた。2026-10-19)
+      const farView = S.overview && S.viewZ >= 3;
+      if (!n.isPlayerNode && !farView) SH.extras(ctx, n.level, p, r, frame || col, frame ? col : C.surface);
       if (owner && n.owner === S.me) { ctx.fillStyle = filled ? C.surface : owner; ctx.beginPath(); ctx.arc(p.x, p.y, n.isPlayerNode ? 3 : 4, 0, Math.PI * 2); ctx.fill(); }
       // 侵入の進捗: 攻め手ごとの正解回数を弧で示す(自分は自分の色、ほかは灰色)
       const hits = n.hits || 1, prog = n.progress || {};
@@ -1088,7 +1097,7 @@
     }
     if (S.overview) {
       ctx.fillStyle = C.muted; ctx.font = '600 12px "BIZ UDPGothic", sans-serif'; ctx.textAlign = 'left';
-      ctx.fillText(`広域表示: Lv${{ 1: 30, 2: 100, 3: 250, 4: 400 }[S.viewZ] || ''} 以上の拠点と、地域の支配。拡大すると全部出ます`, 12, 22);
+      ctx.fillText(`広域表示: Lv${{ 1: 30, 2: 100, 3: 400, 4: 400 }[S.viewZ] || ''} 以上の拠点と、地域の支配。拡大すると全部出ます`, 12, 22);
     }
   }
   function nodeAt(pt) {
