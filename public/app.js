@@ -199,12 +199,12 @@
   const hasQuestion = (lv) => (S.questionRanges || [[1, 999]]).some(([a, b]) => lv >= a && lv <= b);
   const attackLevelOf = (n) => { const base = Math.max(1, n.level) + (n.defense || 0); return n.owner ? Math.max(4, base) : base; };
   // 濃さ(2026-10-19 ユーザー案): 縮小して重なっているときは低いレベルほど薄く、拡大して重なりが無くなると元の濃さ。
-  // レベルの帯ごとに「この拡大率で元の濃さ」を決める(町・字 24、駅・名所 18、乗り換え駅など 10、空港など 4、Lv200 以上はいつも濃い)。いちばん薄くて 20%。
+  // レベルの帯ごとに「この拡大率で元の濃さ」を決める(町・字 30、駅・名所 24、乗り換え駅など 14、空港など 6、Lv200 以上はいつも濃い)。いちばん薄くて 12%。
   // 選択中・自分の拠点・攻撃できる拠点は薄くしない
   const fadeOf = (n) => {
     if (n.id === S.selected || n.isPlayerNode || (n.owner && n.owner === S.me) || (!S.overview && canAttack(n.id) && hasQuestion(attackLevelOf(n)))) return 1;
-    const full = n.level >= 200 ? 0 : n.level >= 100 ? 4 : n.level >= 30 ? 10 : n.level >= 10 ? 18 : 24;
-    return full ? Math.max(0.2, Math.min(1, (zoomRatio() / full) ** 1.5)) : 1;
+    const full = n.level >= 200 ? 0 : n.level >= 100 ? 6 : n.level >= 30 ? 14 : n.level >= 10 ? 24 : 30;
+    return full ? Math.max(0.12, Math.min(1, (zoomRatio() / full) ** 2)) : 1;
   };
   const startRefusal = (n) => (n.isPlayerNode || n.hackable === false)
     ? 'そこは開始地点にできません。町・字か、ふつうの駅(Lv10)を選んでください'
