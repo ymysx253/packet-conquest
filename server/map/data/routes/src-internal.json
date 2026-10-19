@@ -1,0 +1,11 @@
+{
+  "schema": "pc.routes/1",
+  "source": "src-internal",
+  "generatedAt": "2026-10-19T12:05:32.835Z",
+  "routes": [
+    {"mode":"sea","from":"hp-q11361207","to":"pt-s1c9bff7558","fromRef":{"scheme":"internal","value":"hp-q11361207"},"toRef":{"scheme":"internal","value":"pt-s1c9bff7558"},"bidirectional":true,"scope":"domestic","serviceTypes":["passenger"],"status":"active","src":"src-internal","sourceRecordId":"hand-routes-4","retrievedAt":"2026-10-19","evidence":"東海汽船「航路・所要時間」https://www.tokaikisen.co.jp/boarding/searoute/","note":"下田 – 利島(神新汽船。利島から先は新島・式根島・神津島へ。その区間は国のデータにある)","id":"rt-07331fe9c009"},
+    {"mode":"sea","from":"hp-q65272702","to":"isl-q48755564","fromRef":{"scheme":"internal","value":"hp-q65272702"},"toRef":{"scheme":"internal","value":"isl-q48755564"},"bidirectional":true,"scope":"domestic","serviceTypes":["passenger"],"status":"active","src":"src-internal","sourceRecordId":"hand-routes-3","retrievedAt":"2026-10-19","evidence":"東海汽船「航路・所要時間」https://www.tokaikisen.co.jp/boarding/searoute/","note":"熱海 – 大島(ジェット船)","id":"rt-6347a634649d"},
+    {"mode":"sea","from":"pt-s29ca51ea3b","to":"isl-q48755564","fromRef":{"scheme":"internal","value":"pt-s29ca51ea3b"},"toRef":{"scheme":"internal","value":"isl-q48755564"},"bidirectional":true,"scope":"domestic","serviceTypes":["passenger"],"status":"active","src":"src-internal","sourceRecordId":"hand-routes-2","retrievedAt":"2026-10-19","evidence":"東海汽船「航路・所要時間」https://www.tokaikisen.co.jp/boarding/searoute/","note":"横浜大さん橋 – 大島(大型客船)","id":"rt-c209acb514d1"},
+    {"mode":"sea","from":"pt-q1139888","to":"pt-s29ca51ea3b","fromRef":{"scheme":"internal","value":"pt-q1139888"},"toRef":{"scheme":"internal","value":"pt-s29ca51ea3b"},"bidirectional":true,"scope":"domestic","serviceTypes":["passenger"],"status":"active","src":"src-internal","sourceRecordId":"hand-routes-1","retrievedAt":"2026-10-19","evidence":"東海汽船「航路・所要時間」https://www.tokaikisen.co.jp/boarding/searoute/","note":"東京・竹芝 – 横浜大さん橋(大型客船)","id":"rt-dedd2ebb02b3"}
+  ]
+}

@@ -18,14 +18,14 @@ const { loadAll } = require('../server/map/load');
 const ROOT = path.join(__dirname, '..');
 const BOUNDS = path.join(ROOT, 'public/data/bounds');
 const OUT = path.join(ROOT, 'public/data/sea-paths.json');
-const ROUTE_FILE = path.join(ROOT, 'server/map/data/routes/src-ksj-s10a-2016.json');
+const ROUTE_DIR = path.join(ROOT, 'server/map/data/routes'); // 出典ごとの航路の記録(国のデータと、手で足したもの)
 const TODAY = new Date().toISOString().slice(0, 10);
 
 // ---------- ます目(経度 0.005°・緯度 0.004° ≒ 450 m) ----------
 const DLON = 0.005, DLAT = 0.004;
 const all = loadAll();
 const byId = new Map(all.NODES.map((n) => [n.id, n]));
-const routes = JSON.parse(fs.readFileSync(ROUTE_FILE, 'utf8')).routes.filter((r) => r.mode === 'sea' && byId.has(r.from) && byId.has(r.to));
+const routes = fs.readdirSync(ROUTE_DIR).filter((f) => f.endsWith('.json')).flatMap((f) => JSON.parse(fs.readFileSync(path.join(ROUTE_DIR, f), 'utf8')).routes).filter((r) => r.mode === 'sea' && byId.has(r.from) && byId.has(r.to));
 const ends = routes.flatMap((r) => [byId.get(r.from), byId.get(r.to)]);
 const LON0 = Math.min(...ends.map((n) => n.lon)) - 1.5, LON1 = Math.max(...ends.map((n) => n.lon)) + 1.5;
 const LAT0 = Math.min(...ends.map((n) => n.lat)) - 1.5, LAT1 = Math.max(...ends.map((n) => n.lat)) + 1.5;

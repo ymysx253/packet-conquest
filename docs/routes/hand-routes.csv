@@ -1,0 +1,5 @@
+港A,港B,種類,状態,確認元,確認日,メモ
+pt-q1139888,pt-s29ca51ea3b,sea,active,東海汽船「航路・所要時間」https://www.tokaikisen.co.jp/boarding/searoute/,2026-10-19,東京・竹芝 – 横浜大さん橋(大型客船)
+pt-s29ca51ea3b,isl-q48755564,sea,active,東海汽船「航路・所要時間」https://www.tokaikisen.co.jp/boarding/searoute/,2026-10-19,横浜大さん橋 – 大島(大型客船)
+hp-q65272702,isl-q48755564,sea,active,東海汽船「航路・所要時間」https://www.tokaikisen.co.jp/boarding/searoute/,2026-10-19,熱海 – 大島(ジェット船)
+hp-q11361207,pt-s1c9bff7558,sea,active,東海汽船「航路・所要時間」https://www.tokaikisen.co.jp/boarding/searoute/,2026-10-19,下田 – 利島(神新汽船。利島から先は新島・式根島・神津島へ。その区間は国のデータにある)

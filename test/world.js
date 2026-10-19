@@ -64,6 +64,12 @@ async function solve(world, p, nodeId) {
   assert.ok(ov.regions.some((g) => g.name === '千代田区') && ov.regions.every((g) => g.controller === null), 'まだ誰も支配していない');
   await w.setView(a, view, 0);
 
+  // 選んだ拠点のつながり先(名前と位置。縮小していても線を出すため。2026-10-19)
+  { const tw = NODES.find((n) => n.id === DEFAULT_START_ID); const nb = await w.neighbors(tw.id);
+    assert.ok(nb.t === 'neighbors' && nb.list.length >= tw.adj.length && tw.adj.every((id) => nb.list.some((x) => x.id === id && typeof x.lat === 'number' && x.name)), 'つながり先が名前と位置つきで届く');
+    assert.ok(nb.list.some((x) => x.id === home.id), '自分の拠点とのつながりも入る');
+    assert.deepStrictEqual((await w.neighbors('st-nope')).list, [], '無い拠点は空'); }
+
   // 隣だけ攻撃できる
   const [nb] = [...w.adj.get(home.id)];
   assert.ok(await w.canAttack(a.id, nb), '隣の拠点は攻撃できる');

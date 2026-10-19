@@ -24,7 +24,7 @@
     {
       "id": "src-internal", "title": "パケット陣取りの手作りのデータ", "publisher": "パケット陣取り", "kind": "internal",
       "license": "LicenseRef-internal", "commercialUse": true, "shareAlike": false, "attribution": false,
-      "retrievedAt": "2026-10-17", "version": "1", "status": "active", "notes": "東京の名所 64 件(手で入れたもの)"
+      "retrievedAt": "2026-10-17", "version": "1", "status": "active", "notes": "東京の名所 64 件(手で入れたもの)。公開データに無い航路(運航会社の公開している航路図で確かめた港の組だけ。docs/routes/hand-routes.csv)"
     },
     {
       "id": "src-ksj-s10a-2016", "title": "国土数値情報 港湾間流通量・海上経路データ(S10a)2016 年", "publisher": "国土交通省", "kind": "government",

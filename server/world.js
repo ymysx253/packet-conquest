@@ -426,6 +426,18 @@ class World {
     return docs;
   }
 
+  // 選んだ拠点のつながり先(2026-10-19 ユーザー決定: 縮小していても、選んだ拠点から伸びる線を全部出す)。名前と位置だけ
+  async neighbors(nodeId) {
+    let n = this.nodes.get(nodeId);
+    if (!n) { const d = await this.store.loadNode(nodeId); if (!d || d.status !== 'public') return { t: 'neighbors', nodeId, list: [] }; n = d; }
+    const ids = [...new Set([...(n.adj || []), ...(this.adj.get(nodeId) || [])])].slice(0, 200);
+    const have = ids.map((id) => this.nodes.get(id)).filter(Boolean);
+    const missing = ids.filter((id) => !this.nodes.has(id));
+    const more = missing.length ? await this.store.nodesBrief(missing) : [];
+    const list = [...have, ...more].filter((m) => m.status !== 'hidden').map((m) => ({ id: m.id, name: m.name, genre: m.genre || null, lat: m.lat, lon: m.lon }));
+    return { t: 'neighbors', nodeId, list };
+  }
+
   // ---------- 参加・復帰 ----------
   // 参加前の人(開始地点を地図から選ぶ)にも範囲の読み込みを許す。配信先にはならない
   guest(ws) {

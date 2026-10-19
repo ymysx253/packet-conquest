@@ -104,6 +104,7 @@
         requestView(true);
         break;
       case 'tiles': onTiles(m); break;
+      case 'neighbors': if (m.nodeId === S.selected) S.selNb = { id: m.nodeId, list: (m.list || []).map((x) => ({ ...x, w: worldOf(x.lat, x.lon) })) }; break;
       case 'search': renderSearch(m); break;
       case 'moved':
         S.home = m.home; S.movedAt = m.movedAt; S.moving = false; $('pickBar').hidden = true; S.selected = null; S.question = null; S.result = null;
@@ -333,7 +334,7 @@
   // k: 平面座標 → 画面ピクセルの倍率。tx, ty: 画面の左上にある平面座標。BASE_K は「1 倍」(1° ≈ 1100 px)
   const BASE_K = 1.1;
   const V = { k: BASE_K, tx: 0, ty: 0, w: 0, h: 0 };
-  const ZOOM_MIN = 0.02, ZOOM_MAX = 50; // 1 倍に対する比。0.02 倍で日本全体が入る
+  const ZOOM_MIN = 0.02, ZOOM_MAX = 150; // 1 倍に対する比。0.02 倍で日本全体が入る。拡大は 150 倍まで(2026-10-19 に 50 から上げた。ユーザー指摘)
   const toScreen = (p) => ({ x: (p.x - V.tx) * V.k, y: (p.y - V.ty) * V.k });
   const toWorld = (sx, sy) => ({ x: sx / V.k + V.tx, y: sy / V.k + V.ty });
   const zoomRatio = () => V.k / BASE_K;
@@ -485,7 +486,9 @@
       return;
     }
     if (!S.joined) return;
-    if (!n) { S.selected = null; renderSelected(); return; }
+    // 何も無いところを押したら選択を解除する。出ている問題文も消す(2026-10-19 ユーザー指摘)
+    if (!n) { S.selected = null; S.selNb = null; S.question = null; S.result = null; renderQuestion(); renderSelected(); return; }
+    if (S.selected !== n.id) { S.selNb = null; send({ t: 'neighbors', nodeId: n.id }); } // 縮小していても、つながる線を全部出すため
     S.selected = n.id;
     renderSelected();
     const actionable = !S.overview && (canAttack(n.id) || n.owner === S.me);
@@ -887,6 +890,22 @@
       ctx.globalAlpha = (town && !own ? 0.55 : 1) * ef;
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
       ctx.globalAlpha = 1;
+    }
+
+    // 選んだ拠点のつながり(2026-10-19 ユーザー決定): 拡大・縮小にかかわらず、つながり先まで黒い線で出す(選択を解除すると元の色)
+    {
+      const sel = selectedNode();
+      if (sel && S.selNb && S.selNb.id === sel.id && S.selNb.list.length) {
+        const a = toScreen(posOf(sel));
+        ctx.save(); ctx.strokeStyle = C.ink; ctx.fillStyle = C.ink; ctx.lineCap = 'round'; ctx.globalAlpha = 0.9;
+        ctx.lineWidth = Math.max(2, Math.min(4, 1.5 + ratio / 6));
+        for (const m of S.selNb.list) {
+          const b = toScreen(S.nodes.has(m.id) ? posOf(S.nodes.get(m.id)) : m.w);
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+          if (!S.drawn || !S.drawn.has(m.id)) { ctx.beginPath(); ctx.arc(b.x, b.y, 3.5, 0, Math.PI * 2); ctx.fill(); } // 描いていない拠点(縮小で隠れた町・字など)は点で示す
+        }
+        ctx.restore();
+      }
     }
 
     // 拠点: プレイヤーの拠点 → 固定拠点 → 選択中(最前面)

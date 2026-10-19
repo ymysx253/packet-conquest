@@ -49,7 +49,7 @@ function originAllowed(req) {
 }
 // F3: 1 接続あたりのメッセージ数の上限(1 秒に 20 まで。超えたら切断)と、種別ごとの形の検査
 const MSG_PER_SEC = 20;
-const MSG_TYPES = new Set(['join', 'view', 'ask', 'answer', 'search', 'rekey', 'move', 'team']);
+const MSG_TYPES = new Set(['join', 'view', 'ask', 'answer', 'search', 'rekey', 'move', 'team', 'neighbors']); // neighbors: 選んだ拠点のつながり先(2026-10-19)
 // F5: セキュリティヘッダ。スクリプトは自サイトのファイルだけ(インラインは禁止)、スタイルとフォントは Google Fonts を許可
 const SECURITY_HEADERS = {
   'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' ws: wss:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
@@ -176,6 +176,7 @@ async function handle(ws, msg) {
     }
     case 'view': await world.setView(player, Array.isArray(msg.tiles) ? msg.tiles.slice(0, 120).filter((x) => typeof x === 'string' && x.length <= 24) : [], msg.z); break;
     case 'ask': if (typeof msg.nodeId !== 'string' || msg.nodeId.length > 40) return; send(ws, await world.ask(player, msg.nodeId)); break;
+    case 'neighbors': if (typeof msg.nodeId !== 'string' || msg.nodeId.length > 40) return; send(ws, await world.neighbors(msg.nodeId)); break; // 選んだ拠点のつながり先(位置と名前だけ)
     case 'answer': {
       if (typeof msg.qid !== 'string' || msg.qid.length > 40) return;
       // 4 択は choice(0〜3)、入力式は inputs(文字列 12 個まで、各 1,000 文字まで。欄ごとの上限は world.answer で)
