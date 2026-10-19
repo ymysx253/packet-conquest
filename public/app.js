@@ -350,8 +350,9 @@
 
   function resize() {
     const box = $('mapWrap');
-    const w = Math.max(280, box.clientWidth);
-    const h = Math.round(Math.min(620, Math.max(380, w * 0.7)));
+    // 地図は枠(画面の残りの高さ)いっぱい(2026-10-19: ページを縦に伸ばさない)
+    const w = Math.max(200, box.clientWidth);
+    const h = Math.max(200, box.clientHeight);
     const dpr = window.devicePixelRatio || 1;
     canvas.style.width = `${w}px`; canvas.style.height = `${h}px`;
     canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
@@ -360,6 +361,9 @@
     requestView();
   }
   window.addEventListener('resize', resize);
+  if (window.ResizeObserver) new ResizeObserver(() => resize()).observe($('mapWrap')); // 欄の開け閉めで枠の大きさが変わったときも
+  // 凡例(レベルの形・持ち主・出典)はダイアログで出す(2026-10-19 ユーザー指摘)
+  $('legendBtn').onclick = () => { const d = $('legendDialog'); if (d.showModal) d.showModal(); else d.setAttribute('open', ''); };
   const clampK = (k) => Math.min(BASE_K * ZOOM_MAX, Math.max(BASE_K * ZOOM_MIN, k));
   function zoomAt(factor, sx, sy) {
     const before = toWorld(sx, sy);

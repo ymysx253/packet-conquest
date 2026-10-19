@@ -32,7 +32,9 @@
 
 * { box-sizing: border-box; }
 html, body { height: 100%; }
+/* 画面の高さに収める(2026-10-19 ユーザー指摘: ページの縦スクロールを出さない)。地図は残りの高さいっぱい、右の欄は欄の中だけスクロール */
 body {
+  display: flex; flex-direction: column; height: 100dvh; overflow: hidden;
   margin: 0;
   background: var(--bg);
   color: var(--ink);
@@ -44,8 +46,8 @@ body {
 
 .top {
   display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px;
-  padding: 12px 16px;
-  max-width: 1280px; margin: 0 auto;
+  padding: 8px 16px;
+  width: 100%; max-width: 1280px; margin: 0 auto; flex: 0 0 auto;
 }
 .brand { display: flex; align-items: center; gap: 10px; }
 .brand h1 { font: 22px/1 var(--font-display); margin: 0; letter-spacing: 0.02em; }
@@ -68,17 +70,20 @@ body {
 .conn[data-state="on"]::before { background: var(--good); }
 
 .layout {
-  display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px;
-  max-width: 1280px; margin: 0 auto; padding: 0 16px 24px;
+  display: grid; grid-template-columns: minmax(0, 1fr) 340px; grid-template-rows: minmax(0, 1fr); gap: 16px;
+  width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 16px 12px; flex: 1 1 auto; min-height: 0;
 }
-@media (max-width: 880px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+/* 幅の狭い画面: 地図が上 6 割、欄が下 4 割(それぞれの中で完結) */
+@media (max-width: 880px) { .layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 58fr) minmax(0, 42fr); gap: 10px; padding: 0 10px 10px; } }
 
 .board {
-  background: var(--surface); border-radius: 12px; padding: 12px;
-  min-width: 0; position: relative;
+  background: var(--surface); border-radius: 12px; padding: 10px;
+  min-width: 0; min-height: 0; position: relative; display: flex; flex-direction: column;
 }
-.map-wrap { position: relative; overflow: hidden; border-radius: 8px; background: color-mix(in srgb, var(--bg) 40%, var(--surface)); }
-#map { display: block; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
+.board-foot { display: flex; align-items: center; gap: 10px; margin-top: 6px; flex: 0 0 auto; min-width: 0; }
+.credit-short { margin: 0; font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.map-wrap { position: relative; overflow: hidden; border-radius: 8px; background: color-mix(in srgb, var(--bg) 40%, var(--surface)); flex: 1 1 auto; min-height: 0; }
+#map { display: block; position: absolute; left: 0; top: 0; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
 .zoom { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; }
 .zbtn {
   width: 36px; height: 36px; border-radius: 8px; border: 2px solid var(--ink);
@@ -106,8 +111,22 @@ body {
 .lg.own-other { background: var(--muted); border-color: var(--muted); }
 .lg.home { width: 9px; height: 9px; border-width: 2px; }
 .lg.shield { width: 14px; height: 14px; border: 1.5px dashed var(--muted); }
+.lg.water { width: 16px; height: 12px; border-radius: 3px; border: 1px solid var(--line); background: var(--water); }
+.ln { display: inline-block; width: 24px; height: 0; border-top: 3px dashed; }
+.ln.air { border-color: #8B5CF6; }
+.ln.sea { border-color: #F97316; }
+.ln.sel { border-top-style: solid; border-color: var(--ink); }
 
-.side { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.side { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.side > .panel { flex: 0 0 auto; }
+/* 凡例のダイアログ */
+.dlg { border: 0; border-radius: 16px; padding: 20px 22px; width: min(520px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); background: var(--surface); color: var(--ink); box-shadow: 0 20px 50px rgba(10, 20, 30, 0.25); }
+.dlg::backdrop { background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(2px); }
+.dlg-title { font: 22px/1.2 var(--font-display); margin: 0 0 10px; }
+.dlg h3 { margin: 14px 0 6px; }
+.dlg .legend { margin: 0; }
+.dlg .credit { font-size: 12px; }
+.dlg-actions { display: flex; justify-content: flex-end; margin: 16px 0 0; }
 .panel { background: var(--surface); border-radius: 12px; padding: 14px 16px; }
 .label {
   margin: 0 0 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--muted);
