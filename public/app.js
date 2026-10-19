@@ -198,6 +198,14 @@
   // 問題のあるレベル(サーバーが welcome で送る範囲)。問題の無いレベルの拠点は、線がつながっていても占領・強化できない(2026-10-19)
   const hasQuestion = (lv) => (S.questionRanges || [[1, 999]]).some(([a, b]) => lv >= a && lv <= b);
   const attackLevelOf = (n) => { const base = Math.max(1, n.level) + (n.defense || 0); return n.owner ? Math.max(4, base) : base; };
+  // 濃さ(2026-10-19 ユーザー案): 縮小して重なっているときは低いレベルほど薄く、拡大して重なりが無くなると元の濃さ。
+  // レベルの帯ごとに「この拡大率で元の濃さ」を決める(町・字 24、駅・名所 18、乗り換え駅など 10、空港など 4、Lv200 以上はいつも濃い)。いちばん薄くて 20%。
+  // 選択中・自分の拠点・攻撃できる拠点は薄くしない
+  const fadeOf = (n) => {
+    if (n.id === S.selected || n.isPlayerNode || (n.owner && n.owner === S.me) || (!S.overview && canAttack(n.id) && hasQuestion(attackLevelOf(n)))) return 1;
+    const full = n.level >= 200 ? 0 : n.level >= 100 ? 4 : n.level >= 30 ? 10 : n.level >= 10 ? 18 : 24;
+    return full ? Math.max(0.2, Math.min(1, (zoomRatio() / full) ** 1.5)) : 1;
+  };
   const startRefusal = (n) => (n.isPlayerNode || n.hackable === false)
     ? 'そこは開始地点にできません。町・字か、ふつうの駅(Lv10)を選んでください'
     : `${n.name}(Lv${n.level})からは始められません。町・字か、ふつうの駅(Lv10)を選んでください(町・字は地図を拡大すると出ます)`;
@@ -791,7 +799,8 @@
       const town = na.genre === 'town' || nb.genre === 'town'; // 町・字の線は細く薄く(路線の線を主役にする)
       ctx.strokeStyle = own || C.line;
       ctx.lineWidth = (own ? (thin || town ? 4 : 7) : (thin ? 2.5 : town ? 1.5 : 4)) * Math.min(1, Math.max(0.4, ratio / 4));
-      if (town && !own) ctx.globalAlpha = 0.55;
+      const ef = Math.min(fadeOf(na), fadeOf(nb)); // 線も、両端の薄い方に合わせて薄く
+      ctx.globalAlpha = (town && !own ? 0.55 : 1) * ef;
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
       ctx.globalAlpha = 1;
     }
@@ -799,7 +808,8 @@
     // 拠点: プレイヤーの拠点 → 固定拠点 → 選択中(最前面)
     const pulse = 0.5 + 0.5 * Math.sin(t / 260);
     const rank = (n) => (n.id === S.selected ? 2 : n.isPlayerNode ? 0 : 1);
-    const sorted = [...S.nodes.values()].filter(visibleNode).sort((a, b) => rank(a) - rank(b));
+    // レベルの低いものから描き、高いものを上に重ねる(2026-10-19 ユーザー案)
+    const sorted = [...S.nodes.values()].filter(visibleNode).sort((a, b) => rank(a) - rank(b) || a.level - b.level);
     // 重要さ(間引きと名前の優先順位): 選択中 > 自分の拠点 > 誰かの拠点 > レベル > 空港・港
     const prio = (n) => (n.id === S.selected ? 1e6 : 0) + (n.owner && n.owner === S.me ? 1e5 : 0) + (n.owner ? 1e4 : 0) + n.level * 10 + (n.kind === 'GW' ? 5 : 0);
     // 縮小表示: 画面の小さなます目(約 34 px)ごとに、いちばん重要な拠点だけを描く(倍率に対して印が多すぎないように)
@@ -842,8 +852,10 @@
       }
       const filled = !n.isPlayerNode && SH.isFilled(n.level);
       const col = owner || (filled ? C.ink : C.strong);
-      if (n.hackable === false) ctx.globalAlpha = 0.45;
-      else if (owner && n.owner === S.me && !n.isPlayerNode && !S.reach.has(n.id)) ctx.globalAlpha = 0.55; // 自分の拠点から線が切れている所有拠点
+      const fa = fadeOf(n); // 縮小時は低いレベルほど薄く
+      ctx.globalAlpha = fa;
+      if (n.hackable === false) ctx.globalAlpha = 0.45 * fa;
+      else if (owner && n.owner === S.me && !n.isPlayerNode && !S.reach.has(n.id)) ctx.globalAlpha = 0.55 * fa; // 自分の拠点から線が切れている所有拠点
       ctx.fillStyle = filled ? col : C.surface; ctx.strokeStyle = col;
       ctx.lineWidth = owner ? (n.isPlayerNode ? 5 : 7) : (n.isPlayerNode ? 3 : 4);
       shape(n, p, r); ctx.fill(); ctx.stroke();
@@ -866,9 +878,9 @@
       const showLabel = S.overview ? true : n.isPlayerNode
         ? (ratio >= 7 || n.owner === S.me)
         : n.genre === 'town' ? (ratio >= TOWN_LABEL_RATIO || n.owner === S.me || n.id === S.selected)
-        : (ratio >= 7 || (ratio >= 3.5 && n.level >= 2) || (ratio >= 1.5 && n.level >= 3) || n.level >= 4 || n.kind === 'IX' || n.kind === 'GW' || n.owner === S.me);
+        : (ratio >= 14 || (ratio >= 5 && n.level >= 30) || (ratio >= 2 && n.level >= 100) || n.level >= 200 || n.kind === 'IX' || n.owner === S.me); // 2026-10-19 の物差し
       if (showLabel) {
-        const isSel = S.selected === n.id, dim = S.selected && !isSel;
+        const isSel = S.selected === n.id, dim = S.selected && !isSel, fl = fadeOf(n);
         const fs = n.kind === 'IX' ? 14 : n.isPlayerNode ? 10 : 11.5;
         const font = `${n.isPlayerNode ? 500 : 700} ${fs * grow}px "BIZ UDPGothic", sans-serif`;
         ctx.font = font;
@@ -883,7 +895,7 @@
             if (ctx.roundRect) ctx.roundRect(p.x - w / 2, ty - h + 4, w, h, 4); else ctx.rect(p.x - w / 2, ty - h + 4, w, h);
             ctx.fill(); ctx.stroke();
           }
-          ctx.globalAlpha = dim ? 0.3 : 1;
+          ctx.globalAlpha = (dim ? 0.3 : 1) * fl; // 名前も印と同じ濃さ
           ctx.fillStyle = n.isPlayerNode && !isSel ? C.muted : C.ink;
           ctx.fillText(n.name, p.x, ty);
           ctx.globalAlpha = 1;
