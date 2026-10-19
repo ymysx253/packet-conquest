@@ -29,7 +29,8 @@ for (const n of NODES) {
   assert.ok(n.value >= n.level - 1, `${n.name}: Lv に対して点数が低すぎる`);
   if (n.hackable && n.status === 'public') assert.ok(ADJ[n.id].length >= 1, `${n.name}: つながりがない`);
   else assert.strictEqual(ADJ[n.id].length, 0, `${n.name}: ハック不可・非公開の拠点に線がある`);
-  assert.strictEqual(n.hits, Math.max(1, n.adj.length), `${n.name}: 突破回数 = つながりの本数`);
+  // 突破回数 = 陸のつながり + 航路(陸と同じ相手は 1 本)。2026-10-19 から航路も数える
+  assert.strictEqual(n.hits, Math.max(1, n.adj.length + new Set((n.routes || []).map((r) => r.to).filter((t) => !n.adj.includes(t))).size), `${n.name}: 突破回数 = 陸のつながり + 航路`);
   for (const m of n.adj) assert.ok(ADJ[m].includes(n.id), `${n.name}: つながりが片向き`);
   assert.ok(typeof n.area === 'string' && n.area, `${n.name}: area がない`);
   assert.match(n.subnet, /^10\.\d+\.\d+\.0\/20$/);

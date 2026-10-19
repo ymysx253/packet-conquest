@@ -2,7 +2,7 @@
 // 永続ワールドの検証(タイル方式): シード、範囲の読み込み、参加で拠点が生まれる、隣だけ攻撃できる、初心者保護、
 // 回数制の奪取(回数 = つながりの本数)、強化とその減衰、地域の支配(3/4)、集計値、復帰コード、再起動後の復元、配信に答えが含まれないこと
 const assert = require('assert');
-const { World, DEFAULT_START_ID, PROTECT_MS, DECAY_MS, NEWBIE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, weekKeyOf } = require('../server/world');
+const { World, DEFAULT_START_ID, PROTECT_MS, GATEWAY_GUARD_MS, DECAY_MS, NEWBIE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, weekKeyOf } = require('../server/world');
 const { MemoryStore } = require('../server/store');
 const { hasGenerator } = require('../server/questions');
 const { EventLog, dayOf } = require('../server/events');
@@ -431,13 +431,31 @@ async function solve(world, p, nodeId) {
   H.owner = rp.id; w.addEdge(rp.homeNodeId, H.id, w.nodes.get(rp.homeNodeId).t0); rp.reach = null;
   assert.ok(await w.canAttack(rp.id, C2.id), '占領した空港から空路の先を攻撃できる');
   assert.ok(w.pub(C2).routes.some((r) => r.to === H.id), '航路は配信される(画面が線を引く)');
-  assert.strictEqual(C2.hits, Math.max(1, C2.adj.length), '航路は突破回数に数えない');
+  assert.strictEqual(C2.hits, Math.max(1, C2.adj.length + new Set(C2.routes.map((x) => x.to).filter((t) => !C2.adj.includes(t))).size), '航路も突破回数に数える(2026-10-19 ユーザー決定)');
+  assert.ok(H.hits > H.adj.length + 30, '羽田は航路が多いので突破に要る回数も多い');
   const saved = [H.routes, C2.routes];
   H.routes = []; C2.routes = []; rp.reach = null;
   assert.ok(!(await w.canAttack(rp.id, C2.id)), '航路が無ければ遠くの空港は攻撃できない');
   [H.routes, C2.routes] = saved;
   H.owner = null; rp.reach = null;
   assert.ok(!(await w.canAttack(rp.id, C2.id)), '空港を手放すと航路の先は攻撃できない');
+
+  // 空港・港は占領されてから 5 分間は奪えない(2026-10-19 ユーザー決定)。問題のある Lv30 の港で確かめる
+  {
+    const portM = NODES.find((n) => n.genre === 'port' && n.level === 30 && n.hackable && n.status === 'public');
+    await w.ensureTiles(tilesAround(portM.t0, 1));
+    const P = w.nodes.get(portM.id);
+    const gp = await w.join(fakeWs(), 'みなと', null, tokyoSt.id), gq = await w.join(fakeWs(), 'よこどり', null, tokyoSt.id);
+    for (const x of [gp, gq]) { w.addEdge(x.homeNodeId, P.id, w.nodes.get(x.homeNodeId).t0); x.reach = null; x.cooldownUntil = 0; }
+    P.progress = { [w.attackKey(gp)]: P.hits - 1 };
+    await solve(w, gp, P.id);
+    assert.strictEqual(P.owner, gp.id, '港を占領');
+    assert.ok(P.protectedUntil > Date.now() + GATEWAY_GUARD_MS - 5000 && P.protectedUntil <= Date.now() + GATEWAY_GUARD_MS, '空港・港は占領から 5 分間守られる');
+    assert.ok(!(await w.canAttack(gq.id, P.id)), '5 分間はほかの人が奪えない');
+    P.protectedUntil = Date.now() - 1; gp.createdAt = Date.now() - NEWBIE_MS - 1000; // 初心者保護(3 拠点以下・7 日以内)とは別に確かめる
+    assert.ok(await w.canAttack(gq.id, P.id), '5 分たてば奪える');
+    P.owner = null; P.progress = {}; P.protectedUntil = 0; gp.reach = null; gq.reach = null;
+  }
 
   // 問題の無いレベルの拠点は、線がつながっていても占領できない(2026-10-19)。羽田(Lv500)を航路で攻められる状態にして確かめる
   {

@@ -34,6 +34,7 @@ const isHex = (s) => typeof s === 'string' && /^#[0-9a-fA-F]{6}$/.test(s);
 const MAX_LEVEL = 999;                  // 出題レベルの上限(強化はここまで)
 const PROTECT_MS = 24 * 60 * 60 * 1000; // 初心者保護: 生まれた拠点は 24 時間攻撃されない
 const PROTECT_MAX_NODES = 3;            // 初心者保護: 所持拠点がこの数以下の人は攻撃されない(作成から NEWBIE_MS の間だけ)
+const GATEWAY_GUARD_MS = 5 * 60 * 1000; // 空港・港は占領されてから 5 分間は奪えない(2026-10-19 ユーザー決定。すぐ奪い返す待ち伏せを防ぎ、航路の先が制圧される前に奪い返す余地を残す)
 const NEWBIE_MS = 7 * 24 * 60 * 60 * 1000;  // 初心者保護の期限: 作成から 7 日(2026-10-18 決定。別アカウントで要衝を永久に守る穴をふさぐ)
 const IDLE_MS = 7 * 24 * 60 * 60 * 1000;    // 休眠: 稼働時間で 7 日接続が無い無料アカウントは、拠点をすべて中立に戻して削除(サブスク会員は除外)
 const MOVE_INTERVAL_MS = 24 * 60 * 60 * 1000; // 引っ越し(開始地点の変更)は 1 日 1 回(2026-10-18 決定)
@@ -867,6 +868,7 @@ class World {
     if (prev) { prev.nodesOwned = Math.max(0, (prev.nodesOwned || 0) - 1); prev.score = Math.max(0, (prev.score || 0) - gained); }
     this.events.add('capture', { ...ev, level: level === null ? undefined : level, ip: p.ws && p.ws.ip, detail: { prevOwner: prev ? prev.id : null, prevTeam: prev ? prev.team || null : null, gained, hits, defenseBefore } });
     n.owner = p.id; n.defense = 0; n.fortifiedAt = now(); n.progress = {};
+    if (n.genre === 'airport' || n.genre === 'port') n.protectedUntil = now() + GATEWAY_GUARD_MS; // 空港・港は 5 分間奪えない
     this.ownedCache.clear(); // 持ち拠点が変わった(縮小表示に足す分を作り直す)
     this.invalidateReach(p.id); if (prev) this.invalidateReach(prev.id);
     p.points = (p.points || 0) + gained;
@@ -1008,4 +1010,4 @@ class World {
   }
 }
 
-module.exports = { startable, DEFAULT_START_ID, World, PROTECT_MS, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, TEAM_MAX_MEMBERS, TEAM_ICONS, weekKeyOf };
+module.exports = { startable, DEFAULT_START_ID, World, PROTECT_MS, GATEWAY_GUARD_MS, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, TEAM_MAX_MEMBERS, TEAM_ICONS, weekKeyOf };

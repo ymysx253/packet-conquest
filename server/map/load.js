@@ -265,10 +265,15 @@ function loadAll() {
   const ADJ = Object.fromEntries(NODES.map((n) => [n.id, new Set()]));
   for (const n of NODES) for (const m of n.adjMaster || n.adj || []) if (byId[m] && n.hackable && byId[m].hackable && n.status === 'public' && byId[m].status === 'public') { ADJ[n.id].add(m); ADJ[m].add(n.id); }
   for (const n of NODES) { n.adj = [...ADJ[n.id]].sort(); ADJ[n.id] = n.adj; n.hits = Math.max(1, n.adj.length); delete n.adjMaster; }
-  // 航路(DATA-FORMAT.md 第 5 章): 拠点から独立した記録から、ゲームで使える航路だけを拠点ごとの要約にする。突破回数には数えない
+  // 航路(DATA-FORMAT.md 第 5 章): 拠点から独立した記録から、ゲームで使える航路だけを拠点ごとの要約にする。
+  // 航路も突破回数に数える(2026-10-19 ユーザー決定: 奪うのが大変 = 維持が大変)。陸の線と同じ相手は 1 本として数える
   const ROUTE_FILES = readRouteFiles();
   const routes = deriveRoutes(byId, ROUTE_FILES, loadSources());
-  for (const n of NODES) n.routes = routes.byNode.get(n.id) || [];
+  for (const n of NODES) {
+    n.routes = routes.byNode.get(n.id) || [];
+    const extra = new Set(n.routes.map((r) => r.to).filter((t) => !n.adj.includes(t)));
+    n.hits = Math.max(1, n.adj.length + extra.size);
+  }
   const EDGES = [];
   for (const n of NODES) for (const m of n.adj) if (n.id < m) EDGES.push({ a: n.id, b: m });
   const KINDS = Object.assign({}, ...parts.map((p) => p.KINDS));

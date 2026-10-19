@@ -146,7 +146,7 @@
     if (m.overview) {
       // 縮小表示: 送られてきた高レベルの拠点だけに入れ替える
       S.nodes.clear(); S.edges.clear(); S.tiles.clear(); S.overview = true; S.viewZ = m.z;
-      for (const n of m.nodes) S.nodes.set(n.id, n);
+      for (const n of m.nodes) { S.nodes.set(n.id, n); rememberRoutes(n); } // 縮小表示にも自分の空港・港が届くので、航路の線を出せる
       S.regions = Array.isArray(m.regions) ? m.regions : [];
       if (m.z >= 3) loadCoarse(); else for (const g of S.regions) loadBounds(g.pref);
       return;
@@ -308,6 +308,13 @@
     if (!d || !Array.isArray(d.water)) return;
     S.water = d.water.map((w) => ({ id: w.id, name: w.name, polys: projectPolys(w.polys) }));
   }).catch(() => { /* 無くても遊べる */ });
+
+  // 海路の道すじ(2026-10-19): 海路は陸をまたがず海の上を通る曲線で描く(tools/build-sea-paths.js が書く)。キーは港の id(小さい順)
+  S.seaPaths = new Map();
+  fetch('data/sea-paths.json').then((r) => (r.ok ? r.json() : null)).then((d) => {
+    if (!d || !d.paths) return;
+    for (const [k, pts] of Object.entries(d.paths)) S.seaPaths.set(k, pts.map(([lat, lon]) => worldOf(lat, lon)));
+  }).catch(() => { /* 無ければゆるい弧で描く */ });
 
   // ---------- 投影: 固定の縮尺(経度・緯度 → 平面座標。1 単位 = 0.001°) ----------
   const LAT0 = 35.68; // 横方向の補正の基準(東京)。地図が世界に広がったらメルカトルに変える
@@ -601,6 +608,7 @@
     else if (n.hackable === false) status = 'ネットワークにつながっていない場所です(ハック不可)';
     else if (n.owner === S.me) status = 'タップすると強化の問題が出ます';
     else if (n.isPlayerNode) status = 'プレイヤー自身の拠点は占領できません';
+    else if (n.protectedUntil > now() && (n.genre === 'airport' || n.genre === 'port')) status = `占領されたばかりで守られています(あと ${Math.ceil((n.protectedUntil - now()) / 60000)} 分)`; // 空港・港は占領から 5 分
     else if (n.protectedUntil > now()) status = `生まれたばかりで守られています(あと ${Math.ceil((n.protectedUntil - now()) / 3600000)} 時間)`;
     else if (n.owner && (playerById(n.owner) || {}).nodes <= 3 && (playerById(n.owner) || {}).newbie) status = '始めたばかりで拠点が少ないプレイヤーは守られています';
     else if (canAttack(n.id)) status = `タップすると攻撃の問題が出ます(突破まで あと ${Math.max(1, hits - mine)} 回)`;
@@ -793,20 +801,50 @@
       }
     }
 
-    // 航路: 自分が占領している空港・港から行き先へ点線(空路は青系、海路は水色系)
-    if (S.mine.size) {
-      ctx.save(); ctx.setLineDash([8, 6]); ctx.lineWidth = 2.5; ctx.globalAlpha = 0.85;
-      for (const o of S.mine.values()) {
-        const a = toScreen(worldOf(o.lat, o.lon));
-        for (const r of o.routes) {
-          const b = toScreen(worldOf(r.lat, r.lon));
-          ctx.strokeStyle = r.mode === 'air' ? '#3b82f6' : '#14b8a6';
-          // ゆるい弧にする(真っすぐだと線路と見分けにくい)
-          const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, dx = b.x - a.x, dy = b.y - a.y;
-          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.quadraticCurveTo(mx - dy * 0.15, my + dx * 0.15, b.x, b.y); ctx.stroke();
+    // 航路(2026-10-19 ユーザー決定): 実際の空路・海路を、占領したときに曲線で出す(空路は青の弧、海路は水色で海の上を通る線)
+    //   片方の端を自分(切り替えで出すならチームも)が持つ → 点線(行き先を攻撃できる)/ 両端とも → 太い実線 / 空港・港を選んだとき → その航路を薄く
+    {
+      const pairs = new Map(); // 'idA|idB' → { a, b, mode, state }
+      const rank = { sel: 1, one: 2, both: 3 };
+      const ownedByUs = (id) => { if (S.mine.has(id)) return true; const m = S.nodes.get(id); return !!m && m.owner && (m.owner === S.me || (relOf(m) === 'team' && ownShown('team'))); };
+      const add = (o, r, state) => {
+        const [x, y] = o.id < r.to ? [o.id, r.to] : [r.to, o.id];
+        const key = `${x}|${y}`;
+        const st = state === 'one' && ownedByUs(r.to) ? 'both' : state;
+        const cur = pairs.get(key);
+        if (cur && rank[cur.state] >= rank[st]) return;
+        const A = o.id === x ? o : r, B = o.id === x ? r : o; // 向きをそろえる(同じ航路はどちらから見ても同じ曲線)
+        pairs.set(key, { key, a: worldOf(A.lat, A.lon), b: worldOf(B.lat, B.lon), mode: r.mode, state: st });
+      };
+      for (const o of S.mine.values()) for (const r of o.routes) add(o, r, 'one');
+      if (ownShown('team')) for (const n of S.nodes.values()) if (n.routes && n.routes.length && relOf(n) === 'team') for (const r of n.routes) add(n, r, 'one');
+      const sel = S.selected && S.nodes.get(S.selected);
+      if (sel && sel.routes) for (const r of sel.routes) add(sel, r, 'sel');
+      if (pairs.size) {
+        ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        for (const p of [...pairs.values()].sort((u, v) => rank[u.state] - rank[v.state])) {
+          ctx.strokeStyle = p.mode === 'air' ? '#3b82f6' : '#14b8a6';
+          ctx.lineWidth = p.state === 'both' ? 4.5 : p.state === 'one' ? 2.5 : 2;
+          ctx.globalAlpha = p.state === 'sel' ? 0.4 : p.state === 'one' ? 0.85 : 0.95;
+          ctx.setLineDash(p.state === 'both' ? [] : p.state === 'one' ? [8, 6] : [4, 6]);
+          const path = p.mode === 'sea' ? S.seaPaths.get(p.key) : null;
+          ctx.beginPath();
+          if (path && path.length >= 2) {
+            // 海の上の点を、点と点の中ほどを通るなめらかな曲線でつなぐ
+            const q = path.map(toScreen);
+            ctx.moveTo(q[0].x, q[0].y);
+            for (let i = 1; i < q.length - 1; i++) ctx.quadraticCurveTo(q[i].x, q[i].y, (q[i].x + q[i + 1].x) / 2, (q[i].y + q[i + 1].y) / 2);
+            ctx.lineTo(q[q.length - 1].x, q[q.length - 1].y);
+          } else {
+            // 空路(と道すじの無い海路)はゆるい弧。曲がる向きと強さはいつも同じ(線路と見分けやすく)
+            const a = toScreen(p.a), b = toScreen(p.b);
+            const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, dx = b.x - a.x, dy = b.y - a.y, k = p.mode === 'air' ? 0.18 : 0.1;
+            ctx.moveTo(a.x, a.y); ctx.quadraticCurveTo(mx - dy * k, my + dx * k, b.x, b.y);
+          }
+          ctx.stroke();
         }
+        ctx.restore();
       }
-      ctx.restore();
     }
 
     // 陣地(2026-10-19): 持っている拠点のまわりを持ち主の色で薄くにじませる。切り替えで出す範囲を決める
