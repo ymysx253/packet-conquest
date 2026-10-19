@@ -40,7 +40,15 @@
   const ownerOf = (id) => { const n = nodeById(id); return n ? n.owner : null; };
   // 拠点の色: チームに所属していればチームの背景色、いなければプレイヤーの色(2026-10-18 決定)
   const colorOf = (pid) => { const p = playerById(pid); return p ? (p.teamStyle && p.teamStyle.fill ? p.teamStyle.fill : p.color) : null; };
-  const teamFrameOf = (n) => { const o = playerById(n.owner); return (S.team && S.team.style && S.team.style.frame) || (o && o.teamStyle && o.teamStyle.frame) || null; };
+  // 持ち主のチームの見た目 { frame, fill, text }(チームに入っていない人は null)。2026-10-19 ユーザー指摘:
+  // 印の線 = 枠の色、印の中 = 背景色(塗りつぶしの形のレベルは枠の色で塗る)、拠点の名前 = 文字の色
+  const ownerStyleOf = (n) => {
+    if (!n.owner) return null;
+    const o = playerById(n.owner);
+    const mine = (n.owner === S.me || (S.team && n.ownerTeam === S.team.id)) && S.team && S.team.style;
+    const st = (o && o.teamStyle) || mine || (n.ownerFrame ? { frame: n.ownerFrame, fill: n.ownerColor, text: n.ownerText } : null);
+    return st && st.frame ? st : null;
+  };
   // 拠点の持ち主の色(一覧にいない持ち主は、サーバーが拠点に添えた色)
   const ownerColorOf = (n) => (n.owner ? colorOf(n.owner) || n.ownerColor || null : null);
   // 持ち主との関係(2026-10-19): 'me' 自分 / 'team' チームの仲間 / 'other' ほかの人 / null 持ち主なし
@@ -933,7 +941,7 @@
       const na = nodeById(e.a), nb = nodeById(e.b);
       if (!na || !nb || !visibleNode(na) || !visibleNode(nb)) continue; // 描かない町・字への線も描かない
       const a = toScreen(posOf(na)), b = toScreen(posOf(nb));
-      const own = na.owner && na.owner === nb.owner && ownShown(relOf(na)) ? ownerColorOf(na) : null;
+      const own = na.owner && na.owner === nb.owner && ownShown(relOf(na)) ? ((ownerStyleOf(na) || {}).frame || ownerColorOf(na)) : null; // チームの線は枠の色
       const thin = na.isPlayerNode || nb.isPlayerNode;
       const town = na.genre === 'town' || nb.genre === 'town'; // 町・字の線は細く薄く(路線の線を主役にする)
       ctx.strokeStyle = own || C.line;
@@ -1014,15 +1022,16 @@
       ctx.globalAlpha = fa;
       if (n.hackable === false) ctx.globalAlpha = 0.45 * fa;
       else if (owner && n.owner === S.me && !n.isPlayerNode && !S.reach.has(n.id)) ctx.globalAlpha = 0.55 * fa; // 自分の拠点から線が切れている所有拠点
-      // 自分: 塗り + 真ん中の点 / チーム: 塗り(チームの色)+ チームの枠の色 / ほかの人: 塗りだけ(2026-10-19)
-      const frame = rel === 'team' && owner ? teamFrameOf(n) : null;
-      ctx.fillStyle = filled || frame ? col : C.surface; ctx.strokeStyle = frame || col;
-      ctx.lineWidth = frame ? 4 : owner ? (n.isPlayerNode ? 5 : 7) : (n.isPlayerNode ? 3 : 4); // チームの枠は細めにして、中の塗り(チームの色)を見せる
+      // 印の色(2026-10-19 ユーザー指摘): チームの拠点は 線 = 枠の色、中 = 背景色(塗りつぶしのレベルは枠の色)。チームに入っていない人は 線 = その人の色、中 = 白。自分の拠点は真ん中に点
+      const tst = owner ? ownerStyleOf(n) : null;
+      const lineCol = tst ? tst.frame : col, bgCol = tst ? (tst.fill || C.surface) : C.surface;
+      ctx.fillStyle = filled ? lineCol : bgCol; ctx.strokeStyle = lineCol;
+      ctx.lineWidth = tst ? 5 : owner ? (n.isPlayerNode ? 5 : 7) : (n.isPlayerNode ? 3 : 4); // チームは中の背景色が見えるよう少し細く
       shape(n, p, r); ctx.fill(); ctx.stroke();
       // 外輪・外枠・札は、日本全体が見える倍率(段 3・4)では描かない(輪の間隔は縮まないので、細い陸地を覆い隠していた。2026-10-19)
       const farView = S.overview && S.viewZ >= 3;
-      if (!n.isPlayerNode && !farView) SH.extras(ctx, n.level, p, r, frame || col, frame ? col : C.surface);
-      if (owner && n.owner === S.me) { ctx.fillStyle = filled ? C.surface : owner; ctx.beginPath(); ctx.arc(p.x, p.y, n.isPlayerNode ? 3 : 4, 0, Math.PI * 2); ctx.fill(); }
+      if (!n.isPlayerNode && !farView) SH.extras(ctx, n.level, p, r, lineCol, bgCol);
+      if (owner && n.owner === S.me) { ctx.fillStyle = filled ? bgCol : lineCol; ctx.beginPath(); ctx.arc(p.x, p.y, n.isPlayerNode ? 3 : 4, 0, Math.PI * 2); ctx.fill(); }
       // 侵入の進捗: 攻め手ごとの正解回数を弧で示す(自分は自分の色、ほかは灰色)
       const hits = n.hits || 1, prog = n.progress || {};
       const entries = Object.entries(prog).filter(([, v]) => v > 0);
@@ -1058,7 +1067,7 @@
             ctx.fill(); ctx.stroke();
           }
           ctx.globalAlpha = (dim ? 0.3 : 1) * fl; // 名前も印と同じ濃さ
-          ctx.fillStyle = n.isPlayerNode && !isSel ? C.muted : C.ink;
+          ctx.fillStyle = tst && tst.text && !isSel ? tst.text : n.isPlayerNode && !isSel ? C.muted : C.ink; // チームの拠点の名前はチームの文字の色
           ctx.fillText(n.name, p.x, ty);
           ctx.globalAlpha = 1;
         } });

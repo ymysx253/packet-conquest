@@ -404,7 +404,9 @@ class World {
     const live = this.players.get(id);
     if (live) {
       const look = live.team && this.teamLooks.get(live.team);
-      const v = { ownerTeam: live.team || null, ownerColor: look && look.style && look.style.fill ? look.style.fill : live.color || null };
+      const st = look && look.style;
+      // チームの見た目(2026-10-19 ユーザー指摘): 印の線 = 枠の色、印の中 = 背景色、名前 = 文字の色
+      const v = { ownerTeam: live.team || null, ownerColor: st && st.fill ? st.fill : live.color || null, ...(st && st.frame ? { ownerFrame: st.frame, ownerText: st.text || null } : {}) };
       this.ownerLooks.set(id, v);
       return v;
     }
@@ -419,7 +421,7 @@ class World {
     if (p.team) {
       const members = await this.store.teamMembers(p.team, TEAM_MAX_MEMBERS);
       const look = this.teamLooks.get(p.team);
-      for (const m of members) if (!this.players.has(m.id)) this.ownerLooks.set(m.id, { ownerTeam: p.team, ownerColor: look && look.style && look.style.fill ? look.style.fill : m.color || null });
+      for (const m of members) if (!this.players.has(m.id)) this.ownerLooks.set(m.id, { ownerTeam: p.team, ownerColor: look && look.style && look.style.fill ? look.style.fill : m.color || null, ...(look && look.style && look.style.frame ? { ownerFrame: look.style.frame, ownerText: look.style.text || null } : {}) });
       ids = [...new Set([p.id, ...members.map((m) => m.id)])];
     }
     const docs = (await this.store.nodesOwnedByAny(ids)).filter((d) => d.status !== 'hidden');
