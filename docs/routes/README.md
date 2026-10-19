@@ -1,6 +1,6 @@
 # 航路の取り込みの記録
 
-更新: 2026-10-18(`tools/import-routes.js` が書く)。形式は `docs/DATA-FORMAT.md` 第 5 章。
+更新: 2026-10-19(`tools/import-routes.js` が書く)。形式は `docs/DATA-FORMAT.md` 第 5 章。
 
 ## 空路(src-mlit-air-stats、2025 年)
 

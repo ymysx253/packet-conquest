@@ -70,7 +70,7 @@
   function onMessage(m) {
     switch (m.t) {
       case 'welcome':
-        S.me = m.id; S.token = m.token; S.joined = true; S.home = m.home; S.spawn = m.spawn; S.movedAt = m.movedAt || null; S.mine.clear();
+        S.me = m.id; S.token = m.token; S.joined = true; S.home = m.home; S.spawn = m.spawn; S.questionRanges = m.questionRanges || null; S.movedAt = m.movedAt || null; S.mine.clear();
         $('areaChip').textContent = m.area || '日本';
         S.team = m.team ? { id: m.team, name: m.teamName } : null; S.cooldownUntil = m.cooldownUntil || 0; S.cooldownMs = Math.max(4000, S.cooldownUntil - Date.now());
         $('teamPanel').hidden = false; renderTeam();
@@ -173,7 +173,7 @@
         // 開始地点にできない(Lv1 でない駅・名所)。理由と、近くの開始地点にできるものを出す(2026-10-19)
         li.className = 'disabled';
         const sm = document.createElement('small');
-        sm.textContent = `Lv${r.level} の${r.genre === 'station' ? '駅' : '場所'}からは始められません。` + (r.near && r.near.length ? '近くなら:' : 'Lv1 の駅か町・字を選んでください');
+        sm.textContent = `Lv${r.level} の${r.genre === 'station' ? '駅' : '場所'}からは始められません。` + (r.near && r.near.length ? '近くなら:' : '町・字か、ふつうの駅(Lv10)を選んでください');
         li.append(name, sm);
         for (const x of r.near || []) {
           const b = document.createElement('button'); b.type = 'button'; b.className = 'near';
@@ -193,11 +193,14 @@
     if (!m.results.length) { const li = document.createElement('li'); li.textContent = '見つかりません(駅名は「駅」なしでも探せます)'; ul.replaceChildren(li); }
     ul.hidden = false;
   }
-  // 開始地点にできるもの(2026-10-19 決定): Lv1 の駅と町・字だけ。サーバーの startable と同じ
-  const startableNode = (n) => !!n && !n.isPlayerNode && n.hackable !== false && (n.genre === 'station' || n.genre === 'town') && n.level === 1;
+  // 開始地点にできるもの(2026-10-19 決定): 町・字(Lv1〜9)と、ふつうの駅(Lv10)だけ。サーバーの startable と同じ
+  const startableNode = (n) => !!n && !n.isPlayerNode && n.hackable !== false && (n.genre === 'town' || (n.genre === 'station' && n.level <= 10));
+  // 問題のあるレベル(サーバーが welcome で送る範囲)。問題の無いレベルの拠点は、線がつながっていても占領・強化できない(2026-10-19)
+  const hasQuestion = (lv) => (S.questionRanges || [[1, 999]]).some(([a, b]) => lv >= a && lv <= b);
+  const attackLevelOf = (n) => { const base = Math.max(1, n.level) + (n.defense || 0); return n.owner ? Math.max(4, base) : base; };
   const startRefusal = (n) => (n.isPlayerNode || n.hackable === false)
-    ? 'そこは開始地点にできません。Lv1 の駅か町・字を選んでください'
-    : `${n.name}(Lv${n.level})からは始められません。Lv1 の駅か町・字を選んでください(町・字は地図を拡大すると出ます)`;
+    ? 'そこは開始地点にできません。町・字か、ふつうの駅(Lv10)を選んでください'
+    : `${n.name}(Lv${n.level})からは始められません。町・字か、ふつうの駅(Lv10)を選んでください(町・字は地図を拡大すると出ます)`;
   function setStart(r) {
     S.start = { id: r.id, name: r.name };
     $('startInput').value = r.name;
@@ -215,7 +218,7 @@
   $('moveBtn').onclick = () => {
     if (!S.joined) return;
     if (S.movedAt && now() - S.movedAt < 24 * 3600 * 1000) { toast(`引っ越しは 1 日に 1 回までです(あと ${Math.ceil((24 * 3600 * 1000 - (now() - S.movedAt)) / 3600000)} 時間)`); return; }
-    S.moving = true; $('pickBarText').textContent = '引っ越し先の Lv1 の駅か町・字をタップしてください(町・字は拡大すると出ます。所有拠点は残りますが、線がつながるまで広げられません)'; $('pickBar').hidden = false;
+    S.moving = true; $('pickBarText').textContent = '引っ越し先の町・字か、ふつうの駅をタップしてください(町・字は拡大すると出ます。所有拠点は残りますが、線がつながるまで広げられません)'; $('pickBar').hidden = false;
   };
 
   // ---------- 参加 ----------
@@ -435,7 +438,7 @@
       return;
     }
     if (S.picking) {
-      // 開始地点を地図から選ぶ: Lv1 の駅と町・字だけ(2026-10-19。判定はサーバーでもする)
+      // 開始地点を地図から選ぶ: 町・字とふつうの駅だけ(2026-10-19。判定はサーバーでもする)
       if (!n) return;
       if (!startableNode(n)) { toast(startRefusal(n)); return; }
       setStart({ id: n.id, name: n.name, area: n.area }); endPick();
@@ -447,6 +450,8 @@
     renderSelected();
     const actionable = !S.overview && (canAttack(n.id) || n.owner === S.me);
     if (!actionable) return;
+    if (!n.isPlayerNode && n.owner !== S.me && !hasQuestion(attackLevelOf(n))) { toast(`Lv${attackLevelOf(n)} の問題はまだありません。この拠点はまだ占領できません`); return; }
+    if (n.owner === S.me && !n.isPlayerNode && !hasQuestion(Math.max(4, Math.max(1, n.level) + (n.defense || 0) + 1))) { toast('これ以上強化できません(次のレベルの問題がまだありません)'); return; }
     if (now() < S.cooldownUntil) { toast('不正解のため通信が止まっています'); return; }
     send({ t: 'ask', nodeId: n.id });
   }
@@ -535,7 +540,7 @@
     const owner = n.owner ? playerById(n.owner) : null;
     $('npName').textContent = n.name;
     $('npMeta').textContent = [n.isPlayerNode ? 'プレイヤーの拠点' : GENRE_LABELS[n.genre] || '', n.area || ''].filter(Boolean).join(' ・ ');
-    $('npLevel').textContent = `Lv${n.level}${n.defense ? `(+${n.defense} 強化 → 出題 Lv${n.level + n.defense})` : ''}`;
+    $('npLevel').textContent = `Lv${n.level}${n.defense ? `(+${n.defense} 強化 → 出題 Lv${n.level + n.defense})` : ''}` + (!n.isPlayerNode && n.hackable !== false && !hasQuestion(attackLevelOf(n)) ? '(このレベルの問題は準備中。まだ占領できません)' : '');
     $('npValue').textContent = `${n.value}点`;
     $('npCompany').hidden = $('npCompanyLabel').hidden = !n.company;
     if (n.company) $('npCompany').textContent = `${n.company}(命名権など。ハック不可)`;
@@ -820,7 +825,7 @@
       const r = radiusOf(n) * grow;
       const owner = n.owner ? colorOf(n.owner) || C.strong : null;
       const ring = n.isPlayerNode ? r : SH.outerRadius(n.level, r);
-      if (!S.overview && canAttack(n.id)) {
+      if (!S.overview && canAttack(n.id) && hasQuestion(attackLevelOf(n))) {
         ctx.strokeStyle = C.accent; ctx.globalAlpha = 0.45 + 0.55 * pulse; ctx.lineWidth = 5;
         ctx.beginPath(); ctx.arc(p.x, p.y, ring + 6, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1;
       }
@@ -921,7 +926,7 @@
     }
     if (S.overview) {
       ctx.fillStyle = C.muted; ctx.font = '600 12px "BIZ UDPGothic", sans-serif'; ctx.textAlign = 'left';
-      ctx.fillText(`広域表示: Lv${{ 1: 2, 2: 4, 3: 50, 4: 400 }[S.viewZ] || ''} 以上の拠点と、地域の支配。拡大すると全部出ます`, 12, 22);
+      ctx.fillText(`広域表示: Lv${{ 1: 30, 2: 100, 3: 250, 4: 400 }[S.viewZ] || ''} 以上の拠点と、地域の支配。拡大すると全部出ます`, 12, 22);
     }
   }
   function nodeAt(pt) {

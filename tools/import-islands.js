@@ -194,7 +194,7 @@ const hackableNodes = allNodes.filter((n) => n.hackable !== false);
     }
     return best;
   };
-  const levelOf = (sl) => (sl >= 40 ? 5 : sl >= 25 ? 4 : sl >= 15 ? 3 : sl >= 8 ? 2 : 1);
+  const { fameLevel: levelOf } = require('./levels'); // 知名度 → Lv15〜70(新しい物差し)
   let added = 0; const filled = []; const still = [];
   for (const g of empty) {
     const hits = [];

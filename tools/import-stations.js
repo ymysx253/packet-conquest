@@ -29,25 +29,7 @@ const TEMPLATE_FILE = path.join(DATA, 'tokyo.json');
 
 // 手で決めるレベル(主要ターミナルと象徴的な駅)。無い駅は路線数から決める。
 // 都道府県ごとに分ける(同名の駅が別の県にあるため。例: 東京の高松駅と香川の高松駅。2026-10-19)
-const TERMINALS_BY_PREF = {
-  tokyo: { 大手町: 5, 東京: 4, 新宿: 4, 池袋: 4, 渋谷: 4, 品川: 4, 上野: 4, 霞ケ関: 4, 霞ヶ関: 4, 霞が関: 4,
-    秋葉原: 3, 北千住: 3, 立川: 3, 八王子: 3, 町田: 3, 吉祥寺: 3, 新橋: 3, 有楽町: 3, 錦糸町: 3, 蒲田: 3, 中野: 3, 高田馬場: 3 },
-  kanagawa: { 横浜: 4, 川崎: 3, 武蔵小杉: 3, 新横浜: 3, 藤沢: 3, 大船: 3, 小田原: 3, 海老名: 3 },
-  chiba: { 千葉: 4, 船橋: 3, 西船橋: 3, 柏: 3, 松戸: 3, 津田沼: 3, 成田空港: 3 },
-  saitama: { 大宮: 4, 浦和: 3, 川越: 3, 所沢: 3, 熊谷: 3 },
-  ibaraki: { 水戸: 3, つくば: 3, 土浦: 3 }, tochigi: { 宇都宮: 3, 小山: 3 }, gunma: { 高崎: 3, 前橋: 3 },
-  hokkaido: { 札幌: 4, さっぽろ: 3, 大通: 3, 新千歳空港: 3, 旭川: 3, 函館: 3, 新函館北斗: 3, 釧路: 3, 帯広: 3 },
-  aomori: { 青森: 3, 新青森: 3, 八戸: 3 }, iwate: { 盛岡: 3 }, miyagi: { 仙台: 4 }, akita: { 秋田: 3 }, yamagata: { 山形: 3 }, fukushima: { 福島: 3, 郡山: 3 },
-  niigata: { 新潟: 3 }, toyama: { 富山: 3 }, ishikawa: { 金沢: 3 }, fukui: { 福井: 3 }, yamanashi: { 甲府: 3 }, nagano: { 長野: 3, 松本: 3 },
-  gifu: { 岐阜: 3 }, shizuoka: { 静岡: 3, 浜松: 3 }, aichi: { 名古屋: 4, 栄: 3, 金山: 3, 中部国際空港: 3, 豊橋: 3 },
-  mie: { 津: 3, 四日市: 3 }, shiga: { 大津: 3, 草津: 3 }, kyoto: { 京都: 4, 烏丸: 3, 四条: 3, 河原町: 3 },
-  osaka: { 大阪: 4, 梅田: 4, 大阪梅田: 4, 新大阪: 4, 難波: 3, なんば: 3, 天王寺: 3, 大阪阿部野橋: 3, 京橋: 3, 鶴橋: 3, 本町: 3, 淀屋橋: 3, 関西空港: 3 },
-  hyogo: { 三ノ宮: 4, 神戸三宮: 4, 三宮: 3, 神戸: 3, 新神戸: 3, 姫路: 3, 尼崎: 3 }, nara: { 奈良: 3, 大和西大寺: 3 }, wakayama: { 和歌山: 3 },
-  tottori: { 鳥取: 3 }, shimane: { 松江: 3 }, okayama: { 岡山: 3 }, hiroshima: { 広島: 3 }, yamaguchi: { 新山口: 3, 下関: 3 },
-  tokushima: { 徳島: 3 }, kagawa: { 高松: 3 }, ehime: { 松山: 3 }, kochi: { 高知: 3 },
-  fukuoka: { 博多: 4, 天神: 3, '西鉄福岡(天神)': 3, 小倉: 3, 福岡空港: 3 }, saga: { 佐賀: 3 }, nagasaki: { 長崎: 3 }, kumamoto: { 熊本: 3 },
-  oita: { 大分: 3 }, miyazaki: { 宮崎: 3 }, kagoshima: { 鹿児島中央: 3 }, okinawa: { 那覇空港: 3, 県庁前: 3 },
-};
+const { TERMINALS_BY_PREF, stationLevel } = require('./levels'); // 主要駅の表とレベルの式(2026-10-19 に新しい物差しへ。docs/LEVEL-PLAN.md)
 const TERMINALS = TERMINALS_BY_PREF[prefId] || {};
 // ゲーム内の役割を手で決める駅(既定は HUB)
 const KIND_OVERRIDES_BY_PREF = {
@@ -202,9 +184,8 @@ for (const g of [...groups.values()].sort((a, b) => a.code.localeCompare(b.code)
   const region = regionByCode.get(areaCode);
   const lineCount = g.lines.size;
   const name = `${displayName(g.name)}${g.suffix || ''}`;
-  let level = lineCount >= 4 ? 3 : lineCount >= 2 ? 2 : 1;
-  if (TERMINALS[baseName(g.name)]) level = TERMINALS[baseName(g.name)];
-  else if (levelByName[name] && levelByName[name] > level) level = levelByName[name];
+  let level = stationLevel(lineCount, TERMINALS[baseName(g.name)] || 0);
+  if (levelByName[name] && levelByName[name] > level) level = levelByName[name]; // 前の取り込みで手で上げたレベルは残す
   const kind = KIND_OVERRIDES[baseName(g.name)] || kindByName[name] || 'HUB';
   imported.push({ id: `st-${g.code}`, name, genre: 'station', kind, area: region.name, region: region.id, lat: Number(lat.toFixed(5)), lon: Number(lon.toFixed(5)), level, value: level, lines: [...g.lines].sort() });
 }

@@ -75,7 +75,8 @@ const TILE_LAT = 0.025;
 const TILE_LON = 0.03;
 const ZOOMS = [0, 1, 2, 3, 4];
 // 段ごとに表示・読み込みする最小レベル(DESIGN.md 第 13 章の表)
-const MIN_LEVEL_BY_Z = { 0: 1, 1: 2, 2: 4, 3: 50, 4: 400 };
+// 縮小の段ごとに出す拠点のレベルの下限(2026-10-19 に新しい物差しへ。docs/LEVEL-PLAN.md): 段 1 は乗り換え駅・港・有名な名所、段 2 は空港・主要駅、段 3 は各県一の空港・城・庁舎、段 4 は庁舎と国の象徴
+const MIN_LEVEL_BY_Z = { 0: 1, 1: 30, 2: 100, 3: 250, 4: 400 };
 const tileSize = (z) => ({ lat: TILE_LAT * 4 ** z, lon: TILE_LON * 4 ** z });
 const tileKey = (z, y, x) => `t${z}:${y}:${x}`;
 const tileOf = (lat, lon, z = 0) => { const s = tileSize(z); return tileKey(z, Math.floor(lat / s.lat), Math.floor(lon / s.lon)); };

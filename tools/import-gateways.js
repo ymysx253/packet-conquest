@@ -40,7 +40,7 @@ const RESTRICTED = [[24.72, 24.82, 141.26, 141.37], [24.27, 24.31, 153.96, 154.0
 const NORTHERN_BOX = [43.0, 46.0, 145.4, 149.0]; // 北方領土のおおよその範囲(根室半島の先より東)
 
 const distKm = (a, b) => { const r = (d) => (d * Math.PI) / 180; const dLat = r(b.lat - a.lat), dLon = r(b.lon - a.lon); const h = Math.sin(dLat / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dLon / 2) ** 2; return 6371 * 2 * Math.asin(Math.sqrt(h)); };
-const levelOf = (sl) => (sl >= 40 ? 5 : sl >= 25 ? 4 : sl >= 15 ? 3 : sl >= 8 ? 2 : 1);
+const { fameLevel: levelOf } = require('./levels'); // 知名度 → Lv15〜70(新しい物差し)
 const restricted = (p) => RESTRICTED.some(([s, n, w, e]) => p.lat >= s && p.lat <= n && p.lon >= w && p.lon <= e) || (p.lat >= NORTHERN_BOX[0] && p.lat <= NORTHERN_BOX[1] && p.lon >= NORTHERN_BOX[2] && p.lon <= NORTHERN_BOX[3] && p.lon > 145.85);
 
 function sparql(query) {
@@ -193,7 +193,7 @@ function regionAt(p) {
     // 「前泊(伊平屋)」のように島の名前が括弧で付くものは「前泊港(伊平屋)」にする
     const paren = /^(.+?)[(（](.+)[)）]$/.exec(sp.name);
     const name = paren ? `${paren[1].replace(/港$/, '')}港(${paren[2]})` : (/港$/.test(sp.name) ? sp.name : `${sp.name}港`);
-    const level = gatewayLevel('port', name, 1);
+    const level = gatewayLevel('port', name, 0); // 知名度が分からないので港の最低(Lv30)
     const id = 'pt-s' + crypto.createHash('sha256').update(`${SEA_SOURCE}|${sp.key}`).digest('hex').slice(0, 10);
     const n = addNode({ id, name, genre: 'port', kind: 'GW', lat: Number(sp.lat.toFixed(5)), lon: Number(sp.lon.toFixed(5)), level, value: level,
       codes: { ext: [ext] }, src: SEA_SOURCE, gateway: { type: 'port', scope: 'domestic' } });

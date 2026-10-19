@@ -26,7 +26,8 @@ const REGIONS = JSON.parse(fs.readFileSync(path.join(DATA, 'regions.json'), 'utf
 // 対象は地域マスターで nodeFile を持つ都道府県のファイル全部(都県境をまたぐ路線のつながりを作るため、まとめて計算する)
 const NODE_FILES = REGIONS.regions.filter((x) => x.nodeFile).map((x) => path.join(DATA, `${x.nodeFile}.json`));
 const TODAY = '2026-10-19';
-const LANDMARK_MAX_LINKS = 8; // 名所のつながりの上限(レベルが 8 を超える象徴拠点でも 8 本まで)
+const LANDMARK_MAX_LINKS = 8;
+const { landmarkLinkCount } = require('./levels'); // 名所のつながりの上限(レベルが 8 を超える象徴拠点でも 8 本まで)
 
 const distKm = (a, b) => { const R = 6371, toRad = (d) => (d * Math.PI) / 180; const dLat = toRad(b.lat - a.lat), dLon = toRad(b.lon - a.lon); const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLon / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
 const vkey = (c) => `${c[0].toFixed(6)},${c[1].toFixed(6)}`;
@@ -130,7 +131,7 @@ for (const n of nodes) {
   const cy = Math.floor(n.lat * 20), cx = Math.floor(n.lon * 20);
   const cands = [];
   for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) for (const s of sGrid.get(`${cy + dy}:${cx + dx}`) || []) { const d = distKm(n, s); if (d <= LANDMARK_MAX_KM) cands.push({ s, d }); }
-  const near = cands.sort((a, b) => a.d - b.d).slice(0, Math.min(LANDMARK_MAX_LINKS, Math.max(1, n.level)));
+  const near = cands.sort((a, b) => a.d - b.d).slice(0, Math.min(LANDMARK_MAX_LINKS, landmarkLinkCount(n.level))); // 古い物差しと同じ本数(tools/levels.js)
   if (!near.length) landmarkAlone++;
   for (const { s } of near) { link(n.id, s.id); landmarkEdges++; }
 }

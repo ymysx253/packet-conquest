@@ -10,7 +10,7 @@
 // 決まり(2026-10-18 ユーザー決定):
 //   - 丁目は分けない。「銀座一丁目」〜「銀座八丁目」は「銀座」1 つ(市区町村コード + 町の番号 KIHON1 でまとめる)
 //   - 同じ町の番号に名前の違う字がまとまっているときは、名前の先頭の共通部分(「大字平井谷の入」「大字平井本宿」→「平井」)。共通部分が無ければ字ごとに分ける
-//   - 占領できる(ハック可)。基礎レベル Lv1。地域の支配の数に入る。開始地点にも選べる
+//   - 占領できる(ハック可)。基礎レベルは人口で Lv1〜9(2026-10-19。tools/levels.js)。地域の支配の数に入る。開始地点にも選べる
 //   - 線は、境界が接している町・字どうし(borders)と、町・字の中にある駅・名所(contains)。つなぐのは tools/import-links.js
 //   - 水面・河川敷は入れない。米軍・自衛隊の基地、皇居、立ち入りが制限された島は非公開(status: hidden)で入れる
 //   - id は tw-<市区町村コード 5 桁>-<まとめた区画のうち最小の小地域コード 6 桁>(国勢調査のコードから決まるので、入れ直しても変わらない)
@@ -23,6 +23,7 @@ if (!gmlDir) { console.error('使い方: node tools/import-towns.js <e-Stat 小�
 const ROOT = path.join(__dirname, '..');
 const DATA = path.join(ROOT, 'server/map/data');
 const SOURCE = 'src-estat-boundary-2020';
+const { townLevel } = require('./levels'); // 人口 → Lv1〜9(2026-10-19。tools/levels.js)
 const TODAY = new Date().toISOString().slice(0, 10);
 // 入れない区画(名前): 河川敷、湖・水面の扱いのもの
 const SKIP_NAME = /河川敷|水面|水域|無番地/; // 無番地 = 番地の無い国有地などの区画
@@ -310,7 +311,7 @@ for (const t of keep) {
   if (!f) { report.noRegion.push(`${t.code5} ${t.name}: 都道府県のファイルが無い`); continue; }
   if (!f.T.kinds.TOWN) f.T.kinds.TOWN = '町・字';
   if (Array.isArray(f.T.genres) && !f.T.genres.includes('town')) f.T.genres.push('town');
-  const node = { id: t.id, name: t.display, genre: 'town', kind: 'TOWN', area: t.region.name, region: t.region.id, lat: Number(t.lat.toFixed(5)), lon: Number(t.lon.toFixed(5)), level: 1, value: 1,
+  const node = { id: t.id, name: t.display, genre: 'town', kind: 'TOWN', area: t.region.name, region: t.region.id, lat: Number(t.lat.toFixed(5)), lon: Number(t.lon.toFixed(5)), level: townLevel(t.jinko), value: townLevel(t.jinko),
     codes: { ext: [{ scheme: SOURCE, value: `${t.code5}${t.sArea}` }] }, src: SOURCE };
   if (t.hidden) { node.status = 'hidden'; node.hiddenReason = t.hidden; }
   else {

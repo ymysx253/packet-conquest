@@ -55,7 +55,7 @@ async function solve(world, p, nodeId) {
   // 広域表示: 粗いタイルで高いレベルだけ
   await w.setView(a, [tileOf(home.lat, home.lon, 2)], 2);
   const ov = last(wsA, 'tiles');
-  assert.ok(ov.overview && ov.minLevel === 4 && ov.nodes.every((n) => n.level >= 4), '広域は Lv4 以上だけ');
+  assert.ok(ov.overview && ov.minLevel === 100 && ov.nodes.every((n) => n.level >= 100), '広域(段 2)は Lv100 以上だけ(2026-10-19 の物差し)');
   assert.ok(Array.isArray(ov.regions) && ov.regions.length > 0 && ov.regions.every((g) => g.tier === 6 && typeof g.lat === 'number'), '広域には区・市の支配状況が付く');
   assert.ok(ov.regions.some((g) => g.name === '千代田区') && ov.regions.every((g) => g.controller === null), 'まだ誰も支配していない');
   await w.setView(a, view, 0);
@@ -270,11 +270,11 @@ async function solve(world, p, nodeId) {
 
   // 開始地点(第 3.1 節): 名前で検索でき、選んだ駅のまわりに拠点が生まれ、その駅とつながる。指定が無ければ東京駅
   const tokyoSt = NODES.find((n) => n.id === DEFAULT_START_ID); // 既定の開始地点: 東京駅の隣の町・字「丸の内」(2026-10-19)
-  assert.ok(tokyoSt.name === '丸の内' && tokyoSt.genre === 'town' && tokyoSt.level === 1, '既定の開始地点は丸の内');
+  assert.ok(tokyoSt.name === '丸の内' && tokyoSt.genre === 'town' && tokyoSt.level <= 9, '既定の開始地点は丸の内(町・字)');
   assert.strictEqual(a.startNodeId, tokyoSt.id, '指定が無ければ丸の内');
   assert.ok(distanceKm(home, tokyoSt) <= 1.05 && w.adj.get(home.id).has(tokyoSt.id), '丸の内のまわりに生まれ、丸の内とつながる');
-  const found = await w.search('japan', '高尾');
-  assert.ok(found.some((r) => r.name === '高尾駅') && found.every((r) => typeof r.starters === 'number'), '名前の一部で検索できる');
+  const found = await w.search('japan', '高尾山口'); // 町・字が入って「高尾」だけでは同じ名前の町が多い
+  assert.ok(found.some((r) => r.name === '高尾山口駅') && found.every((r) => typeof r.starters === 'number'), '名前の一部で検索できる');
   assert.strictEqual((await w.search('japan', '浅草寺')).length, 0, 'ハック不可の寺社は開始地点にできない');
   const takao = NODES.find((n) => n.name === '高尾山口駅' && n.region.startsWith('tokyo-')); // Lv1 の駅(開始地点にできる)
   const t1 = await w.join(fakeWs(), 'たかお', null, takao.id);
@@ -290,7 +290,7 @@ async function solve(world, p, nodeId) {
   assert.ok(bigSt.level > 1);
   await assert.rejects(() => w.join(fakeWs(), 'おおきい', null, bigSt.id), /始められません/, 'Lv1 でない駅からは始められない');
   const sr = (await w.search('japan', '東京駅')).find((r) => r.id === bigSt.id);
-  assert.ok(sr && sr.startable === false && sr.near.length >= 1 && sr.near.every((x) => x.level === 1 && ['station', 'town'].includes(x.genre)), '検索では選べない理由と近くの候補');
+  assert.ok(sr && sr.startable === false && sr.near.length >= 1 && sr.near.every((x) => x.genre === 'town' || (x.genre === 'station' && x.level <= 10)), '検索では選べない理由と近くの候補');
   assert.ok((await w.search('japan', '丸の内')).some((r) => r.id === DEFAULT_START_ID && r.startable), '丸の内は選べる');
   const before2 = w.players.size;
   await assert.rejects(() => w.join(fakeWs(), 'だめ', null, tHome.id), /選べません/, 'プレイヤーの拠点からは始められない');
@@ -398,7 +398,7 @@ async function solve(world, p, nodeId) {
   const rp = await w.join(fakeWs(), 'こうろ', null, tokyoSt.id);
   await w.ensureTiles(tilesAround(hnd.t0, 1)); await w.ensureTiles(tilesAround(cts.t0, 1));
   const H = w.nodes.get(hnd.id), C2 = w.nodes.get(cts.id);
-  assert.ok(H && C2 && H.level === 10, '羽田空港は国際線の拠点 Lv10');
+  assert.ok(H && C2 && H.level === 500, '羽田空港は国際線の拠点 Lv500');
   // 実際の航路(国土交通省 航空輸送統計 2025 年。server/map/data/routes/)に羽田–新千歳がある
   assert.ok(H.routes.some((r) => r.to === C2.id && r.mode === 'air' && r.metrics && r.metrics.passengers > 1000000), '羽田–新千歳の空路(年間の旅客数つき)');
   assert.ok(C2.routes.some((r) => r.to === H.id), '航路は接続なので両向き');
@@ -413,6 +413,25 @@ async function solve(world, p, nodeId) {
   [H.routes, C2.routes] = saved;
   H.owner = null; rp.reach = null;
   assert.ok(!(await w.canAttack(rp.id, C2.id)), '空港を手放すと航路の先は攻撃できない');
+
+  // 問題の無いレベルの拠点は、線がつながっていても占領できない(2026-10-19)。羽田(Lv500)を航路で攻められる状態にして確かめる
+  {
+    const { hasGenerator } = require('../server/questions');
+    assert.ok(!hasGenerator(500) && hasGenerator(10) && hasGenerator(30) && !hasGenerator(31));
+    const qp = await w.join(fakeWs(), 'もんだい', null, tokyoSt.id);
+    const Hn = w.nodes.get(hnd.id), Cn = w.nodes.get(cts.id);
+    Hn.owner = qp.id; w.addEdge(qp.homeNodeId, Hn.id, w.nodes.get(qp.homeNodeId).t0); qp.reach = null;
+    assert.ok(await w.canAttack(qp.id, Cn.id), '線(航路)はつながっている');
+    await assert.rejects(() => w.ask(qp, Cn.id), /問題はまだありません/, 'Lv250 以上の問題は無いので占領できない');
+    // 強化は、上げた先のレベルに問題があるときだけ(Lv30 → 31 は問題が無い)
+    const lv30 = [...w.nodes.values()].find((n) => !n.isPlayerNode && n.hackable !== false && n.status === 'public' && n.level === 30);
+    if (lv30) {
+      const prevOwner = lv30.owner, prevDef = lv30.defense; lv30.owner = qp.id; lv30.defense = 0;
+      await assert.rejects(() => w.ask(qp, lv30.id), /これ以上強化できません/, 'Lv31 の問題が無いので Lv30 からは強化できない');
+      lv30.owner = prevOwner; lv30.defense = prevDef;
+    }
+    Hn.owner = null; qp.reach = null;
+  }
 
   // 参加前の人も地図を読める(開始地点を地図から選ぶため)。配信先にはならない
   const gws = fakeWs();

@@ -17,7 +17,7 @@ const TOKYO_MASTER = JSON.parse(require('fs').readFileSync(require('path').join(
 const SPAWN_CENTER = TOKYO_MASTER.spawn ? { lat: TOKYO_MASTER.spawn.lat, lon: TOKYO_MASTER.spawn.lon, radiusKm: TOKYO_MASTER.spawn.radiusKm, name: TOKYO_MASTER.spawn.name } : null;
 const { nodeDocs, regionDocs } = require('./map/load');
 const { distanceKm, tilesAround, tileOf, tileFields, parseTile, tileSize, addrOf, MIN_LEVEL_BY_Z } = require('./map/geo');
-const { getQuestion } = require('./questions');
+const { getQuestion, hasGenerator, QUESTION_RANGES } = require('./questions');
 const { judge } = require('./questions/normalize');
 const { dayOf, noopEvents } = require('./events');
 
@@ -42,8 +42,9 @@ const TICK_CAP_MS = 5 * 60 * 1000;          // 稼働時計: 1 回の刻みで�
 const HOME_LINKS = 2;                   // プレイヤーの拠点がつながる近隣拠点の数(開始地点 + 近い 1 つ)
 const SPAWN_RINGS_KM = [0.3, 0.6, 1.0];  // 開始地点のまわりに置く半径。空きがなければ広げ、1 km でも無ければ満員(第 3.1 節)
 const SPAWN_TRIES = 80;                 // 半径ごとの試行回数
-// 開始地点にできるもの(2026-10-19 決定): Lv1 の駅と町・字だけ。大きな駅・空港・名所からは始めない(誰でも同じ条件で始める)
-const startable = (n) => !!n && !n.isPlayerNode && n.hackable !== false && (n.status || 'public') === 'public' && (n.genre === 'station' || n.genre === 'town') && n.level === 1;
+// 開始地点にできるもの(2026-10-19 決定): 町・字(Lv1〜9)と、ふつうの駅(Lv10)だけ。大きな駅・空港・名所からは始めない(誰でも同じ条件で始める)。
+// レベルの物差しを変えたとき(docs/LEVEL-PLAN.md)に「Lv1 の駅と町・字」から言い換えた(指す範囲は同じ)
+const startable = (n) => !!n && !n.isPlayerNode && n.hackable !== false && (n.status || 'public') === 'public' && ((n.genre === 'town') || (n.genre === 'station' && n.level <= 10));
 // 指定が無いときの開始地点: 東京駅の隣の町・字「丸の内」(東京駅は Lv4 なので開始地点にできない)
 const DEFAULT_START_ID = (TOKYO_MASTER.nodes.find((n) => n.name === '丸の内' && n.genre === 'town') || TOKYO_MASTER.nodes.find((n) => startable(n)) || TOKYO_MASTER.nodes[0]).id;
 const MIN_GAP_KM = 0.15;                // 拠点どうしの最小距離
@@ -397,7 +398,10 @@ class World {
   async search(country, q) {
     const text = String(q || '').trim().slice(0, 20);
     if (!text) return [];
-    const rows = await this.store.searchNodes(country, text, 10);
+    // 多めに取り、名前が完全に一致するもの → 前方一致 → 開始地点にできるもの → レベルの高い順に並べて 20 件(町・字は同じ名前が多く、レベルが低いので埋もれやすい)
+    const rank = (r) => (r.name === text || r.name.replace(/\(.*\)$/, '') === text ? 0 : r.name.startsWith(text) ? 1 : 2);
+    const rows = (await this.store.searchNodes(country, text, 50))
+      .sort((a, b) => rank(a) - rank(b) || (startable(b) - startable(a)) || (b.level - a.level)).slice(0, 20); // 町・字は同じ名前が多いので 20 件(候補に市区町村名が付く)
     const starters = await this.store.countStarters(rows.map((r) => r.id));
     const out = [];
     for (const r of rows) {
@@ -421,11 +425,11 @@ class World {
     let n = this.nodes.get(id);
     if (!n) { const d = await this.store.loadNode(id); if (d) n = this.adopt(d); }
     if (!n || n.isPlayerNode || n.hackable === false || n.status !== 'public' || n.country !== (p.country || this.country)) {
-      throw new Error('その開始地点は選べません。Lv1 の駅か町・字を選んでください');
+      throw new Error('その開始地点は選べません。町・字か、ふつうの駅を選んでください');
     }
     if (strict && !startable(n)) {
       const near = await this.nearStartable(n, 3);
-      throw new Error(`${n.name}(Lv${n.level})からは始められません。開始地点にできるのは Lv1 の駅か町・字です${near.length ? `(近くなら ${near.map((x) => x.name).join('、')})` : ''}`);
+      throw new Error(`${n.name}(Lv${n.level})からは始められません。開始地点にできるのは町・字か、ふつうの駅(Lv10)です${near.length ? `(近くなら ${near.map((x) => x.name).join('、')})` : ''}`);
     }
     return n;
   }
@@ -716,6 +720,10 @@ class World {
         : '自分の拠点とつながっている拠点だけ攻撃できます');
     }
     const level = this.levelFor(n, mode);
+    // 問題の無いレベルの拠点は占領も強化もできない(2026-10-19 決定。線はつながっていて選べるが、問題が出ない)
+    if (!hasGenerator(level)) throw new Error(mode === 'fortify' ? `この拠点の出題 Lv${level} の問題はまだありません。強化できません` : `Lv${level} の問題はまだありません。この拠点はまだ占領できません`);
+    // 強化は、上げた先のレベルに問題があるときだけ(問題の無いレベルまで上げて、誰にも攻められなくするのを防ぐ)
+    if (mode === 'fortify') { const next = Math.max(4, Math.min(MAX_LEVEL, level + 1)); if (!hasGenerator(next)) throw new Error(`これ以上強化できません(Lv${next} の問題がまだありません)`); }
     if (p.pending && p.pending.nodeId === nodeId && p.pending.mode === mode && p.pending.level === level) return p.pending.payload;
     const q = getQuestion({ level, node: n });
     const qid = newId();
@@ -955,7 +963,8 @@ class World {
     if (!home && p.startNodeId) { try { const s = await this.startNode(p); spawn = { ...spawn, lat: s.lat, lon: s.lon, name: s.name }; } catch { /* 選べない開始地点なら既定のまま */ } }
     return { t: 'welcome', id: p.id, token: p.token, name: p.name, country: p.country || this.country, startNodeId: p.startNodeId || null, movedAt: p.movedAt || null, area: this.areaNameOf(p),
       team: p.team || null, teamName: p.team ? (this.teamNames.get(p.team) || null) : null, cooldownUntil: p.cooldownUntil || 0,
-      home: home ? { id: home.id, lat: home.lat, lon: home.lon } : null, spawn };
+      home: home ? { id: home.id, lat: home.lat, lon: home.lon } : null, spawn,
+      questionRanges: QUESTION_RANGES }; // 問題のあるレベルの範囲(画面が、問題の無い拠点を光らせない・選んだときに理由を出す)
   }
 }
 

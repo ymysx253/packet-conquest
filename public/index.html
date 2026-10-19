@@ -34,7 +34,7 @@
       </div>
       <p class="map-hint">ホイールやピンチで拡大縮小、ドラッグで移動</p>
       <div class="pick-bar" id="pickBar" hidden>
-        <span id="pickBarText">開始地点にする Lv1 の駅か町・字をタップしてください(町・字は拡大すると出ます)</span>
+        <span id="pickBarText">開始地点にする町・字か、ふつうの駅をタップしてください(町・字は拡大すると出ます)</span>
         <button type="button" class="btn small" id="pickCancelBtn">やめる</button>
       </div>
     </div>
@@ -183,7 +183,7 @@
   <div class="sheet">
     <h2 class="sheet-title">パケット陣取り</h2>
     <p class="sheet-en">Packet Conquest</p>
-    <p class="lead">ネットワークの問題に正解して、自分のネットワークを隣の拠点へ広げていく陣取りゲームです。世界は1つ、制限時間はありません。日本全国の駅や町(Lv1)から始められます。</p>
+    <p class="lead">ネットワークの問題に正解して、自分のネットワークを隣の拠点へ広げていく陣取りゲームです。世界は1つ、制限時間はありません。日本全国の町や駅から始められます。</p>
 
     <form id="joinForm" class="join" autocomplete="off">
       <label for="nameInput">名前</label>
@@ -192,7 +192,7 @@
       <input id="codeInput" class="mono" maxlength="24" placeholder="空欄なら新しく始めます">
       <label for="countrySelect">登録国</label>
       <select id="countrySelect"><option value="japan">日本</option></select>
-      <label for="startInput">開始地点(Lv1 の駅か町・字の名前で検索。空欄なら丸の内)</label>
+      <label for="startInput">開始地点(町・字か、ふつうの駅の名前で検索。空欄なら丸の内)</label>
       <div class="row2">
         <input id="startInput" maxlength="20" placeholder="例: 丸の内、銀座、高尾山口駅">
         <button type="button" class="btn" id="pickMapBtn">地図から選ぶ</button>

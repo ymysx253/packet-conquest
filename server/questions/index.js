@@ -3,7 +3,8 @@
 //   Lv1〜3  サブネット計算(subnet.js の難易度 1〜3)
 //   Lv4〜10 アドレッシングの基礎知識(basics.js)
 //   Lv11〜  docs/questions/ の設計書に沿った生成器(calc.js 11〜20、vlsm.js 21〜30、transport.js 51〜60 …)。
-//          モジュールは { make(level, node, rng), RANGE: [lo, hi], VERSION } を公開する。無いレベルは Lv10 までの中で最も近いものを出し provisional を付ける
+//          モジュールは { make(level, node, rng), RANGE: [lo, hi], VERSION } を公開する。
+//          生成器の無いレベルの拠点は、ゲームでは占領も強化もできない(world.js の ask。2026-10-19)。getQuestion を直接呼ぶと Lv10 までの中で最も近いものを出し provisional を付ける
 // 答えはサーバーだけが持ち、クライアントには送らない(q.meta、accept、answerIndex も送らない)。
 
 const { makeQuestion } = require('./subnet');
@@ -21,7 +22,9 @@ for (const f of GENERATOR_FILES) {
 }
 const BASE_MAX = 10;
 const MAX_IMPLEMENTED = Math.max(BASE_MAX, ...BY_LEVEL.keys());
-const hasGenerator = (level) => level <= BASE_MAX || BY_LEVEL.has(level);
+const hasGenerator = (level) => level >= 1 && (level <= BASE_MAX || BY_LEVEL.has(level));
+// 問題のあるレベルの範囲 [[下, 上], …](画面に送る。問題の無いレベルの拠点は占領・強化できない。2026-10-19)
+const QUESTION_RANGES = (() => { const out = []; for (let lv = 1; lv <= 999; lv++) { if (!hasGenerator(lv)) continue; const last = out[out.length - 1]; if (last && last[1] === lv - 1) last[1] = lv; else out.push([lv, lv]); } return out; })();
 
 function getQuestion({ level, node, seed }) {
   const s = Number.isInteger(seed) ? seed >>> 0 : newSeed();
@@ -34,4 +37,4 @@ function getQuestion({ level, node, seed }) {
   return { ...q, level, seed: s, answerKind: 'choice', source: 'generated', provisional: level > BASE_MAX };
 }
 
-module.exports = { getQuestion, MAX_IMPLEMENTED, BY_LEVEL, hasGenerator };
+module.exports = { getQuestion, MAX_IMPLEMENTED, BY_LEVEL, hasGenerator, QUESTION_RANGES };
