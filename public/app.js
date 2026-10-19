@@ -523,7 +523,7 @@
     park: '公園・庭園', nature: '自然の名所', zoo_aquarium: '動物園・水族館・植物園', museum: '博物館・美術館', library: '図書館',
     theater: '劇場・ホール', stadium: 'スタジアム・競技場', heritage: '歴史的建造物', monument: '記念碑・広場', shrine_temple: '寺社',
     government: '官公庁', university: '大学・研究', market: '市場・商店街', convention: '展示場・会議場', complex: '複合施設',
-    observatory: '天文台', ix: '相互接続点', town: '町・字',
+    observatory: '天文台', ix: '相互接続点', town: '町・字', tourism: '観光地',
   };
   $('rankKind').onchange = renderPlayers;
   function renderPlayers() {
@@ -566,7 +566,9 @@
     if (!n) return;
     const owner = n.owner ? playerById(n.owner) : null;
     $('npName').textContent = n.name;
-    $('npMeta').textContent = [n.isPlayerNode ? 'プレイヤーの拠点' : GENRE_LABELS[n.genre] || '', n.area || ''].filter(Boolean).join(' ・ ');
+    // 観光地は細分(温泉・滝 …)を添える(tags の先頭。続けて指定・百選)
+    const genreLabel = (GENRE_LABELS[n.genre] || '') + (n.genre === 'tourism' && n.tags && n.tags[0] ? `(${n.tags[0]})` : '');
+    $('npMeta').textContent = [n.isPlayerNode ? 'プレイヤーの拠点' : genreLabel, n.tags && n.tags.length > 1 ? n.tags.slice(1).join('・') : '', n.area || ''].filter(Boolean).join(' ・ ');
     $('npLevel').textContent = `Lv${n.level}${n.defense ? `(+${n.defense} 強化 → 出題 Lv${n.level + n.defense})` : ''}` + (!n.isPlayerNode && n.hackable !== false && !hasQuestion(attackLevelOf(n)) ? '(このレベルの問題は準備中。まだ占領できません)' : '');
     $('npValue').textContent = `${n.value}点`;
     $('npCompany').hidden = $('npCompanyLabel').hidden = !n.company;

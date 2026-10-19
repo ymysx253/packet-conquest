@@ -21,7 +21,7 @@ const HIDDEN_REASONS = new Set(['military', 'restricted', 'disputed']);
 const DATA_DIR = path.join(__dirname, 'data');
 const LEVEL_MIN = 1, LEVEL_MAX = 999; // 1〜10 が基本(国は 10)。11〜999 は拡張用。形は public/shapes.js
 // 拠点に使ってよい名所のジャンル(docs/PLACES.md 第2章と同じ)
-const GENRES = new Set(['station', 'bus_terminal', 'airport', 'port', 'bridge', 'tower', 'park', 'nature', 'zoo_aquarium', 'museum', 'library', 'theater', 'stadium', 'heritage', 'monument', 'shrine_temple', 'government', 'university', 'market', 'convention', 'complex', 'observatory', 'ix', 'town']); // town = 町・字(2026-10-18。tools/import-towns.js)
+const GENRES = new Set(['station', 'bus_terminal', 'airport', 'port', 'bridge', 'tower', 'park', 'nature', 'zoo_aquarium', 'museum', 'library', 'theater', 'stadium', 'heritage', 'monument', 'shrine_temple', 'government', 'university', 'market', 'convention', 'complex', 'observatory', 'ix', 'town', 'tourism']); // town = 町・字(2026-10-18。tools/import-towns.js)、tourism = 観光地(2026-10-19。tools/import-tourism.js)
 const VALUE_MIN = 1, VALUE_MAX = 999;
 
 function fail(region, msg) { throw new Error(`拠点マスター ${region}: ${msg}`); }

@@ -305,6 +305,7 @@ class World {
       isPlayerNode: !!n.isPlayerNode, protectedUntil: n.protectedUntil || 0, hackable: n.hackable !== false, lines: n.lines || [],
       hits: n.hits || 1, progress: n.progress || {}, // 突破に必要な回数と、攻め手ごとの正解回数(第 14 章)
       company: n.company || null, // 命名権など企業名の施設の企業名
+      tags: n.tags && n.tags.length ? n.tags : undefined, // 細分と指定(観光地の「温泉」「特別名勝」など)
       ...(n.owner ? this.ownerLook(n.owner) : {}), // 持ち主のチームと色(自分・チーム・ほかの人を見分ける。2026-10-19)
       routes: n.routes && n.routes.length ? n.routes : undefined, // 航路(空港・港)。行き先 { to, mode, name, lat, lon }
     };

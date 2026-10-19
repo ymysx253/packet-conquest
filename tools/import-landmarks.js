@@ -70,7 +70,7 @@ const grid = new Map();
 const cell = (p) => `${Math.floor(p.lat * 200)}:${Math.floor(p.lon * 200)}`;
 for (const { T } of files.values()) {
   T.nodes = T.nodes.filter((n) => !n.id.startsWith('lm-'));
-  for (const n of T.nodes) { const k = cell(n); if (!grid.has(k)) grid.set(k, []); grid.get(k).push(n); }
+  for (const n of T.nodes) { if (n.id.startsWith('ts-')) continue; const k = cell(n); if (!grid.has(k)) grid.set(k, []); grid.get(k).push(n); } // 観光地(ts-、tools/import-tourism.js)は名所の後に入れるので比べない
 }
 const nearExisting = (p) => {
   const cy = Math.floor(p.lat * 200), cx = Math.floor(p.lon * 200);

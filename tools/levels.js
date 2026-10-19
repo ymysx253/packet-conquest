@@ -3,11 +3,13 @@
 // レベルは出題の難しさそのもの(docs/LEVELS.md)。国の象徴を 777 に置き、そこから段ごとに割り付ける。
 //
 //   国の象徴(国会議事堂) 777 / 首都の象徴(東京都庁) 600 / 国際線の拠点の空港 500 / 都道府県庁舎 400 / 各県で一番の城・塔 300
-//   各県で一番の空港 250 / 主要駅 200 / ほかの空港 150 / 乗り換え駅・港・有名な名所 30〜99 / ふつうの駅 10・ほかの名所 15〜25 / 町・字 1〜9
+//   各県で一番の空港 250 / 主要駅 200 / ほかの空港 150・各県で一番の観光地 150 / 乗り換え駅・港・有名な名所 30〜99 / ふつうの駅 10・ほかの名所 15〜25 / 町・字 1〜9
 
 const L = Object.freeze({
   NATIONAL_SYMBOL: 777, CAPITAL_SYMBOL: 600, HUB_AIRPORT: 500, PREF_OFFICE: 400, PREF_TOP_CASTLE: 300, TOWER: 300,
   PREF_TOP_AIRPORT: 250, MAIN_STATION: 200, AIRPORT: 150, PORT_MIN: 30, STATION: 10,
+  // 観光地(2026-10-19 ユーザー決定。tools/import-tourism.js): 世界遺産・日本三景・特別名勝 300、各都道府県で一番 150、指定・百選あり 30〜70、ほか 15〜25
+  TOURISM_NATIONAL: 300, TOURISM_PREF_TOP: 150, TOURISM_DESIGNATED_MIN: 30, TOURISM_PLAIN_MAX: 25,
 });
 
 // 名所の知名度(Wikidata の言語版の数)→ レベル。40 以上 70、25 以上 50、15 以上 30、8 以上 25、それ未満 15
