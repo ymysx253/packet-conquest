@@ -32,9 +32,10 @@
 
 * { box-sizing: border-box; }
 html, body { height: 100%; }
-/* 画面の高さに収める(2026-10-19 ユーザー指摘: ページの縦スクロールを出さない)。地図は残りの高さいっぱい、右の欄は欄の中だけスクロール */
+/* 画面の高さに収める(2026-10-19 ユーザー指摘: ページの縦スクロールを出さない)。地図は残りの高さいっぱい、右の欄は欄の中だけスクロール。
+   ゲームの画面(body.app)だけ。形の一覧(shapes.html)など同じ style.css を使うほかのページはふつうにスクロールする */
+body.app { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
 body {
-  display: flex; flex-direction: column; height: 100dvh; overflow: hidden;
   margin: 0;
   background: var(--bg);
   color: var(--ink);
@@ -120,7 +121,7 @@ body {
 .side { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .side > .panel { flex: 0 0 auto; }
 /* 凡例のダイアログ */
-.dlg { border: 0; border-radius: 16px; padding: 20px 22px; width: min(520px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); background: var(--surface); color: var(--ink); box-shadow: 0 20px 50px rgba(10, 20, 30, 0.25); }
+.dlg { overflow-y: auto; overscroll-behavior: contain; border: 0; border-radius: 16px; padding: 20px 22px; width: min(520px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); background: var(--surface); color: var(--ink); box-shadow: 0 20px 50px rgba(10, 20, 30, 0.25); }
 .dlg::backdrop { background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(2px); }
 .dlg-title { font: 22px/1.2 var(--font-display); margin: 0 0 10px; }
 .dlg h3 { margin: 14px 0 6px; }
