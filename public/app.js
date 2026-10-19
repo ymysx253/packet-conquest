@@ -851,7 +851,8 @@
         ctx.beginPath(); ctx.arc(p.x, p.y, ring + 4, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
       }
       const filled = !n.isPlayerNode && SH.isFilled(n.level);
-      const col = owner || (filled ? C.ink : C.strong);
+      // 持ち主のいない拠点は、塗りつぶしの形でも元の色(灰色)。黒(文字の色)は濃すぎる(2026-10-19 ユーザー指摘)
+      const col = owner || C.strong;
       const fa = fadeOf(n); // 縮小時は低いレベルほど薄く
       ctx.globalAlpha = fa;
       if (n.hackable === false) ctx.globalAlpha = 0.45 * fa;
