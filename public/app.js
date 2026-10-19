@@ -298,8 +298,10 @@
     fetch(`data/bounds/${pref}.json`).then((r) => (r.ok ? r.json() : null)).then((d) => {
       if (!d || !d.regions) return;
       for (const [id, g] of Object.entries(d.regions)) S.bounds.set(id, { id, name: g.name, pref, polys: projectPolys(g.polys) });
+      S.boundsReady.add(pref); // 海の塗り分けで、この県は細かい版を使う
     }).catch(() => { /* 境界が無くても遊べる */ });
   }
+  S.boundsReady = new Set(); // 細かい境界を読み終えた都道府県
   function loadCoarse() {
     if (S.coarse) return;
     S.coarse = new Map();
@@ -309,6 +311,7 @@
     }).catch(() => { /* 無くても遊べる */ });
   }
   loadBounds('tokyo'); // 開始地点の既定は東京
+  loadCoarse(); // 粗い全国版はいつも読む(海を水色にするとき、陸地の下地に使う。2026-10-19)
   // 湖・湾の形(2026-10-19): 薄い水色で塗る。全国で 1 ファイル(tools/import-towns.js が書く)
   S.water = [];
   fetch('data/water.json').then((r) => (r.ok ? r.json() : null)).then((d) => {
@@ -778,6 +781,28 @@
     const ratio = zoomRatio();
     const grow = V.w < 600 ? 1.15 : 1;
 
+    // 海(2026-10-19 ユーザー指摘: 湖と同じ色に): 下地を水色にして、陸地(区・市の面)を陸の色で塗る。
+    // 陸地は粗い全国版(約 1 km)を下地にし、読み込んである都道府県は細かい版で重ねる。全国版が届くまでは今までどおり(全部陸の色)
+    if (S.coarse && S.coarse.size) {
+      ctx.fillStyle = tok('--water') || '#D6ECFA'; ctx.fillRect(0, 0, V.w, V.h);
+      ctx.fillStyle = tok('--land') || '#F7F9FA';
+      const lo = toWorld(0, 0), hi = toWorld(V.w, V.h);
+      const detailed = !(S.overview && S.viewZ >= 3); // 細かい境界を使う倍率か
+      const fillLand = (set, coarse) => {
+        for (const b of set.values()) {
+          if (!b.polys[0] || !b.polys[0][0]) continue;
+          if (coarse && detailed && S.boundsReady.has(b.pref)) continue; // 細かい版を読んだ県は粗い版で塗らない(海岸が約 1 km ずれるため)
+          if (!b.bbox) { let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity; for (const ring of b.polys) for (const q of ring) { if (q.x < x0) x0 = q.x; if (q.x > x1) x1 = q.x; if (q.y < y0) y0 = q.y; if (q.y > y1) y1 = q.y; } b.bbox = [x0, y0, x1, y1]; }
+          if (b.bbox[2] < lo.x || b.bbox[0] > hi.x || b.bbox[3] < lo.y || b.bbox[1] > hi.y) continue;
+          ctx.beginPath();
+          for (const ring of b.polys) { for (let i = 0; i < ring.length; i++) { const q = toScreen(ring[i]); if (i) ctx.lineTo(q.x, q.y); else ctx.moveTo(q.x, q.y); } ctx.closePath(); }
+          ctx.fill('evenodd');
+        }
+      };
+      fillLand(S.coarse, true);
+      if (detailed) fillLand(S.bounds, false);
+    }
+
     // 区・市の境界: 支配者がいればその色で薄く塗る。縮小時は輪郭も濃く。z3 以上は粗い全国版
     const boundSet = S.overview && S.viewZ >= 3 && S.coarse ? S.coarse : S.bounds;
     if (boundSet && boundSet.size) {
@@ -818,7 +843,7 @@
       }
     }
 
-    // 航路(2026-10-19 ユーザー決定): 実際の空路・海路を、占領したときに曲線で出す(空路は青の弧、海路は水色で海の上を通る線)
+    // 航路(2026-10-19 ユーザー決定): 実際の空路・海路を、占領したときに曲線で出す(空路は紫の弧、海路はオレンジで海の上を通る線)
     //   片方の端を自分(切り替えで出すならチームも)が持つ → 点線(行き先を攻撃できる)/ 両端とも → 太い実線 / 空港・港を選んだとき → その航路を薄く
     {
       const pairs = new Map(); // 'idA|idB' → { a, b, mode, state }
@@ -842,7 +867,7 @@
       if (pairs.size) {
         ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
         for (const p of [...pairs.values()].sort((u, v) => rank[u.state] - rank[v.state])) {
-          ctx.strokeStyle = p.mode === 'air' ? '#3b82f6' : '#14b8a6';
+          ctx.strokeStyle = p.mode === 'air' ? '#8B5CF6' : '#F97316'; // 空路は紫、海路はオレンジ(海を水色にしたので青・水色から変えた。2026-10-19 ユーザー指摘)
           ctx.lineWidth = p.state === 'both' ? 4.5 : p.state === 'one' ? 2.5 : 2;
           ctx.globalAlpha = p.state === 'sel' ? 0.4 : p.state === 'one' ? 0.85 : 0.95;
           ctx.setLineDash(p.state === 'both' ? [] : p.state === 'one' ? [8, 6] : [4, 6]);
