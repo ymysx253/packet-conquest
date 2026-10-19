@@ -45,6 +45,7 @@ const SEED = tokyo.NODES.filter((n) => n.region.startsWith('tokyo-'));
     const ws = fakeWs();
     const a = await w.join(ws, 'テスト', null);
     assert.ok(a.homeNodeId && (await store.loadNode(a.homeNodeId)), 'プレイヤーの拠点が保存される');
+    assert.ok((await store.nodesOwnedByAny([a.id, 'p-nobody'])).some((n) => n.id === a.homeNodeId), '何人かの持つ拠点をまとめて引ける(縮小表示に自分とチームの拠点を足す)');
     assert.ok((await store.findPlayerByToken(a.token)).id === a.id, '復帰コードで引ける');
     const [nb] = [...w.adj.get(a.homeNodeId)];
     const hits = w.nodes.get(nb).hits;

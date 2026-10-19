@@ -91,6 +91,8 @@ class World {
     this.teamNames = new Map(); // チーム id → 名前(表示用のキャッシュ)
     this.teamLooks = new Map(); // チーム id → { style, icon }(拠点の色はチームの色に合わせる。2026-10-18 決定)
     this.rankCache = null;
+    this.ownerLooks = new Map(); // プレイヤー id → { team, color }(読み込んでいない持ち主の色とチームを拠点に添えるため)
+    this.ownedCache = new Map(); // 自分(またはチーム)の key → { at, docs }(縮小表示に足す持ち拠点。少しの間使い回す)
   }
   // ---------- チーム(第 3.11 節、2026-10-18 決定) ----------
   // 作成と参加のどちらでもできる。所属中は作成できない。脱退は可能。人数の上限は作成時に 2〜TEAM_MAX_MEMBERS で決める
@@ -107,7 +109,7 @@ class World {
     const team = { id: newId(), type: 'team', name: nm, ownerId: p.id, maxMembers: max, memberCount: 1, createdAt: now(), style: { ...DEFAULT_TEAM_STYLE }, icon: TEAM_ICONS[0] };
     await this.store.saveTeam(team);
     this.teamNames.set(team.id, team.name); this.teamLooks.set(team.id, { style: { ...team.style }, icon: team.icon });
-    p.team = team.id; p.reach = null;
+    p.team = team.id; p.reach = null; this.ownedCache.clear();
     await this.persistPlayer(p);
     this.events.add('team.create', { playerId: p.id, teamId: team.id, detail: { name: team.name, maxMembers: max } });
     this.addLog(`${p.name} がチーム「${team.name}」を作りました`);
@@ -121,7 +123,7 @@ class World {
     if ((team.memberCount || 0) >= team.maxMembers) throw new Error(`このチームは満員です(${team.maxMembers} 人まで)`);
     team.memberCount = (team.memberCount || 0) + 1;
     await this.store.saveTeam(team);
-    p.team = team.id;
+    p.team = team.id; this.ownedCache.clear();
     await this.persistPlayer(p);
     this.events.add('team.join', { playerId: p.id, teamId: team.id, detail: { memberCount: team.memberCount } });
     this.addLog(`${p.name} がチーム「${team.name}」に参加しました`);
@@ -168,7 +170,7 @@ class World {
     }
     const name = team ? team.name : p.team;
     const teamId = p.team;
-    p.team = null;
+    p.team = null; this.ownedCache.clear();
     await this.persistPlayer(p);
     this.events.add('team.leave', { playerId: p.id, teamId, detail: { memberCount: team ? team.memberCount : null, newOwnerId, deleted } });
     this.addLog(`${p.name} がチーム「${name}」を脱退しました`);
@@ -303,6 +305,7 @@ class World {
       isPlayerNode: !!n.isPlayerNode, protectedUntil: n.protectedUntil || 0, hackable: n.hackable !== false, lines: n.lines || [],
       hits: n.hits || 1, progress: n.progress || {}, // 突破に必要な回数と、攻め手ごとの正解回数(第 14 章)
       company: n.company || null, // 命名権など企業名の施設の企業名
+      ...(n.owner ? this.ownerLook(n.owner) : {}), // 持ち主のチームと色(自分・チーム・ほかの人を見分ける。2026-10-19)
       routes: n.routes && n.routes.length ? n.routes : undefined, // 航路(空港・港)。行き先 { to, mode, name, lat, lon }
     };
   }
@@ -383,8 +386,42 @@ class World {
       const docs = await this.store.loadTiles(this.country, list, minLevel);
       p.view = new Set(); p.viewZ = zz;
       const regions = await this.regionsInView(list, zz);
+      // 自分とチームの拠点は、レベルが低くても縮小表示に足す(見ている範囲の中だけ)
+      if (!p.guest) {
+        const inView = new Set(list), seen = new Set(docs.map((d) => d.id));
+        for (const d of await this.ownedForOverview(p)) if (!seen.has(d.id) && inView.has(d[`t${zz}`] || tileOf(d.lat, d.lon, zz))) { docs.push(d); seen.add(d.id); }
+      }
       this.send(p, { t: 'tiles', z: zz, added: list, dropped: [], overview: true, minLevel, nodes: docs.filter((d) => d.status === 'public').map((d) => this.pub(this.adopt(d))), edges: [], regions });
     }
+  }
+
+  // 持ち主のチームと色。読み込んである人はその場で、ほかは覚えている分だけ
+  ownerLook(id) {
+    const live = this.players.get(id);
+    if (live) {
+      const look = live.team && this.teamLooks.get(live.team);
+      const v = { ownerTeam: live.team || null, ownerColor: look && look.style && look.style.fill ? look.style.fill : live.color || null };
+      this.ownerLooks.set(id, v);
+      return v;
+    }
+    return this.ownerLooks.get(id) || {};
+  }
+  // 縮小表示に必ず出す、自分とチームの仲間の持つ拠点(2026-10-19 ユーザー決定)。20 秒は同じ結果を使う
+  async ownedForOverview(p) {
+    const key = this.attackKey(p);
+    const hit = this.ownedCache.get(key);
+    if (hit && now() - hit.at < 20000) return hit.docs;
+    let ids = [p.id];
+    if (p.team) {
+      const members = await this.store.teamMembers(p.team, TEAM_MAX_MEMBERS);
+      const look = this.teamLooks.get(p.team);
+      for (const m of members) if (!this.players.has(m.id)) this.ownerLooks.set(m.id, { ownerTeam: p.team, ownerColor: look && look.style && look.style.fill ? look.style.fill : m.color || null });
+      ids = [...new Set([p.id, ...members.map((m) => m.id)])];
+    }
+    const docs = (await this.store.nodesOwnedByAny(ids)).filter((d) => d.status !== 'hidden');
+    this.ownedCache.set(key, { at: now(), docs });
+    if (this.ownedCache.size > 500) this.ownedCache.delete(this.ownedCache.keys().next().value);
+    return docs;
   }
 
   // ---------- 参加・復帰 ----------
@@ -532,6 +569,7 @@ class World {
           continue;
         }
         n.owner = null; n.defense = 0; n.fortifiedAt = null; n.progress = {}; n.protectedUntil = 0;
+        this.ownedCache.clear();
         await this.persistNode(n);
         nodesFreed++;
         if (this.nodes.has(n.id)) this.emitNode(n);
@@ -828,6 +866,7 @@ class World {
     if (prev) { prev.nodesOwned = Math.max(0, (prev.nodesOwned || 0) - 1); prev.score = Math.max(0, (prev.score || 0) - gained); }
     this.events.add('capture', { ...ev, level: level === null ? undefined : level, ip: p.ws && p.ws.ip, detail: { prevOwner: prev ? prev.id : null, prevTeam: prev ? prev.team || null : null, gained, hits, defenseBefore } });
     n.owner = p.id; n.defense = 0; n.fortifiedAt = now(); n.progress = {};
+    this.ownedCache.clear(); // 持ち拠点が変わった(縮小表示に足す分を作り直す)
     this.invalidateReach(p.id); if (prev) this.invalidateReach(prev.id);
     p.points = (p.points || 0) + gained;
     p.nodesOwned = (p.nodesOwned || 0) + 1;

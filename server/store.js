@@ -113,6 +113,7 @@ class MemoryStore {
   async loadMeta(id) { const m = this.meta.get(id); return m ? { ...m } : null; }
   async saveMeta(doc) { this.meta.set(doc.id, { ...doc }); }
   async nodesOwnedBy(playerId) { return [...this.nodes.values()].filter((n) => n.owner === playerId).map((n) => ({ ...n })); }
+  async nodesOwnedByAny(ids, limit = 3000) { const s = new Set(ids); return [...this.nodes.values()].filter((n) => n.owner && s.has(n.owner)).slice(0, limit).map((n) => ({ ...n })); }
   async deleteNode(id) { const n = this.nodes.get(id); if (!n) return; for (let z = 0; z <= 4; z++) { const s = this.byTile.get(n[`t${z}`]); if (s) s.delete(id); } this.nodes.delete(id); }
   async deletePlayer(id) { this.players.delete(id); }
   async countStarters(nodeIds) {

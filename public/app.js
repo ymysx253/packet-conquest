@@ -34,6 +34,20 @@
   const ownerOf = (id) => { const n = nodeById(id); return n ? n.owner : null; };
   // 拠点の色: チームに所属していればチームの背景色、いなければプレイヤーの色(2026-10-18 決定)
   const colorOf = (pid) => { const p = playerById(pid); return p ? (p.teamStyle && p.teamStyle.fill ? p.teamStyle.fill : p.color) : null; };
+  const teamFrameOf = (n) => { const o = playerById(n.owner); return (S.team && S.team.style && S.team.style.frame) || (o && o.teamStyle && o.teamStyle.frame) || null; };
+  // 拠点の持ち主の色(一覧にいない持ち主は、サーバーが拠点に添えた色)
+  const ownerColorOf = (n) => (n.owner ? colorOf(n.owner) || n.ownerColor || null : null);
+  // 持ち主との関係(2026-10-19): 'me' 自分 / 'team' チームの仲間 / 'other' ほかの人 / null 持ち主なし
+  const relOf = (n) => {
+    if (!n.owner) return null;
+    if (n.owner === S.me) return 'me';
+    const t = S.team && S.team.id;
+    if (t) { const o = playerById(n.owner); if (n.ownerTeam === t || (o && o.team === t)) return 'team'; }
+    return 'other';
+  };
+  // 地図の上の切り替え「自分だけ / チームまで / 全員」: 持ち主の色と陣地のにじみを、どこまで出すか
+  const OWN_VIEWS = ['me', 'team', 'all'];
+  const ownShown = (rel) => !!rel && (S.ownView === 'all' || rel === 'me' || (rel === 'team' && S.ownView === 'team'));
 
   // ---------- 初期表示 ----------
   $('nameInput').value = store.get('pc-name') || '';
@@ -77,7 +91,7 @@
         if (S.team) { S.infoOnly = true; send({ t: 'team', action: 'info' }); }
         store.set('pc-token', m.token); store.set('pc-name', m.name);
         $('codeInput').value = m.token;
-        $('lobby').hidden = true; $('mePanel').hidden = false; $('onlineChip').hidden = false;
+        $('lobby').hidden = true; $('mePanel').hidden = false; $('onlineChip').hidden = false; $('ownView').hidden = false;
         $('lobbyError').textContent = ''; $('meCode').textContent = m.token;
         resize();
         if (S.home) centerOn(worldOf(S.home.lat, S.home.lon), 9); else if (S.spawn) centerOn(worldOf(S.spawn.lat, S.spawn.lon), 9);
@@ -200,9 +214,9 @@
   const attackLevelOf = (n) => { const base = Math.max(1, n.level) + (n.defense || 0); return n.owner ? Math.max(4, base) : base; };
   // 濃さ(2026-10-19 ユーザー案): 縮小して重なっているときは低いレベルほど薄く、拡大して重なりが無くなると元の濃さ。
   // レベルの帯ごとに「この拡大率で元の濃さ」を決める(町・字 30、駅・名所 24、乗り換え駅など 14、空港など 6、Lv200 以上はいつも濃い)。いちばん薄くて 12%。
-  // 選択中・自分の拠点・攻撃できる拠点は薄くしない
+  // 選択中・自分とチームの拠点・攻撃できる拠点は薄くしない
   const fadeOf = (n) => {
-    if (n.id === S.selected || n.isPlayerNode || (n.owner && n.owner === S.me) || (!S.overview && canAttack(n.id) && hasQuestion(attackLevelOf(n)))) return 1;
+    if (n.id === S.selected || n.isPlayerNode || (n.owner && n.owner === S.me) || (relOf(n) === 'team' && ownShown('team')) || (!S.overview && canAttack(n.id) && hasQuestion(attackLevelOf(n)))) return 1;
     const full = n.level >= 200 ? 0 : n.level >= 100 ? 6 : n.level >= 30 ? 14 : n.level >= 10 ? 24 : 30;
     return full ? Math.max(0.12, Math.min(1, (zoomRatio() / full) ** 2)) : 1;
   };
@@ -315,7 +329,7 @@
     : (11 + Math.min(10, n.level) * 0.6 + Math.min(9, Math.floor((n.level - 1) / 10)) * 0.4 + Math.min(9, Math.floor((n.level - 1) / 100)) * 0.8) * (n.genre === 'town' ? 0.7 : 1)); // 町・字は小さめ
   // 町・字(2026-10-18)は数が多いので、ある程度拡大したときだけ描く。自分の拠点・選択中・攻撃できるものは縮小していても描く
   const TOWN_MIN_RATIO = 10, TOWN_LABEL_RATIO = 14; // 町・字の印は拡大率 10 から、名前は 14 から(参加直後の 9 では駅と名所が主役)
-  const visibleNode = (n) => n.genre !== 'town' || zoomRatio() >= TOWN_MIN_RATIO || n.id === S.selected || (n.owner && n.owner === S.me) || canAttack(n.id);
+  const visibleNode = (n) => n.genre !== 'town' || zoomRatio() >= TOWN_MIN_RATIO || n.id === S.selected || (n.owner && n.owner === S.me) || (relOf(n) === 'team' && ownShown('team')) || canAttack(n.id);
 
   function resize() {
     const box = $('mapWrap');
@@ -345,6 +359,11 @@
     if (S.home) centerOn(worldOf(S.home.lat, S.home.lon), Math.max(9, zoomRatio()));
     else if (S.spawn) centerOn(worldOf(S.spawn.lat, S.spawn.lon), Math.max(9, zoomRatio()));
   }
+  // 持ち主の表示の切り替え(端末ごとに覚える)
+  try { const v = localStorage.getItem('pc.ownView'); S.ownView = OWN_VIEWS.includes(v) ? v : 'all'; } catch (e) { S.ownView = 'all'; }
+  const renderOwnView = () => { for (const b of document.querySelectorAll('#ownView button')) b.setAttribute('aria-pressed', String(b.dataset.v === S.ownView)); };
+  for (const b of document.querySelectorAll('#ownView button')) b.onclick = () => { S.ownView = b.dataset.v; try { localStorage.setItem('pc.ownView', S.ownView); } catch (e) { /* 覚えられなくても動く */ } renderOwnView(); };
+  renderOwnView();
   $('zoomIn').onclick = () => zoomAt(1.4, V.w / 2, V.h / 2);
   $('zoomOut').onclick = () => zoomAt(1 / 1.4, V.w / 2, V.h / 2);
   $('zoomHome').onclick = centerOnMine;
@@ -788,13 +807,31 @@
       ctx.restore();
     }
 
+    // 陣地(2026-10-19): 持っている拠点のまわりを持ち主の色で薄くにじませる。切り替えで出す範囲を決める
+    {
+      const hr = Math.max(16, Math.min(70, 10 + ratio * 1.6)) * grow;
+      for (const n of S.nodes.values()) {
+        const rel = relOf(n);
+        if (!ownShown(rel) || n.isPlayerNode || !visibleNode(n)) continue;
+        const col = ownerColorOf(n);
+        if (!col) continue;
+        const p = toScreen(posOf(n));
+        if (p.x < -hr || p.y < -hr || p.x > V.w + hr || p.y > V.h + hr) continue;
+        const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, hr);
+        g.addColorStop(0, col); g.addColorStop(1, 'transparent');
+        ctx.globalAlpha = rel === 'other' ? 0.16 : 0.28; ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(p.x, p.y, hr, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
     // 線路(リンク)
     ctx.lineCap = 'round';
     for (const e of S.edges.values()) {
       const na = nodeById(e.a), nb = nodeById(e.b);
       if (!na || !nb || !visibleNode(na) || !visibleNode(nb)) continue; // 描かない町・字への線も描かない
       const a = toScreen(posOf(na)), b = toScreen(posOf(nb));
-      const own = na.owner && na.owner === nb.owner ? colorOf(na.owner) : null;
+      const own = na.owner && na.owner === nb.owner && ownShown(relOf(na)) ? ownerColorOf(na) : null;
       const thin = na.isPlayerNode || nb.isPlayerNode;
       const town = na.genre === 'town' || nb.genre === 'town'; // 町・字の線は細く薄く(路線の線を主役にする)
       ctx.strokeStyle = own || C.line;
@@ -810,8 +847,8 @@
     const rank = (n) => (n.id === S.selected ? 2 : n.isPlayerNode ? 0 : 1);
     // レベルの低いものから描き、高いものを上に重ねる(2026-10-19 ユーザー案)
     const sorted = [...S.nodes.values()].filter(visibleNode).sort((a, b) => rank(a) - rank(b) || a.level - b.level);
-    // 重要さ(間引きと名前の優先順位): 選択中 > 自分の拠点 > 誰かの拠点 > レベル > 空港・港
-    const prio = (n) => (n.id === S.selected ? 1e6 : 0) + (n.owner && n.owner === S.me ? 1e5 : 0) + (n.owner ? 1e4 : 0) + n.level * 10 + (n.kind === 'GW' ? 5 : 0);
+    // 重要さ(間引きと名前の優先順位): 選択中 > 自分の拠点 > チームの拠点 > 誰かの拠点 > レベル > 空港・港
+    const prio = (n) => (n.id === S.selected ? 1e6 : 0) + (n.owner && n.owner === S.me ? 1e5 : 0) + (relOf(n) === 'team' ? 5e4 : 0) + (n.owner ? 1e4 : 0) + n.level * 10 + (n.kind === 'GW' ? 5 : 0);
     // 縮小表示: 画面の小さなます目(約 34 px)ごとに、いちばん重要な拠点だけを描く(倍率に対して印が多すぎないように)
     let drawList = sorted;
     if (S.overview) {
@@ -833,7 +870,8 @@
       const p = toScreen(posOf(n));
       if (p.x < -60 || p.y < -60 || p.x > V.w + 60 || p.y > V.h + 60) continue;
       const r = radiusOf(n) * grow;
-      const owner = n.owner ? colorOf(n.owner) || C.strong : null;
+      const rel = relOf(n), shownOwn = ownShown(rel);
+      const owner = n.owner && shownOwn ? ownerColorOf(n) || C.strong : null; // 切り替えで出さない持ち主は、持ち主なしと同じ見た目
       const ring = n.isPlayerNode ? r : SH.outerRadius(n.level, r);
       if (!S.overview && canAttack(n.id) && hasQuestion(attackLevelOf(n))) {
         ctx.strokeStyle = C.accent; ctx.globalAlpha = 0.45 + 0.55 * pulse; ctx.lineWidth = 5;
@@ -857,10 +895,12 @@
       ctx.globalAlpha = fa;
       if (n.hackable === false) ctx.globalAlpha = 0.45 * fa;
       else if (owner && n.owner === S.me && !n.isPlayerNode && !S.reach.has(n.id)) ctx.globalAlpha = 0.55 * fa; // 自分の拠点から線が切れている所有拠点
-      ctx.fillStyle = filled ? col : C.surface; ctx.strokeStyle = col;
-      ctx.lineWidth = owner ? (n.isPlayerNode ? 5 : 7) : (n.isPlayerNode ? 3 : 4);
+      // 自分: 塗り + 真ん中の点 / チーム: 塗り(チームの色)+ チームの枠の色 / ほかの人: 塗りだけ(2026-10-19)
+      const frame = rel === 'team' && owner ? teamFrameOf(n) : null;
+      ctx.fillStyle = filled || frame ? col : C.surface; ctx.strokeStyle = frame || col;
+      ctx.lineWidth = frame ? 4 : owner ? (n.isPlayerNode ? 5 : 7) : (n.isPlayerNode ? 3 : 4); // チームの枠は細めにして、中の塗り(チームの色)を見せる
       shape(n, p, r); ctx.fill(); ctx.stroke();
-      if (!n.isPlayerNode) SH.extras(ctx, n.level, p, r, col, C.surface);
+      if (!n.isPlayerNode) SH.extras(ctx, n.level, p, r, frame || col, frame ? col : C.surface);
       if (owner && n.owner === S.me) { ctx.fillStyle = filled ? C.surface : owner; ctx.beginPath(); ctx.arc(p.x, p.y, n.isPlayerNode ? 3 : 4, 0, Math.PI * 2); ctx.fill(); }
       // 侵入の進捗: 攻め手ごとの正解回数を弧で示す(自分は自分の色、ほかは灰色)
       const hits = n.hits || 1, prog = n.progress || {};

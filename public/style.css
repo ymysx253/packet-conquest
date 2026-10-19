@@ -84,6 +84,12 @@ body {
   background: var(--surface); color: var(--ink); font: 700 18px/1 var(--font-mono); cursor: pointer;
 }
 .zbtn:hover { background: var(--bg); }
+.own-view { position: absolute; top: 10px; left: 10px; z-index: 2; display: flex; border: 2px solid var(--ink); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.own-view[hidden] { display: none; }
+.own-view button { border: 0; border-left: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 700 12px/1 "BIZ UDPGothic", sans-serif; padding: 8px 10px; cursor: pointer; min-height: 32px; }
+.own-view button:first-child { border-left: 0; }
+.own-view button:hover { background: var(--bg); }
+.own-view button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
 .map-hint { position: absolute; left: 10px; bottom: 6px; margin: 0; font-size: 11px; color: var(--muted); pointer-events: none; }
 .credit { margin: 6px 0 0; font-size: 11px; color: var(--muted); }
 .legend {
@@ -93,6 +99,10 @@ body {
 .legend li { display: inline-flex; align-items: center; gap: 4px; }
 .legend canvas { display: block; }
 .lg { display: inline-block; border: 3px solid var(--line-strong); background: var(--surface); border-radius: 50%; }
+.lg.own-me, .lg.own-team, .lg.own-other { width: 13px; height: 13px; }
+.lg.own-me { background: radial-gradient(circle, var(--surface) 0 2px, var(--ink) 2.5px); border-color: var(--ink); }
+.lg.own-team { background: var(--muted); border-color: var(--ink); }
+.lg.own-other { background: var(--muted); border-color: var(--muted); }
 .lg.home { width: 9px; height: 9px; border-width: 2px; }
 .lg.shield { width: 14px; height: 14px; border: 1.5px dashed var(--muted); }
 

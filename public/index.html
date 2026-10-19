@@ -32,6 +32,11 @@
         <button type="button" class="zbtn" id="zoomOut" aria-label="縮小" title="縮小">−</button>
         <button type="button" class="zbtn" id="zoomHome" aria-label="自分の拠点へ" title="自分の拠点へ">⌂</button>
       </div>
+      <div class="own-view" id="ownView" role="group" aria-label="持ち主の色を出す範囲" hidden>
+        <button type="button" data-v="me" aria-pressed="false">自分だけ</button>
+        <button type="button" data-v="team" aria-pressed="false">チームまで</button>
+        <button type="button" data-v="all" aria-pressed="true">全員</button>
+      </div>
       <p class="map-hint">ホイールやピンチで拡大縮小、ドラッグで移動</p>
       <div class="pick-bar" id="pickBar" hidden>
         <span id="pickBarText">開始地点にする町・字か、ふつうの駅をタップしてください(町・字は拡大すると出ます)</span>
@@ -39,6 +44,9 @@
       </div>
     </div>
     <ul class="legend" id="legend">
+      <li><i class="lg own-me"></i>自分の拠点(真ん中に点)</li>
+      <li><i class="lg own-team"></i>チームの拠点(チームの枠の色)</li>
+      <li><i class="lg own-other"></i>ほかの人の拠点</li>
       <li><i class="lg home"></i>プレイヤーの拠点</li>
       <li><i class="lg shield"></i>保護中</li>
       <li><a href="shapes.html">形の一覧(Lv1〜999)</a></li>

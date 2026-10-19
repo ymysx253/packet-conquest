@@ -143,6 +143,12 @@ class CosmosStore {
     const rows = await this.query('nodes', { query: 'SELECT * FROM c WHERE c.owner = @id', parameters: [{ name: '@id', value: playerId }] });
     return rows.map((r) => this.strip(r));
   }
+  // 何人か(自分とチームの仲間)の持つ拠点。縮小表示に必ず出すため(2026-10-19)
+  async nodesOwnedByAny(ids, limit = 3000) {
+    if (!ids.length) return [];
+    const rows = await this.query('nodes', { query: 'SELECT TOP @n * FROM c WHERE ARRAY_CONTAINS(@ids, c.owner)', parameters: [{ name: '@n', value: limit }, { name: '@ids', value: ids }] });
+    return rows.map((r) => this.strip(r));
+  }
   async deleteNode(id) {
     const n = await this.loadNode(id);
     if (!n) return;

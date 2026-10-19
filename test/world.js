@@ -4,6 +4,7 @@
 const assert = require('assert');
 const { World, DEFAULT_START_ID, PROTECT_MS, DECAY_MS, NEWBIE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, weekKeyOf } = require('../server/world');
 const { MemoryStore } = require('../server/store');
+const { hasGenerator } = require('../server/questions');
 const { EventLog, dayOf } = require('../server/events');
 const { tilesAround, tileOf, distanceKm } = require('../server/map/geo');
 const { NODES } = require('../server/map/all');
@@ -14,7 +15,9 @@ const last = (ws, t) => [...ws.sent].reverse().find((m) => m.t === t);
 // 正解がわからないので、サーバーの pending を読んで答える(テスト専用)
 async function solve(world, p, nodeId) {
   const q = await world.ask(p, nodeId);
-  const r = await world.answer(p, q.qid, p.pending ? p.pending.answerIndex : -1);
+  const pend = p.pending;
+  const ans = pend && pend.answerKind === 'text' ? (pend.fields || []).map((f) => (f.accept && f.accept[0]) || '') : pend ? pend.answerIndex : -1; // 書き込み式は受け付ける答えの 1 つ目
+  const r = await world.answer(p, q.qid, ans);
   assert.ok(r.correct, 'テストは正解を選ぶ');
   return r;
 }
@@ -55,7 +58,8 @@ async function solve(world, p, nodeId) {
   // 広域表示: 粗いタイルで高いレベルだけ
   await w.setView(a, [tileOf(home.lat, home.lon, 2)], 2);
   const ov = last(wsA, 'tiles');
-  assert.ok(ov.overview && ov.minLevel === 100 && ov.nodes.every((n) => n.level >= 100), '広域(段 2)は Lv100 以上だけ(2026-10-19 の物差し)');
+  assert.ok(ov.overview && ov.minLevel === 100 && ov.nodes.every((n) => n.level >= 100 || n.owner === a.id), '広域(段 2)は Lv100 以上だけ(2026-10-19 の物差し)。自分の拠点は低くても届く');
+  assert.ok(ov.nodes.some((n) => n.id === home.id), '縮小表示にも自分の拠点が届く');
   assert.ok(Array.isArray(ov.regions) && ov.regions.length > 0 && ov.regions.every((g) => g.tier === 6 && typeof g.lat === 'number'), '広域には区・市の支配状況が付く');
   assert.ok(ov.regions.some((g) => g.name === '千代田区') && ov.regions.every((g) => g.controller === null), 'まだ誰も支配していない');
   await w.setView(a, view, 0);
@@ -257,6 +261,22 @@ async function solve(world, p, nodeId) {
   const g3 = ov3.regions.find((g) => g.id === regionId);
   assert.ok(g3 && g3.controller && g3.controller.kind === 'team' && g3.controller.style.fill === '#FFCC00' && g3.controller.icon === '⚡', '地域の支配者がチームなら見た目つき');
   regionDoc.control = null; await store.saveRegion(regionDoc); w.invalidateRegions();
+  // 縮小表示でも、自分とチームの仲間の拠点はレベルが低くても届く。ほかの人の低い拠点は届かない。持ち主のチームと色が付く(2026-10-19)
+  {
+    const T2 = tileOf(home.lat, home.lon, 2);
+    const lows = [...w.nodes.values()].filter((n) => !n.isPlayerNode && !n.owner && n.status === 'public' && n.level < 100 && tileOf(n.lat, n.lon, 2) === T2).slice(0, 2);
+    assert.strictEqual(lows.length, 2);
+    lows[0].owner = cee.id; lows[1].owner = eee.id;
+    for (const n of lows) await w.persistNode(n);
+    w.ownedCache.clear();
+    await w.setView(a, [T2], 2);
+    const ov4 = last(a.ws, 'tiles');
+    const mate = ov4.nodes.find((n) => n.id === lows[0].id);
+    assert.ok(mate && mate.ownerTeam === team1.id && mate.ownerColor === '#FFCC00', '仲間の低い拠点が縮小表示に届き、チームと色が付く');
+    assert.ok(!ov4.nodes.some((n) => n.id === lows[1].id), 'ほかの人の低い拠点は縮小表示に足さない');
+    for (const n of lows) { n.owner = null; await w.persistNode(n); }
+    w.ownedCache.clear();
+  }
   await w.setView(a, view, 0);
   // リーダーが抜けたら、いちばん古い人にリーダーが移る
   await w.leaveTeam(a);
@@ -341,7 +361,12 @@ async function solve(world, p, nodeId) {
   const wsM = fakeWs();
   const mover = await w.join(wsM, 'ひっこし', null, tokyoSt.id);
   const mHome0 = w.nodes.get(mover.homeNodeId);
-  const mTarget = [...w.adj.get(mHome0.id)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false);
+  const freeQ = (n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false && n.status === 'public' && hasGenerator(w.levelFor(n, 'attack')); // 問題のあるレベルの空き拠点(2026-10-19 から問題の無い拠点は占領できない)
+  let mTarget = [...w.adj.get(mHome0.id)].map((id) => w.nodes.get(id)).find(freeQ);
+  if (!mTarget) { // 隣が先の検証で取られていたら、近くの空き拠点とつなぐ
+    mTarget = [...w.nodes.values()].filter(freeQ).sort((x, y) => distanceKm(x, mHome0) - distanceKm(y, mHome0))[0];
+    w.addEdge(mHome0.id, mTarget.id, mHome0.t0); mover.reach = null;
+  }
   for (let i = 0; i < mTarget.hits; i++) await solve(w, mover, mTarget.id);
   assert.strictEqual(mTarget.owner, mover.id); assert.strictEqual(mover.nodesOwned, 2);
   const beyond = [...w.adj.get(mTarget.id)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false);
