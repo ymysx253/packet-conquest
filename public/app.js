@@ -30,6 +30,12 @@
   };
   const now = () => Date.now() + S.offset;
   const nodeById = (id) => S.nodes.get(id);
+  // 選んでいる拠点(2026-10-19): 地図を動かして読み込みから外れても、選んでいる間は覚えておいた拠点を使う(情報パネルも航路の線も出したまま)
+  const selectedNode = () => {
+    const n = S.selected && S.nodes.get(S.selected);
+    if (n) S.selNode = n;
+    return n || (S.selected && S.selNode && S.selNode.id === S.selected ? S.selNode : null);
+  };
   const playerById = (id) => S.players.find((p) => p.id === id);
   const ownerOf = (id) => { const n = nodeById(id); return n ? n.owner : null; };
   // 拠点の色: チームに所属していればチームの背景色、いなければプレイヤーの色(2026-10-18 決定)
@@ -568,7 +574,7 @@
     $('log').scrollTop = $('log').scrollHeight;
   }
   function renderSelected() {
-    const n = S.selected && nodeById(S.selected);
+    const n = selectedNode();
     $('nodePanel').hidden = !n;
     if (!n) return;
     const owner = n.owner ? playerById(n.owner) : null;
@@ -818,10 +824,8 @@
       };
       for (const o of S.mine.values()) for (const r of o.routes) add(o, r, 'one');
       if (ownShown('team')) for (const n of S.nodes.values()) if (n.routes && n.routes.length && relOf(n) === 'team') for (const r of n.routes) add(n, r, 'one');
-      // 選んだ空港・港の航路は、その拠点が画面の外に出て読み込みから外れても出し続ける(選んだときの航路を覚えておく。2026-10-19)
-      const live = S.selected && S.nodes.get(S.selected);
-      if (live && live.routes && live.routes.length) S.selRoutes = { id: live.id, lat: live.lat, lon: live.lon, routes: live.routes };
-      const sel = live || (S.selected && S.selRoutes && S.selRoutes.id === S.selected ? S.selRoutes : null);
+      // 選んだ空港・港の航路は、その拠点が画面の外に出て読み込みから外れても出し続ける(selectedNode が覚えている)
+      const sel = selectedNode();
       if (sel && sel.routes) for (const r of sel.routes) add(sel, r, 'sel');
       if (pairs.size) {
         ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
