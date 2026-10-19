@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "chiba",
   "name": "千葉県",
-  "version": 46,
+  "version": 47,
   "updatedAt": "2026-10-19",
   "note": "千葉県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -2533,8 +2533,8 @@
     { "id": "lm-q5120896", "name": "鋸山", "genre": "nature", "kind": "LM", "area": "富津市", "region": "chiba-12226", "lat": 35.16028, "lon": 139.84083, "level": 25, "value": 25, "codes": {"wikidata": "Q5120896"}, "src": "src-wikidata", "adj": ["st-005471", "st-005558", "tw-12463-002000"] },
     { "id": "lm-q575336", "name": "東京湾観音", "genre": "monument", "kind": "LM", "area": "富津市", "region": "chiba-12226", "lat": 35.26361, "lon": 139.8625, "level": 15, "value": 15, "codes": {"wikidata": "Q575336"}, "src": "src-wikidata", "adj": ["st-005205", "tw-12226-014000"] },
     { "id": "lm-q575499", "name": "マザー牧場", "genre": "park", "kind": "LM", "area": "富津市", "region": "chiba-12226", "lat": 35.24603, "lon": 139.93483, "level": 15, "value": 15, "hackable": false, "codes": {"wikidata": "Q575499"}, "src": "src-wikidata" },
-    { "id": "pt-q575503", "name": "浜金谷港", "genre": "port", "kind": "GW", "lat": 35.16944, "lon": 139.81764, "level": 30, "value": 30, "codes": {"wikidata": "Q575503", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "千葉/浜金谷"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "富津市", "region": "chiba-12226", "adj": ["st-005359", "st-005471", "st-005558"] },
     { "id": "ts-q11457112", "name": "富津岬", "genre": "tourism", "kind": "LM", "area": "富津市", "region": "chiba-12226", "lat": 35.31274, "lon": 139.78661, "level": 15, "value": 15, "tags": ["岬・海岸"], "codes": {"wikidata": "Q11457112"}, "src": "src-wikidata", "adj": ["tw-12226-001000"] },
+    { "id": "pt-q575503", "name": "浜金谷港", "genre": "port", "kind": "GW", "lat": 35.16944, "lon": 139.81764, "level": 30, "value": 30, "codes": {"wikidata": "Q575503", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "千葉/浜金谷"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "富津市", "region": "chiba-12226", "adj": ["st-005359", "st-005471", "st-005558"] },
     { "id": "tw-12226-001000", "name": "富津", "genre": "town", "kind": "TOWN", "area": "富津市", "region": "chiba-12226", "lat": 35.31104, "lon": 139.81147, "level": 6, "value": 6, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "12226001000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-12226-002000", "tw-12226-003000", "tw-12226-013000"], "contains": ["ts-q11457112"], "adj": ["ts-q11457112", "tw-12226-002000", "tw-12226-003000", "tw-12226-013000"] },
     { "id": "tw-12226-002000", "name": "新井(富津市)", "genre": "town", "kind": "TOWN", "area": "富津市", "region": "chiba-12226", "lat": 35.3156, "lon": 139.83042, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "12226002000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-12226-001000", "tw-12226-003000", "tw-12226-007000", "tw-12226-013000"], "adj": ["tw-12226-001000", "tw-12226-003000", "tw-12226-007000", "tw-12226-013000"] },
     { "id": "tw-12226-003000", "name": "川名(富津市)", "genre": "town", "kind": "TOWN", "area": "富津市", "region": "chiba-12226", "lat": 35.30653, "lon": 139.83422, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "12226003000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-12226-001000", "tw-12226-002000", "tw-12226-004000", "tw-12226-007000", "tw-12226-008000"], "adj": ["tw-12226-001000", "tw-12226-002000", "tw-12226-004000", "tw-12226-007000", "tw-12226-008000"] },

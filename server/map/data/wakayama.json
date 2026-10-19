@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "wakayama",
   "name": "和歌山県",
-  "version": 44,
+  "version": 45,
   "updatedAt": "2026-10-19",
   "note": "和歌山県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -71,8 +71,8 @@
     { "id": "lm-q7007362", "name": "淡嶋神社", "genre": "shrine_temple", "kind": "LM", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.2738, "lon": 135.06667, "level": 15, "value": 15, "hackable": false, "codes": {"wikidata": "Q7007362"}, "src": "src-wikidata" },
     { "id": "lm-q11339346", "name": "ポルトヨーロッパ", "genre": "park", "kind": "LM", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.15417, "lon": 135.17692, "level": 15, "value": 15, "hackable": false, "codes": {"wikidata": "Q11339346"}, "src": "src-wikidata" },
     { "id": "lm-q11417410", "name": "和歌山県庁舎", "genre": "government", "kind": "GOV", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.22597, "lon": 135.1675, "level": 400, "value": 400, "codes": {"wikidata": "Q11417410"}, "src": "src-wikidata", "adj": ["st-008348", "st-008351", "st-008358", "st-008365", "st-008375", "st-008376", "st-008382", "st-008384", "tw-30201-133000"] },
-    { "id": "pt-se23d91c9d1", "name": "和歌山港", "genre": "port", "kind": "GW", "lat": 34.19284, "lon": 135.13758, "level": 30, "value": 30, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "和歌山/和歌山"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "和歌山市", "region": "wakayama-30201", "adj": ["st-008382", "st-008411"] },
     { "id": "ts-q11417713", "name": "和歌浦", "genre": "tourism", "kind": "LM", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.19081, "lon": 135.16662, "level": 30, "value": 30, "tags": ["景勝地", "名勝"], "codes": {"wikidata": "Q11417713"}, "src": "src-wikidata", "adj": ["st-008382", "st-008384", "st-008411", "tw-30201-431001"] },
+    { "id": "pt-se23d91c9d1", "name": "和歌山港", "genre": "port", "kind": "GW", "lat": 34.19284, "lon": 135.13758, "level": 30, "value": 30, "codes": {"ext": [{"scheme": "src-ksj-s10a-2016", "value": "和歌山/和歌山"}]}, "src": "src-ksj-s10a-2016", "gateway": {"type": "port", "scope": "domestic"}, "area": "和歌山市", "region": "wakayama-30201", "adj": ["st-008382", "st-008411"] },
     { "id": "tw-30201-003000", "name": "宇治袋町", "genre": "town", "kind": "TOWN", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.23662, "lon": 135.17344, "level": 2, "value": 2, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "30201003000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-30201-018001", "tw-30201-035001", "tw-30201-066001", "tw-30201-079000"], "adj": ["tw-30201-018001", "tw-30201-035001", "tw-30201-066001", "tw-30201-079000"] },
     { "id": "tw-30201-005000", "name": "宇治藪下", "genre": "town", "kind": "TOWN", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.24301, "lon": 135.17625, "level": 2, "value": 2, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "30201005000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-30201-008000", "tw-30201-035001"], "adj": ["tw-30201-008000", "tw-30201-035001"] },
     { "id": "tw-30201-008000", "name": "嘉家作丁", "genre": "town", "kind": "TOWN", "area": "和歌山市", "region": "wakayama-30201", "lat": 34.24279, "lon": 135.17838, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "30201008000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-30201-005000", "tw-30201-035001", "tw-30201-038000", "tw-30201-317000"], "adj": ["tw-30201-005000", "tw-30201-035001", "tw-30201-038000", "tw-30201-317000"] },

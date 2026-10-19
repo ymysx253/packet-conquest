@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "fukui",
   "name": "福井県",
-  "version": 44,
+  "version": 45,
   "updatedAt": "2026-10-19",
   "note": "福井県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -627,8 +627,8 @@
     { "id": "lm-q17216403", "name": "敦賀市立看護大学", "genre": "university", "kind": "EDU", "area": "敦賀市", "region": "fukui-18202", "lat": 35.64511, "lon": 136.03375, "level": 15, "value": 15, "codes": {"wikidata": "Q17216403"}, "src": "src-wikidata", "adj": ["st-004149", "tw-18202-036000"] },
     { "id": "lm-q11499542", "name": "敦賀市立博物館", "genre": "museum", "kind": "LM", "area": "敦賀市", "region": "fukui-18202", "lat": 35.6565, "lon": 136.06875, "level": 15, "value": 15, "codes": {"wikidata": "Q11499542"}, "src": "src-wikidata", "adj": ["st-010186", "tw-18202-009000"] },
     { "id": "lm-q11129346", "name": "氣比神宮", "genre": "shrine_temple", "kind": "LM", "area": "敦賀市", "region": "fukui-18202", "lat": 35.65472, "lon": 136.07473, "level": 15, "value": 15, "hackable": false, "codes": {"wikidata": "Q11129346"}, "src": "src-wikidata" },
-    { "id": "pt-q7850265", "name": "敦賀港", "genre": "port", "kind": "GW", "lat": 35.65, "lon": 136.05, "level": 30, "value": 30, "codes": {"wikidata": "Q7850265", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "福井/敦賀"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "敦賀市", "region": "fukui-18202", "adj": ["st-004142", "st-004149", "st-010186", "tw-18202-035000"] },
     { "id": "ts-q11548084", "name": "気比松原", "genre": "tourism", "kind": "LM", "area": "敦賀市", "region": "fukui-18202", "lat": 35.65556, "lon": 136.05, "level": 30, "value": 30, "tags": ["景勝地", "名勝"], "codes": {"wikidata": "Q11548084"}, "src": "src-wikidata", "adj": ["st-004142", "st-004149", "st-010186", "tw-18202-031000"] },
+    { "id": "pt-q7850265", "name": "敦賀港", "genre": "port", "kind": "GW", "lat": 35.65, "lon": 136.05, "level": 30, "value": 30, "codes": {"wikidata": "Q7850265", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "福井/敦賀"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "敦賀市", "region": "fukui-18202", "adj": ["st-004142", "st-004149", "st-010186", "tw-18202-035000"] },
     { "id": "tw-18202-001000", "name": "金ケ崎町", "genre": "town", "kind": "TOWN", "area": "敦賀市", "region": "fukui-18202", "lat": 35.66434, "lon": 136.0701, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "18202001000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-18202-002000", "tw-18202-003000", "tw-18202-004000", "tw-18202-005000", "tw-18202-130000"], "contains": ["lm-q47419034"], "adj": ["lm-q47419034", "tw-18202-002000", "tw-18202-003000", "tw-18202-004000", "tw-18202-005000", "tw-18202-130000"] },
     { "id": "tw-18202-002000", "name": "港町", "genre": "town", "kind": "TOWN", "area": "敦賀市", "region": "fukui-18202", "lat": 35.66063, "lon": 136.07379, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "18202002000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-18202-001000", "tw-18202-003000", "tw-18202-006000"], "adj": ["tw-18202-001000", "tw-18202-003000", "tw-18202-006000"] },
     { "id": "tw-18202-003000", "name": "栄新町", "genre": "town", "kind": "TOWN", "area": "敦賀市", "region": "fukui-18202", "lat": 35.65867, "lon": 136.07541, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "18202003000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-18202-001000", "tw-18202-002000", "tw-18202-004000", "tw-18202-008000"], "adj": ["tw-18202-001000", "tw-18202-002000", "tw-18202-004000", "tw-18202-008000"] },

@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "fukushima",
   "name": "福島県",
-  "version": 44,
+  "version": 45,
   "updatedAt": "2026-10-19",
   "note": "福島県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -760,6 +760,7 @@
     { "id": "lm-q3095180", "name": "白水阿弥陀堂", "genre": "shrine_temple", "kind": "LM", "area": "いわき市", "region": "fukushima-07204", "lat": 37.03651, "lon": 140.8372, "level": 15, "value": 15, "hackable": false, "codes": {"wikidata": "Q3095180"}, "src": "src-wikidata" },
     { "id": "ts-q9283820", "name": "阿武隈高地", "genre": "tourism", "kind": "LM", "area": "いわき市", "region": "fukushima-07204", "lat": 37.10556, "lon": 140.66889, "level": 150, "value": 150, "tags": ["景勝地"], "codes": {"wikidata": "Q9283820"}, "src": "src-wikidata", "adj": ["tw-07204-197000"] },
     { "id": "ts-q11260179", "name": "いわき湯本温泉", "genre": "tourism", "kind": "LM", "area": "いわき市", "region": "fukushima-07204", "lat": 37.0089, "lon": 140.848, "level": 15, "value": 15, "tags": ["温泉"], "codes": {"wikidata": "Q11260179"}, "src": "src-wikidata", "adj": ["st-001684", "tw-07204-114001"] },
+    { "id": "pt-q11459331", "name": "小名浜港", "genre": "port", "kind": "GW", "lat": 36.93611, "lon": 140.89583, "level": 30, "value": 30, "codes": {"wikidata": "Q11459331", "ext": [{"scheme": "src-ksj-s10a-2016", "value": "福島/小名浜"}]}, "src": "src-wikidata", "gateway": {"type": "port", "scope": "domestic"}, "area": "いわき市", "region": "fukushima-07204", "adj": ["st-001710"] },
     { "id": "tw-07204-001002", "name": "平字堂根町", "genre": "town", "kind": "TOWN", "area": "いわき市", "region": "fukushima-07204", "lat": 37.05126, "lon": 140.89086, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "07204001002"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-07204-001007", "tw-07204-001023", "tw-07204-001024", "tw-07204-012000"], "adj": ["tw-07204-001007", "tw-07204-001023", "tw-07204-001024", "tw-07204-012000"] },
     { "id": "tw-07204-001003", "name": "平字梅本", "genre": "town", "kind": "TOWN", "area": "いわき市", "region": "fukushima-07204", "lat": 37.05077, "lon": 140.88477, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "07204001003"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-07204-001004", "tw-07204-001014", "tw-07204-001023", "tw-07204-012000", "tw-07204-137000", "tw-07204-138000", "tw-07204-140000"], "adj": ["tw-07204-001004", "tw-07204-001014", "tw-07204-001023", "tw-07204-012000", "tw-07204-137000", "tw-07204-138000", "tw-07204-140000"] },
     { "id": "tw-07204-001004", "name": "平字堂ノ前", "genre": "town", "kind": "TOWN", "area": "いわき市", "region": "fukushima-07204", "lat": 37.05215, "lon": 140.88578, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "07204001004"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-07204-001003", "tw-07204-001014", "tw-07204-001020", "tw-07204-001023"], "adj": ["tw-07204-001003", "tw-07204-001014", "tw-07204-001020", "tw-07204-001023"] },
@@ -1051,7 +1052,7 @@
     { "id": "st-001657", "name": "いわき駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 37.05819, "lon": 140.89063, "level": 30, "value": 30, "lines": ["東日本旅客鉄道 常磐線", "東日本旅客鉄道 磐越東線"], "adj": ["lm-q6100373", "st-001646", "st-001653", "st-001672", "tw-07204-001048"] },
     { "id": "st-001672", "name": "内郷駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 37.0356, "lon": 140.85454, "level": 10, "value": 10, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001657", "st-001684", "tw-07204-134000"] },
     { "id": "st-001684", "name": "湯本駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 37.00611, "lon": 140.85028, "level": 10, "value": 10, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["lm-q11260113", "lm-q11260157", "lm-q4981824", "lm-q7572157", "st-001672", "st-001710", "ts-q11260179", "tw-07204-114001"] },
-    { "id": "st-001710", "name": "泉駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 36.95574, "lon": 140.85493, "level": 10, "value": 10, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["lm-q4782699", "st-001684", "st-001726", "tw-07204-082000"] },
+    { "id": "st-001710", "name": "泉駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 36.95574, "lon": 140.85493, "level": 10, "value": 10, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["lm-q4782699", "pt-q11459331", "st-001684", "st-001726", "tw-07204-082000"] },
     { "id": "st-001726", "name": "植田駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 36.92093, "lon": 140.79648, "level": 10, "value": 10, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001710", "st-001738", "tw-07204-092000"] },
     { "id": "st-001738", "name": "勿来駅", "genre": "station", "kind": "HUB", "area": "いわき市", "region": "fukushima-07204", "lat": 36.88356, "lon": 140.78672, "level": 10, "value": 10, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-001726", "st-001768", "tw-07204-104000"] },
 

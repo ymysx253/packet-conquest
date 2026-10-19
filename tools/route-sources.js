@@ -55,30 +55,37 @@ function readAir(dir, year) {
   return { year, segments: [...out.values()].map((s) => ({ ...s, cargoTons: Math.round(s.cargoTons) })) };
 }
 
-// 海路: SeaRoute の GeoJSON。寄港地があれば 出発 → 寄港地 → 到着 の 2 区間に分ける。
+// 海路: SeaRoute の GeoJSON。寄港地があれば 出発 → 寄港地 1 → 寄港地 2 … → 到着 の区間に分ける。
+// 寄港地が 2 つ以上の便(伊豆諸島の「東京 → 元町 → 利島 → 新島 → 式根島 → 神津島」など)は、寄港地の都道府県・港湾名が配列で入っている。
+// 線の点の並び(coordinates)は 出発・寄港地…・到着 の順なので、寄港地の位置はそこから取る(2026-10-19。以前は寄港地 1 つだけを見ていて、途中の島が抜けていた)
 // { ports: Map('都道府県/港湾名' → { pref, name, lat, lon }), legs: [{ from, to, shipType, perWeek, sourceRecordId }] }
 function readSea(dir) {
-  const file = fs.readdirSync(dir).find((f) => /_SeaRoute\.geojson$/.test(f));
+  const file = fs.readdirSync(dir).find((f) => /_SeaRoute.geojson$/.test(f));
   if (!file) throw new Error(`${dir} に *_SeaRoute.geojson がありません`);
   const data = JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8'));
   const ports = new Map();
   const key = (pref, name) => `${clean(pref)}/${clean(name)}`;
   const put = (pref, name, xy) => { const k = key(pref, name); if (!ports.has(k)) ports.set(k, { key: k, pref: clean(pref), name: clean(name), lat: xy[1], lon: xy[0] }); return k; };
-  const raw = data.features.map((f, i) => {
-    const p = f.properties; const c = f.geometry.coordinates;
-    return { i, from: put(p.S10a_108, p.S10a_109, c[0]), to: put(p.S10a_112, p.S10a_113, c[c.length - 1]), via: p.S10a_111 ? key(p.S10a_110, p.S10a_111) : null,
-      shipType: p.S10a_114, perWeek: num(p.S10a_126), distanceKm: num(p.S10a_115) || null };
-  });
+  const list = (v) => (Array.isArray(v) ? v : v ? String(v).split(/[,、]/).map((x) => x.trim()).filter(Boolean) : []); // 寄港地が複数なら「元町,利島,新島」のように区切って入っている
   const legs = [];
-  for (const r of raw) {
-    const id = `SeaRoute-${r.i + 1}`;
-    if (r.via && ports.has(r.via) && r.via !== r.from && r.via !== r.to) {
-      legs.push({ from: r.from, to: r.via, shipType: r.shipType, perWeek: r.perWeek, sourceRecordId: `${id}-1` });
-      legs.push({ from: r.via, to: r.to, shipType: r.shipType, perWeek: r.perWeek, sourceRecordId: `${id}-2` });
-    } else if (r.from !== r.to) {
-      legs.push({ from: r.from, to: r.to, shipType: r.shipType, perWeek: r.perWeek, distanceKm: r.distanceKm, sourceRecordId: id });
-    }
-  }
+  data.features.forEach((f, i) => {
+    const p = f.properties; const c = f.geometry.coordinates;
+    const vp = list(p.S10a_110), vn = list(p.S10a_111);
+    const stops = [put(p.S10a_108, p.S10a_109, c[0])];
+    // 寄港地: 点の数が 出発 + 寄港地 + 到着 と合うときだけ位置を使う(合わなければ位置の分かっている港だけ)
+    vn.forEach((name, k) => {
+      if (!name) return;
+      const kk = key(vp[k] || vp[0] || '', name);
+      if (c.length === vn.length + 2) stops.push(put(vp[k] || vp[0] || '', name, c[k + 1]));
+      else if (ports.has(kk)) stops.push(kk);
+    });
+    stops.push(put(p.S10a_112, p.S10a_113, c[c.length - 1]));
+    const id = `SeaRoute-${i + 1}`;
+    const path2 = stops.filter((k, j) => j === 0 || k !== stops[j - 1]); // 同じ港が続くものは 1 つに
+    const base = { shipType: p.S10a_114, perWeek: num(p.S10a_126) };
+    if (path2.length === 2) { if (path2[0] !== path2[1]) legs.push({ from: path2[0], to: path2[1], ...base, distanceKm: num(p.S10a_115) || null, sourceRecordId: id }); return; }
+    for (let j = 0; j + 1 < path2.length; j++) if (path2[j] !== path2[j + 1]) legs.push({ from: path2[j], to: path2[j + 1], ...base, sourceRecordId: `${id}-${j + 1}` });
+  });
   return { ports, legs };
 }
 

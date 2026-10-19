@@ -22,7 +22,7 @@
 | `museum` | 博物館・美術館・科学館 | 437 | 424 | 13 | 0 | LM / DC | Wikidata |
 | `heritage` | 歴史的建造物・城・遺跡 | 335 | 335 | 0 | 0 | LM | Wikidata |
 | `university` | 大学・研究所 | 319 | 319 | 0 | 0 | EDU | Wikidata |
-| `port` | 港・フェリーターミナル | 259 | 259 | 0 | 0 | GW | Wikidata、国土数値情報 S10a |
+| `port` | 港・フェリーターミナル | 329 | 329 | 0 | 0 | GW | Wikidata、国土数値情報 S10a |
 | `park` | 都市公園・庭園 | 246 | 147 | 99 | 0 | LM | Wikidata |
 | `stadium` | スタジアム・アリーナ・競技場 | 195 | 184 | 11 | 0 | LM | Wikidata |
 | `monument` | 記念碑・名のある広場や交差点 | 180 | 180 | 0 | 0 | LM | Wikidata |
