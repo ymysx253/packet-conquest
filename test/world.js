@@ -237,16 +237,16 @@ async function solve(world, p, nodeId) {
   await w.joinTeam(dee, team1.id);
   await assert.rejects(() => w.joinTeam(eee, team1.id), /満員/);
   // 合算: a と cee が同じ拠点を攻める(cee の拠点は a の陣地の隣に生まれたとは限らないので、cee に a の隣の所有拠点を与える)
-  const shared = [...w.adj.get(nb)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false && n.hits >= 2);
+  const shared = [...w.adj.get(nb)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false && n.hits >= 2 && hasGenerator(w.levelFor(n, 'attack'))); // 問題のあるレベルの拠点
   const c1Launch = w.nodes.get(nb); // a の所有拠点 nb を cee にも隣接させるため、cee の拠点と nb をつなぐ
   w.addEdge(cee.homeNodeId, c1Launch.id, w.nodes.get(cee.homeNodeId).t0);
   // cee は nb を持っていないので、nb から先は攻められない。合算を確かめるには cee が shared に隣接する所有拠点を持つ必要がある
-  const c1Own = [...w.adj.get(shared.id)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false && n.id !== nb);
-  if (c1Own) {
+  const c1Own = shared && [...w.adj.get(shared.id)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false && n.id !== nb);
+  if (shared && c1Own) {
     c1Own.owner = cee.id; await w.persistNode(c1Own); w.addEdge(cee.homeNodeId, c1Own.id, w.nodes.get(cee.homeNodeId).t0); cee.reach = null;
-    const qa = await w.ask(a, shared.id); await w.answer(a, qa.qid, a.pending.answerIndex);
+    await solve(w, a, shared.id);
     assert.strictEqual(shared.progress[team1.id], 1, '進捗はチームの鍵で数える');
-    const qc = await w.ask(cee, shared.id); await w.answer(cee, qc.qid, cee.pending.answerIndex);
+    await solve(w, cee, shared.id);
     assert.strictEqual(shared.owner === cee.id ? 2 : shared.progress[team1.id], 2, '仲間の正解が合算される');
   }
   const rk2 = await w.rankings();

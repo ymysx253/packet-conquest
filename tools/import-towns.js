@@ -11,7 +11,7 @@
 //   - 丁目は分けない。「銀座一丁目」〜「銀座八丁目」は「銀座」1 つ(市区町村コード + 町の番号 KIHON1 でまとめる)
 //   - 同じ町の番号に名前の違う字がまとまっているときは、名前の先頭の共通部分(「大字平井谷の入」「大字平井本宿」→「平井」)。共通部分が無ければ字ごとに分ける
 //   - 占領できる(ハック可)。基礎レベルは人口で Lv1〜9(2026-10-19。tools/levels.js)。地域の支配の数に入る。開始地点にも選べる
-//   - 線は、境界が接している町・字どうし(borders)と、町・字の中にある駅・名所(contains)。つなぐのは tools/import-links.js
+//   - 線は、境界が接している町・字どうし(borders)と、まわりの駅・名所(contains)。どちらも「見通し」で、すぐ隣だけ(2026-10-20)。つなぐのは tools/import-links.js
 //   - 水面・河川敷は入れない。米軍・自衛隊の基地、皇居、立ち入りが制限された島は非公開(status: hidden)で入れる
 //   - id は tw-<市区町村コード 5 桁>-<まとめた区画のうち最小の小地域コード 6 桁>(国勢調査のコードから決まるので、入れ直しても変わらない)
 const fs = require('fs');
@@ -252,18 +252,129 @@ for (const [k, c] of pairCount) {
 }
 vertexOwner.length = 0; vertexOwner2.length = 0;
 
-// 町・字の中にある駅・名所(公開・ハック可)。町・字の範囲を約 5 km のます目に登録して、近所の町・字だけ調べる
+// ---------- 見通し(2026-10-20 ユーザー決定) ----------
+// 拠点どうしは「すぐ隣」だけをつなぐ。2 つの拠点を結ぶ線が、ほかの町・字の区域を通るなら、つながない(飛び越えない)。
+//   - 町・字どうし: 境界が接していて、代表点を結ぶ線がほかの町・字を通らないもの。
+//     山林など広い区域(相生市の「陸・那波」は約 64 km²)が、遠い端で接している町へ一気につながっていた。大きな町から隣の町へは、間の町を通って行く
+//   - 駅・名所・空港・港と町・字: まわりの町・字の代表点のうち、線がほかの町・字を通らないものすべて(自分がいる町の区域の中を通るのはよい)。
+//     どの町に属すかではなく、まわりの町の拠点と隣り合っているか(東京タワーなら、まわりの 5 つほどの町)
+//   - 電車・飛行機・船(路線・空路・海路)はこの決まりの外(tools/import-links.js、server/map/routes.js)
+// 判定: 線分が、対象以外の町・字の境界の辺と交わるか。辺は約 20 m で間引いた輪郭から作り、約 1 km のます目で引く
+const losReport = { checked: 0, dropped: 0 };
+const SEG_G = 0.01;
+const ex1 = [], ey1 = [], ex2 = [], ey2 = [], eOwner = [];
+const segGrid = new Map();
+pub.forEach((t, ti) => {
+  for (const f of t.feats) for (const r of f.rings) {
+    const pts = simplify(r.pts, 0.0002);
+    for (let i = 0; i + 1 < pts.length; i++) {
+      const [x1, y1] = pts[i], [x2, y2] = pts[i + 1];
+      const e = ex1.length; ex1.push(x1); ey1.push(y1); ex2.push(x2); ey2.push(y2); eOwner.push(ti);
+      for (let gy = Math.floor(Math.min(y1, y2) / SEG_G); gy <= Math.floor(Math.max(y1, y2) / SEG_G); gy++) for (let gx = Math.floor(Math.min(x1, x2) / SEG_G); gx <= Math.floor(Math.max(x1, x2) / SEG_G); gx++) {
+        const k = gy * 100000 + gx; let arr = segGrid.get(k); if (!arr) segGrid.set(k, (arr = [])); arr.push(e);
+      }
+    }
+  }
+});
+const segCross = (ax, ay, bx, by, cx, cy, dx, dy) => { // 線分 AB と CD が交わるか(端の接触は数えない)
+  const o = (px, py, qx, qy, rx, ry) => (qx - px) * (ry - py) - (qy - py) * (rx - px);
+  const d1 = o(ax, ay, bx, by, cx, cy), d2 = o(ax, ay, bx, by, dx, dy), d3 = o(cx, cy, dx, dy, ax, ay), d4 = o(cx, cy, dx, dy, bx, by);
+  return ((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) && ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0));
+};
+// 点 (ax, ay) から (bx, by) への線が、allow(町・字の番号の集まり)以外の町・字の区域を通るか
+function blockedLine(ax, ay, bx, by, allow) {
+  const seen = new Set();
+  const steps = Math.max(1, Math.ceil(Math.max(Math.abs(bx - ax), Math.abs(by - ay)) / (SEG_G / 2)));
+  for (let s = 0; s <= steps; s++) {
+    const x = ax + ((bx - ax) * s) / steps, y = ay + ((by - ay) * s) / steps;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const k = (Math.floor(y / SEG_G) + dy) * 100000 + Math.floor(x / SEG_G) + dx;
+      if (seen.has(k)) continue; seen.add(k);
+      for (const e of segGrid.get(k) || []) {
+        if (allow.has(eOwner[e])) continue;
+        if (segCross(ax, ay, bx, by, ex1[e], ey1[e], ex2[e], ey2[e])) return true;
+      }
+    }
+  }
+  return false;
+}
+const tIdx = new Map(pub.map((t, i) => [t.id, i]));
+{
+  const original = new Map([...borders].map(([id, set]) => [id, [...set]]));
+  for (const [id, set] of borders) {
+    const ai = tIdx.get(id);
+    for (const other of [...set]) {
+      const bi = tIdx.get(other);
+      if (bi < ai) continue; // 組ごとに 1 回
+      losReport.checked++;
+      const A = pub[ai], B = pub[bi];
+      if (blockedLine(A.lon, A.lat, B.lon, B.lat, new Set([ai, bi]))) { set.delete(other); borders.get(other).delete(id); losReport.dropped++; }
+    }
+  }
+  // 隣が全部外れた町・字(形が入り組んでいて、どの隣への線もほかの町を通るもの)は、接している町のうち代表点がいちばん近い 1 つとだけつなぐ
+  for (const [id, set] of borders) {
+    if (set.size || !original.get(id).length) continue;
+    const A = pub[tIdx.get(id)];
+    const near = original.get(id).map((o) => pub[tIdx.get(o)]).sort((x, y) => distKm(A, x) - distKm(A, y))[0];
+    set.add(near.id); borders.get(near.id).add(id); losReport.kept = (losReport.kept || 0) + 1;
+  }
+}
+
+// 駅・名所・空港・港と町・字(contains)。町・字の範囲を約 5 km のます目に登録して、近所の町・字だけ調べる
 const townGrid = new Map();
 const G5 = 0.05;
 for (const t of pub) for (let y = Math.floor(t.bb[1] / G5); y <= Math.floor(t.bb[3] / G5); y++) for (let x = Math.floor(t.bb[0] / G5); x <= Math.floor(t.bb[2] / G5); x++) {
   const k = `${y}:${x}`; if (!townGrid.has(k)) townGrid.set(k, []); townGrid.get(k).push(t);
 }
 const contains = new Map(pub.map((t) => [t.id, []]));
+const ACCESS_KM = 3, ACCESS_CANDS = 60; // 調べる町・字: 代表点が 3 km 以内の近い順 60 まで(すぐ隣はこの中に入る)
+const insideOf = new Map(); // 拠点 id → その拠点がある町・字の番号(無ければ -1)
 for (const n of others) {
   if (n.hackable === false || n.status === 'hidden' || n.isPlayerNode) continue;
-  const cands = townGrid.get(`${Math.floor(n.lat / G5)}:${Math.floor(n.lon / G5)}`) || [];
-  const t = cands.find((x) => inTown(n, x));
-  if (t) contains.get(t.id).push(n.id);
+  const cands = new Set();
+  for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) for (const x of townGrid.get(`${Math.floor(n.lat / G5) + dy}:${Math.floor(n.lon / G5) + dx}`) || []) cands.add(x);
+  const inside = [...cands].find((x) => inTown(n, x));
+  const hit = new Set(inside ? [inside] : []);
+  const near = [...cands].filter((x) => x !== inside).map((x) => ({ x, d: distKm(n, x) })).filter((o) => o.d <= ACCESS_KM).sort((p, q) => p.d - q.d).slice(0, ACCESS_CANDS);
+  const insideIdx = inside ? tIdx.get(inside.id) : -1;
+  insideOf.set(n.id, insideIdx);
+  for (const { x } of near) {
+    const xi = tIdx.get(x.id);
+    if (!blockedLine(n.lon, n.lat, x.lon, x.lat, new Set([insideIdx, xi]))) hit.add(x);
+  }
+  if (!hit.size) { // どの町の中にも無く、見通せる町も無い: 代表点がいちばん近い町(5 km まで)
+    let best = null, bd = 5;
+    for (const x of cands) { const d = distKm(n, x); if (d < bd) { bd = d; best = x; } }
+    if (best) { hit.add(best); losReport.nearest = (losReport.nearest || 0) + 1; }
+  }
+  losReport.access = (losReport.access || 0) + hit.size;
+  for (const t of hit) contains.get(t.id).push(n.id);
+}
+
+// 名所から見通せる駅(2026-10-20 ユーザー決定): 名所(駅・町・字以外)から駅へ直接つなぐのは、間にほかの町・字が無いときだけ。
+// 線が、名所のある町と駅のある町以外の町・字の区域を通るならつながない(東京タワー → 御成門駅 はよい、→ 六本木一丁目駅 は間に麻布台があるのでだめ)。
+// 一覧は server/map/data/derived/landmark-stations.json に書き、tools/import-links.js が名所と駅を結ぶときに使う(5 km 以内・近い順)
+{
+  const LM_KM = 5;
+  const stations = others.filter((n) => n.genre === 'station' && n.hackable !== false && n.status !== 'hidden');
+  const sg = new Map(); const sc = (p) => `${Math.floor(p.lat * 20)}:${Math.floor(p.lon * 20)}`;
+  for (const st of stations) { const k = sc(st); if (!sg.has(k)) sg.set(k, []); sg.get(k).push(st); }
+  const visible = {}; let pairs = 0, ok = 0;
+  for (const n of others) {
+    if (n.genre === 'station' || n.hackable === false || n.status === 'hidden' || n.isPlayerNode) continue;
+    const ni = insideOf.has(n.id) ? insideOf.get(n.id) : -1;
+    const cy = Math.floor(n.lat * 20), cx = Math.floor(n.lon * 20); const list = [];
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) for (const st of sg.get(`${cy + dy}:${cx + dx}`) || []) {
+      const d = distKm(n, st); if (d > LM_KM) continue;
+      pairs++;
+      const si = insideOf.has(st.id) ? insideOf.get(st.id) : -1;
+      if (!blockedLine(n.lon, n.lat, st.lon, st.lat, new Set([ni, si]))) { list.push({ id: st.id, d }); ok++; }
+    }
+    visible[n.id] = list.sort((p, q) => p.d - q.d).map((x) => x.id);
+  }
+  const dir = path.join(DATA, 'derived'); fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, 'landmark-stations.json'), JSON.stringify({ schema: 'pc.derived.landmark-stations/1', note: '名所から見通せる駅(5 km 以内、近い順)。tools/import-towns.js が町・字の区域から作り、tools/import-links.js が使う', updatedAt: TODAY, visible }) + '\n');
+  losReport.lmPairs = pairs; losReport.lmOk = ok;
 }
 
 // ---------- 湖・湾の形(2026-10-19): 画面が薄い水色で塗る(public/data/water.json) ----------
@@ -352,6 +463,7 @@ for (const { file, T } of nodeFiles.values()) {
 const linked = pub.filter((t) => (borders.get(t.id).size + contains.get(t.id).length) > 0).length;
 console.log(`名前の無い切れ端・境界未定で除いた区画 ${unnamed.length}`);
 console.log(`町・字: 区画 ${feats.length} → ${towns.length} にまとめ、${added} 件を入れた(公開 ${pub.length}、非公開 ${report.hidden.length})。線のある町・字 ${linked}`);
+console.log(`見通しで間引いた隣どうしの線: 調べた ${losReport.checked} 組のうち ${losReport.dropped} 組を外した(隣が全部外れたため、いちばん近い隣を残した町 ${losReport.kept || 0})。駅・名所と町・字の線 ${losReport.access || 0} 本(見通せる町が無く、いちばん近い町につないだもの ${losReport.nearest || 0})。名所から 5 km 以内の駅 ${losReport.lmPairs || 0} 組のうち、間に町が無いもの ${losReport.lmOk || 0} 組`);
 console.log(`隣の町・字の線(延べ) ${[...borders.values()].reduce((s, x) => s + x.size, 0) / 2} 本、中の駅・名所との線 ${[...contains.values()].reduce((s, x) => s + x.length, 0)} 本、代表点をずらした ${report.moved} 件`);
 if (report.hidden.length) console.log('非公開: ' + report.hidden.join('、'));
 if (report.skipped.length) console.log('入れなかった(河川敷など): ' + report.skipped.join('、'));

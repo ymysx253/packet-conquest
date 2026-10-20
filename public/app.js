@@ -117,7 +117,7 @@
       case 'moved':
         S.home = m.home; S.movedAt = m.movedAt; S.moving = false; $('pickBar').hidden = true; S.selected = null; S.question = null; S.result = null;
         if (m.area) $('areaChip').textContent = m.area;
-        S.nodes.clear(); S.edges.clear(); S.tiles.clear(); lastViewKey = '';
+        S.nodes.clear(); S.edges.clear(); S.tiles.clear(); lastViewKey = ''; railCache = null;
         centerOn(worldOf(m.home.lat, m.home.lon), 9); requestView(true); renderQuestion();
         toast('引っ越しました。新しい拠点から広げ直してください');
         break;
@@ -158,6 +158,7 @@
 
   // 受け取ったタイルを取り込み、見えなくなったタイルの拠点を捨てる
   function onTiles(m) {
+    railCache = null; // 拠点とつながりが入れ替わるので、路線の隣どうしを作り直す
     if (m.overview) {
       // 縮小表示: 送られてきた高レベルの拠点だけに入れ替える
       S.nodes.clear(); S.edges.clear(); S.tiles.clear(); S.overview = true; S.viewZ = m.z;
@@ -350,6 +351,57 @@
   const worldOf = (lat, lon) => ({ x: lon * 1000 * KX, y: -lat * 1000 });
   const latLonOf = (x, y) => ({ lat: -y / 1000, lon: x / (1000 * KX) });
   const posOf = (n) => { if (!n._p) n._p = worldOf(n.lat, n.lon); return n._p; };
+
+  // ---------- 路線の線(2026-10-20 ユーザー決定) ----------
+  // 駅と駅の線は鉄道の地図記号のように、縁取りの中を白と黒の交互にする(新幹線は青緑と白)。乗り物の線は曲線:
+  //   同じ路線の前後の駅を通るなめらかな曲線にする(各駅での向きは、反対側の隣の駅からこちらの隣の駅への向き)。分かれ道では、いちばんまっすぐ続く隣を使う
+  //   両端の駅が同じ新幹線の路線を持つ線を新幹線とする(全国 101 本。どれも新幹線で隣り合う駅だった)
+  const RAIL = { ink: '#2B2B2B', paper: '#FFFFFF', shinkansen: '#00897B' };
+  let railCache = null; // 駅 id → [{ id, lines }](路線でつながる隣の駅)。タイルが届くたびに作り直す
+  const commonLines = (a, b) => { const bl = b.lines || []; return (a.lines || []).filter((l) => bl.includes(l)); };
+  function railLinesOf(na, nb) { // 2 つの駅を結ぶ路線(新幹線があれば新幹線だけ)。路線の線でなければ空
+    if (na.genre !== 'station' || nb.genre !== 'station' || na.isPlayerNode || nb.isPlayerNode) return [];
+    const ls = commonLines(na, nb);
+    const shk = ls.filter((l) => l.includes('新幹線'));
+    return shk.length ? shk : ls;
+  }
+  function railIndex() {
+    if (railCache) return railCache;
+    railCache = new Map();
+    const push = (k, v) => { let arr = railCache.get(k); if (!arr) railCache.set(k, (arr = [])); arr.push(v); };
+    for (const e of S.edges.values()) {
+      const a = S.nodes.get(e.a), b = S.nodes.get(e.b);
+      if (!a || !b) continue;
+      const ls = railLinesOf(a, b);
+      if (!ls.length) continue;
+      push(a.id, { id: b.id, lines: ls }); push(b.id, { id: a.id, lines: ls });
+    }
+    return railCache;
+  }
+  function railTangent(na, nb, ls) { // na での線の向き(単位ベクトル)
+    const pa = posOf(na), pb = posOf(nb);
+    let dx = pb.x - pa.x, dy = pb.y - pa.y; const dl = Math.hypot(dx, dy) || 1; dx /= dl; dy /= dl;
+    let best = null, bestDot = -0.2; // 反対側(内積が小さい)にある同じ路線の隣だけを使う
+    for (const m of railIndex().get(na.id) || []) {
+      if (m.id === nb.id || !m.lines.some((l) => ls.includes(l))) continue;
+      const c = S.nodes.get(m.id); if (!c) continue;
+      const pc = posOf(c); let ux = pc.x - pa.x, uy = pc.y - pa.y; const ul = Math.hypot(ux, uy) || 1; ux /= ul; uy /= ul;
+      const dot = ux * dx + uy * dy;
+      if (dot < bestDot) { bestDot = dot; best = { ux, uy }; }
+    }
+    if (!best) return { x: dx, y: dy };
+    const tx = dx - best.ux, ty = dy - best.uy, tl = Math.hypot(tx, ty) || 1;
+    return { x: tx / tl, y: ty / tl };
+  }
+  function railCurve(na, nb) { // 路線の線の形(画面座標の 3 次ベジェ)。路線の線でなければ null
+    const ls = railLinesOf(na, nb);
+    if (!ls.length) return null;
+    const a = toScreen(posOf(na)), b = toScreen(posOf(nb));
+    const L = Math.hypot(b.x - a.x, b.y - a.y) / 3;
+    const ta = railTangent(na, nb, ls), tb = railTangent(nb, na, ls);
+    return { a, b, c1: { x: a.x + ta.x * L, y: a.y + ta.y * L }, c2: { x: b.x + tb.x * L, y: b.y + tb.y * L }, shinkansen: ls[0].includes('新幹線') };
+  }
+  const railPath = (ctx, cv) => { ctx.beginPath(); ctx.moveTo(cv.a.x, cv.a.y); ctx.bezierCurveTo(cv.c1.x, cv.c1.y, cv.c2.x, cv.c2.y, cv.b.x, cv.b.y); };
 
   // ---------- 地図: 拡大縮小と移動 ----------
   // k: 平面座標 → 画面ピクセルの倍率。tx, ty: 画面の左上にある平面座標。BASE_K は「1 倍」(1° ≈ 1100 px)
@@ -976,21 +1028,43 @@
       ctx.globalAlpha = 1;
     }
 
-    // 線路(リンク)
+    // 線路(リンク)。路線の線(駅と駅)は後でまとめて、鉄道の地図記号のように描く
     ctx.lineCap = 'round';
+    const lineScale = Math.min(1, Math.max(0.4, ratio / 4));
+    const rails = [];
     for (const e of S.edges.values()) {
       const na = nodeById(e.a), nb = nodeById(e.b);
       if (!na || !nb || !visibleNode(na) || !visibleNode(nb)) continue; // 描かない町・字への線も描かない
-      const a = toScreen(posOf(na)), b = toScreen(posOf(nb));
       const own = na.owner && na.owner === nb.owner && ownShown(relOf(na)) ? ((ownerStyleOf(na) || {}).frame || ownerColorOf(na)) : null; // チームの線は枠の色
+      const ef = Math.min(fadeOf(na), fadeOf(nb)); // 線も、両端の薄い方に合わせて薄く
+      const cv = railCurve(na, nb);
+      if (cv) { rails.push({ cv, own, ef }); continue; }
+      const a = toScreen(posOf(na)), b = toScreen(posOf(nb));
       const thin = na.isPlayerNode || nb.isPlayerNode;
       const town = na.genre === 'town' || nb.genre === 'town'; // 町・字の線は細く薄く(路線の線を主役にする)
       ctx.strokeStyle = own || C.line;
-      ctx.lineWidth = (own ? (thin || town ? 4 : 7) : (thin ? 2.5 : town ? 1.5 : 4)) * Math.min(1, Math.max(0.4, ratio / 4));
-      const ef = Math.min(fadeOf(na), fadeOf(nb)); // 線も、両端の薄い方に合わせて薄く
+      ctx.lineWidth = (own ? (thin || town ? 4 : 7) : (thin ? 2.5 : town ? 1.5 : 4)) * lineScale;
       ctx.globalAlpha = (town && !own ? 0.55 : 1) * ef;
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
       ctx.globalAlpha = 1;
+    }
+    if (rails.length) {
+      // 縁取り → 中の白 → 交互の色、の順に全部の線へ重ねる(交わるところもきれいに見える)。
+      // 占領した路線(両端が同じ持ち主)は記号の形のまま、黒(新幹線は青緑)の部分を持ち主の色にして少し太く(2026-10-20 ユーザー決定。チームならチームの枠の色)
+      const W = Math.max(3, 6 * lineScale), inner = Math.max(1.4, W - 2.2), dash = Math.max(4, W * 2.2);
+      const Wo = W * 1.4, innerO = Math.max(1.4, Wo - 3);
+      ctx.save(); ctx.lineCap = 'butt';
+      for (const pass of [0, 1, 2]) {
+        ctx.setLineDash(pass === 2 ? [dash, dash] : []);
+        for (const r of rails) {
+          ctx.globalAlpha = r.ef;
+          const col = r.own || (r.cv.shinkansen ? RAIL.shinkansen : RAIL.ink);
+          ctx.strokeStyle = pass === 1 ? RAIL.paper : col;
+          ctx.lineWidth = r.own ? (pass === 0 ? Wo : innerO) : (pass === 0 ? W : inner);
+          railPath(ctx, r.cv); ctx.stroke();
+        }
+      }
+      ctx.restore();
     }
 
     // 選んだ拠点のつながり(2026-10-19 ユーザー決定): 拡大・縮小にかかわらず、つながり先まで黒い線で出す(選択を解除すると元の色)
@@ -1002,7 +1076,9 @@
         ctx.lineWidth = Math.max(2, Math.min(4, 1.5 + ratio / 6));
         for (const m of S.selNb.list) {
           const b = toScreen(S.nodes.has(m.id) ? posOf(S.nodes.get(m.id)) : m.w);
-          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+          const cv = S.nodes.has(m.id) ? railCurve(sel, S.nodes.get(m.id)) : null; // 路線の線は同じ曲線でなぞる
+          if (cv) railPath(ctx, cv); else { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); }
+          ctx.stroke();
           if (!S.drawn || !S.drawn.has(m.id)) { ctx.beginPath(); ctx.arc(b.x, b.y, 3.5, 0, Math.PI * 2); ctx.fill(); } // 描いていない拠点(縮小で隠れた町・字など)は点で示す
         }
         ctx.restore();

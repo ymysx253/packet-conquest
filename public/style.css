@@ -117,6 +117,9 @@ body {
 .ln.air { border-color: #8B5CF6; }
 .ln.sea { border-color: #F97316; }
 .ln.sel { border-top-style: solid; border-color: var(--ink); }
+/* 路線は鉄道の地図記号のように縁取りの中を白と黒の交互(新幹線は青緑と白)。色は app.js の RAIL と同じ */
+.ln.rail { height: 3px; border: 1.5px solid #2B2B2B; background: repeating-linear-gradient(90deg, #2B2B2B 0 6px, #FFFFFF 6px 12px); }
+.ln.rail.shinkansen { border-color: #00897B; background: repeating-linear-gradient(90deg, #00897B 0 6px, #FFFFFF 6px 12px); }
 
 .side { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .side > .panel { flex: 0 0 auto; }

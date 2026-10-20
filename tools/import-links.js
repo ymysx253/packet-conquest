@@ -126,12 +126,19 @@ const sGrid = new Map();
 const sCell = (p) => `${Math.floor(p.lat * 20)}:${Math.floor(p.lon * 20)}`; // 約 5 km のます目
 for (const s of hackableStations) { const k = sCell(s); if (!sGrid.has(k)) sGrid.set(k, []); sGrid.get(k).push(s); }
 let landmarkEdges = 0, landmarkAlone = 0;
+// 名所から見通せる駅(2026-10-20 ユーザー決定。tools/import-towns.js が作る): 間にほかの町・字がある駅とは直接つながない。一覧に無い名所は前のまま
+const LM_VIS_FILE = path.join(__dirname, '..', 'server/map/data/derived/landmark-stations.json');
+const LM_VIS = fs.existsSync(LM_VIS_FILE) ? JSON.parse(fs.readFileSync(LM_VIS_FILE, 'utf8')).visible : null;
+let landmarkBlocked = 0;
 for (const n of nodes) {
   if (n.genre === 'station' || n.genre === 'town' || n.hackable === false || n.status === 'hidden') continue; // 町・字は下で境界から結ぶ
   const cy = Math.floor(n.lat * 20), cx = Math.floor(n.lon * 20);
   const cands = [];
   for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) for (const s of sGrid.get(`${cy + dy}:${cx + dx}`) || []) { const d = distKm(n, s); if (d <= LANDMARK_MAX_KM) cands.push({ s, d }); }
-  const near = cands.sort((a, b) => a.d - b.d).slice(0, Math.min(LANDMARK_MAX_LINKS, landmarkLinkCount(n.level))); // 古い物差しと同じ本数(tools/levels.js)
+  const vis = LM_VIS && LM_VIS[n.id] ? new Set(LM_VIS[n.id]) : null;
+  const seeThrough = vis ? cands.filter((c) => vis.has(c.s.id)) : cands;
+  landmarkBlocked += cands.length - seeThrough.length;
+  const near = seeThrough.sort((a, b) => a.d - b.d).slice(0, Math.min(LANDMARK_MAX_LINKS, landmarkLinkCount(n.level))); // 古い物差しと同じ本数(tools/levels.js)
   if (!near.length) landmarkAlone++;
   for (const { s } of near) { link(n.id, s.id); landmarkEdges++; }
 }
@@ -191,7 +198,7 @@ for (const { file, T } of FILES) {
 
 const deg = {}; for (const n of hackable) { const d = adj.get(n.id).size; deg[d] = (deg[d] || 0) + 1; }
 const top = hackable.map((n) => ({ name: n.name, d: adj.get(n.id).size })).sort((a, b) => b.d - a.d).slice(0, 8);
-console.log(`対象 ${FILES.length} ファイル ${nodes.length} 拠点。路線のつながり ${lineEdges / 2} 本、名所のつながり ${landmarkEdges} 本(5 km 以内に駅が無い名所 ${landmarkAlone})、町・字のつながり ${townEdges} 本、橋 ${bridges.length} 本。拠点に結びつかなかった N02 の駅 ${unmapped} 件(対象外の都道府県など)`);
+console.log(`対象 ${FILES.length} ファイル ${nodes.length} 拠点。路線のつながり ${lineEdges / 2} 本、名所のつながり ${landmarkEdges} 本(5 km 以内に見通せる駅が無い名所 ${landmarkAlone}。間に町があって外した駅 ${landmarkBlocked})、町・字のつながり ${townEdges} 本、橋 ${bridges.length} 本。拠点に結びつかなかった N02 の駅 ${unmapped} 件(対象外の都道府県など)`);
 console.log('つながりの本数 → 拠点数', JSON.stringify(deg));
 console.log('多い順', top.map((t) => `${t.name} ${t.d}`).join(' / '));
 if (bridges.length) console.log('橋:', bridges.join(' / '));

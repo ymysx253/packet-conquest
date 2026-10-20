@@ -55,15 +55,18 @@ const seen = new Set([HACKABLE[0].id]); const stack = [HACKABLE[0].id];
 while (stack.length) for (const m of ADJ[stack.pop()]) if (!seen.has(m)) { seen.add(m); stack.push(m); }
 assert.strictEqual(seen.size, HACKABLE.length, '地図が分断されています');
 for (const e of EDGES) assert.ok(ADJ[e.a] && ADJ[e.b] && e.a !== e.b, 'リンクの端点が不正');
-// つながりは路線に沿う(第 14 章): 新宿駅がいちばん多く、末端の駅は 1 本。名所は近い駅をレベルと同じ数だけ
+// つながりは路線に沿う(第 14 章): 新宿駅がいちばん多く、末端の駅は 1 本。名所は見通せる近い駅をレベルの数まで
 const byName = Object.fromEntries(NODES.filter((n) => n.region.startsWith('tokyo-')).map((n) => [n.name, n])); // 全国に同名の駅があるので東京に限る
 const railLinks = (n) => n.adj.filter((id) => id.startsWith('st-')).length; // 名所を除いた路線のつながり
 assert.ok(railLinks(byName['新宿駅']) >= 10 && railLinks(byName['新宿駅']) === Math.max(...NODES.filter((n) => n.genre === 'station').map(railLinks)), '路線のつながりは新宿駅が最多(名所が集まる駅は名所の線ぶん本数が増える)');
 assert.ok(byName['東京駅'].adj.includes(byName['神田駅'].id) && byName['東京駅'].adj.includes(byName['有楽町駅'].id), '東京駅は山手線の前後とつながる');
 assert.strictEqual(railLinks(byName['奥多摩駅']), 1, '終点は路線のつながりが 1 本');
-assert.strictEqual(railLinks(byName['東京タワー']), 8, '名所は近い駅をレベルの数だけ(上限 8)');
+assert.ok(railLinks(byName['東京タワー']) >= 1 && railLinks(byName['東京タワー']) <= 8, '名所は近い駅をレベルの数まで(上限 8)');
+// 見通し(2026-10-20): 名所と駅の間にほかの町・字があればつながない。東京タワー → 御成門駅 は間に町が無いのでよい、→ 六本木一丁目駅 は麻布台を飛び越えるのでだめ
+assert.ok(byName['東京タワー'].adj.includes(byName['御成門駅'].id), '東京タワーと御成門駅は、間に町が無いのでつながる');
+assert.ok(!byName['東京タワー'].adj.includes(byName['六本木一丁目駅'].id), '東京タワーと六本木一丁目駅は、間に麻布台があるのでつながらない');
 assert.ok(byName['東京タワー'].adj.some((id) => id.startsWith('tw-')), '名所は自分がある町・字ともつながる');
-assert.strictEqual(byName['国会議事堂'].level, 777); assert.strictEqual(byName['東京都庁'].level, 600); assert.strictEqual(railLinks(byName['国会議事堂']), 8, '象徴拠点も駅とは 8 本まで(町・字との線は別)');
+assert.strictEqual(byName['国会議事堂'].level, 777); assert.strictEqual(byName['東京都庁'].level, 600); assert.ok(railLinks(byName['国会議事堂']) <= 8, '象徴拠点も駅とは 8 本まで(町・字との線は別)');
 assert.ok(byName['東京タワー'].adj.every((id) => NODES.find((n) => n.id === id).genre === 'station' || NODES.find((n) => n.id === id).genre === 'town'), '名所は駅と町・字とだけつながる');
 // 開始地点の近くに拠点がある
 assert.ok(NODES.some((n) => distanceKm(n, SPAWN_CENTER) < SPAWN_CENTER.radiusKm), '開始地点の近くに拠点がない');
