@@ -19,7 +19,7 @@
     selected: null, centerPending: false,
     start: null, picking: false, searchTimer: null, // 開始地点(選んだ駅・名所)と、地図から選ぶモード
     moving: false, movedAt: null, reach: new Set(), // 引っ越しの選択中 / 最後の引っ越し / 自分の拠点から線でつながっている所有拠点
-    rankings: null, me2: null, team: null, cooldownMs: 4000, // ランキング / 自分の集計 / 所属チーム / いまの待ち時間の長さ
+    rankings: null, me2: null, team: null, cooldownMs: 5000, // ランキング / 自分の集計 / 所属チーム / いまの待ち時間の長さ
     mine: new Map(), // 自分が占領している空港・港(航路を持つもの)。画面の外に出ても覚えておき、航路の線を引く
     bounds: new Map(), // 区・市の境界(地域 id → { polys })。public/data/bounds/<都道府県>.json を見えている分だけ読む
     boundsLoaded: new Set(), coarse: null, // 読み込み済みの都道府県 / 縮小時の粗い全国版(japan.json)
@@ -101,7 +101,7 @@
       case 'welcome':
         S.me = m.id; S.token = m.token; S.joined = true; S.home = m.home; S.spawn = m.spawn; S.questionRanges = m.questionRanges || null; S.movedAt = m.movedAt || null; S.mine.clear();
         $('areaChip').textContent = m.area || '日本';
-        S.team = m.team ? { id: m.team, name: m.teamName } : null; S.cooldownUntil = m.cooldownUntil || 0; S.cooldownMs = Math.max(4000, S.cooldownUntil - Date.now());
+        S.team = m.team ? { id: m.team, name: m.teamName } : null; S.cooldownUntil = m.cooldownUntil || 0; S.cooldownMs = Math.max(5000, S.cooldownUntil - Date.now());
         renderTeam();
         if (S.team) { S.infoOnly = true; send({ t: 'team', action: 'info' }); }
         store.set('pc-token', m.token); store.set('pc-name', m.name);
@@ -347,6 +347,13 @@
     if (!d || !d.paths) return;
     for (const [k, pts] of Object.entries(d.paths)) S.seaPaths.set(k, pts.map(([lat, lon]) => worldOf(lat, lon)));
   }).catch(() => { /* 無ければゆるい弧で描く */ });
+  // 路線の線の形(2026-10-20 ユーザー指摘: 海沿いで電車の線が海の上を通っていた)。本当の線路の形(N02 を約 60 m で間引いたもの)。
+  // キーは駅の id を小さい順に「|」でつないだもの、点は [経度, 緯度] で小さい方の駅から(両端の駅は含まない。[] はまっすぐ)
+  S.railPaths = new Map();
+  fetch('data/rail-paths.json').then((r) => (r.ok ? r.json() : null)).then((d) => {
+    if (!d || !d.paths) return;
+    for (const [k, pts] of Object.entries(d.paths)) S.railPaths.set(k, pts.map(([lon, lat]) => worldOf(lat, lon)));
+  }).catch(() => { /* 無ければ前後の駅の向きから作る曲線で描く */ });
 
   // ---------- 投影: 固定の縮尺(経度・緯度 → 平面座標。1 単位 = 0.001°) ----------
   const LAT0 = 35.68; // 横方向の補正の基準(東京)。地図が世界に広がったらメルカトルに変える
@@ -397,19 +404,39 @@
     const tx = dx - best.ux, ty = dy - best.uy, tl = Math.hypot(tx, ty) || 1;
     return { x: tx / tl, y: ty / tl };
   }
-  function railCurve(na, nb) { // 路線の線の形(画面座標の 3 次ベジェ)。路線の線でなければ null
+  function railCurve(na, nb) { // 路線の線の形(画面座標)。本当の線路の形があればそれ(path)、無ければ 3 次ベジェ。路線の線でなければ null
     const ls = railLinesOf(na, nb);
     if (!ls.length) return null;
     const a = toScreen(posOf(na)), b = toScreen(posOf(nb));
+    const key = na.id < nb.id ? `${na.id}|${nb.id}` : `${nb.id}|${na.id}`;
+    const pts = S.railPaths && S.railPaths.get(key);
+    if (pts) { const q = pts.map(toScreen); return { a, b, path: na.id < nb.id ? q : q.reverse(), shinkansen: ls[0].includes('新幹線') }; }
     const L = Math.hypot(b.x - a.x, b.y - a.y) / 3;
     const ta = railTangent(na, nb, ls), tb = railTangent(nb, na, ls);
     return { a, b, c1: { x: a.x + ta.x * L, y: a.y + ta.y * L }, c2: { x: b.x + tb.x * L, y: b.y + tb.y * L }, shinkansen: ls[0].includes('新幹線') };
   }
-  const railPath = (ctx, cv) => { ctx.beginPath(); ctx.moveTo(cv.a.x, cv.a.y); ctx.bezierCurveTo(cv.c1.x, cv.c1.y, cv.c2.x, cv.c2.y, cv.b.x, cv.b.y); };
+  const railPath = (ctx, cv) => {
+    ctx.beginPath(); ctx.moveTo(cv.a.x, cv.a.y);
+    if (!cv.path) { ctx.bezierCurveTo(cv.c1.x, cv.c1.y, cv.c2.x, cv.c2.y, cv.b.x, cv.b.y); return; }
+    // 線路の点を、点と点の中ほどを通るなめらかな線でつなぐ(海路と同じ描き方)
+    const q = [cv.a, ...cv.path, cv.b];
+    for (let i = 1; i < q.length - 1; i++) ctx.quadraticCurveTo(q[i].x, q[i].y, (q[i].x + q[i + 1].x) / 2, (q[i].y + q[i + 1].y) / 2);
+    ctx.lineTo(cv.b.x, cv.b.y);
+  };
 
   // ---------- 地図: 拡大縮小と移動 ----------
   // k: 平面座標 → 画面ピクセルの倍率。tx, ty: 画面の左上にある平面座標。BASE_K は「1 倍」(1° ≈ 1100 px)
   const BASE_K = 1.1;
+  // 地図の文字をくっきり(2026-10-20 ユーザー指摘: ぼやける)。表示倍率 125% などでは CSS の 1px が画面の点 1.25 個になるので、
+  // 文字の大きさと置く位置を画面の点の単位にそろえる。文字のまわりは地の色で縁取る(線と重なっても読める)。名前は薄くても 6 割の濃さ
+  const snapPx = (v) => { const d = window.devicePixelRatio || 1; return Math.round(v * d) / d; };
+  const haloFor = (color) => { // 文字の色が明るければ暗い縁、暗ければ明るい縁
+    const m = /^#([0-9a-f]{6})$/i.exec(String(color || '').trim()); if (!m) return '#FFFFFF';
+    const v = parseInt(m[1], 16), lum = (0.299 * (v >> 16) + 0.587 * ((v >> 8) & 255) + 0.114 * (v & 255)) / 255;
+    return lum > 0.6 ? '#0E141B' : '#FFFFFF';
+  };
+  const LABEL_MIN_ALPHA = 0.6;
+  const LABEL_PLUS = 2; // 地図の文字(拠点と地域の名前)を 2px 大きく。いちばん小さい文字(プレイヤーの拠点の名前)が 12px になる(2026-10-20 ユーザー指摘: 小さくて見えない。最低 12px)
   const V = { k: BASE_K, tx: 0, ty: 0, w: 0, h: 0 };
   const ZOOM_MIN = 0.02, ZOOM_MAX = 150; // 1 倍に対する比。0.02 倍で日本全体が入る。拡大は 150 倍まで(2026-10-19 に 50 から上げた。ユーザー指摘)
   const toScreen = (p) => ({ x: (p.x - V.tx) * V.k, y: (p.y - V.ty) * V.k });
@@ -436,6 +463,9 @@
     requestView();
   }
   window.addEventListener('resize', resize);
+  // 表示倍率だけが変わったとき(別の画面へウィンドウを動かしたなど)も、画面の点に合わせて描き直す(2026-10-20)
+  const watchDpr = () => { if (!window.matchMedia) return; const mq = window.matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`); const on = () => { resize(); watchDpr(); }; if (mq.addEventListener) mq.addEventListener('change', on, { once: true }); };
+  watchDpr();
   if (window.ResizeObserver) new ResizeObserver(() => resize()).observe($('mapWrap')); // 欄の開け閉めで枠の大きさが変わったときも
   // 凡例(レベルの形・持ち主・出典)はダイアログで出す(2026-10-19 ユーザー指摘)
   $('legendBtn').onclick = () => { const d = $('legendDialog'); if (d.showModal) d.showModal(); else d.setAttribute('open', ''); };
@@ -1177,23 +1207,27 @@
         : (ratio >= 14 || (ratio >= 5 && n.level >= 30) || (ratio >= 2 && n.level >= 100) || n.level >= 200 || n.kind === 'IX' || n.owner === S.me); // 2026-10-19 の物差し
       if (showLabel) {
         const isSel = S.selected === n.id, dim = S.selected && !isSel, fl = fadeOf(n);
-        const fs = n.kind === 'IX' ? 14 : n.isPlayerNode ? 10 : 11.5;
-        const font = `${n.isPlayerNode ? 500 : 700} ${fs * grow}px "BIZ UDPGothic", sans-serif`;
+        const fs = (n.kind === 'IX' ? 14 : n.isPlayerNode ? 10 : 11.5) + LABEL_PLUS;
+        const font = `${n.isPlayerNode ? 500 : 700} ${snapPx(fs * grow)}px "BIZ UDPGothic", sans-serif`;
         ctx.font = font;
-        const ty = p.y + top + 12 * grow, tw = ctx.measureText(n.name).width, th = fs * grow;
+        const tx = snapPx(p.x), ty = snapPx(p.y + top + (12 + LABEL_PLUS) * grow), tw = ctx.measureText(n.name).width, th = snapPx(fs * grow);
         // 名前の優先: 選択中・自分の拠点は必ず。ほかはレベルが高いほど先に置く(縮小時の区・市の名前は Lv8 前後と同じ扱い)
         const lp = isSel ? 1e6 : (n.owner && n.owner === S.me) ? 9e5 : 150 + n.level * 20 + (n.kind === 'GW' ? 15 : 0);
-        labels.push({ prio: lp, must: isSel || (n.owner && n.owner === S.me), box: [p.x - tw / 2 - 3, ty - th, tw + 6, th + 5], draw: () => {
+        labels.push({ prio: lp, must: isSel || (n.owner && n.owner === S.me), box: [tx - tw / 2 - 3, ty - th, tw + 6, th + 5], draw: () => {
           ctx.textAlign = 'center'; ctx.font = font;
           if (isSel) {
             const w = tw + 10, h = th + 6;
             ctx.fillStyle = C.surface; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; ctx.beginPath();
-            if (ctx.roundRect) ctx.roundRect(p.x - w / 2, ty - h + 4, w, h, 4); else ctx.rect(p.x - w / 2, ty - h + 4, w, h);
+            if (ctx.roundRect) ctx.roundRect(snapPx(tx - w / 2), ty - h + 4, w, h, 4); else ctx.rect(snapPx(tx - w / 2), ty - h + 4, w, h);
             ctx.fill(); ctx.stroke();
           }
-          ctx.globalAlpha = (dim ? 0.3 : 1) * fl; // 名前も印と同じ濃さ
-          ctx.fillStyle = tst && tst.text && !isSel ? tst.text : n.isPlayerNode && !isSel ? C.muted : C.ink; // チームの拠点の名前はチームの文字の色
-          ctx.fillText(n.name, p.x, ty);
+          const color = tst && tst.text && !isSel ? tst.text : n.isPlayerNode && !isSel ? C.muted : C.ink; // チームの拠点の名前はチームの文字の色
+          if (!isSel) { // 縁取りは濃いまま(文字だけ薄くすると線が透けるので)
+            ctx.globalAlpha = dim ? 0.5 : 1; ctx.lineJoin = 'round'; ctx.lineWidth = 3.5; ctx.strokeStyle = haloFor(color); ctx.strokeText(n.name, tx, ty);
+          }
+          ctx.globalAlpha = (dim ? 0.3 : 1) * Math.max(LABEL_MIN_ALPHA, fl); // 名前は印と同じく遠いと薄くするが、6 割より薄くしない
+          ctx.fillStyle = color;
+          ctx.fillText(n.name, tx, ty);
           ctx.globalAlpha = 1;
         } });
       }
@@ -1202,15 +1236,15 @@
     if (S.overview) {
       // 地域の支配(第 14.2 節): 中心に地域名。支配者がいれば、その色の帯と名前
       for (const g of S.regions) {
-        const q = toScreen(worldOf(g.lat, g.lon));
+        const q0 = toScreen(worldOf(g.lat, g.lon)), q = { x: snapPx(q0.x), y: snapPx(q0.y) };
         if (q.x < -80 || q.y < -40 || q.x > V.w + 80 || q.y > V.h + 40) continue;
         const st = g.controller && g.controller.style ? g.controller.style : null;
         const col = g.controller ? (st ? st.fill : g.controller.color) : null;
-        const font = `700 ${g.tier <= 3 ? 16 : g.tier === 5 ? 14 : 12}px "BIZ UDPGothic", sans-serif`;
+        const font = `700 ${snapPx((g.tier <= 3 ? 16 : g.tier === 5 ? 14 : 12) + LABEL_PLUS)}px "BIZ UDPGothic", sans-serif`;
         ctx.font = font;
         const label = (g.controller && g.controller.icon ? g.controller.icon + ' ' : '') + g.name, sub = g.controller ? `${g.controller.name} が支配` : '';
         const w = Math.max(ctx.measureText(label).width, sub ? ctx.measureText(sub).width * 0.85 : 0) + 14;
-        const h = sub ? 34 : 20;
+        const h = (sub ? 34 : 20) + LABEL_PLUS * (sub ? 2 : 1);
         // 地域名の優先: 支配者のいる地域 > 国・地方 > 都道府県 > 区・市
         const lp = (g.controller ? 8e5 : 0) + (g.tier <= 3 ? 750 : g.tier === 5 ? 700 : 300);
         labels.push({ prio: lp, box: [q.x - w / 2, q.y - 10, w, h], draw: () => {
@@ -1219,8 +1253,8 @@
           ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(q.x - w / 2, q.y - 10, w, h, 5); else ctx.rect(q.x - w / 2, q.y - 10, w, h); ctx.fill();
           ctx.globalAlpha = 1;
           ctx.strokeStyle = st ? st.frame : (col || C.line); ctx.lineWidth = st ? 2 : 1.5; ctx.stroke();
-          ctx.fillStyle = st ? st.text : (col ? '#fff' : C.ink); ctx.fillText(label, q.x, q.y + 5);
-          if (sub) { ctx.font = '600 10.5px "BIZ UDPGothic", sans-serif'; ctx.fillText(sub, q.x, q.y + 19); }
+          ctx.fillStyle = st ? st.text : (col ? '#fff' : C.ink); ctx.fillText(label, q.x, snapPx(q.y + 5 + LABEL_PLUS));
+          if (sub) { ctx.font = `600 ${snapPx(10.5 + LABEL_PLUS)}px "BIZ UDPGothic", sans-serif`; ctx.fillText(sub, q.x, snapPx(q.y + 19 + LABEL_PLUS * 2)); }
         } });
       }
     }
@@ -1252,7 +1286,12 @@
   function tickUi() {
     const cd = S.cooldownUntil - now();
     $('cool').hidden = cd <= 0;
-    if (cd > 0) $('coolBar').style.transform = `scaleX(${Math.min(1, cd / (S.cooldownMs || 4000))})`;
+    if (cd > 0) $('coolBar').style.transform = `scaleX(${Math.min(1, cd / (S.cooldownMs || 5000))})`;
+    // 問題ダイアログにも出す(2026-10-20 ユーザー指摘)。答えたあとの「続けて解く」があるときだけ。待ち時間が終わったら押せるようにする
+    const next = $('qNext'), showCool = cd > 0 && !next.hidden;
+    $('qCool').hidden = !showCool;
+    if (showCool) { $('qCoolBar').style.transform = `scaleX(${Math.min(1, cd / (S.cooldownMs || 5000))})`; $('qCoolText').textContent = `お手付き: あと ${Math.ceil(cd / 1000)} 秒`; }
+    if (next.disabled !== (cd > 0)) next.disabled = cd > 0;
   }
   let toastTimer;
   function toast(text) {

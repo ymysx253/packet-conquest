@@ -22,8 +22,8 @@ const { getQuestion, hasGenerator, QUESTION_RANGES } = require('./questions');
 const { judge } = require('./questions/normalize');
 const { dayOf, noopEvents } = require('./events');
 
-const COOLDOWN_MS = 4000;               // 不正解のあと操作できない時間(連続不正解で倍増。SECURITY.md F4)
-const COOLDOWN_MAX_MS = 60000;          // 待ち時間の上限
+const COOLDOWN_MS = 5000;               // 不正解のあと操作できない時間。いつも 5 秒(2026-10-20 ユーザー決定: 長すぎる。以前は連続不正解で倍増。SECURITY.md F4)
+const COOLDOWN_MAX_MS = COOLDOWN_MS;    // 上限(いまは倍増しないので同じ)
 const MIN_ANSWER_MS = 1000;             // 最短解答時間(SECURITY.md F6): 出題から 1 秒未満の解答は受け付けない(問題は残す)
 const RANK_TTL_MS = 10 * 1000;          // ランキングの集計結果を持つ時間
 const RANK_N = 15;
@@ -895,11 +895,11 @@ class World {
     let outcome, cooldownMs = 0;
     if (correct) { p.wrongStreak = 0; outcome = await this.apply(p, pend.nodeId, pend.mode, pend.level); }
     else {
-      // 連続不正解で待ち時間を倍増(4 → 8 → 16 → 32 → 60 秒)。保存するので再接続しても消えない(SECURITY.md F4)
+      // 不正解の待ち時間はいつも 5 秒(2026-10-20 ユーザー決定)。連続回数は記録に残す。待ち時間は保存するので再接続しても消えない(SECURITY.md F4)
       p.wrongStreak = (p.wrongStreak || 0) + 1;
-      cooldownMs = Math.min(COOLDOWN_MAX_MS, COOLDOWN_MS * 2 ** (p.wrongStreak - 1));
+      cooldownMs = COOLDOWN_MS;
       p.cooldownUntil = now() + cooldownMs;
-      outcome = `不正解。通信が ${Math.round(cooldownMs / 1000)} 秒止まります${p.wrongStreak > 1 ? `(連続 ${p.wrongStreak} 回目。正解すると戻ります)` : ''}`;
+      outcome = `不正解。通信が ${Math.round(cooldownMs / 1000)} 秒止まります`;
       await this.persistPlayer(p);
     }
     // 出来事の記録(問題の本文・選択肢・答え・qid は書かない)。at は解答の時刻なので、apply が積んだ intrude / capture より前に並ぶ

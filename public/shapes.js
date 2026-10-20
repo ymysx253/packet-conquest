@@ -128,14 +128,14 @@
 
     if (d.badge) {
       const label = `Lv${d.level}`;
-      c.font = '700 9px "IBM Plex Mono", monospace';
+      c.font = '700 12px "IBM Plex Mono", monospace'; // 最低 12px(2026-10-20 ユーザー指摘)
       const w = c.measureText(label).width + 6;
       const top = outerRadius(level, r);
-      const bx = p.x + r * 0.9, by = p.y - top - 10;
+      const bx = p.x + r * 0.9, by = p.y - top - 13;
       c.fillStyle = color; c.beginPath();
-      if (c.roundRect) c.roundRect(bx, by, w, 12, 3); else c.rect(bx, by, w, 12);
+      if (c.roundRect) c.roundRect(bx, by, w, 15, 3); else c.rect(bx, by, w, 15);
       c.fill();
-      c.fillStyle = surface; c.textAlign = 'left'; c.fillText(label, bx + 3, by + 9.5);
+      c.fillStyle = surface; c.textAlign = 'left'; c.fillText(label, bx + 3, by + 12);
     }
   }
 

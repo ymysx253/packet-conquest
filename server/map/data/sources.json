@@ -56,6 +56,12 @@
       "retrievedAt": "2026-10-20", "version": "1", "status": "active", "notes": "ゲームが作る架空の航路と港(2026-10-20 ユーザー決定)。陸からも航路からも行けない島の港、港の無い島には仮の港(pp-)を作り、いちばん近い港と結ぶ。1 日 20 分だけ使える。tools/import-links.js が毎回作り直す"
     },
     {
+      "id": "src-gsi-rdcl", "title": "地理院タイル 道路中心線(experimental_rdcl)", "publisher": "国土地理院", "kind": "government",
+      "url": "https://maps.gsi.go.jp/development/ichiran.html", "license": "LicenseRef-gsi-content", "commercialUse": true, "shareAlike": false,
+      "attribution": true, "attributionText": { "ja": "「地理院タイル(道路中心線)」(国土地理院)を加工して作成", "en": "Processed from GSI Tiles (road centerlines), Geospatial Information Authority of Japan" },
+      "retrievedAt": "2026-10-20", "version": "2016", "status": "active", "notes": "島が道(橋・トンネル)でつながっているかの判定だけに使う(道路そのものは画面に出さない)。国土地理院コンテンツ利用規約(出典の明示で商用可。CC BY 4.0 と同じ扱い)。tools/fetch-road-links.js"
+    },
+    {
       "id": "src-mlit-isj", "title": "位置参照情報(街区レベル・大字町丁目レベル)", "publisher": "国土交通省", "kind": "government",
       "url": "https://nlftp.mlit.go.jp/isj/", "license": "PDL-1.0", "commercialUse": true, "shareAlike": false,
       "attribution": true, "attributionText": { "ja": "「位置参照情報ダウンロードサービス」(国土交通省)(https://nlftp.mlit.go.jp/isj/)をもとに作成", "en": "Based on Location Reference Information, MLIT Japan" },

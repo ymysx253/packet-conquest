@@ -77,6 +77,9 @@ for (const f of stationFeatures) { const k = lineKey(f.properties); (stByLine.ge
 const adj = new Map(nodes.map((n) => [n.id, new Set()]));
 const link = (a, b) => { if (a && b && a !== b) { adj.get(a).add(b); adj.get(b).add(a); } };
 let lineEdges = 0, unmapped = 0;
+// 路線の線の形(2026-10-20 ユーザー指摘: 海沿いで電車の線が海の上を通っていた)。前後の駅の向きから作る曲線ではなく、本当の線路の形(N02 の鉄道区間)をなぞる。
+// 駅と駅の間の線路を間引いて public/data/rail-paths.json に書く(画面が読む)。キーは 2 つの駅の id を小さい順に「|」でつないだもの、点は小さい方の駅から
+const railPaths = new Map();
 for (const [line, sts] of stByLine) {
   // この路線に都内の拠点が 1 つも無ければ飛ばす
   const mapped = sts.map((f) => ({ f, id: nodeIdOf(f) }));
@@ -85,13 +88,15 @@ for (const [line, sts] of stByLine) {
   const graph = new Map(); // vkey → Set<vkey>
   const addV = (k) => { if (!graph.has(k)) graph.set(k, new Set()); return graph.get(k); };
   const addE = (a, b) => { if (a !== b) { addV(a).add(b); addV(b).add(a); } };
-  for (const f of secByLine.get(line) || []) { const c = f.geometry.coordinates; addE(vkey(c[0]), vkey(c[c.length - 1])); }
+  const segCoords = new Map(); // 'a|b' → その区間の点(a から b)
+  const addSeg = (c) => { const a = vkey(c[0]), b = vkey(c[c.length - 1]); addE(a, b); if (!segCoords.has(`${a}|${b}`)) { segCoords.set(`${a}|${b}`, c); segCoords.set(`${b}|${a}`, [...c].reverse()); } };
+  for (const f of secByLine.get(line) || []) addSeg(f.geometry.coordinates);
   // 駅の端点 → 駅。駅の区間そのものも辺にする
   const stationAt = new Map(); // vkey → index in mapped
   mapped.forEach((x, i) => {
     const c = x.f.geometry.coordinates;
     const a = vkey(c[0]), b = vkey(c[c.length - 1]);
-    addE(a, b); stationAt.set(a, i); stationAt.set(b, i);
+    addSeg(c); stationAt.set(a, i); stationAt.set(b, i);
     if (!x.id) unmapped++;
   });
   // 各駅から線形をたどり、別の駅に着いたら隣とする(途中の駅で止まるので、飛び越えない)
@@ -101,15 +106,26 @@ for (const [line, sts] of stByLine) {
     const starts = [vkey(c[0]), vkey(c[c.length - 1])];
     const seen = new Set(starts);
     const queue = [...starts];
+    const prev = new Map(); // たどった道すじ(線路の形を書き出すため)
     while (queue.length) {
       const v = queue.shift();
       for (const w of graph.get(v) || []) {
         if (seen.has(w)) continue;
-        seen.add(w);
+        seen.add(w); prev.set(w, v);
         const j = stationAt.get(w);
         if (j !== undefined && j !== i) {
           // 隣の駅。都内の拠点なら結ぶ。都外なら線はここで途切れる
-          if (mapped[j].id && mapped[j].id !== x.id) { link(x.id, mapped[j].id); lineEdges++; }
+          if (mapped[j].id && mapped[j].id !== x.id) {
+            link(x.id, mapped[j].id); lineEdges++;
+            const pk = x.id < mapped[j].id ? `${x.id}|${mapped[j].id}` : `${mapped[j].id}|${x.id}`;
+            if (!railPaths.has(pk)) { // 線路の形: たどった頂点の列を区間の点に戻す(新幹線の駅どうしなどは先に見つけた路線の形)
+              const vs = [w]; while (prev.has(vs[vs.length - 1])) vs.push(prev.get(vs[vs.length - 1]));
+              vs.reverse();
+              const pts = [];
+              for (let q = 1; q < vs.length; q++) { const cs = segCoords.get(`${vs[q - 1]}|${vs[q]}`); if (cs) pts.push(...(pts.length ? cs.slice(1) : cs)); }
+              if (pts.length >= 2) railPaths.set(pk, x.id < mapped[j].id ? pts : pts.reverse());
+            }
+          }
           continue; // 駅の先へは進まない
         }
         queue.push(w);
@@ -156,7 +172,7 @@ for (const n of nodes) {
 // ---------- 分断の橋渡し ----------
 // 離島(2026-10-20 ユーザー決定): 海の上で町どうしはつながらない。陸からも航路からも行けない島に町があれば、島の港から、
 // 港が無ければ島に仮の港(pp-。名前は「<町>港(仮)」)を作って、いちばん近い港へ「幻の航路」を引く。幻の航路は 1 日に 20 分だけ使える(航路ごとに時間をずらす)
-// (server/map/data/routes/src-phantom.json。出典 src-phantom)。町の無い島(無人の岩など)と、海を通らない分断(山の中など)は、今までどおり近い拠点へ橋をかける
+// (server/map/data/routes/src-phantom.json。出典 src-phantom)。海を通らない分断(山の中など)は、今までどおり近い拠点へ橋をかける。町の無い島にも港を付ける(2026-10-20)
 const PHANTOM_SRC = 'src-phantom';
 // 開く 20 分は航路ごとにずらす(2026-10-20 ユーザー決定)。航路の id から 20 分刻みの 72 通りのどれかに決める(同じ航路は毎日同じ時間。サーバーの時計の UTC)
 const PHANTOM_MIN = 20;
@@ -176,13 +192,58 @@ let routeJoins = 0;
 }
 // いちばん小さいまとまりから、外側でいちばん近い拠点へ橋を 1 本かける、を 1 つになるまで繰り返す。
 // 小さいまとまり × 全拠点で済むので、全国(約 9,000 駅)でも速い(以前は全拠点 × 全拠点を毎回)
-const { seaCross } = require('./sea').makeSea(ROOT);
+const { seaCross, firstCoast, onLand } = require('./sea').makeSea(ROOT);
 const { routeId } = require('../server/map/routes');
 const isPort = (n) => n.genre === 'port' && n.gateway && n.hackable !== false && n.status !== 'hidden';
 const allPorts = hackable.filter(isPort);
 const fileOf = new Map(); for (const x of FILES) for (const n of x.T.nodes) fileOf.set(n.id, x.T);
 const bridges = [], seaBridges = [], phantomRoutes = [], phantomPorts = [];
 const kmText = (d) => (d >= 10 ? d.toFixed(0) + ' km' : (d * 1000).toFixed(0) + ' m');
+
+// 道でつながる島(2026-10-20 ユーザー決定: 道がつながっているところは船ではなく、ふつうの拠点の線で結ぶ)。
+// tools/fetch-road-links.js が国土地理院の道路中心線で調べた結果(server/map/data/derived/road-links.json)の組を結ぶ
+const ROAD_FILE = path.join(DATA, 'derived', 'road-links.json');
+const roadLinks = fs.existsSync(ROAD_FILE) ? JSON.parse(fs.readFileSync(ROAD_FILE, 'utf8')).links : [];
+let roadJoins = 0;
+for (const r of roadLinks) if (parent.has(r.a) && parent.has(r.b)) { link(r.a, r.b); if (find(r.a) !== find(r.b)) roadJoins++; union(r.a, r.b); }
+
+// 海で隔てられたまとまりの、向こう岸に近いところ(向こう岸の陸地ごと、近い順に 6 か所まで)。
+// 道でつながっているかを調べる場所として server/map/data/derived/sea-gaps.json に書く(tools/fetch-road-links.js が読む)
+{
+  const G = 0.05, grid = new Map();
+  for (const n of hackable) { const k = `${Math.floor(n.lat / G)}:${Math.floor(n.lon / G)}`; if (!grid.has(k)) grid.set(k, []); grid.get(k).push(n); }
+  const comps = new Map();
+  for (const n of hackable) { const k = find(n.id); if (!comps.has(k)) comps.set(k, []); comps.get(k).push(n); }
+  const main = [...comps.values()].reduce((x, y) => (y.length > x.length ? y : x));
+  const gaps = [];
+  for (const list of comps.values()) {
+    if (list === main) continue;
+    const key = find(list[0].id);
+    // 島の拠点ごとに、向こう岸の陸地(まとまり)ごとのいちばん近い拠点(いちばん近い陸地が別の島で、橋は本土へ架かっていることがある。笠戸島など)
+    const cand = [];
+    for (const a of list) {
+      const bestBy = new Map(); // 向こう岸のまとまり → いちばん近い組
+      const cy = Math.floor(a.lat / G), cx = Math.floor(a.lon / G);
+      for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) for (const b of grid.get(`${cy + dy}:${cx + dx}`) || []) {
+        const kb = find(b.id); if (kb === key) continue;
+        const d = distKm(a, b); if (d > 20) continue;
+        const cur = bestBy.get(kb); if (!cur || d < cur.d) bestBy.set(kb, { a, b, d, kb });
+      }
+      cand.push(...bestBy.values());
+    }
+    cand.sort((p, q) => p.d - q.d);
+    // 近い順に 6 か所まで: 向こう岸のまとまりが新しいか、島の側の場所が 3 km 以上離れているもの
+    const picked = [];
+    for (const c of cand) {
+      if (picked.length >= 6) break;
+      if (picked.some((p) => p.kb === c.kb && distKm(p.a, c.a) < 3)) continue;
+      if (seaCross(c.a, c.b)) picked.push(c);
+    }
+    if (picked.length) gaps.push({ comp: list[0].id, size: list.length, ...(list.length <= 60 ? { nodes: list.map((n) => ({ id: n.id, lat: n.lat, lon: n.lon })) } : {}), pairs: picked.map((p) => ({ a: p.a.id, b: p.b.id, aLat: p.a.lat, aLon: p.a.lon, bLat: p.b.lat, bLon: p.b.lon, km: Number(p.d.toFixed(3)) })) });
+  }
+  fs.mkdirSync(path.join(DATA, 'derived'), { recursive: true });
+  fs.writeFileSync(path.join(DATA, 'derived', 'sea-gaps.json'), JSON.stringify({ schema: 'pc.derived.sea-gaps/1', note: '海で隔てられたまとまりの、向こう岸にいちばん近いところ(tools/import-links.js が書き、tools/fetch-road-links.js が道でつながっているかを調べる)', gaps }) + '\n');
+}
 for (;;) {
   const comps = new Map();
   for (const n of hackable) { const k = find(n.id); if (!comps.has(k)) comps.set(k, []); comps.get(k).push(n); }
@@ -197,20 +258,27 @@ for (;;) {
   }
   const overSea = seaCross(best.a, best.b);
   const towns = small.filter((n) => n.genre === 'town');
-  if (overSea && towns.length) {
+  if (overSea) { // 海で隔てられた島は、町が無くても港を付ける(2026-10-20 ユーザー: 港をとにかく付けて近くの島と結ぶ)
     // 島の港(あれば)か、町。そこからいちばん近い、島の外の港
     const own = small.find(isPort);
     let pick = null;
-    for (const s of own ? [own] : towns) for (const q of allPorts) {
+    for (const s of own ? [own] : towns.length ? towns : small) for (const q of allPorts) {
       if (find(q.id) === key) continue;
       const d = distKm(s, q);
       if (!pick || d < pick.d) pick = { s, q, d };
     }
     if (pick) {
       let port = own;
-      if (!port) { // 仮の港: 町の代表点から、結ぶ先の港の方へ 150 m ずらして置く(同じ場所に 2 つの拠点を置かない)
+      if (!port) { // 仮の港: 町の代表点から結ぶ先の港へ進み、最初に海岸に出る点の 40 m 手前(陸側)に置く(2026-10-20 ユーザー指摘: 島の真ん中にあった)。
+        // 町の代表点からは 30 m 以上離す(同じ場所に 2 つの拠点を置かない)。海岸が見つからなければ 150 m ずらす
         const t = pick.s;
-        const k = Math.min(1, 0.15 / Math.max(pick.d, 0.001));
+        const coast = onLand(t) ? firstCoast(t, pick.q) : null; // 町の代表点が陸の外なら、海岸は探さない(遠くの別の陸地の海岸を拾う)
+        let k = Math.min(1, 0.15 / Math.max(pick.d, 0.001));
+        if (coast) {
+          const kc = Math.max(0.03 / Math.max(pick.d, 0.001), coast.t - 0.04 / Math.max(pick.d, 0.001));
+          const c = { lat: t.lat + (pick.q.lat - t.lat) * kc, lon: t.lon + (pick.q.lon - t.lon) * kc };
+          if (onLand(c) && !seaCross(t, c)) k = kc; // 島の陸の上で、町から海を渡らずに行ける所だけ
+        }
         const at = { lat: Number((t.lat + (pick.q.lat - t.lat) * k).toFixed(5)), lon: Number((t.lon + (pick.q.lon - t.lon) * k).toFixed(5)) };
         port = { id: `pp-${t.id}`, name: `${t.name}港(仮)`, genre: 'port', kind: 'GW', area: t.area, region: t.region, lat: at.lat, lon: at.lon,
           level: L.PORT_MIN, value: L.PORT_MIN, src: PHANTOM_SRC, gateway: { type: 'port', scope: 'domestic' } };
@@ -247,6 +315,25 @@ for (const a of hackable) {
   if (!best) continue;
   link(a.id, best.b.id);
   bridges.push(`${a.name}–${best.b.name} (${kmText(best.d)})`);
+}
+
+// 路線の線の形を書き出す: 約 60 m で間引き、両端(駅)は除いて途中の点だけ。途中の点が無ければ [](まっすぐ)
+{
+  const simplify = (pts, tol) => {
+    if (pts.length <= 2) return pts;
+    const keep = new Uint8Array(pts.length); keep[0] = keep[pts.length - 1] = 1;
+    const stack = [[0, pts.length - 1]];
+    while (stack.length) {
+      const [i0, i1] = stack.pop(); const [ax, ay] = pts[i0], [bx, by] = pts[i1]; const dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy;
+      let best = -1, bd = tol * tol;
+      for (let i = i0 + 1; i < i1; i++) { const [px, py] = pts[i]; let u = l2 ? ((px - ax) * dx + (py - ay) * dy) / l2 : 0; u = Math.max(0, Math.min(1, u)); const ex = ax + u * dx - px, ey = ay + u * dy - py, d2 = ex * ex + ey * ey; if (d2 > bd) { bd = d2; best = i; } }
+      if (best >= 0) { keep[best] = 1; stack.push([i0, best], [best, i1]); }
+    }
+    return pts.filter((_, i) => keep[i]);
+  };
+  const out = {};
+  for (const [k, pts] of [...railPaths].sort((p, q) => (p[0] < q[0] ? -1 : 1))) out[k] = simplify(pts, 0.0006).slice(1, -1).map(([x, y]) => [Number(x.toFixed(5)), Number(y.toFixed(5))]);
+  fs.writeFileSync(path.join(ROOT, 'public/data/rail-paths.json'), JSON.stringify({ schema: 'pc.rail-paths/1', note: '路線の線の形(国土数値情報 鉄道データ N02 の線路を約 60 m で間引いたもの。両端の駅は除く)。tools/import-links.js が作る', paths: out }) + '\n');
 }
 
 // ---------- 書き戻し(ファイルごと) ----------

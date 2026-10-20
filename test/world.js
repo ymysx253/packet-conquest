@@ -89,15 +89,15 @@ async function solve(world, p, nodeId) {
   assert.ok(a.pending && a.pending.qid === q.qid, '拒んでも問題は残る');
   w.minAnswerMs = 0;
   const wrong = await w.answer(a, q.qid, (a.pending.answerIndex + 1) % 4);
-  assert.ok(!wrong.correct && a.cooldownUntil > Date.now() && wrong.cooldownMs === COOLDOWN_MS, '不正解で待ち時間 4 秒');
+  assert.ok(!wrong.correct && a.cooldownUntil > Date.now() && wrong.cooldownMs === COOLDOWN_MS, '不正解で待ち時間 5 秒');
   assert.strictEqual((await store.loadPlayer(a.id)).cooldownUntil, a.cooldownUntil, '待ち時間は保存される(再接続で消せない)');
   // 連続不正解で倍増(4 → 8 → 16 …、上限 60 秒)。正解で戻る
   a.cooldownUntil = 0;
   const q2 = await w.ask(a, nb); const wrong2 = await w.answer(a, q2.qid, (a.pending.answerIndex + 1) % 4);
-  assert.strictEqual(wrong2.cooldownMs, COOLDOWN_MS * 2, '2 回目は 8 秒');
+  assert.strictEqual(wrong2.cooldownMs, COOLDOWN_MS, '続けて間違えても 5 秒(2026-10-20 から延ばさない)');
   a.cooldownUntil = 0; a.wrongStreak = 10;
   const q3 = await w.ask(a, nb); const wrong3 = await w.answer(a, q3.qid, (a.pending.answerIndex + 1) % 4);
-  assert.strictEqual(wrong3.cooldownMs, COOLDOWN_MAX_MS, '上限 60 秒');
+  assert.strictEqual(wrong3.cooldownMs, COOLDOWN_MAX_MS, '何回続けても 5 秒');
   a.cooldownUntil = 0;
   await assert.rejects(async () => { a.cooldownUntil = Date.now() + 5000; await w.ask(a, nb); }, /待って/, '待ち時間中は出題しない');
   a.cooldownUntil = 0;
@@ -549,7 +549,7 @@ async function solve(world, p, nodeId) {
   assert.ok(allEvents.some((e) => e.kind === 'resume' && e.playerId === a.id && e.detail.renamed === false), '復帰');
   assert.ok(allEvents.some((e) => e.kind === 'leave' && e.playerId === a.id && typeof e.detail.sec === 'number'), '切断に接続秒数');
   const wrongEv = allEvents.filter((e) => e.kind === 'answer' && e.playerId === a.id && e.ok === false);
-  assert.ok(wrongEv.length >= 3 && wrongEv[0].detail.cooldownMs === COOLDOWN_MS && wrongEv[1].detail.cooldownMs === COOLDOWN_MS * 2 && wrongEv.every((e) => e.level >= 1 && typeof e.sec === 'number' && e.detail.mode === 'attack' && !('qid' in e)), '不正解の answer(待ち時間の倍増。qid は書かない)');
+  assert.ok(wrongEv.length >= 3 && wrongEv[0].detail.cooldownMs === COOLDOWN_MS && wrongEv[1].detail.cooldownMs === COOLDOWN_MS && wrongEv[1].detail.wrongStreak === 2 && wrongEv.every((e) => e.level >= 1 && typeof e.sec === 'number' && e.detail.mode === 'attack' && !('qid' in e)), '不正解の answer(待ち時間はいつも同じ。連続回数は記録する。qid は書かない)');
   assert.ok(allEvents.some((e) => e.kind === 'limit' && e.playerId === a.id && e.detail.rule === 'fast' && e.detail.ms >= 0), '速すぎる解答は limit(fast)');
   const cap = allEvents.find((e) => e.kind === 'capture' && e.playerId === a.id && e.nodeId === nb);
   assert.ok(cap && cap.detail.gained === target.value && cap.detail.prevOwner === null && cap.detail.hits === target.hits && cap.level >= 1 && cap.regionId === target.region, 'capture に得点と前の所有者');

@@ -104,7 +104,7 @@
 | F1 | WebSocket の Origin 検査 — **済(2026-10-18)** | `server/index.js` | `verifyClient` で `Origin` が自サイト(Host と同じ)か `ALLOWED_ORIGINS`(カンマ区切り。本番は `https://packet-conquest.com,https://www.packet-conquest.com`)でなければ 403。Origin の無い接続(ブラウザ以外)は通す |
 | F2 | 参加スパムの制限 — **済(2026-10-18)** | `server/limits.js`, `server/index.js`, `server/world.js` | 接続元(IP。前段の X-Forwarded-For)ごとに新規作成 1 時間 3 回・1 日 10 回、復帰の試行 1 分 5 回。1 接続につき `join` は 1 回。休眠(7 日)の回収は `world.reclaimIdle`(起動時と 1 時間ごと)。複数台にしたら制限の記録を共有ストアへ |
 | F3 | メッセージの厳密な検査とレート制限 — **済(部分、2026-10-18)** | `server/index.js` | 許可する種別の一覧、`view` のタイル数と文字列長、`ask` の id 長、`answer` の qid と 0〜3 の整数を検査(外れたものは黙って捨てる)。1 接続 1 秒 20 メッセージ(トークン バケット)を超えたら切断。**残り**: 接続元ごとの同時接続数の上限(App Service に出すときに前段の制限と合わせて決める) |
-| F4 | 総当たり対策 — **済(2026-10-18)** | `server/world.js` | 連続不正解で待ち時間を倍増(4 → 8 → 16 → 32 → 60 秒)。正解で戻る。待ち時間と連続回数はプレイヤーに保存し、再接続・別端末で短縮できない。`test/world.js` で検査 |
+| F4 | 総当たり対策 — **済(2026-10-18)** | `server/world.js` | 連続不正解で待ち時間を倍増(4 → 8 → 16 → 32 → 60 秒)。正解で戻る。**2026-10-20 にユーザー決定で、いつも 5 秒に変えた(長すぎるため。倍増はやめた)。総当たりは 4 択なら 1 問あたり平均 2 回の不正解 = 10 秒ほどの遅れにしかならないので、異常検知(不正解の多さ)で補う**。待ち時間と連続回数はプレイヤーに保存し、再接続・別端末で短縮できない。`test/world.js` で検査 |
 | F5 | セキュリティヘッダ — **済(2026-10-18)** | `server/index.js` | CSP(script は自サイトのファイルだけ、style とフォントは Google Fonts、接続は自サイトと ws/wss、埋め込み禁止)、`X-Content-Type-Options: nosniff`、`X-Frame-Options: DENY`、`Referrer-Policy: no-referrer`、`Permissions-Policy`。`shapes.html` のインライン スクリプトは `shapes-page.js` に出した。HSTS は HTTPS 化(Azure)のときに |
 | F6 | 最短解答時間 — **済(2026-10-18)** | `server/world.js` | 出題時刻 `askedAt` を `pending` に持ち、1 秒未満の解答は「速すぎます」で拒む(不正解にはせず問題は残る)。`test/world.js`・`test/abuse.js` で検査 |
 

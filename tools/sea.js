@@ -97,7 +97,30 @@ function makeSea(ROOT) {
     }
     return false; // 陸の外の端の近くだけでまたいだ線は、海の上を通らない
   }
-  return { onLand, seaCross, coastEdges: coastE.length / 4, enclaveEdges };
+  // a から b へ進んで、最初に海岸をまたぐ点(仮の港を海岸に置くため。2026-10-20)。またがなければ null
+  function firstCoast(a, b) {
+    let bestT = Infinity;
+    const seen = new Set(), hitE = new Set();
+    const steps = Math.max(1, Math.ceil(Math.max(Math.abs(b.lon - a.lon), Math.abs(b.lat - a.lat)) / (COAST_G / 2)));
+    for (let s = 0; s <= steps; s++) {
+      const x = a.lon + ((b.lon - a.lon) * s) / steps, y = a.lat + ((b.lat - a.lat) * s) / steps;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const k = (Math.floor(y / COAST_G) + dy) * 100000 + Math.floor(x / COAST_G) + dx;
+        if (seen.has(k)) continue; seen.add(k);
+        for (const e of coastGrid.get(k) || []) {
+          if (hitE.has(e)) continue; hitE.add(e);
+          const x1 = coastE[4 * e], y1 = coastE[4 * e + 1], x2 = coastE[4 * e + 2], y2 = coastE[4 * e + 3];
+          if (!segCross(a.lon, a.lat, b.lon, b.lat, x1, y1, x2, y2)) continue;
+          const rx = b.lon - a.lon, ry = b.lat - a.lat, sx = x2 - x1, sy = y2 - y1, den = rx * sy - ry * sx;
+          const t = den ? ((x1 - a.lon) * sy - (y1 - a.lat) * sx) / den : 0;
+          if (t < bestT) bestT = t;
+        }
+      }
+      if (bestT < Infinity && bestT * steps < s - 1) break; // もう見つかった点より先しか残っていない
+    }
+    return bestT < Infinity ? { t: bestT, lat: a.lat + (b.lat - a.lat) * bestT, lon: a.lon + (b.lon - a.lon) * bestT } : null;
+  }
+  return { onLand, seaCross, firstCoast, coastEdges: coastE.length / 4, enclaveEdges };
 }
 
 module.exports = { makeSea, pointInRing, segCross };

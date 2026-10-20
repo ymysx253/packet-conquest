@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "tottori",
   "name": "鳥取県",
-  "version": 63,
+  "version": 78,
   "updatedAt": "2026-10-19",
   "note": "鳥取県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -855,7 +855,7 @@
     { "id": "tw-31204-044000", "name": "三軒屋町", "genre": "town", "kind": "TOWN", "area": "境港市", "region": "tottori-31204", "lat": 35.50926, "lon": 133.22928, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "31204044000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-31204-001000", "tw-31204-002000", "tw-31204-039000", "tw-31204-040000"], "adj": ["tw-31204-001000", "tw-31204-002000", "tw-31204-039000", "tw-31204-040000"] },
     { "id": "tw-31204-045000", "name": "幸神町", "genre": "town", "kind": "TOWN", "area": "境港市", "region": "tottori-31204", "lat": 35.50723, "lon": 133.23953, "level": 4, "value": 4, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "31204045000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-31204-039000", "tw-31204-040000"], "contains": ["st-004508"], "adj": ["st-004508", "tw-31204-039000", "tw-31204-040000"] },
     { "id": "tw-31204-047000", "name": "中海(境港市)", "genre": "town", "kind": "TOWN", "area": "境港市", "region": "tottori-31204", "lat": 35.49735, "lon": 133.22631, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "31204047000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-31204-003000", "tw-31204-050001"], "adj": ["tw-31204-003000", "tw-31204-050001"] },
-    { "id": "tw-31204-048000", "name": "潮見町", "genre": "town", "kind": "TOWN", "area": "境港市", "region": "tottori-31204", "lat": 35.55134, "lon": 133.26873, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "31204048000"}]}, "src": "src-estat-boundary-2020", "adj": ["pp-tw-31204-048000"] },
+    { "id": "tw-31204-048000", "name": "潮見町", "genre": "town", "kind": "TOWN", "area": "境港市", "region": "tottori-31204", "lat": 35.55134, "lon": 133.26873, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "31204048000"}]}, "src": "src-estat-boundary-2020", "adj": ["tw-32201-186000"] },
     { "id": "tw-31204-049000", "name": "西工業団地", "genre": "town", "kind": "TOWN", "area": "境港市", "region": "tottori-31204", "lat": 35.52622, "lon": 133.20192, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "31204049000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-31204-001000", "tw-31204-004000"], "contains": ["lm-q11550847"], "adj": ["lm-q11550847", "tw-31204-001000", "tw-31204-004000"] },
     { "id": "tw-31204-050001", "name": "夕日ヶ丘", "genre": "town", "kind": "TOWN", "area": "境港市", "region": "tottori-31204", "lat": 35.50243, "lon": 133.22534, "level": 5, "value": 5, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "31204050001"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-31204-001000", "tw-31204-040000", "tw-31204-047000"], "adj": ["tw-31204-001000", "tw-31204-040000", "tw-31204-047000"] },
     { "id": "st-004384", "name": "境港駅", "genre": "station", "kind": "HUB", "area": "境港市", "region": "tottori-31204", "lat": 35.54425, "lon": 133.22326, "level": 10, "value": 10, "lines": ["西日本旅客鉄道 境線"], "adj": ["st-004405", "tw-31204-021000", "tw-31204-022000", "tw-31204-024000", "tw-31204-025000"] },
@@ -1598,8 +1598,6 @@
     { "id": "tw-31403-017001", "name": "吉原", "genre": "town", "kind": "TOWN", "area": "江府町", "region": "tottori-31403", "lat": 35.34259, "lon": 133.52533, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "31403017001"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-31386-037000", "tw-31390-050001", "tw-31403-018000"], "adj": ["tw-31386-037000", "tw-31390-050001", "tw-31403-018000"] },
     { "id": "tw-31403-018000", "name": "大河原", "genre": "town", "kind": "TOWN", "area": "江府町", "region": "tottori-31403", "lat": 35.33017, "lon": 133.53755, "level": 2, "value": 2, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "31403018000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-31403-009001", "tw-31403-010001", "tw-31403-012000", "tw-31403-017001"], "adj": ["tw-31403-009001", "tw-31403-010001", "tw-31403-012000", "tw-31403-017001"] },
     { "id": "st-005152", "name": "江尾駅", "genre": "station", "kind": "HUB", "area": "江府町", "region": "tottori-31403", "lat": 35.28357, "lon": 133.48497, "level": 10, "value": 10, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["st-004972", "st-005184", "tw-31403-001001", "tw-31403-002001", "tw-31403-003001", "tw-31403-006001"] },
-    { "id": "st-005184", "name": "武庫駅", "genre": "station", "kind": "HUB", "area": "江府町", "region": "tottori-31403", "lat": 35.26772, "lon": 133.4766, "level": 10, "value": 10, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["st-005152", "st-005255", "tw-31403-001001", "tw-31403-014000", "tw-31403-015001"] },
-
-    { "id": "pp-tw-31204-048000", "name": "潮見町港(仮)", "genre": "port", "kind": "GW", "area": "境港市", "region": "tottori-31204", "lat": 35.55206, "lon": 133.26733, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-31204-048000"] }
+    { "id": "st-005184", "name": "武庫駅", "genre": "station", "kind": "HUB", "area": "江府町", "region": "tottori-31403", "lat": 35.26772, "lon": 133.4766, "level": 10, "value": 10, "lines": ["西日本旅客鉄道 伯備線"], "adj": ["st-005152", "st-005255", "tw-31403-001001", "tw-31403-014000", "tw-31403-015001"] }
   ]
 }

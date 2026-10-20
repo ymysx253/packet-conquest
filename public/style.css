@@ -82,7 +82,7 @@ body {
   min-width: 0; min-height: 0; position: relative; display: flex; flex-direction: column;
 }
 .board-foot { display: flex; align-items: center; gap: 10px; margin-top: 6px; flex: 0 0 auto; min-width: 0; }
-.credit-short { margin: 0; font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.credit-short { margin: 0; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .map-wrap { position: relative; overflow: hidden; border-radius: 8px; background: color-mix(in srgb, var(--bg) 40%, var(--surface)); flex: 1 1 auto; min-height: 0; }
 #map { display: block; position: absolute; left: 0; top: 0; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
 .zoom { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; }
@@ -97,8 +97,8 @@ body {
 .own-view button:first-child { border-left: 0; }
 .own-view button:hover { background: var(--bg); }
 .own-view button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
-.map-hint { position: absolute; left: 10px; bottom: 6px; margin: 0; font-size: 11px; color: var(--muted); pointer-events: none; }
-.credit { margin: 6px 0 0; font-size: 11px; color: var(--muted); }
+.map-hint { position: absolute; left: 10px; bottom: 6px; margin: 0; font-size: 12px; color: var(--muted); pointer-events: none; }
+.credit { margin: 6px 0 0; font-size: 12px; color: var(--muted); }
 .legend {
   list-style: none; margin: 8px 0 0; padding: 0;
   display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--muted);
@@ -133,7 +133,7 @@ body {
 .dlg-actions { display: flex; justify-content: flex-end; margin: 16px 0 0; }
 .panel { background: var(--surface); border-radius: 12px; padding: 14px 16px; }
 .label {
-  margin: 0 0 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--muted);
+  margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: var(--muted);
 }
 
 .scores { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
@@ -284,6 +284,11 @@ body {
 .qdlg[data-size="full"] { width: calc(100vw - 32px); height: calc(100dvh - 32px); max-width: none; }
 .qdlg .qtable-wrap { overflow-x: auto; }
 .qactions { gap: 8px; }
+/* お手付き(不正解のあとの待ち時間)を問題ダイアログにも出す(2026-10-20)。終わるまで「続けて解く」は押せない */
+.qcool { display: flex; align-items: center; gap: 10px; margin: 12px 0 0; }
+.qcool[hidden] { display: none; }
+.qcool-text { flex: 0 0 auto; font-size: 13px; font-weight: 700; color: var(--bad); }
+.qcool-track { flex: 1 1 auto; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
 .qdlg .unsupported { color: var(--bad); font-weight: 700; }
 .team-btn { max-width: 14em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .me-row { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; align-items: center; gap: 10px; }
