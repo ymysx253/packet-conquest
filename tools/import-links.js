@@ -334,6 +334,18 @@ for (const a of hackable) {
   const out = {};
   for (const [k, pts] of [...railPaths].sort((p, q) => (p[0] < q[0] ? -1 : 1))) out[k] = simplify(pts, 0.0006).slice(1, -1).map(([x, y]) => [Number(x.toFixed(5)), Number(y.toFixed(5))]);
   fs.writeFileSync(path.join(ROOT, 'public/data/rail-paths.json'), JSON.stringify({ schema: 'pc.rail-paths/1', note: '路線の線の形(国土数値情報 鉄道データ N02 の線路を約 60 m で間引いたもの。両端の駅は除く)。tools/import-links.js が作る', paths: out }) + '\n');
+  // 新幹線の線の一覧(2026-10-21 ユーザー指摘: ドラッグすると新幹線の線が途中で消える)。駅と駅の間が長く、両端の駅が読み込み範囲の外だと画面が線を持てないので、
+  // 全国の新幹線の線(約 100 本)と両端の駅の位置・路線を public/data/shinkansen.json に書く。画面は読み込み範囲に関係なくいつも描く
+  const shk = { edges: [], stations: {} };
+  for (const k of Object.keys(out)) {
+    const [a, b] = k.split('|'); const na = byId.get(a), nb = byId.get(b);
+    if (!na || !nb) continue;
+    const ls = (na.lines || []).filter((l) => (nb.lines || []).includes(l) && l.includes('新幹線'));
+    if (!ls.length) continue;
+    shk.edges.push([a, b]);
+    for (const n of [na, nb]) shk.stations[n.id] = { name: n.name, lat: n.lat, lon: n.lon, lines: (n.lines || []).filter((l) => l.includes('新幹線')) };
+  }
+  fs.writeFileSync(path.join(ROOT, 'public/data/shinkansen.json'), JSON.stringify({ schema: 'pc.shinkansen/1', note: '新幹線の線(駅と駅)と両端の駅。tools/import-links.js が作る。形は rail-paths.json', ...shk }) + '\n');
 }
 
 // ---------- 書き戻し(ファイルごと) ----------

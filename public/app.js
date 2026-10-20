@@ -354,6 +354,14 @@
     if (!d || !d.paths) return;
     for (const [k, pts] of Object.entries(d.paths)) S.railPaths.set(k, pts.map(([lon, lat]) => worldOf(lat, lon)));
   }).catch(() => { /* 無ければ前後の駅の向きから作る曲線で描く */ });
+  // 新幹線の線(2026-10-21 ユーザー指摘: ドラッグすると途中で消える)。駅と駅の間が長く、両端の駅が読み込み範囲の外だと線を持てないので、
+  // 全国の新幹線の線(約 100 本)を最初に読み、読み込み範囲に関係なくいつも描く(拠点を描く倍率のとき)
+  S.shkEdges = []; S.shkKeys = new Set(); S.shkStations = new Map();
+  fetch('data/shinkansen.json').then((r) => (r.ok ? r.json() : null)).then((d) => {
+    if (!d || !d.edges) return;
+    for (const [id, st] of Object.entries(d.stations || {})) S.shkStations.set(id, { id, genre: 'station', name: st.name, lat: st.lat, lon: st.lon, lines: st.lines || [] });
+    S.shkEdges = d.edges; S.shkKeys = new Set(d.edges.map(([a, b]) => (a < b ? `${a}|${b}` : `${b}|${a}`)));
+  }).catch(() => { /* 無ければ読み込み範囲の線だけ */ });
 
   // ---------- 投影: 固定の縮尺(経度・緯度 → 平面座標。1 単位 = 0.001°) ----------
   const LAT0 = 35.68; // 横方向の補正の基準(東京)。地図が世界に広がったらメルカトルに変える
@@ -367,7 +375,7 @@
   //   同じ路線の前後の駅を通るなめらかな曲線にする(各駅での向きは、反対側の隣の駅からこちらの隣の駅への向き)。分かれ道では、いちばんまっすぐ続く隣を使う
   //   両端の駅が同じ新幹線の路線を持つ線を新幹線とする(全国 101 本。どれも新幹線で隣り合う駅だった)
   const RAIL = { ink: '#2B2B2B', paper: '#FFFFFF', shinkansen: '#00897B' };
-  const railNode = (id) => S.nodes.get(id) || S.far.get(id); // 読み込んでいない遠い隣の駅も含める
+  const railNode = (id) => S.nodes.get(id) || S.far.get(id) || (S.shkStations && S.shkStations.get(id)); // 読み込んでいない遠い隣の駅・新幹線の駅も含める
   let railCache = null; // 駅 id → [{ id, lines }](路線でつながる隣の駅)。タイルが届くたびに作り直す
   const commonLines = (a, b) => { const bl = b.lines || []; return (a.lines || []).filter((l) => bl.includes(l)); };
   function railLinesOf(na, nb) { // 2 つの駅を結ぶ路線(新幹線があれば新幹線だけ)。路線の線でなければ空
@@ -1070,6 +1078,7 @@
     const lineScale = Math.min(1, Math.max(0.4, ratio / 4));
     const rails = [];
     for (const e of S.edges.values()) {
+      if (S.shkKeys.has(e.a < e.b ? `${e.a}|${e.b}` : `${e.b}|${e.a}`)) continue; // 新幹線の線は下でまとめて描く
       const na = railNode(e.a), nb = railNode(e.b);
       if (!na || !nb || !visibleNode(na) || !visibleNode(nb)) continue; // 描かない町・字への線も描かない
       const own = na.owner && na.owner === nb.owner && ownShown(relOf(na)) ? ((ownerStyleOf(na) || {}).frame || ownerColorOf(na)) : null; // チームの線は枠の色
@@ -1085,6 +1094,17 @@
       ctx.globalAlpha = (town && !own ? 0.55 : 1) * ef;
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
       ctx.globalAlpha = 1;
+    }
+    // 新幹線の線: 読み込み範囲に関係なく、画面にかかるものを描く(持ち主の色は、読み込んでいる駅の分だけ分かる)
+    if (!S.overview) for (const [a, b] of S.shkEdges) {
+      const na = railNode(a), nb = railNode(b);
+      if (!na || !nb) continue;
+      const cv = railCurve(na, nb);
+      if (!cv) continue;
+      const xs = [cv.a.x, cv.b.x, ...(cv.path || []).map((q) => q.x)], ys = [cv.a.y, cv.b.y, ...(cv.path || []).map((q) => q.y)];
+      if (Math.max(...xs) < -20 || Math.min(...xs) > V.w + 20 || Math.max(...ys) < -20 || Math.min(...ys) > V.h + 20) continue; // 画面にかからない
+      const own = na.owner && na.owner === nb.owner && ownShown(relOf(na)) ? ((ownerStyleOf(na) || {}).frame || ownerColorOf(na)) : null;
+      rails.push({ cv, own, ef: 1 });
     }
     if (rails.length) {
       // 縁取り → 中の白 → 交互の色、の順に全部の線へ重ねる(交わるところもきれいに見える)。
