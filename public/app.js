@@ -1015,12 +1015,13 @@
     }
 
     // 陣地(2026-10-19): 持っている拠点のまわりを持ち主の色で薄くにじませる。切り替えで出す範囲を決める
+    // 色はチームならチームの背景色、チームに入っていなければその人の色(2026-10-20 ユーザー決定)
     {
       const hr = Math.max(16, Math.min(70, 10 + ratio * 1.6)) * grow;
       for (const n of S.nodes.values()) {
         const rel = relOf(n);
         if (!ownShown(rel) || n.isPlayerNode || !visibleNode(n)) continue;
-        const col = ownerColorOf(n);
+        const col = (ownerStyleOf(n) || {}).fill || ownerColorOf(n);
         if (!col) continue;
         const p = toScreen(posOf(n));
         if (p.x < -hr || p.y < -hr || p.x > V.w + hr || p.y > V.h + hr) continue;

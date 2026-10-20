@@ -298,6 +298,87 @@ function blockedLine(ax, ay, bx, by, allow) {
   }
   return false;
 }
+// 海(2026-10-20 ユーザー決定: 海の上で町どうしがつながることはない)。海の上を通る線は、町どうし・駅や名所と町・名所と駅のどれもつながない
+//   (路線・空路・海路は乗り物なので別。島へは航路か、橋やトンネルを通る路線で渡る)。
+//   陸 = 区・市の境界(public/data/bounds。tools/import-boundaries.js が作り、画面が陸を塗るのと同じ形)。境界の辺はすべて隣の区・市と共有されるので、
+//   1 つの区・市にしか出てこない辺が海岸。線が海岸をまたげば、海の上を通っている
+const seaReport = { towns: 0, access: 0, landmark: 0 };
+const coastE = []; // [x1, y1, x2, y2, …]
+const landRings = []; // { pts, bb }
+const single = []; // 1 つの区・市にしか出てこない辺 [x1, y1, x2, y2]
+{
+  const dir = path.join(ROOT, 'public/data/bounds');
+  const cnt = new Map();
+  for (const f of fs.readdirSync(dir)) {
+    if (!/\.json$/.test(f) || f === 'japan.json' || f === 'index.json') continue;
+    const j = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+    for (const r of Object.values(j.regions || {})) for (const ring of r.polys) {
+      const pts = new Float64Array(ring.length * 2); const bb = [180, 90, -180, -90];
+      ring.forEach(([x, y], i) => { pts[2 * i] = x; pts[2 * i + 1] = y; if (x < bb[0]) bb[0] = x; if (y < bb[1]) bb[1] = y; if (x > bb[2]) bb[2] = x; if (y > bb[3]) bb[3] = y; });
+      landRings.push({ pts, bb });
+      for (let i = 0; i + 1 < ring.length; i++) {
+        const a = `${ring[i][0]},${ring[i][1]}`, b = `${ring[i + 1][0]},${ring[i + 1][1]}`;
+        if (a === b) continue;
+        const k = a < b ? `${a}|${b}` : `${b}|${a}`;
+        cnt.set(k, (cnt.get(k) || 0) + 1);
+      }
+    }
+  }
+  for (const [k, c] of cnt) if (c === 1) { const [p, q] = k.split('|'); single.push([...p.split(',').map(Number), ...q.split(',').map(Number)]); }
+  if (!landRings.length) { console.error('public/data/bounds に区・市の境界がありません(先に tools/import-boundaries.js)'); process.exit(1); }
+}
+const LAND_G = 0.1;
+const landGrid = new Map();
+landRings.forEach((r, i) => { for (let gy = Math.floor(r.bb[1] / LAND_G); gy <= Math.floor(r.bb[3] / LAND_G); gy++) for (let gx = Math.floor(r.bb[0] / LAND_G); gx <= Math.floor(r.bb[2] / LAND_G); gx++) { const k = gy * 100000 + gx; let arr = landGrid.get(k); if (!arr) landGrid.set(k, (arr = [])); arr.push(i); } });
+const landAt = (x, y) => (landGrid.get(Math.floor(y / LAND_G) * 100000 + Math.floor(x / LAND_G)) || []).some((i) => { const r = landRings[i]; return x >= r.bb[0] && x <= r.bb[2] && y >= r.bb[1] && y <= r.bb[3] && pointInRing([x, y], r.pts); });
+const landCache = new Map();
+function onLand(p) { // 点が陸(どこかの区・市の中)にあるか
+  const key = `${p.lon},${p.lat}`;
+  if (!landCache.has(key)) landCache.set(key, landAt(p.lon, p.lat));
+  return landCache.get(key);
+}
+// 共有されない辺のうち、両側とも陸のものは海岸ではない(境界ファイルは外周だけなので、飛び地の外周が共有されない辺として残る。佐久市の中の佐久穂町など)
+let enclaveEdges = 0;
+for (const [x1, y1, x2, y2] of single) {
+  const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, l = Math.hypot(x2 - x1, y2 - y1) || 1, nx = (-(y2 - y1) / l) * 0.0002, ny = ((x2 - x1) / l) * 0.0002;
+  if (landAt(mx + nx, my + ny) && landAt(mx - nx, my - ny)) { enclaveEdges++; continue; }
+  coastE.push(x1, y1, x2, y2);
+}
+const COAST_G = 0.02;
+const coastGrid = new Map();
+for (let e = 0; e < coastE.length / 4; e++) {
+  const x1 = coastE[4 * e], y1 = coastE[4 * e + 1], x2 = coastE[4 * e + 2], y2 = coastE[4 * e + 3];
+  for (let gy = Math.floor(Math.min(y1, y2) / COAST_G); gy <= Math.floor(Math.max(y1, y2) / COAST_G); gy++) for (let gx = Math.floor(Math.min(x1, x2) / COAST_G); gx <= Math.floor(Math.max(x1, x2) / COAST_G); gx++) {
+    const k = gy * 100000 + gx; let arr = coastGrid.get(k); if (!arr) coastGrid.set(k, (arr = [])); arr.push(e);
+  }
+}
+// 陸の外にある端(海の上の港など)から PIER_DEG(約 1 km)以内のまたぎは数えない(港の中は防波堤や埠頭で海岸が入り組み、何度もまたぐ)
+const PIER_DEG = 0.01;
+function seaCross(a, b) { // a から b への線が海の上を通るか
+  const offA = !onLand(a), offB = !onLand(b);
+  const nearOff = (x, y) => (offA && Math.hypot(x - a.lon, y - a.lat) < PIER_DEG) || (offB && Math.hypot(x - b.lon, y - b.lat) < PIER_DEG);
+  const seen = new Set(), hitE = new Set();
+  const steps = Math.max(1, Math.ceil(Math.max(Math.abs(b.lon - a.lon), Math.abs(b.lat - a.lat)) / (COAST_G / 2)));
+  for (let s = 0; s <= steps; s++) {
+    const x = a.lon + ((b.lon - a.lon) * s) / steps, y = a.lat + ((b.lat - a.lat) * s) / steps;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const k = (Math.floor(y / COAST_G) + dy) * 100000 + Math.floor(x / COAST_G) + dx;
+      if (seen.has(k)) continue; seen.add(k);
+      for (const e of coastGrid.get(k) || []) {
+        if (hitE.has(e) || !segCross(a.lon, a.lat, b.lon, b.lat, coastE[4 * e], coastE[4 * e + 1], coastE[4 * e + 2], coastE[4 * e + 3])) continue;
+        hitE.add(e);
+        // またいだ点(線分 AB と海岸の辺の交点)
+        const x1 = coastE[4 * e], y1 = coastE[4 * e + 1], x2 = coastE[4 * e + 2], y2 = coastE[4 * e + 3];
+        const rx = b.lon - a.lon, ry = b.lat - a.lat, sx = x2 - x1, sy = y2 - y1, den = rx * sy - ry * sx;
+        const t = den ? ((x1 - a.lon) * sy - (y1 - a.lat) * sx) / den : 0;
+        if (nearOff(a.lon + rx * t, a.lat + ry * t)) continue;
+        return true; // 端から離れたところで海岸をまたいだ = 海の上を通る
+      }
+    }
+  }
+  return false; // 陸の外の端の近くだけでまたいだ線は、海の上を通らない
+}
+
 const tIdx = new Map(pub.map((t, i) => [t.id, i]));
 {
   const original = new Map([...borders].map(([id, set]) => [id, [...set]]));
@@ -309,13 +390,16 @@ const tIdx = new Map(pub.map((t, i) => [t.id, i]));
       losReport.checked++;
       const A = pub[ai], B = pub[bi];
       if (blockedLine(A.lon, A.lat, B.lon, B.lat, new Set([ai, bi]))) { set.delete(other); borders.get(other).delete(id); losReport.dropped++; }
+      else if (seaCross(A, B)) { set.delete(other); borders.get(other).delete(id); seaReport.towns++; }
     }
   }
-  // 隣が全部外れた町・字(形が入り組んでいて、どの隣への線もほかの町を通るもの)は、接している町のうち代表点がいちばん近い 1 つとだけつなぐ
+  // 隣が全部外れた町・字(形が入り組んでいて、どの隣への線もほかの町を通るもの)は、接している町のうち代表点がいちばん近い 1 つとだけつなぐ。
+  // 海の上を通る相手とはつながない(島に 1 つだけの町などは、航路や路線で渡る。それも無ければ tools/import-links.js の「分断の橋渡し」)
   for (const [id, set] of borders) {
     if (set.size || !original.get(id).length) continue;
     const A = pub[tIdx.get(id)];
-    const near = original.get(id).map((o) => pub[tIdx.get(o)]).sort((x, y) => distKm(A, x) - distKm(A, y))[0];
+    const near = original.get(id).map((o) => pub[tIdx.get(o)]).filter((x) => !seaCross(A, x)).sort((x, y) => distKm(A, x) - distKm(A, y))[0];
+    if (!near) { losReport.island = (losReport.island || 0) + 1; continue; }
     set.add(near.id); borders.get(near.id).add(id); losReport.kept = (losReport.kept || 0) + 1;
   }
 }
@@ -340,12 +424,19 @@ for (const n of others) {
   insideOf.set(n.id, insideIdx);
   for (const { x } of near) {
     const xi = tIdx.get(x.id);
-    if (!blockedLine(n.lon, n.lat, x.lon, x.lat, new Set([insideIdx, xi]))) hit.add(x);
+    if (blockedLine(n.lon, n.lat, x.lon, x.lat, new Set([insideIdx, xi]))) continue;
+    if (seaCross(n, x)) { seaReport.access++; continue; }
+    hit.add(x);
   }
-  if (!hit.size) { // どの町の中にも無く、見通せる町も無い: 代表点がいちばん近い町(5 km まで)
+  if (!hit.size) { // どの町の中にも無く、見通せる町も無い: 代表点がいちばん近い町(5 km まで。海の上を通らないもの)
+    let best = null, bd = 5;
+    for (const x of cands) { const d = distKm(n, x); if (d < bd && !seaCross(n, x)) { bd = d; best = x; } }
+    if (best) { hit.add(best); losReport.nearest = (losReport.nearest || 0) + 1; }
+  }
+  if (!hit.size && (n.genre === 'port' || n.genre === 'airport')) { // 港・空港は岸にある。座標が港の水面の真ん中にあって(名古屋港など)陸の線が残らないときは、いちばん近い町とつなぐ
     let best = null, bd = 5;
     for (const x of cands) { const d = distKm(n, x); if (d < bd) { bd = d; best = x; } }
-    if (best) { hit.add(best); losReport.nearest = (losReport.nearest || 0) + 1; }
+    if (best) { hit.add(best); seaReport.harbor = (seaReport.harbor || 0) + 1; }
   }
   losReport.access = (losReport.access || 0) + hit.size;
   for (const t of hit) contains.get(t.id).push(n.id);
@@ -368,7 +459,9 @@ for (const n of others) {
       const d = distKm(n, st); if (d > LM_KM) continue;
       pairs++;
       const si = insideOf.has(st.id) ? insideOf.get(st.id) : -1;
-      if (!blockedLine(n.lon, n.lat, st.lon, st.lat, new Set([ni, si]))) { list.push({ id: st.id, d }); ok++; }
+      if (blockedLine(n.lon, n.lat, st.lon, st.lat, new Set([ni, si]))) continue;
+      if (seaCross(n, st)) { seaReport.landmark++; continue; }
+      list.push({ id: st.id, d }); ok++;
     }
     visible[n.id] = list.sort((p, q) => p.d - q.d).map((x) => x.id);
   }
@@ -464,6 +557,7 @@ const linked = pub.filter((t) => (borders.get(t.id).size + contains.get(t.id).le
 console.log(`名前の無い切れ端・境界未定で除いた区画 ${unnamed.length}`);
 console.log(`町・字: 区画 ${feats.length} → ${towns.length} にまとめ、${added} 件を入れた(公開 ${pub.length}、非公開 ${report.hidden.length})。線のある町・字 ${linked}`);
 console.log(`見通しで間引いた隣どうしの線: 調べた ${losReport.checked} 組のうち ${losReport.dropped} 組を外した(隣が全部外れたため、いちばん近い隣を残した町 ${losReport.kept || 0})。駅・名所と町・字の線 ${losReport.access || 0} 本(見通せる町が無く、いちばん近い町につないだもの ${losReport.nearest || 0})。名所から 5 km 以内の駅 ${losReport.lmPairs || 0} 組のうち、間に町が無いもの ${losReport.lmOk || 0} 組`);
+console.log(`海の上を通るため外した線: 町どうし ${seaReport.towns}、駅・名所と町 ${seaReport.access}、名所と駅 ${seaReport.landmark}。海岸の辺 ${coastE.length / 4}(飛び地の外周で除いた辺 ${enclaveEdges})。隣が全部海の向こうで、町どうしの線が無い町 ${losReport.island || 0}。水面の真ん中にあるため、いちばん近い町とつないだ港・空港 ${seaReport.harbor || 0}`);
 console.log(`隣の町・字の線(延べ) ${[...borders.values()].reduce((s, x) => s + x.size, 0) / 2} 本、中の駅・名所との線 ${[...contains.values()].reduce((s, x) => s + x.length, 0)} 本、代表点をずらした ${report.moved} 件`);
 if (report.hidden.length) console.log('非公開: ' + report.hidden.join('、'));
 if (report.skipped.length) console.log('入れなかった(河川敷など): ' + report.skipped.join('、'));

@@ -158,6 +158,14 @@ const parent = new Map(hackable.map((n) => [n.id, n.id]));
 const find = (x) => (parent.get(x) === x ? x : (parent.set(x, find(parent.get(x))), parent.get(x)));
 const union = (a, b) => { parent.set(find(a), find(b)); };
 for (const n of hackable) for (const m of adj.get(n.id)) union(n.id, m);
+// 航路でつながる空港・港は同じまとまりとして数える(2026-10-20: 海の上で町どうしはつながらないので、島へは航路で渡る。航路のある島には橋をかけない)
+let routeJoins = 0;
+{
+  const { readRouteFiles, deriveRoutes } = require('../server/map/routes');
+  const { loadSources } = require('../server/map/sources');
+  const { byNode } = deriveRoutes(Object.fromEntries(nodes.map((n) => [n.id, n])), readRouteFiles(), loadSources());
+  for (const [id, list] of byNode) for (const r of list) if (parent.has(id) && parent.has(r.to) && find(id) !== find(r.to)) { union(id, r.to); routeJoins++; }
+}
 // いちばん小さいまとまりから、外側でいちばん近い拠点へ橋を 1 本かける、を 1 つになるまで繰り返す。
 // 小さいまとまり × 全拠点で済むので、全国(約 9,000 駅)でも速い(以前は全拠点 × 全拠点を毎回)
 const bridges = [];
@@ -175,6 +183,16 @@ for (;;) {
   }
   link(best.a.id, best.b.id); union(best.a.id, best.b.id);
   bridges.push(`${best.a.name}–${best.b.name} (${best.d >= 10 ? best.d.toFixed(0) + ' km' : (best.d * 1000).toFixed(0) + ' m'})`);
+}
+
+// 陸の線が 1 本も無い拠点(航路でつながるので橋渡しの対象にならなかった、町から遠い港など)は、いちばん近い拠点と 1 本つなぐ
+for (const a of hackable) {
+  if (adj.get(a.id).size) continue;
+  let best = null;
+  for (const b of hackable) { if (b.id === a.id) continue; const d = distKm(a, b); if (!best || d < best.d) best = { b, d }; }
+  if (!best) continue;
+  link(a.id, best.b.id);
+  bridges.push(`${a.name}–${best.b.name} (${best.d >= 10 ? best.d.toFixed(0) + ' km' : (best.d * 1000).toFixed(0) + ' m'})`);
 }
 
 // ---------- 書き戻し(ファイルごと) ----------
@@ -198,7 +216,7 @@ for (const { file, T } of FILES) {
 
 const deg = {}; for (const n of hackable) { const d = adj.get(n.id).size; deg[d] = (deg[d] || 0) + 1; }
 const top = hackable.map((n) => ({ name: n.name, d: adj.get(n.id).size })).sort((a, b) => b.d - a.d).slice(0, 8);
-console.log(`対象 ${FILES.length} ファイル ${nodes.length} 拠点。路線のつながり ${lineEdges / 2} 本、名所のつながり ${landmarkEdges} 本(5 km 以内に見通せる駅が無い名所 ${landmarkAlone}。間に町があって外した駅 ${landmarkBlocked})、町・字のつながり ${townEdges} 本、橋 ${bridges.length} 本。拠点に結びつかなかった N02 の駅 ${unmapped} 件(対象外の都道府県など)`);
+console.log(`対象 ${FILES.length} ファイル ${nodes.length} 拠点。路線のつながり ${lineEdges / 2} 本、名所のつながり ${landmarkEdges} 本(5 km 以内に見通せる駅が無い名所 ${landmarkAlone}。間に町があって外した駅 ${landmarkBlocked})、町・字のつながり ${townEdges} 本、航路でつながったまとまり ${routeJoins}、橋 ${bridges.length} 本。拠点に結びつかなかった N02 の駅 ${unmapped} 件(対象外の都道府県など)`);
 console.log('つながりの本数 → 拠点数', JSON.stringify(deg));
 console.log('多い順', top.map((t) => `${t.name} ${t.d}`).join(' / '));
 if (bridges.length) console.log('橋:', bridges.join(' / '));

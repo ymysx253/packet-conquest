@@ -48,11 +48,12 @@ for (const n of NODES) {
     assert.ok(d >= 0.025, `${n.name} と ${m.name} が同じ場所です (${(d * 1000).toFixed(0)} m)`);
   }
 }
-// 連結: ハック可能な公開の拠点どうしは、どこからでも全部へ到達できる
+// 連結: ハック可能な公開の拠点どうしは、どこからでも全部へ到達できる(陸のつながりと航路。海の上で町どうしはつながらないので、島へは航路で渡る。2026-10-20)
 const HACKABLE = NODES.filter((n) => n.hackable && n.status === 'public'); // 非公開の拠点(自衛隊・米軍の飛行場)はゲームの地図に入らない
 assert.ok(HACKABLE.length >= 100 && HACKABLE.length < NODES.length, 'ハック不可の拠点(寺社)がいくつかある');
 const seen = new Set([HACKABLE[0].id]); const stack = [HACKABLE[0].id];
-while (stack.length) for (const m of ADJ[stack.pop()]) if (!seen.has(m)) { seen.add(m); stack.push(m); }
+const ROUTES_OF = Object.fromEntries(NODES.map((n) => [n.id, (n.routes || []).map((r) => r.to)]));
+while (stack.length) { const x = stack.pop(); for (const m of [...ADJ[x], ...ROUTES_OF[x]]) if (!seen.has(m)) { seen.add(m); stack.push(m); } }
 assert.strictEqual(seen.size, HACKABLE.length, '地図が分断されています');
 for (const e of EDGES) assert.ok(ADJ[e.a] && ADJ[e.b] && e.a !== e.b, 'リンクの端点が不正');
 // つながりは路線に沿う(第 14 章): 新宿駅がいちばん多く、末端の駅は 1 本。名所は見通せる近い駅をレベルの数まで
