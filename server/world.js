@@ -375,14 +375,27 @@ class World {
       const dropped = [...p.view].filter((t) => !next.has(t));
       p.view = next; p.viewZ = 0;
       const nodes = [], edges = [];
+      // 遠い隣の駅(2026-10-20 ユーザー決定): 路線の線は、相手の駅が見ている範囲の外でも画面の外へ向かって描く(新幹線は隣の駅が数十 km 先)。
+      // 駅と駅のつながりで、相手が範囲の外なら、相手の位置・路線・持ち主の見た目を添える
+      const farOf = (id) => {
+        const n = this.nodes.get(id);
+        return n && n.status === 'public' && n.genre === 'station' && !next.has(n.t0)
+          ? { id, name: n.name, genre: n.genre, lat: n.lat, lon: n.lon, level: n.level, lines: n.lines || [], owner: n.owner || null, ...(n.owner ? this.ownerLook(n.owner) : {}) } : null;
+      };
+      const out = (e) => {
+        const na = this.nodes.get(e.a), nb = this.nodes.get(e.b);
+        if (!na || !nb || na.genre !== 'station' || nb.genre !== 'station') return e;
+        const far = farOf(e.a) || farOf(e.b);
+        return far ? { a: e.a, b: e.b, far } : e;
+      };
       for (const t of added) {
         const c = this.tile(t);
         for (const n of c.nodes.values()) if (n.status === 'public') nodes.push(this.pub(n));
-        for (const e of c.edges.values()) edges.push(e);
+        for (const e of c.edges.values()) edges.push(out(e));
       }
       // 隣のタイルからこのタイルへ入るリンクも送る(端の拠点が孤立して見えないように)
       for (const t of added) for (const u of tilesAround(t, 1)) if (!next.has(u) && this.tiles.has(u)) {
-        for (const e of this.tiles.get(u).edges.values()) if (this.tile(t).nodes.has(e.a) || this.tile(t).nodes.has(e.b)) edges.push(e);
+        for (const e of this.tiles.get(u).edges.values()) if (this.tile(t).nodes.has(e.a) || this.tile(t).nodes.has(e.b)) edges.push(out(e));
       }
       this.send(p, { t: 'tiles', z: 0, added, dropped, nodes, edges });
     } else {

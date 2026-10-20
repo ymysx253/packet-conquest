@@ -10,6 +10,7 @@
     home: null, spawn: null,
     nodes: new Map(),   // id → 拠点(サーバーから受け取った範囲だけ)
     edges: new Map(),   // key → {a, b}
+    far: new Map(),     // 読み込んでいない隣の駅(id → 位置・路線)。路線の線を画面の外へ伸ばすのに使う(2026-10-20)
     tiles: new Set(),   // 受け取っているタイル(z0)
     regions: [],        // 縮小時の地域の支配(区・市 / 都道府県 / 国)
     viewZ: 0, overview: false,
@@ -117,7 +118,7 @@
       case 'moved':
         S.home = m.home; S.movedAt = m.movedAt; S.moving = false; $('pickBar').hidden = true; S.selected = null; S.question = null; S.result = null;
         if (m.area) $('areaChip').textContent = m.area;
-        S.nodes.clear(); S.edges.clear(); S.tiles.clear(); lastViewKey = ''; railCache = null;
+        S.nodes.clear(); S.edges.clear(); S.far.clear(); S.tiles.clear(); lastViewKey = ''; railCache = null;
         centerOn(worldOf(m.home.lat, m.home.lon), 9); requestView(true); renderQuestion();
         toast('引っ越しました。新しい拠点から広げ直してください');
         break;
@@ -161,17 +162,17 @@
     railCache = null; // 拠点とつながりが入れ替わるので、路線の隣どうしを作り直す
     if (m.overview) {
       // 縮小表示: 送られてきた高レベルの拠点だけに入れ替える
-      S.nodes.clear(); S.edges.clear(); S.tiles.clear(); S.overview = true; S.viewZ = m.z;
+      S.nodes.clear(); S.edges.clear(); S.far.clear(); S.tiles.clear(); S.overview = true; S.viewZ = m.z;
       for (const n of m.nodes) { S.nodes.set(n.id, n); rememberRoutes(n); } // 縮小表示にも自分の空港・港が届くので、航路の線を出せる
       S.regions = Array.isArray(m.regions) ? m.regions : [];
       if (m.z >= 3) loadCoarse(); else for (const g of S.regions) loadBounds(g.pref);
       return;
     }
-    if (S.overview) { S.nodes.clear(); S.edges.clear(); S.tiles.clear(); S.overview = false; S.regions = []; }
+    if (S.overview) { S.nodes.clear(); S.edges.clear(); S.far.clear(); S.tiles.clear(); S.overview = false; S.regions = []; }
     S.viewZ = 0;
     for (const t of m.dropped) {
       S.tiles.delete(t);
-      for (const [id, n] of S.nodes) if (n.t0 === t && !(S.home && id === S.home.id)) S.nodes.delete(id);
+      for (const [id, n] of S.nodes) if (n.t0 === t && !(S.home && id === S.home.id)) { if (n.genre === 'station') S.far.set(id, n); S.nodes.delete(id); }
     }
     for (const t of m.added) S.tiles.add(t);
     for (const n of m.nodes) { S.nodes.set(n.id, n); rememberRoutes(n); }
@@ -179,6 +180,8 @@
     for (const pref of new Set(m.nodes.map((n) => (n.region || '').split('-')[0]).filter(Boolean))) loadBounds(pref);
     for (const e of m.edges) S.edges.set(e.a < e.b ? `${e.a}|${e.b}` : `${e.b}|${e.a}`, e);
     for (const [k, e] of S.edges) if (!S.nodes.has(e.a) && !S.nodes.has(e.b)) S.edges.delete(k);
+    for (const e of m.edges) if (e.far) S.far.set(e.far.id, e.far);
+    { const used = new Set(); for (const e of S.edges.values()) { used.add(e.a); used.add(e.b); } for (const id of [...S.far.keys()]) if (S.nodes.has(id) || !used.has(id)) S.far.delete(id); } // 使わなくなった遠い隣は捨てる
     computeReach();
     renderSelected();
   }
@@ -357,6 +360,7 @@
   //   同じ路線の前後の駅を通るなめらかな曲線にする(各駅での向きは、反対側の隣の駅からこちらの隣の駅への向き)。分かれ道では、いちばんまっすぐ続く隣を使う
   //   両端の駅が同じ新幹線の路線を持つ線を新幹線とする(全国 101 本。どれも新幹線で隣り合う駅だった)
   const RAIL = { ink: '#2B2B2B', paper: '#FFFFFF', shinkansen: '#00897B' };
+  const railNode = (id) => S.nodes.get(id) || S.far.get(id); // 読み込んでいない遠い隣の駅も含める
   let railCache = null; // 駅 id → [{ id, lines }](路線でつながる隣の駅)。タイルが届くたびに作り直す
   const commonLines = (a, b) => { const bl = b.lines || []; return (a.lines || []).filter((l) => bl.includes(l)); };
   function railLinesOf(na, nb) { // 2 つの駅を結ぶ路線(新幹線があれば新幹線だけ)。路線の線でなければ空
@@ -370,7 +374,7 @@
     railCache = new Map();
     const push = (k, v) => { let arr = railCache.get(k); if (!arr) railCache.set(k, (arr = [])); arr.push(v); };
     for (const e of S.edges.values()) {
-      const a = S.nodes.get(e.a), b = S.nodes.get(e.b);
+      const a = railNode(e.a), b = railNode(e.b);
       if (!a || !b) continue;
       const ls = railLinesOf(a, b);
       if (!ls.length) continue;
@@ -384,7 +388,7 @@
     let best = null, bestDot = -0.2; // 反対側(内積が小さい)にある同じ路線の隣だけを使う
     for (const m of railIndex().get(na.id) || []) {
       if (m.id === nb.id || !m.lines.some((l) => ls.includes(l))) continue;
-      const c = S.nodes.get(m.id); if (!c) continue;
+      const c = railNode(m.id); if (!c) continue;
       const pc = posOf(c); let ux = pc.x - pa.x, uy = pc.y - pa.y; const ul = Math.hypot(ux, uy) || 1; ux /= ul; uy /= ul;
       const dot = ux * dx + uy * dy;
       if (dot < bestDot) { bestDot = dot; best = { ux, uy }; }
@@ -1033,12 +1037,13 @@
     const lineScale = Math.min(1, Math.max(0.4, ratio / 4));
     const rails = [];
     for (const e of S.edges.values()) {
-      const na = nodeById(e.a), nb = nodeById(e.b);
+      const na = railNode(e.a), nb = railNode(e.b);
       if (!na || !nb || !visibleNode(na) || !visibleNode(nb)) continue; // 描かない町・字への線も描かない
       const own = na.owner && na.owner === nb.owner && ownShown(relOf(na)) ? ((ownerStyleOf(na) || {}).frame || ownerColorOf(na)) : null; // チームの線は枠の色
       const ef = Math.min(fadeOf(na), fadeOf(nb)); // 線も、両端の薄い方に合わせて薄く
       const cv = railCurve(na, nb);
       if (cv) { rails.push({ cv, own, ef }); continue; }
+      if (!S.nodes.has(na.id) || !S.nodes.has(nb.id)) continue; // 読み込んでいない遠い隣へは、路線の線だけ伸ばす
       const a = toScreen(posOf(na)), b = toScreen(posOf(nb));
       const thin = na.isPlayerNode || nb.isPlayerNode;
       const town = na.genre === 'town' || nb.genre === 'town'; // 町・字の線は細く薄く(路線の線を主役にする)
@@ -1076,7 +1081,7 @@
         ctx.lineWidth = Math.max(2, Math.min(4, 1.5 + ratio / 6));
         for (const m of S.selNb.list) {
           const b = toScreen(S.nodes.has(m.id) ? posOf(S.nodes.get(m.id)) : m.w);
-          const cv = S.nodes.has(m.id) ? railCurve(sel, S.nodes.get(m.id)) : null; // 路線の線は同じ曲線でなぞる
+          const cv = railNode(m.id) ? railCurve(sel, railNode(m.id)) : null; // 路線の線は同じ曲線でなぞる
           if (cv) railPath(ctx, cv); else { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); }
           ctx.stroke();
           if (!S.drawn || !S.drawn.has(m.id)) { ctx.beginPath(); ctx.arc(b.x, b.y, 3.5, 0, Math.PI * 2); ctx.fill(); } // 描いていない拠点(縮小で隠れた町・字など)は点で示す
