@@ -93,7 +93,7 @@ class CosmosStore {
   // 選んだ拠点のつながり先(名前と位置だけ)。1 回の問い合わせで引く
   async nodesBrief(ids) {
     if (!ids.length) return [];
-    return this.query('nodes', { query: 'SELECT c.id, c.name, c.genre, c.lat, c.lon, c.status FROM c WHERE ARRAY_CONTAINS(@ids, c.id)', parameters: [{ name: '@ids', value: ids }] });
+    return this.query('nodes', { query: 'SELECT c.id, c.name, c.genre, c.lat, c.lon, c.status, c.owner, c.ownerIsTeam, c.isPlayerNode FROM c WHERE ARRAY_CONTAINS(@ids, c.id)', parameters: [{ name: '@ids', value: ids }] });
   }
   async loadNode(id) {
     const rows = await this.query('nodes', { query: 'SELECT * FROM c WHERE c.id = @id', parameters: [{ name: '@id', value: id }] });

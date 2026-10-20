@@ -64,7 +64,7 @@ class MemoryStore {
     return out;
   }
   async loadNode(id) { const n = this.nodes.get(id); return n ? { ...n } : null; }
-  async nodesBrief(ids) { return ids.map((id) => this.nodes.get(id)).filter(Boolean).map((n) => ({ id: n.id, name: n.name, genre: n.genre, lat: n.lat, lon: n.lon, status: n.status })); }
+  async nodesBrief(ids) { return ids.map((id) => this.nodes.get(id)).filter(Boolean).map((n) => ({ id: n.id, name: n.name, genre: n.genre, lat: n.lat, lon: n.lon, status: n.status, owner: n.owner || null, ownerIsTeam: n.ownerIsTeam || undefined, isPlayerNode: n.isPlayerNode || undefined })); }
   async saveNode(doc) {
     const prev = this.nodes.get(doc.id);
     if (!prev) this._index(doc);

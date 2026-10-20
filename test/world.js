@@ -308,6 +308,36 @@ async function solve(world, p, nodeId) {
   assert.strictEqual(a.team, null);
   assert.ok(!heldNode.owner && !heldNode.ownerIsTeam, 'チームが消えると、チームの持ち物は中立に戻る');
 
+  // 囲み(2026-10-21 ユーザー決定): 必要な回数 = つながりの本数 −(自分かチームが押さえている隣の数 − 1)。最低 1。チームの仲間・チームの持ち物も数える
+  {
+    const t = [...w.nodes.values()].find((n) => !n.isPlayerNode && !n.owner && n.hackable !== false && n.status === 'public' && (n.hits || 1) >= 3
+      && w.neighborIds(n).filter((id) => w.nodes.has(id) && !w.nodes.get(id).owner && !w.nodes.get(id).isPlayerNode).length >= 3);
+    assert.ok(t, '囲みを試す拠点(つながり 3 本以上で、空いている隣が 3 つ)');
+    const nb3 = w.neighborIds(t).filter((id) => w.nodes.has(id) && !w.nodes.get(id).owner && !w.nodes.get(id).isPlayerNode).slice(0, 3).map((id) => w.nodes.get(id));
+    const base = await w.siege(t, a);
+    const expect = (held) => Math.max(1, t.hits - Math.max(0, held - 1));
+    assert.strictEqual(base.need, expect(base.held), '囲みの式');
+    nb3[0].owner = a.id;
+    assert.strictEqual((await w.siege(t, a)).need, expect(base.held + 1), '隣を 1 つ押さえる');
+    nb3[1].owner = a.id;
+    const two = await w.siege(t, a);
+    assert.strictEqual(two.held, base.held + 2); assert.strictEqual(two.need, expect(base.held + 2), '隣を 2 つ押さえると 1 回減る(最初の 1 つ以降)');
+    // チーム: 仲間の拠点とチームの持ち物も数える
+    const tm = await w.createTeam(a, '囲みチーム', 3);
+    const mate = await w.join(fakeWs(), 'なかま', null, tokyoSt0.id); await w.joinTeam(mate, tm.id);
+    nb3[2].owner = mate.id;
+    assert.strictEqual((await w.siege(t, a)).held, base.held + 3, 'チームの仲間が押さえた隣も数える');
+    nb3[2].owner = tm.id; nb3[2].ownerIsTeam = true;
+    assert.strictEqual((await w.siege(t, a)).held, base.held + 3, 'チームの持ち物の隣も数える');
+    const all = w.neighborIds(t).map((id) => w.nodes.get(id)).filter(Boolean);
+    const saved = all.map((m) => [m, m.owner, m.ownerIsTeam]);
+    for (const m of all) if (!m.isPlayerNode) { m.owner = a.id; delete m.ownerIsTeam; }
+    assert.ok((await w.siege(t, a)).need >= 1, 'どんなに囲んでも 1 回は正解が要る');
+    for (const [m, o, it] of saved) { m.owner = o; if (it) m.ownerIsTeam = it; else delete m.ownerIsTeam; }
+    for (const m of nb3) { m.owner = null; delete m.ownerIsTeam; }
+    await w.leaveTeam(mate); await w.leaveTeam(a);
+  }
+
   // 開始地点(第 3.1 節): 名前で検索でき、選んだ駅のまわりに拠点が生まれ、その駅とつながる。指定が無ければ東京駅
   const tokyoSt = NODES.find((n) => n.id === DEFAULT_START_ID); // 既定の開始地点: 東京駅の隣の町・字「丸の内」(2026-10-19)
   assert.ok(tokyoSt.name === '丸の内' && tokyoSt.genre === 'town' && tokyoSt.level <= 9, '既定の開始地点は丸の内(町・字)');

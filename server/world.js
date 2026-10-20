@@ -491,15 +491,16 @@ class World {
   }
 
   // 選んだ拠点のつながり先(2026-10-19 ユーザー決定: 縮小していても、選んだ拠点から伸びる線を全部出す)。名前と位置だけ
-  async neighbors(nodeId) {
+  async neighbors(nodeId, p = null) {
     let n = this.nodes.get(nodeId);
     if (!n) { const d = await this.store.loadNode(nodeId); if (!d || d.status !== 'public') return { t: 'neighbors', nodeId, list: [] }; n = d; }
-    const ids = [...new Set([...(n.adj || []), ...(this.adj.get(nodeId) || [])])].slice(0, 200);
+    const ids = [...new Set([...(n.adj || []), ...(this.adj.get(nodeId) || []), ...(n.routes || []).map((r) => r.to)])].slice(0, 200);
     const have = ids.map((id) => this.nodes.get(id)).filter(Boolean);
     const missing = ids.filter((id) => !this.nodes.has(id));
     const more = missing.length ? await this.store.nodesBrief(missing) : [];
-    const list = [...have, ...more].filter((m) => m.status !== 'hidden').map((m) => ({ id: m.id, name: m.name, genre: m.genre || null, lat: m.lat, lon: m.lon }));
-    return { t: 'neighbors', nodeId, list };
+    const list = [...have, ...more].filter((m) => m.status !== 'hidden').map((m) => ({ id: m.id, name: m.name, genre: m.genre || null, lat: m.lat, lon: m.lon, owner: m.owner || null, ...(m.owner ? this.ownerLook(m.owner, m.ownerIsTeam) : {}) }));
+    const siege = p && !p.guest && this.nodes.has(n.id) ? await this.siege(this.nodes.get(n.id), p) : null; // この人にとっての突破に必要な回数(囲み)
+    return { t: 'neighbors', nodeId, list, ...(siege ? { siege } : {}) };
   }
 
   // ---------- 参加・復帰 ----------
@@ -816,6 +817,29 @@ class World {
     return mine.some((id) => reach.has(id)) || viaRoute.some((id) => reach.has(id));
   }
 
+  // 囲み(2026-10-21 ユーザー決定): 突破に必要な正解の回数 = つながりの本数 −(自分かチームが押さえている隣の数 − 1)。どんなに減っても 1 回は正解が要る。
+  // 隣 = 拠点マスターのつながり(adj)と航路の行き先(つながりの本数 hits と同じ数え方。プレイヤーの拠点の線は数えない)。
+  // 押さえている = 自分、チームの仲間、チームの持ち物。本拠地から線でつながっているかは問わない(それは攻撃できる条件だけ)。
+  // 使うのは攻めるときだけ(占領したあとに周りを押さえても、持っている拠点には関係しない)
+  neighborIds(n) { return [...new Set([...(n.adj || []), ...(n.routes || []).map((r) => r.to)])].filter((id) => id !== n.id); }
+  async heldBy(m, p) { // 隣の拠点 m を p(とそのチーム)が押さえているか
+    if (!m || !m.owner || m.isPlayerNode) return false;
+    if (m.ownerIsTeam) return !!p.team && m.owner === p.team;
+    if (m.owner === p.id) return true;
+    if (!p.team) return false;
+    const o = await this.getPlayer(m.owner);
+    return !!o && o.team === p.team;
+  }
+  async siege(n, p) {
+    const ids = this.neighborIds(n);
+    const missing = ids.filter((id) => !this.nodes.has(id));
+    const docs = [...ids.map((id) => this.nodes.get(id)).filter(Boolean), ...(missing.length ? await this.store.nodesBrief(missing) : [])];
+    let held = 0;
+    for (const m of docs) if (await this.heldBy(m, p)) held++;
+    const hits = n.hits || 1;
+    return { hits, held, need: Math.max(1, hits - Math.max(0, held - 1)) };
+  }
+
   // 出題レベル。難しさはレベルだけで決める(設計書 3.2)。突破に必要な回数は hits(つながりの本数)で別に決まる
   levelFor(n, mode) {
     const base = Math.min(MAX_LEVEL, Math.max(1, n.level) + (this.settle(n).defense || 0));
@@ -946,11 +970,11 @@ class World {
     const key = this.attackKey(p);
     n.progress = n.progress || {};
     n.progress[key] = (n.progress[key] || 0) + 1;
-    const hits = n.hits || 1;
+    const { need: hits, held } = await this.siege(n, p); // 囲むほど少ない(2026-10-21)。判定は正解したときだけ(正解せずに占領にはならない)
     if (n.progress[key] < hits) {
       this.addLog(`${p.name} が ${n.name} に侵入(${n.progress[key]}/${hits})`);
       await this.persistNode(n);
-      this.events.add('intrude', { ...ev, level: level === null ? undefined : level, detail: { progress: n.progress[key], hits, key } });
+      this.events.add('intrude', { ...ev, level: level === null ? undefined : level, detail: { progress: n.progress[key], hits, held, base: n.hits || 1, key } });
       this.emitNode(n);
       return `${n.name} に侵入しました(突破まで あと ${hits - n.progress[key]} 回)`;
     }
@@ -960,7 +984,7 @@ class World {
     const defenseBefore = n.defense || 0;
     if (prev) { prev.nodesOwned = Math.max(0, (prev.nodesOwned || 0) - 1); prev.score = Math.max(0, (prev.score || 0) - gained); }
     if (prevTeam) { prevTeam.heldNodes = Math.max(0, (prevTeam.heldNodes || 0) - 1); prevTeam.heldScore = Math.max(0, (prevTeam.heldScore || 0) - gained); await this.store.saveTeam(prevTeam); }
-    this.events.add('capture', { ...ev, level: level === null ? undefined : level, ip: p.ws && p.ws.ip, detail: { prevOwner: prev ? prev.id : null, prevTeam: prev ? prev.team || null : prevTeam ? prevTeam.id : null, gained, hits, defenseBefore } });
+    this.events.add('capture', { ...ev, level: level === null ? undefined : level, ip: p.ws && p.ws.ip, detail: { prevOwner: prev ? prev.id : null, prevTeam: prev ? prev.team || null : prevTeam ? prevTeam.id : null, gained, hits, held, base: n.hits || 1, defenseBefore } });
     n.owner = p.id; delete n.ownerIsTeam; n.capturedTeam = p.team || null; n.defense = 0; n.fortifiedAt = now(); n.progress = {}; // チームにいる間に取ったか(脱退したときにチームへ渡す。2026-10-20)
     if (n.genre === 'airport' || n.genre === 'port') n.protectedUntil = now() + GATEWAY_GUARD_MS; // 空港・港は 5 分間奪えない
     this.ownedCache.clear(); // 持ち拠点が変わった(縮小表示に足す分を作り直す)

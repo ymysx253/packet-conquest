@@ -176,7 +176,7 @@ async function handle(ws, msg) {
     }
     case 'view': await world.setView(player, Array.isArray(msg.tiles) ? msg.tiles.slice(0, 120).filter((x) => typeof x === 'string' && x.length <= 24) : [], msg.z); break;
     case 'ask': if (typeof msg.nodeId !== 'string' || msg.nodeId.length > 40) return; send(ws, await world.ask(player, msg.nodeId)); break;
-    case 'neighbors': if (typeof msg.nodeId !== 'string' || msg.nodeId.length > 40) return; send(ws, await world.neighbors(msg.nodeId)); break; // 選んだ拠点のつながり先(位置と名前だけ)
+    case 'neighbors': if (typeof msg.nodeId !== 'string' || msg.nodeId.length > 40) return; send(ws, await world.neighbors(msg.nodeId, player)); break; // 選んだ拠点のつながり先(位置と名前だけ)
     case 'answer': {
       if (typeof msg.qid !== 'string' || msg.qid.length > 40) return;
       // 4 択は choice(0〜3)、入力式は inputs(文字列 12 個まで、各 1,000 文字まで。欄ごとの上限は world.answer で)

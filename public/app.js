@@ -113,7 +113,7 @@
         requestView(true);
         break;
       case 'tiles': onTiles(m); break;
-      case 'neighbors': if (m.nodeId === S.selected) S.selNb = { id: m.nodeId, list: (m.list || []).map((x) => ({ ...x, w: worldOf(x.lat, x.lon) })) }; break;
+      case 'neighbors': if (m.nodeId === S.selected) { S.selNb = { id: m.nodeId, list: (m.list || []).map((x) => ({ ...x, w: worldOf(x.lat, x.lon) })), siege: m.siege || null }; renderSelected(); } break;
       case 'search': renderSearch(m); break;
       case 'moved':
         S.home = m.home; S.movedAt = m.movedAt; S.moving = false; $('pickBar').hidden = true; S.selected = null; S.question = null; S.result = null;
@@ -132,6 +132,7 @@
           if (S.nodes.has(n.id) || S.tiles.has(n.t0)) S.nodes.set(n.id, n);
           rememberRoutes(n);
         }
+        if (S.selected && S.selNb && m.nodes.some((n) => n.id === S.selected || S.selNb.list.some((x) => x.id === n.id))) refreshSiege(); // 囲みが変わったかもしれない(2026-10-21)
         computeReach();
         renderSelected();
         break;
@@ -650,6 +651,11 @@
     else S.mine.delete(n.id);
   }
   // サーバーの canAttack と同じ条件(表示用。判定はサーバーが行う)
+  let siegeTimer = null;
+  function refreshSiege() { // まとめて 1 回だけ聞き直す
+    if (siegeTimer) return;
+    siegeTimer = setTimeout(() => { siegeTimer = null; if (S.selected) send({ t: 'neighbors', nodeId: S.selected }); }, 400);
+  }
   function canAttack(id) {
     const n = nodeById(id);
     if (!n || !S.me || n.owner === S.me) return false;
@@ -725,14 +731,16 @@
     $('npOwner').textContent = n.ownerIsTeam ? `チーム「${n.ownerTeamName || '?'}」の持ち物${S.team && S.team.id === n.owner ? '(あなたのチーム)' : ''}` // チームを抜けた人が取った拠点はチームの持ち物(2026-10-20)
       : owner ? `${owner.name}${owner.id === S.me ? '(あなた)' : ''}` : (n.owner ? '他のプレイヤー' : '中立');
     // 突破に必要な回数 = つながりの本数。自分(チーム)の進捗と、他の攻め手の最大進捗
-    const hits = n.hits || 1, prog = n.progress || {};
+    // 囲み(2026-10-21 ユーザー決定): つながりの本数 −(自分かチームが押さえている隣の数 − 1)。最低 1。数はサーバーが選んだときに返す
+    const sg = S.selNb && S.selNb.id === n.id && S.selNb.siege ? S.selNb.siege : null;
+    const base = n.hits || 1, hits = n.owner === S.me || !sg ? base : sg.need, prog = n.progress || {};
     const myKey = S.team ? S.team.id : S.me;
     const mine = prog[myKey] || 0;
     const others = Object.entries(prog).filter(([k]) => k !== myKey).map(([, v]) => v);
-    const parts = [`正解 ${hits} 回(つながり ${hits} 本)`];
+    const parts = [`正解 ${hits} 回(つながり ${base} 本${hits < base ? `、囲み ${sg.held} 本で −${base - hits}` : ''})`];
     if (n.hackable === false) parts.length = 0, parts.push('ハック不可');
     else if (n.owner === S.me) { if (others.length) parts.push(`侵入されています: 最大 ${Math.max(...others)}/${hits}`); }
-    else { if (mine) parts.push(`${S.team ? 'チーム' : 'あなた'} ${mine}/${hits}`); if (others.length) parts.push(`他の攻め手 最大 ${Math.max(...others)}/${hits}`); }
+    else { if (mine) parts.push(`${S.team ? 'チーム' : 'あなた'} ${mine}/${hits}`); if (others.length) parts.push(`他の攻め手 最大 ${Math.max(...others)} 回正解`); } // ほかの攻め手の必要な回数は囲みで人ごとに違う
     $('npHits').textContent = parts.join(' ・ ');
     const lines = Array.isArray(n.lines) ? n.lines : [];
     $('npLines').hidden = !lines.length;
