@@ -284,15 +284,29 @@ async function solve(world, p, nodeId) {
     w.ownedCache.clear();
   }
   await w.setView(a, view, 0);
+  // チームにいる間に取った拠点は、抜けた時点でチームの持ち物になる(2026-10-20 ユーザー決定)。チームに入る前に取った拠点はその人に残る
+  const heldNode = w.nodes.get(nb);
+  heldNode.capturedTeam = team1.id; // チームにいる間に取ったことにする
+  const keptNode = [...w.nodes.values()].find((n) => n.owner === a.id && !n.isPlayerNode && n.id !== nb);
+  if (keptNode) keptNode.capturedTeam = null;
+  const ownedBefore = a.nodesOwned;
   // リーダーが抜けたら、いちばん古い人にリーダーが移る
   await w.leaveTeam(a);
   const after = await store.loadTeam(team1.id);
   assert.ok(after && after.ownerId === cee.id, 'リーダーの引き継ぎ');
+  assert.ok(heldNode.owner === team1.id && heldNode.ownerIsTeam, 'チームにいる間に取った拠点はチームの持ち物になる');
+  assert.strictEqual(a.nodesOwned, ownedBefore - 1, '抜けた人の拠点の数から減る');
+  assert.ok(after.heldNodes === 1 && after.heldScore > 0, 'チームの持ち物の数と点');
+  if (keptNode) assert.strictEqual(keptNode.owner, a.id, 'チームに入る前に取った拠点はその人に残る');
+  assert.ok(w.pub(heldNode).ownerIsTeam && w.pub(heldNode).ownerTeam === team1.id && w.pub(heldNode).ownerTeamName === 'あかチーム', 'チームの見た目と名前で配信');
+  assert.strictEqual(await w.canAttack(cee.id, heldNode.id), false, '自分のチームの持ち物は攻撃できない');
+  assert.ok((await w.rankings()).teams.find((t) => t.id === team1.id).nodes >= 1, 'チームの順位に持ち物の拠点を数える');
   await w.joinTeam(a, team1.id); await w.leaveTeam(cee); await w.leaveTeam(dee);
   assert.strictEqual((await store.loadTeam(team1.id)).memberCount, 1);
   await w.leaveTeam(a);
   assert.strictEqual(await store.loadTeam(team1.id), null, '最後の 1 人が抜けるとチームは消える');
   assert.strictEqual(a.team, null);
+  assert.ok(!heldNode.owner && !heldNode.ownerIsTeam, 'チームが消えると、チームの持ち物は中立に戻る');
 
   // 開始地点(第 3.1 節): 名前で検索でき、選んだ駅のまわりに拠点が生まれ、その駅とつながる。指定が無ければ東京駅
   const tokyoSt = NODES.find((n) => n.id === DEFAULT_START_ID); // 既定の開始地点: 東京駅の隣の町・字「丸の内」(2026-10-19)

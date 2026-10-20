@@ -619,7 +619,8 @@
     if (!openNow(n.hours)) return false; // 開いている時間の外
     if (n.isPlayerNode) return false; // プレイヤー自身の拠点は占領禁止
     if (n.protectedUntil > now()) return false;
-    if (n.owner) { const o = playerById(n.owner); if (o && o.nodes <= 3 && o.newbie) return false; }
+    if (n.ownerIsTeam && S.team && n.owner === S.team.id) return false; // 自分のチームの持ち物(2026-10-20)
+    if (n.owner && !n.ownerIsTeam) { const o = playerById(n.owner); if (o && o.nodes <= 3 && o.newbie) return false; }
     if (adjacent(id).some((a) => ownerOf(a) === S.me && S.reach.has(a))) return true;
     // 航路の先: 自分が占領している空港・港から航路がある(画面の外の空港でもよい。最終の判定はサーバー)
     return (n.routes || []).some((r) => routeOpenNow(r) && S.mine.has(r.to) && (S.reach.has(r.to) || !S.nodes.has(r.to)));
@@ -682,7 +683,8 @@
     if (n.hours) $('npValue').textContent += `(開いている時間: 毎日 ${n.hours.map(jstRange).join('・')} 日本時間)`; // 1 日中ではない拠点だけ
     $('npCompany').hidden = $('npCompanyLabel').hidden = !n.company;
     if (n.company) $('npCompany').textContent = `${n.company}(命名権など。ハック不可)`;
-    $('npOwner').textContent = owner ? `${owner.name}${owner.id === S.me ? '(あなた)' : ''}` : (n.owner ? '他のプレイヤー' : '中立');
+    $('npOwner').textContent = n.ownerIsTeam ? `チーム「${n.ownerTeamName || '?'}」の持ち物${S.team && S.team.id === n.owner ? '(あなたのチーム)' : ''}` // チームを抜けた人が取った拠点はチームの持ち物(2026-10-20)
+      : owner ? `${owner.name}${owner.id === S.me ? '(あなた)' : ''}` : (n.owner ? '他のプレイヤー' : '中立');
     // 突破に必要な回数 = つながりの本数。自分(チーム)の進捗と、他の攻め手の最大進捗
     const hits = n.hits || 1, prog = n.progress || {};
     const myKey = S.team ? S.team.id : S.me;

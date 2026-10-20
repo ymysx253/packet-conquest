@@ -51,6 +51,22 @@ if (fs.existsSync(EXTRA)) {
     if (same) same[di] = '○'; else rows.push(r); // 候補一覧にあれば、その行を取り込む印に
   }
 }
+// 手で足す行(docs/landmarks/extra-hand.csv。同じ列 + 「座標の出典」)。Wikidata に座標が無い都道府県庁舎 7 件など(2026-10-20)。
+// 座標は出典の台帳にある別の出どころ(src-mlit-isj など)から。拠点の src はその出典にする
+const coordSrc = new Map(); // Wikidata の id → 座標の出典
+const HAND = path.join(ROOT, 'docs/landmarks/extra-hand.csv');
+if (fs.existsSync(HAND)) {
+  const hx = parseCsv(fs.readFileSync(HAND, 'utf8').replace(/^﻿/, ''));
+  const hh = hx.shift();
+  const si = hh.indexOf('座標の出典'), qi = head.indexOf('Wikidata');
+  for (const r of hx) {
+    if (r.length <= 1) continue;
+    const row = head.map((name) => { const i = hh.indexOf(name); return i < 0 ? '' : r[i]; }); // 候補一覧の列の順にそろえる
+    if (rows.some((x) => x[qi] === row[qi])) throw new Error(`extra-hand.csv: ${row[qi]} は候補一覧にもあります`);
+    rows.push(row);
+    if (si >= 0 && r[si]) coordSrc.set(row[qi], r[si]);
+  }
+}
 const col = (name) => { const i = head.indexOf(name); if (i < 0) throw new Error(`一覧に列「${name}」がありません`); return i; };
 const C = { pref: col('都道府県'), area: col('市区町村'), name: col('名前'), genre: col('genre'), sub: col('細分'), take: col('取り込み'), dup: col('既存と重複'), company: col('企業(命名権など)'), sl: col('知名度(言語版の数)'), qid: col('Wikidata'), lat: col('緯度'), lon: col('経度'), decide: col('採否(確認用)') };
 
@@ -70,7 +86,7 @@ const grid = new Map();
 const cell = (p) => `${Math.floor(p.lat * 200)}:${Math.floor(p.lon * 200)}`;
 for (const { T } of files.values()) {
   T.nodes = T.nodes.filter((n) => !n.id.startsWith('lm-'));
-  for (const n of T.nodes) { if (n.id.startsWith('ts-')) continue; const k = cell(n); if (!grid.has(k)) grid.set(k, []); grid.get(k).push(n); } // 観光地(ts-、tools/import-tourism.js)は名所の後に入れるので比べない
+  for (const n of T.nodes) { if (n.id.startsWith('ts-') || n.genre === 'town') continue; const k = cell(n); if (!grid.has(k)) grid.set(k, []); grid.get(k).push(n); } // 観光地(ts-、tools/import-tourism.js)は名所の後に入れるので比べない。町・字の代表点とも比べない(建物ではないので。愛媛県庁舎が一番町の代表点から 25 m 以内だった。2026-10-20)
 }
 const nearExisting = (p) => {
   const cy = Math.floor(p.lat * 200), cx = Math.floor(p.lon * 200);
@@ -135,7 +151,7 @@ for (const c of picked) {
   if (c.hidden) { node.status = 'hidden'; node.hiddenReason = c.hidden; }
   if (c.company) node.company = c.company;
   node.codes = { wikidata: c.qid }; // 形式は docs/DATA-FORMAT.md 第 4 章(空港・港の IATA などは tools/fetch-codes.js が足す)
-  node.src = 'src-wikidata';
+  node.src = coordSrc.get(c.qid) || 'src-wikidata';
   if (c.hackable && (c.genre === 'airport' || c.genre === 'port')) {
     const hub = c.genre === 'airport' && HUB_AIRPORTS.has(name);
     node.gateway = { type: c.genre, scope: hub ? 'international' : 'domestic', ...(hub ? { hub: true } : {}) };

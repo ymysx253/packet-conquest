@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "saitama",
   "name": "埼玉県",
-  "version": 57,
+  "version": 64,
   "updatedAt": "2026-10-19",
   "note": "埼玉県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -1846,8 +1846,8 @@
     { "id": "st-002802", "name": "沼南駅", "genre": "station", "kind": "HUB", "area": "上尾市", "region": "saitama-11219", "lat": 35.97133, "lon": 139.62357, "level": 10, "value": 10, "lines": ["埼玉新都市交通 伊奈線"], "adj": ["st-002787", "st-002812", "tw-11219-023101", "tw-11219-023201", "tw-11219-023301", "tw-11219-024001", "tw-11219-045000", "tw-11301-001001"] },
     { "id": "st-002812", "name": "原市駅", "genre": "station", "kind": "HUB", "area": "上尾市", "region": "saitama-11219", "lat": 35.96351, "lon": 139.62212, "level": 10, "value": 10, "lines": ["埼玉新都市交通 伊奈線"], "adj": ["st-002802", "st-002824", "tw-11219-023101", "tw-11219-023201", "tw-11219-025000"] },
 
-    { "id": "lm-q953446", "name": "獨協大学", "genre": "university", "kind": "EDU", "area": "草加市", "region": "saitama-11221", "lat": 35.83986, "lon": 139.79437, "level": 15, "value": 15, "codes": {"wikidata": "Q953446"}, "src": "src-wikidata", "adj": ["tw-11221-007001", "tw-11221-009001", "tw-11221-034000", "tw-11221-035001"] },
     { "id": "ts-q21653394", "name": "草加松原", "genre": "tourism", "kind": "LM", "area": "草加市", "region": "saitama-11221", "lat": 35.84103, "lon": 139.80528, "level": 30, "value": 30, "tags": ["景勝地", "名勝", "日本の道100選"], "codes": {"wikidata": "Q21653394"}, "src": "src-wikidata", "adj": ["tw-11221-008001", "tw-11221-010001", "tw-11221-023001", "tw-11221-024001"] },
+    { "id": "lm-q953446", "name": "獨協大学", "genre": "university", "kind": "EDU", "area": "草加市", "region": "saitama-11221", "lat": 35.83986, "lon": 139.79437, "level": 15, "value": 15, "codes": {"wikidata": "Q953446"}, "src": "src-wikidata", "adj": ["tw-11221-007001", "tw-11221-009001", "tw-11221-034000", "tw-11221-035001"] },
     { "id": "tw-11221-001001", "name": "高砂(草加市)", "genre": "town", "kind": "TOWN", "area": "草加市", "region": "saitama-11221", "lat": 35.82806, "lon": 139.8053, "level": 7, "value": 7, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "11221001001"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-11221-004001", "tw-11221-005001", "tw-11221-011001"], "contains": ["st-003040"], "adj": ["st-003040", "tw-11221-004001", "tw-11221-005001", "tw-11221-011001"] },
     { "id": "tw-11221-002001", "name": "住吉", "genre": "town", "kind": "TOWN", "area": "草加市", "region": "saitama-11221", "lat": 35.83118, "lon": 139.80943, "level": 6, "value": 6, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "11221002001"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-11221-003001", "tw-11221-011001"], "contains": ["st-003040"], "adj": ["st-003040", "tw-11221-003001", "tw-11221-011001"] },
     { "id": "tw-11221-003001", "name": "神明(草加市)", "genre": "town", "kind": "TOWN", "area": "草加市", "region": "saitama-11221", "lat": 35.83437, "lon": 139.80563, "level": 6, "value": 6, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "11221003001"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-11221-002001", "tw-11221-007001", "tw-11221-008001"], "adj": ["tw-11221-002001", "tw-11221-007001", "tw-11221-008001"] },

@@ -37,7 +37,7 @@
 | `sessions` | `/playerId` | 長丁場シナリオの途中経過(再開用)。TTL あり | フェーズ 2〜3 | 同時プレイ数 |
 | `events` | `/day` | 出来事の記録(`docs/LOGS.md`)。既定 TTL 90 日、種類ごとに 30 日〜無期限。1 日に DAU × 100 件 | フェーズ 1 手順 9〜10(作成済み。設定は LOGS.md 7.7) | 多い(TTL で回収) |
 | `sponsors` | `/id` | スポンサー(店・施設)と掲載条件 | 段階 C | 少ない |
-| `teams` | `/id` | チーム(`{ id, type: "team", name, ownerId, maxMembers, memberCount, createdAt, style: { frame, fill, text }, icon }`)。style は #RRGGBB、icon は用意した記号。リーダー(ownerId)だけ変更可。合計点は players を team で GROUP BY | 手順 8(2026-10-18) | 少ない |
+| `teams` | `/id` | チーム(`{ id, type: "team", name, ownerId, maxMembers, memberCount, createdAt, style: { frame, fill, text }, icon, heldNodes, heldScore }`)。heldNodes / heldScore はチームの持ち物の拠点の数と点(2026-10-20。順位に足す)。style は #RRGGBB、icon は用意した記号。リーダー(ownerId)だけ変更可。合計点は players を team で GROUP BY | 手順 8(2026-10-18) | 少ない |
 | `routes` | `/source` | 航路の記録(空路・海路。形は `docs/DATA-FORMAT.md` 第 5 章)。出典ごとに差し替えるので出典で分ける。管理と監査用で、ゲームは `nodes` の `routes`(要約)を使う | 2026-10-19(起動時に SDK が作る) | 国内数百件、世界で数万件 |
 | `meta` | `/id` | 小さな設定・状態。稼働時計 `clock`(`{ id: "clock", uptimeMs, savedAt }`)と、出典の台帳の写し `sources`(`{ id: "sources", schema, sources: [...], syncedAt }`。`tools/db-setup.js` が書く)。無ければ起動時に SDK が作る(共有スループット) | 手順 5(2026-10-18) | 数件 |
 | `terms` / `devices` | `/category` / `/id` | 技術用語マスター・機器種別マスター(いまは JSON ファイル。問題生成を DB 駆動にするときに移す) | 必要になったら | 数十〜数百件 |
@@ -131,7 +131,7 @@
 - **開いている時間**(`hours`。2026-10-19 ユーザー決定): その拠点を攻撃できる時間。`[{ from: "HH:MM", to: "HH:MM" }]` をサーバーの時計の UTC で見る。`00:00-00:00`(from と to が同じ)は 1 日中で、これが既定。**DB で管理する設定**(設定画面で変える)なので、マスターの入れ直し(`tools/db-setup.js --force`)では上書きしない(指紋 masterHash にも入れない)。時間の外は攻撃できない(持ち主の強化はできる)。既存の拠点には `tools/backfill-node-hours.js` で一度だけ足した
 - **マスターの項目**(登録・審査で決まる): name、genre、kind、area、country(地域マスターから引く。パーティションキーの 1 段目)、region、lat、lon、level、value、hackable、lines、alias、status、registeredBy、sponsorId
 - **つながり(2026-10-18、DESIGN.md 第 14 章)**: `adj` はつながっている拠点 id(駅は同じ路線の前後の駅、名所は近い駅をレベルと同じ数。`tools/import-links.js` が国土数値情報 N02 から作る)。`hits` は突破に必要な正解の回数 = `adj` の本数(1 以上)。どちらもマスターの項目
-- **ゲーム状態の項目**(遊びで変わる): owner、defense、fortifiedAt(最後に強化・奪取した時刻。強化は 24 時間ごとに 1 下がる)、progress(攻め手 → 正解回数。キーはプレイヤー id かチーム id。占領で空に戻る)、protectedUntil、updatedAt。`value` は基礎点で、画面に出す点数は `value + 減衰後の defense`
+- **ゲーム状態の項目**(遊びで変わる): owner(プレイヤーの id。チームの持ち物ならチームの id で ownerIsTeam: true。2026-10-20)、ownerIsTeam、capturedTeam(取ったときに所属していたチームの id。抜けたらその拠点をチームへ渡す)、defense、fortifiedAt(最後に強化・奪取した時刻。強化は 24 時間ごとに 1 下がる)、progress(攻め手 → 正解回数。キーはプレイヤー id かチーム id。占領で空に戻る)、protectedUntil、updatedAt。`value` は基礎点で、画面に出す点数は `value + 減衰後の defense`
 - **出典と識別コード(2026-10-19、`docs/DATA-FORMAT.md` 第 4 章)**: `codes` は外部の識別コード(`iata` / `icao` / `unlocode` / `wikidata` / `ksj` / `ext`)。駅の `ksj` は id から付く。`src` は出典の台帳の id。`gateway` は空港・港の玄関口の情報(`{ type, scope, hub? }`)。`names` は言語ごとの名前。どれもマスターの項目
 - **航路の要約(`routes`)**: `[{ to, mode: "air" | "sea", name, lat, lon }]`。`routes` コンテナーの記録から、使ってよい出典・運航中・両端が玄関口のものだけを `load.js` が作る派生値
 - `location` は Cosmos DB の地理空間クエリ用(GeoJSON Point は経度・緯度の順)。lat / lon と二重に持つ

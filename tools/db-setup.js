@@ -54,7 +54,7 @@ async function inChunks(items, fn) {
     console.log(`nodes: ${docs.length} 件を保存(初回)`);
   } else if (force) {
     const existing = new Map();
-    const it = store.c.nodes.items.query('SELECT c.id, c.country, c.region, c.isPlayerNode, c.owner, c.defense, c.fortifiedAt, c.progress, c.protectedUntil, c.createdAt, c.sponsorId, c.hours, c.masterHash FROM c');
+    const it = store.c.nodes.items.query('SELECT c.id, c.country, c.region, c.isPlayerNode, c.owner, c.defense, c.fortifiedAt, c.progress, c.protectedUntil, c.ownerIsTeam, c.capturedTeam, c.createdAt, c.sponsorId, c.hours, c.masterHash FROM c');
     for (const { resources } of [await it.fetchAll()]) for (const r of resources) existing.set(r.id, r);
     const changed = docs.filter((d) => { const cur = existing.get(d.id); return !cur || cur.masterHash !== d.masterHash; });
     // 地域(パーティションキー)が変わった拠点は、上書きでは別の文書が増えるので、古い方を消してから入れる
@@ -62,7 +62,8 @@ async function inChunks(items, fn) {
     await inChunks(moved, (d) => { const cur = existing.get(d.id); return store.c.nodes.item(d.id, [cur.country, cur.region]).delete().catch((e) => { if (e.code !== 404) throw e; }); });
     const merged = changed.map((d) => {
       const cur = existing.get(d.id);
-      return cur ? { ...d, hours: cur.hours || d.hours, owner: cur.owner || null, defense: cur.defense || 0, fortifiedAt: cur.fortifiedAt || null, progress: cur.progress || {}, protectedUntil: cur.protectedUntil || 0, createdAt: cur.createdAt || d.createdAt, sponsorId: cur.sponsorId || null } : d;
+      // ゲーム状態は保つ(チームの持ち物 ownerIsTeam と、取ったときのチーム capturedTeam も。2026-10-20)
+      return cur ? { ...d, hours: cur.hours || d.hours, owner: cur.owner || null, defense: cur.defense || 0, fortifiedAt: cur.fortifiedAt || null, progress: cur.progress || {}, protectedUntil: cur.protectedUntil || 0, ...(cur.ownerIsTeam ? { ownerIsTeam: true } : {}), ...(cur.capturedTeam ? { capturedTeam: cur.capturedTeam } : {}), createdAt: cur.createdAt || d.createdAt, sponsorId: cur.sponsorId || null } : d;
     });
     await inChunks(merged, (d) => store.c.nodes.items.upsert(d));
     console.log(`nodes: 変わらなかった ${docs.length - changed.length} 件は書かない。地域が変わった ${moved.length} 件は入れ直し`);

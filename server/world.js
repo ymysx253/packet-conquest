@@ -163,22 +163,59 @@ class World {
     let newOwnerId = null, deleted = false;
     if (team) {
       team.memberCount = Math.max(0, (team.memberCount || 1) - 1);
-      if (team.memberCount === 0) { deleted = true; await this.store.deleteTeam(team.id); }
-      else {
-        // リーダーが抜けたら、いちばん古くからいる人にリーダーを渡す
-        if (team.ownerId === p.id) { const next = (await this.store.teamMembers(team.id, 2)).find((m) => m.id !== p.id); team.ownerId = next ? next.id : null; newOwnerId = team.ownerId; }
-        await this.store.saveTeam(team);
-      }
+      if (team.memberCount === 0) deleted = true;
+      // リーダーが抜けたら、いちばん古くからいる人にリーダーを渡す
+      else if (team.ownerId === p.id) { const next = (await this.store.teamMembers(team.id, 2)).find((m) => m.id !== p.id); team.ownerId = next ? next.id : null; newOwnerId = team.ownerId; }
     }
     const name = team ? team.name : p.team;
     const teamId = p.team;
-    p.team = null; this.ownedCache.clear();
+    // チームにいる間に取った拠点は、抜けた時点でその人のものではなくチームの持ち物になる(2026-10-20 ユーザー決定)。チームが消えるなら中立に戻す
+    const moved = await this.handOverToTeam(p.id, teamId, deleted ? null : team);
+    p.nodesOwned = Math.max(0, (p.nodesOwned || 0) - moved.count); p.score = Math.max(0, (p.score || 0) - moved.score);
+    let freed = 0;
+    if (deleted) { freed = await this.releaseTeamHeld(teamId); await this.store.deleteTeam(teamId); }
+    else if (team) await this.store.saveTeam(team);
+    p.team = null; this.ownedCache.clear(); this.invalidateReach(p.id);
     await this.persistPlayer(p);
-    this.events.add('team.leave', { playerId: p.id, teamId, detail: { memberCount: team ? team.memberCount : null, newOwnerId, deleted } });
-    this.addLog(`${p.name} がチーム「${name}」を脱退しました`);
+    this.events.add('team.leave', { playerId: p.id, teamId, detail: { memberCount: team ? team.memberCount : null, newOwnerId, deleted, nodesToTeam: deleted ? 0 : moved.count, nodesFreed: (deleted ? moved.count : 0) + freed } });
+    this.addLog(`${p.name} がチーム「${name}」を脱退しました` + (moved.count ? (deleted ? `(チームが無くなったため、チームにいる間に取った拠点 ${moved.count} か所は中立に)` : `(チームにいる間に取った拠点 ${moved.count} か所はチームのものに)`) : ''));
     await this.emitPlayers();
     return name;
   }
+  // チームにいる間に取った拠点(capturedTeam)を、チームの持ち物にする。team が無い(消える)ときは中立に戻す。動かした数と点数を返す
+  async handOverToTeam(pid, teamId, team) {
+    const byId = new Map((await this.store.nodesOwnedBy(pid)).map((d) => [d.id, d]));
+    for (const n of this.nodes.values()) if (n.owner === pid) byId.set(n.id, n); // キャッシュの方が新しいことがある
+    let count = 0, score = 0;
+    for (const d of byId.values()) {
+      const n = this.nodes.get(d.id) || d;
+      if (n.owner !== pid || n.isPlayerNode || !teamId || n.capturedTeam !== teamId) continue;
+      const v = this.valueOf(n);
+      if (team) { n.owner = team.id; n.ownerIsTeam = true; team.heldNodes = (team.heldNodes || 0) + 1; team.heldScore = (team.heldScore || 0) + v; }
+      else this.neutralize(n);
+      count++; score += v;
+      await this.persistNode(n);
+      if (this.nodes.has(n.id)) this.emitNode(n);
+      await this.updateControl(n);
+    }
+    if (count) { this.ownedCache.clear(); this.invalidateReach(pid); }
+    return { count, score };
+  }
+  // チームが消えるとき、チームの持ち物の拠点を中立に戻す。戻した数を返す
+  async releaseTeamHeld(teamId) {
+    let count = 0;
+    for (const d of await this.store.nodesOwnedBy(teamId)) {
+      const n = this.nodes.get(d.id) || d;
+      if (n.owner !== teamId || !n.ownerIsTeam) continue;
+      this.neutralize(n); count++;
+      await this.persistNode(n);
+      if (this.nodes.has(n.id)) this.emitNode(n);
+      await this.updateControl(n);
+    }
+    if (count) this.ownedCache.clear();
+    return count;
+  }
+  neutralize(n) { n.owner = null; delete n.ownerIsTeam; delete n.capturedTeam; n.defense = 0; n.fortifiedAt = null; n.progress = {}; n.protectedUntil = 0; }
 
   // ---------- 起動 ----------
   async init() {
@@ -245,6 +282,9 @@ class World {
       for (const d of docs) this.adopt(d);
     }
     for (const t of tiles0) if (!this.tile(t).linked) await this.linkTile(t);
+    // チームの持ち物の拠点(2026-10-20)は、チームの見た目で描くので、まだ読んでいないチームを読む
+    const teams = new Set(); for (const t of tiles0) for (const n of this.tile(t).nodes.values()) if (n.ownerIsTeam && !this.teamLooks.has(n.owner)) teams.add(n.owner);
+    for (const id of teams) await this.teamInfo(id);
   }
   // 読み込んだドキュメントをキャッシュに入れる
   adopt(doc) {
@@ -308,7 +348,7 @@ class World {
       hits: n.hits || 1, progress: n.progress || {}, // 突破に必要な回数と、攻め手ごとの正解回数(第 14 章)
       company: n.company || null, // 命名権など企業名の施設の企業名
       tags: n.tags && n.tags.length ? n.tags : undefined, // 細分と指定(観光地の「温泉」「特別名勝」など)
-      ...(n.owner ? this.ownerLook(n.owner) : {}), // 持ち主のチームと色(自分・チーム・ほかの人を見分ける。2026-10-19)
+      ...(n.owner ? this.ownerLook(n.owner, n.ownerIsTeam) : {}), // 持ち主のチームと色(自分・チーム・ほかの人を見分ける。2026-10-19)。チームの持ち物ならチームの見た目と名前(2026-10-20)
       ...(isAlwaysOpen(n.hours) ? {} : { hours: n.hours, open: openAt(n.hours) }), // 開いている時間が決まっている拠点だけ(サーバーの時計で判定した結果つき)
       routes: n.routes && n.routes.length ? n.routes.map((r) => (r.hours ? { ...r, open: routeOpen(r) } : r)) : undefined, // 航路(空港・港)。行き先 { to, mode, name, lat, lon }。季節航路は hours と、いま使えるか(open。サーバーの時計)
     };
@@ -336,6 +376,9 @@ class World {
     const pub = (list) => list.map((x) => this.pubPlayer(x));
     const teamDocs = new Map();
     for (const t of teams) teamDocs.set(t.team, await this.teamInfo(t.team));
+    // チームの持ち物の拠点(2026-10-20)の点と数を足して並べ直す
+    for (const t of teams) { const d = teamDocs.get(t.team); if (d) { t.score = (t.score || 0) + (d.heldScore || 0); t.nodes = (t.nodes || 0) + (d.heldNodes || 0); } }
+    teams.sort((a, b) => (b.score || 0) - (a.score || 0) || (b.points || 0) - (a.points || 0));
     const data = {
       week: wk,
       score: pub(score), points: pub(points), nodes: pub(nodes), weekPoints: pub(week).map((x, i) => ({ ...x, weekPoints: week[i].weekPoints || 0 })),
@@ -380,7 +423,7 @@ class World {
       const farOf = (id) => {
         const n = this.nodes.get(id);
         return n && n.status === 'public' && n.genre === 'station' && !next.has(n.t0)
-          ? { id, name: n.name, genre: n.genre, lat: n.lat, lon: n.lon, level: n.level, lines: n.lines || [], owner: n.owner || null, ...(n.owner ? this.ownerLook(n.owner) : {}) } : null;
+          ? { id, name: n.name, genre: n.genre, lat: n.lat, lon: n.lon, level: n.level, lines: n.lines || [], owner: n.owner || null, ...(n.owner ? this.ownerLook(n.owner, n.ownerIsTeam) : {}) } : null;
       };
       const out = (e) => {
         const na = this.nodes.get(e.a), nb = this.nodes.get(e.b);
@@ -413,7 +456,11 @@ class World {
   }
 
   // 持ち主のチームと色。読み込んである人はその場で、ほかは覚えている分だけ
-  ownerLook(id) {
+  ownerLook(id, isTeam) {
+    if (isTeam) { // チームの持ち物の拠点(2026-10-20)
+      const st = this.teamLooks.get(id) && this.teamLooks.get(id).style;
+      return { ownerIsTeam: true, ownerTeam: id, ownerTeamName: this.teamNames.get(id) || null, ownerColor: st && st.fill ? st.fill : null, ...(st && st.frame ? { ownerFrame: st.frame, ownerText: st.text || null } : {}) };
+    }
     const live = this.players.get(id);
     if (live) {
       const look = live.team && this.teamLooks.get(live.team);
@@ -435,7 +482,7 @@ class World {
       const members = await this.store.teamMembers(p.team, TEAM_MAX_MEMBERS);
       const look = this.teamLooks.get(p.team);
       for (const m of members) if (!this.players.has(m.id)) this.ownerLooks.set(m.id, { ownerTeam: p.team, ownerColor: look && look.style && look.style.fill ? look.style.fill : m.color || null, ...(look && look.style && look.style.frame ? { ownerFrame: look.style.frame, ownerText: look.style.text || null } : {}) });
-      ids = [...new Set([p.id, ...members.map((m) => m.id)])];
+      ids = [...new Set([p.id, ...members.map((m) => m.id), p.team])]; // チームの持ち物の拠点も(2026-10-20)
     }
     const docs = (await this.store.nodesOwnedByAny(ids)).filter((d) => d.status !== 'hidden');
     this.ownedCache.set(key, { at: now(), docs });
@@ -589,6 +636,16 @@ class World {
     for (const doc of docs) {
       const live = this.players.get(doc.id);
       if ((live && live.online) || doc.plan) continue;
+      // チームにいた人(2026-10-20): チームにいる間に取った拠点はチームの持ち物に(脱退と同じ)。チームの人数も減らし、0 人ならチームを消す
+      let nodesToTeam = 0;
+      if (doc.team) {
+        const team = await this.teamInfo(doc.team);
+        if (team) {
+          team.memberCount = Math.max(0, (team.memberCount || 1) - 1);
+          if (team.memberCount === 0) { await this.handOverToTeam(doc.id, doc.team, null); await this.releaseTeamHeld(doc.team); await this.store.deleteTeam(doc.team); }
+          else { if (team.ownerId === doc.id) { const next = (await this.store.teamMembers(team.id, 2)).find((m) => m.id !== doc.id); team.ownerId = next ? next.id : null; } nodesToTeam = (await this.handOverToTeam(doc.id, doc.team, team)).count; await this.store.saveTeam(team); }
+        }
+      }
       const owned = await this.store.nodesOwnedBy(doc.id);
       let nodesFreed = 0, homeDeleted = false;
       for (const d of owned) {
@@ -599,7 +656,8 @@ class World {
           homeDeleted = true;
           continue;
         }
-        n.owner = null; n.defense = 0; n.fortifiedAt = null; n.progress = {}; n.protectedUntil = 0;
+        if (n.owner !== doc.id) continue; // チームへ渡した拠点
+        this.neutralize(n);
         this.ownedCache.clear();
         await this.persistNode(n);
         nodesFreed++;
@@ -608,7 +666,7 @@ class World {
       }
       await this.store.deletePlayer(doc.id);
       this.players.delete(doc.id);
-      this.events.add('reclaim', { playerId: doc.id, teamId: doc.team || undefined, detail: { name: doc.name, nodesFreed, homeDeleted, lastSeen: doc.lastSeen, lastSeenUp: doc.lastSeenUp } });
+      this.events.add('reclaim', { playerId: doc.id, teamId: doc.team || undefined, detail: { name: doc.name, nodesFreed, nodesToTeam, homeDeleted, lastSeen: doc.lastSeen, lastSeenUp: doc.lastSeenUp } });
       this.addLog(`${doc.name} は 7 日間接続が無かったため、拠点が中立に戻りました`);
       count++;
     }
@@ -745,7 +803,8 @@ class World {
     if (!openAt(n.hours)) return false; // 開いている時間の外は攻撃できない(2026-10-19)
     if (n.isPlayerNode) return false; // プレイヤー自身の拠点は占領禁止(2026-10-18 決定)
     if (n.protectedUntil > now()) return false;
-    if (n.owner) { const o = await this.getPlayer(n.owner); if (o && (o.nodesOwned || 0) <= PROTECT_MAX_NODES && this.isNewbie(o)) return false; }
+    if (n.ownerIsTeam) { const me = await this.getPlayer(pid); if (me && me.team === n.owner) return false; } // 自分のチームの持ち物(2026-10-20)
+    if (n.owner && !n.ownerIsTeam) { const o = await this.getPlayer(n.owner); if (o && (o.nodesOwned || 0) <= PROTECT_MAX_NODES && this.isNewbie(o)) return false; }
     const nb = this.adj.get(nodeId) || new Set();
     const mine = [...nb].filter((id) => { const m = this.nodes.get(id); return m && m.owner === pid; });
     // 航路(2026-10-19): 自分の拠点からたどれる空港・港を占領していれば、その航路の先の空港・港を攻撃できる(行き先は遠くてよい)
@@ -777,11 +836,13 @@ class World {
       mode = 'fortify';
     } else if (await this.canAttack(p.id, nodeId)) {
       mode = 'attack';
+    } else if (n.ownerIsTeam && n.owner === p.team) {
+      throw new Error('チームの持ち物の拠点です(攻撃も強化もできません)');
     } else if (n.isPlayerNode) {
       throw new Error('プレイヤー自身の拠点は占領できません');
     } else if (n.protectedUntil > now()) {
       throw new Error('この拠点は生まれたばかりで守られています');
-    } else if (n.owner && await (async () => { const o = await this.getPlayer(n.owner); return o && o.nodesOwned <= PROTECT_MAX_NODES && this.isNewbie(o); })()) {
+    } else if (n.owner && !n.ownerIsTeam && await (async () => { const o = await this.getPlayer(n.owner); return o && o.nodesOwned <= PROTECT_MAX_NODES && this.isNewbie(o); })()) {
       throw new Error('始めたばかりで拠点が少ないプレイヤーは守られています');
     } else {
       const nb = this.adj.get(nodeId) || new Set();
@@ -893,12 +954,14 @@ class World {
       this.emitNode(n);
       return `${n.name} に侵入しました(突破まで あと ${hits - n.progress[key]} 回)`;
     }
-    const prev = n.owner ? await this.getPlayer(n.owner) : null;
+    const prev = n.owner && !n.ownerIsTeam ? await this.getPlayer(n.owner) : null;
+    const prevTeam = n.owner && n.ownerIsTeam ? await this.teamInfo(n.owner) : null; // チームの持ち物(2026-10-20)
     const gained = this.valueOf(n);
     const defenseBefore = n.defense || 0;
     if (prev) { prev.nodesOwned = Math.max(0, (prev.nodesOwned || 0) - 1); prev.score = Math.max(0, (prev.score || 0) - gained); }
-    this.events.add('capture', { ...ev, level: level === null ? undefined : level, ip: p.ws && p.ws.ip, detail: { prevOwner: prev ? prev.id : null, prevTeam: prev ? prev.team || null : null, gained, hits, defenseBefore } });
-    n.owner = p.id; n.defense = 0; n.fortifiedAt = now(); n.progress = {};
+    if (prevTeam) { prevTeam.heldNodes = Math.max(0, (prevTeam.heldNodes || 0) - 1); prevTeam.heldScore = Math.max(0, (prevTeam.heldScore || 0) - gained); await this.store.saveTeam(prevTeam); }
+    this.events.add('capture', { ...ev, level: level === null ? undefined : level, ip: p.ws && p.ws.ip, detail: { prevOwner: prev ? prev.id : null, prevTeam: prev ? prev.team || null : prevTeam ? prevTeam.id : null, gained, hits, defenseBefore } });
+    n.owner = p.id; delete n.ownerIsTeam; n.capturedTeam = p.team || null; n.defense = 0; n.fortifiedAt = now(); n.progress = {}; // チームにいる間に取ったか(脱退したときにチームへ渡す。2026-10-20)
     if (n.genre === 'airport' || n.genre === 'port') n.protectedUntil = now() + GATEWAY_GUARD_MS; // 空港・港は 5 分間奪えない
     this.ownedCache.clear(); // 持ち拠点が変わった(縮小表示に足す分を作り直す)
     this.invalidateReach(p.id); if (prev) this.invalidateReach(prev.id);
@@ -906,7 +969,7 @@ class World {
     p.nodesOwned = (p.nodesOwned || 0) + 1;
     this.bumpWeek(p); p.weekPoints += gained; p.weekNodes += 1;
     p.score = (p.score || 0) + this.valueOf(n);
-    this.addLog(prev ? `${p.name} が ${prev.name} から ${n.name} を奪取` : `${p.name} が ${n.name} に到達`);
+    this.addLog(prev ? `${p.name} が ${prev.name} から ${n.name} を奪取` : prevTeam ? `${p.name} がチーム「${prevTeam.name}」から ${n.name} を奪取` : `${p.name} が ${n.name} に到達`);
     await this.persistNode(n); await this.persistPlayer(p);
     if (prev) { await this.persistPlayer(prev); if (prev.nodesOwned === 0) await this.respawn(prev); }
     this.emitNode(n); this.emitPlayers();

@@ -27,7 +27,7 @@ const REGIONS = JSON.parse(fs.readFileSync(path.join(DATA, 'regions.json'), 'utf
 const NODE_FILES = REGIONS.regions.filter((x) => x.nodeFile).map((x) => path.join(DATA, `${x.nodeFile}.json`));
 const TODAY = '2026-10-19';
 const LANDMARK_MAX_LINKS = 8;
-const { landmarkLinkCount } = require('./levels'); // 名所のつながりの上限(レベルが 8 を超える象徴拠点でも 8 本まで)
+const { landmarkLinkCount, L } = require('./levels'); // 名所のつながりの上限(レベルが 8 を超える象徴拠点でも 8 本まで)
 
 const distKm = (a, b) => { const R = 6371, toRad = (d) => (d * Math.PI) / 180; const dLat = toRad(b.lat - a.lat), dLon = toRad(b.lon - a.lon); const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLon / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
 const vkey = (c) => `${c[0].toFixed(6)},${c[1].toFixed(6)}`;
@@ -35,6 +35,7 @@ const lineKey = (p) => `${p.N02_004} ${p.N02_003}`;
 
 // ---------- 拠点マスター(全ファイルをまとめる) ----------
 const FILES = NODE_FILES.map((f) => ({ file: f, T: JSON.parse(fs.readFileSync(f, 'utf8')) }));
+for (const x of FILES) x.T.nodes = x.T.nodes.filter((n) => !n.id.startsWith('pp-')); // 前回作った仮の港は外して作り直す(下の「分断の橋渡し」)
 const nodes = FILES.flatMap((x) => x.T.nodes);
 const byId = new Map(nodes.map((n) => [n.id, n]));
 const stations = nodes.filter((n) => n.genre === 'station');
@@ -153,6 +154,13 @@ for (const n of nodes) {
 }
 
 // ---------- 分断の橋渡し ----------
+// 離島(2026-10-20 ユーザー決定): 海の上で町どうしはつながらない。陸からも航路からも行けない島に町があれば、島の港から、
+// 港が無ければ島に仮の港(pp-。名前は「<町>港(仮)」)を作って、いちばん近い港へ「幻の航路」を引く。幻の航路は 1 日に 20 分だけ使える(航路ごとに時間をずらす)
+// (server/map/data/routes/src-phantom.json。出典 src-phantom)。町の無い島(無人の岩など)と、海を通らない分断(山の中など)は、今までどおり近い拠点へ橋をかける
+const PHANTOM_SRC = 'src-phantom';
+// 開く 20 分は航路ごとにずらす(2026-10-20 ユーザー決定)。航路の id から 20 分刻みの 72 通りのどれかに決める(同じ航路は毎日同じ時間。サーバーの時計の UTC)
+const PHANTOM_MIN = 20;
+const phantomHours = (id) => { const slot = parseInt(id.slice(3, 11), 16) % (1440 / PHANTOM_MIN); const hm = (m) => `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; return [{ from: hm(slot * PHANTOM_MIN), to: hm(slot * PHANTOM_MIN + PHANTOM_MIN) }]; };
 const hackable = nodes.filter((n) => n.hackable !== false && n.status !== 'hidden'); // 非公開の拠点(自衛隊・米軍の飛行場など)は線の対象外
 const parent = new Map(hackable.map((n) => [n.id, n.id]));
 const find = (x) => (parent.get(x) === x ? x : (parent.set(x, find(parent.get(x))), parent.get(x)));
@@ -163,12 +171,18 @@ let routeJoins = 0;
 {
   const { readRouteFiles, deriveRoutes } = require('../server/map/routes');
   const { loadSources } = require('../server/map/sources');
-  const { byNode } = deriveRoutes(Object.fromEntries(nodes.map((n) => [n.id, n])), readRouteFiles(), loadSources());
+  const { byNode } = deriveRoutes(Object.fromEntries(nodes.map((n) => [n.id, n])), readRouteFiles().filter((x) => x.data.source !== PHANTOM_SRC), loadSources()); // 前回の幻の航路は数えない(作り直す)
   for (const [id, list] of byNode) for (const r of list) if (parent.has(id) && parent.has(r.to) && find(id) !== find(r.to)) { union(id, r.to); routeJoins++; }
 }
 // いちばん小さいまとまりから、外側でいちばん近い拠点へ橋を 1 本かける、を 1 つになるまで繰り返す。
 // 小さいまとまり × 全拠点で済むので、全国(約 9,000 駅)でも速い(以前は全拠点 × 全拠点を毎回)
-const bridges = [];
+const { seaCross } = require('./sea').makeSea(ROOT);
+const { routeId } = require('../server/map/routes');
+const isPort = (n) => n.genre === 'port' && n.gateway && n.hackable !== false && n.status !== 'hidden';
+const allPorts = hackable.filter(isPort);
+const fileOf = new Map(); for (const x of FILES) for (const n of x.T.nodes) fileOf.set(n.id, x.T);
+const bridges = [], seaBridges = [], phantomRoutes = [], phantomPorts = [];
+const kmText = (d) => (d >= 10 ? d.toFixed(0) + ' km' : (d * 1000).toFixed(0) + ' m');
 for (;;) {
   const comps = new Map();
   for (const n of hackable) { const k = find(n.id); if (!comps.has(k)) comps.set(k, []); comps.get(k).push(n); }
@@ -181,8 +195,48 @@ for (;;) {
     const d = distKm(a, b);
     if (!best || d < best.d) best = { a, b, d };
   }
+  const overSea = seaCross(best.a, best.b);
+  const towns = small.filter((n) => n.genre === 'town');
+  if (overSea && towns.length) {
+    // 島の港(あれば)か、町。そこからいちばん近い、島の外の港
+    const own = small.find(isPort);
+    let pick = null;
+    for (const s of own ? [own] : towns) for (const q of allPorts) {
+      if (find(q.id) === key) continue;
+      const d = distKm(s, q);
+      if (!pick || d < pick.d) pick = { s, q, d };
+    }
+    if (pick) {
+      let port = own;
+      if (!port) { // 仮の港: 町の代表点から、結ぶ先の港の方へ 150 m ずらして置く(同じ場所に 2 つの拠点を置かない)
+        const t = pick.s;
+        const k = Math.min(1, 0.15 / Math.max(pick.d, 0.001));
+        const at = { lat: Number((t.lat + (pick.q.lat - t.lat) * k).toFixed(5)), lon: Number((t.lon + (pick.q.lon - t.lon) * k).toFixed(5)) };
+        port = { id: `pp-${t.id}`, name: `${t.name}港(仮)`, genre: 'port', kind: 'GW', area: t.area, region: t.region, lat: at.lat, lon: at.lon,
+          level: L.PORT_MIN, value: L.PORT_MIN, src: PHANTOM_SRC, gateway: { type: 'port', scope: 'domestic' } };
+        fileOf.get(t.id).nodes.push(port); nodes.push(port); byId.set(port.id, port); hackable.push(port); allPorts.push(port);
+        adj.set(port.id, new Set()); parent.set(port.id, port.id);
+        link(port.id, t.id); union(port.id, t.id);
+        phantomPorts.push(port.name);
+      }
+      const q = pick.q;
+      phantomRoutes.push({ mode: 'sea', from: port.id, to: q.id, fromRef: { scheme: 'internal', value: port.id }, toRef: { scheme: 'internal', value: q.id },
+        bidirectional: true, scope: 'domestic', serviceTypes: ['passenger'], status: 'seasonal', hours: phantomHours(routeId({ src: PHANTOM_SRC, mode: 'sea', from: port.id, to: q.id })), src: PHANTOM_SRC,
+        sourceRecordId: `phantom-${phantomRoutes.length + 1}`, retrievedAt: TODAY, note: `幻の航路: ${port.name} – ${q.name}(${kmText(distKm(port, q))}。1 日 20 分だけ)`,
+        id: routeId({ src: PHANTOM_SRC, mode: 'sea', from: port.id, to: q.id }) });
+      union(port.id, q.id);
+      continue;
+    }
+  }
   link(best.a.id, best.b.id); union(best.a.id, best.b.id);
-  bridges.push(`${best.a.name}–${best.b.name} (${best.d >= 10 ? best.d.toFixed(0) + ' km' : (best.d * 1000).toFixed(0) + ' m'})`);
+  const text = `${best.a.name}–${best.b.name} (${kmText(best.d)})`;
+  bridges.push(text);
+  if (overSea) seaBridges.push(text);
+}
+{ // 幻の航路の記録(毎回作り直す)
+  const file = path.join(DATA, 'routes', `${PHANTOM_SRC}.json`);
+  const head = { schema: 'pc.routes/1', source: PHANTOM_SRC, generatedAt: `${TODAY}T00:00:00.000Z`, note: '幻の航路(tools/import-links.js が作る。陸からも航路からも行けない島の港・仮の港と、いちばん近い港を結ぶ。1 日 20 分だけ使える)' };
+  fs.writeFileSync(file, JSON.stringify(head, null, 2).replace(/\n}$/, ',\n  "routes": [\n') + phantomRoutes.map((x) => '    ' + JSON.stringify(x)).join(',\n') + '\n  ]\n}\n');
 }
 
 // 陸の線が 1 本も無い拠点(航路でつながるので橋渡しの対象にならなかった、町から遠い港など)は、いちばん近い拠点と 1 本つなぐ
@@ -192,7 +246,7 @@ for (const a of hackable) {
   for (const b of hackable) { if (b.id === a.id) continue; const d = distKm(a, b); if (!best || d < best.d) best = { b, d }; }
   if (!best) continue;
   link(a.id, best.b.id);
-  bridges.push(`${a.name}–${best.b.name} (${best.d >= 10 ? best.d.toFixed(0) + ' km' : (best.d * 1000).toFixed(0) + ' m'})`);
+  bridges.push(`${a.name}–${best.b.name} (${kmText(best.d)})`);
 }
 
 // ---------- 書き戻し(ファイルごと) ----------
@@ -220,3 +274,4 @@ console.log(`対象 ${FILES.length} ファイル ${nodes.length} 拠点。路線
 console.log('つながりの本数 → 拠点数', JSON.stringify(deg));
 console.log('多い順', top.map((t) => `${t.name} ${t.d}`).join(' / '));
 if (bridges.length) console.log('橋:', bridges.join(' / '));
+console.log(`離島: 幻の航路 ${phantomRoutes.length} 本(仮の港 ${phantomPorts.length} か所: ${phantomPorts.join('、')})。海をまたぐ橋(町の無い島など) ${seaBridges.length} 本: ${seaBridges.join(' / ')}`);
