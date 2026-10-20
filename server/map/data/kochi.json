@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "kochi",
   "name": "高知県",
-  "version": 78,
+  "version": 87,
   "updatedAt": "2026-10-19",
   "note": "高知県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -1939,7 +1939,7 @@
     { "id": "st-009612", "name": "土佐入野駅", "genre": "station", "kind": "HUB", "area": "黒潮町", "region": "kochi-39428", "lat": 33.02343, "lon": 133.01115, "level": 10, "value": 10, "lines": ["土佐くろしお鉄道 中村線"], "adj": ["st-009607", "st-009616", "tw-39428-022000", "tw-39428-028001", "tw-39428-033000"] },
     { "id": "st-009616", "name": "西大方駅", "genre": "station", "kind": "HUB", "area": "黒潮町", "region": "kochi-39428", "lat": 33.00896, "lon": 132.98717, "level": 10, "value": 10, "lines": ["土佐くろしお鉄道 中村線"], "adj": ["st-009612", "st-009620", "tw-39428-031000", "tw-39428-032000", "tw-39428-033000"] },
 
-    { "id": "pp-tw-39208-053001", "name": "沖の島町鵜来島港(仮)", "genre": "port", "kind": "GW", "area": "宿毛市", "region": "kochi-39208", "lat": 32.80699, "lon": 132.48804, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-39208-053001"] },
-    { "id": "pp-tw-39208-054000", "name": "沖の島町母島港(仮)", "genre": "port", "kind": "GW", "area": "宿毛市", "region": "kochi-39208", "lat": 32.74402, "lon": 132.54561, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-39208-054000"] }
+    { "id": "pp-tw-39208-053001", "name": "沖の島町鵜来島港(仮)", "genre": "port", "kind": "GW", "area": "宿毛市", "region": "kochi-39208", "lat": 32.80698, "lon": 132.48808, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-39208-053001"] },
+    { "id": "pp-tw-39208-054000", "name": "沖の島町母島港(仮)", "genre": "port", "kind": "GW", "area": "宿毛市", "region": "kochi-39208", "lat": 32.74402, "lon": 132.54562, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-39208-054000"] }
   ]
 }

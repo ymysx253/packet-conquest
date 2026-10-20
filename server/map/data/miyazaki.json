@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "miyazaki",
   "name": "宮崎県",
-  "version": 78,
+  "version": 87,
   "updatedAt": "2026-10-19",
   "note": "宮崎県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {

@@ -61,7 +61,8 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const areas = GAPS.filter((g) => g.nodes).map((g) => {
     let la0 = 90, la1 = -90, lo0 = 180, lo1 = -180;
     for (const n of g.nodes) { la0 = Math.min(la0, n.lat); la1 = Math.max(la1, n.lat); lo0 = Math.min(lo0, n.lon); lo1 = Math.max(lo1, n.lon); }
-    const box = [la0 - AREA_LAT, la1 + AREA_LAT, lo0 - AREA_LON, lo1 + AREA_LON];
+    const big = g.nodes.length <= 3 ? 4 / 3 : 1; // 拠点 3 つ以下の小さな島は まわり 約 4 km(橋が拠点から遠いことがある。笠戸島)
+    const box = [la0 - AREA_LAT * big, la1 + AREA_LAT * big, lo0 - AREA_LON * big, lo1 + AREA_LON * big];
     const tiles = [];
     for (let y = ty(box[1]); y <= ty(box[0]); y++) for (let x = tx(box[2]); x <= tx(box[3]); x++) tiles.push(`${x}/${y}`);
     return { comp: g.comp, nodes: g.nodes, box, tiles };
@@ -130,10 +131,11 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
       try { const j = JSON.parse(fs.readFileSync(path.join(ROOT, 'server/map/data', file), 'utf8')); if (Array.isArray(j.nodes)) for (const n of j.nodes) if (n.hackable !== false && n.status !== 'hidden' && !n.id.startsWith('pp-')) ALL.push({ id: n.id, lat: n.lat, lon: n.lon }); } catch { /* 拠点のファイルでない */ }
     }
     const NEAR_AREA = 0.3; // すぐそば(km)
+    const { seaCross, onLand } = require('./sea').makeSea(ROOT); // 島の道路が海を渡った先の陸地まで続いているかの判定
     for (const ar of areas) {
       const inComp = new Set(ar.nodes.map((n) => n.id));
       const outs = ALL.filter((n) => !inComp.has(n.id) && n.lat >= ar.box[0] && n.lat <= ar.box[1] && n.lon >= ar.box[2] && n.lon <= ar.box[3]);
-      if (!outs.length) continue;
+      // 枠の中に島の外の拠点が無くても飛ばさない(下の「海を渡った先」の判定は枠の外の拠点と結ぶ。笠戸島)
       const parent = new Map();
       const find = (x) => { let r = x; while (parent.get(r) !== r) r = parent.get(r); let y = x; while (parent.get(y) !== r) { const n = parent.get(y); parent.set(y, r); y = n; } return r; };
       const vgrid = new Map(); const VG = 0.003;
@@ -152,11 +154,12 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
         return out;
       };
       const nearestOther = (p, list) => list.reduce((m, q) => Math.min(m, distKm(p, q)), Infinity);
-      const aRoots = ar.nodes.map((n) => ({ n, roots: rootsNear(n, Math.min(NEAR_AREA, 0.4 * nearestOther(n, outs))) }));
+      // すぐそば(300 m)に道路が無い拠点(山の中の代表点など。笠戸島)は、1 km まで広げる。どちらも向こう岸までの 4 割まで
+      const rootsAround = (p, cap) => { let r = rootsNear(p, Math.min(NEAR_AREA, cap)); if (!r.size) r = rootsNear(p, Math.min(1, cap)); return r; };
+      const aRoots = ar.nodes.map((n) => ({ n, roots: rootsAround(n, 0.4 * nearestOther(n, outs)) }));
       let best = null;
       for (const o of outs) {
-        const rad = Math.min(NEAR_AREA, 0.4 * nearestOther(o, ar.nodes));
-        const ro = rootsNear(o, rad);
+        const ro = rootsAround(o, 0.4 * nearestOther(o, ar.nodes));
         if (!ro.size) continue;
         for (const { n, roots } of aRoots) {
           if (![...roots].some((x) => ro.has(x))) continue;
@@ -164,7 +167,26 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
           if (!best || d < best.d) best = { a: n.id, b: o.id, d };
         }
       }
-      if (best) links.push({ a: best.a, b: best.b, km: Number(best.d.toFixed(3)), comp: ar.comp, by: 'area' });
+      // 向こう岸の拠点の代表点が枠の外にあることがある(笠戸島: 笠戸大橋の先の下松の町)。島の道路網が、島から海を渡った先の陸地まで続いていれば、
+      // そこにいちばん近い島の外の拠点と結ぶ(拠点は枠の外でもよい)
+      if (!best) {
+        const islandRoots = new Set(aRoots.flatMap((x) => [...x.roots]));
+        if (islandRoots.size) {
+          const verts = [];
+          for (const list of vgrid.values()) for (const [k, c] of list) if (islandRoots.has(find(k))) verts.push({ lat: c[1], lon: c[0] });
+          // 島の拠点から 1 km 以上離れた点を、道路網全体から均等に 300 点まで選んで調べる(遠い順だけだと枠の隅ばかりになる。笠戸島)
+          const far = verts.filter((v) => ar.nodes.every((n) => distKm(n, v) > 1));
+          const step = Math.max(1, Math.floor(far.length / 300));
+          for (let vi = 0; vi < far.length; vi += step) {
+            const v = far[vi];
+            const a = ar.nodes.reduce((m, n) => (distKm(n, v) < distKm(m, v) ? n : m));
+            if (!onLand(v) || !seaCross(a, v)) continue;
+            const o = ALL.filter((n) => !inComp.has(n.id) && Math.abs(n.lat - v.lat) < 0.05 && Math.abs(n.lon - v.lon) < 0.06).reduce((m, n) => (!m || distKm(n, v) < distKm(m, v) ? n : m), null);
+            if (o && !seaCross(v, o)) { best = { a: a.id, b: o.id, d: distKm(a, o), via: 'beyond' }; break; }
+          }
+        }
+      }
+      if (best) links.push({ a: best.a, b: best.b, km: Number(best.d.toFixed(3)), comp: ar.comp, by: best.via === 'beyond' ? 'area-beyond' : 'area' });
     }
   }
   // 前回の結果に足す(結んだあとに残ったまとまりを、次の回で調べる)
