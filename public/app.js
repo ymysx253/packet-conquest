@@ -713,6 +713,7 @@
     if (!n) return;
     const owner = n.owner ? playerById(n.owner) : null;
     $('npName').textContent = n.name;
+    $('npKana').textContent = n.kana || ''; $('npKana').hidden = !n.kana; // 読み(2026-10-21 ユーザー決定: 漢字が難しくて読めない。地図には出さない)
     // 観光地は細分(温泉・滝 …)を添える(tags の先頭。続けて指定・百選)
     const genreLabel = (GENRE_LABELS[n.genre] || '') + (n.genre === 'tourism' && n.tags && n.tags[0] ? `(${n.tags[0]})` : '');
     $('npMeta').textContent = [n.isPlayerNode ? 'プレイヤーの拠点' : genreLabel, n.tags && n.tags.length > 1 ? n.tags.slice(1).join('・') : '', n.area || ''].filter(Boolean).join(' ・ ');

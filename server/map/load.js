@@ -274,6 +274,15 @@ function loadAll() {
     const extra = new Set(n.routes.map((r) => r.to).filter((t) => !n.adj.includes(t)));
     n.hits = Math.max(1, n.adj.length + extra.size);
   }
+  // 名前(2026-10-21 ユーザー決定): names は言語ごとの名前(ja 漢字、en 英語)。kana は日本語の名前の読み(ひらがな)。
+  // 読みと英語は tools/import-yomi.js が作る derived/yomi.json から。読みは「拠点の情報」に出す(地図には出さない)。英語は英語の表示を作ったときに使う
+  const YOMI_FILE = path.join(__dirname, 'data', 'derived', 'yomi.json');
+  const yomi = fs.existsSync(YOMI_FILE) ? JSON.parse(fs.readFileSync(YOMI_FILE, 'utf8')).nodes : {};
+  for (const n of NODES) {
+    const y = yomi[n.id];
+    n.names = { ...(n.names || {}), ja: n.name, ...(y && y[1] ? { en: y[1] } : {}) };
+    if (y && y[0]) n.kana = y[0];
+  }
   const EDGES = [];
   for (const n of NODES) for (const m of n.adj) if (n.id < m) EDGES.push({ a: n.id, b: m });
   const KINDS = Object.assign({}, ...parts.map((p) => p.KINDS));
@@ -295,7 +304,7 @@ function nodeDocs(nodes, now = Date.now()) {
     location: { type: 'Point', coordinates: [m.lon, m.lat] },
     t0: m.t0, t1: m.t1, t2: m.t2, t3: m.t3, t4: m.t4,
     level: m.level, value: m.value, hackable: m.hackable !== false, lines: m.lines || [], tags: m.tags || [],
-    company: m.company || null, codes: m.codes || {}, src: m.src || null, gateway: m.gateway || null, names: m.names || null,
+    company: m.company || null, codes: m.codes || {}, src: m.src || null, gateway: m.gateway || null, names: m.names || null, kana: m.kana || null,
     adj: m.adj || [], hits: m.hits || Math.max(1, (m.adj || []).length), // つながりと、突破に必要な正解の回数(第 14 章)
     routes: m.routes || [], // 航路(空路・海路)。行き先 { to, mode, name, lat, lon }。占領した空港・港から行き先を攻撃できる
     // 開いている時間(2026-10-19 ユーザー決定)。DB で管理する設定(設定画面で変える)。マスターの入れ直しでは上書きしない(tools/db-setup.js)。既定は 1 日中

@@ -56,6 +56,12 @@
       "retrievedAt": "2026-10-20", "version": "1", "status": "active", "notes": "ゲームが作る架空の航路と港(2026-10-20 ユーザー決定)。陸からも航路からも行けない島の港、港の無い島には仮の港(pp-)を作り、いちばん近い港と結ぶ。1 日 20 分だけ使える。tools/import-links.js が毎回作り直す"
     },
     {
+      "id": "src-jp-post-zip", "title": "郵便番号データ(住所の郵便番号 UTF-8 版)", "publisher": "日本郵便株式会社", "kind": "commercial",
+      "url": "https://www.post.japanpost.jp/service/search/zipcode/download/utf-zip.html", "license": "LicenseRef-jp-post-zip", "commercialUse": true, "shareAlike": false,
+      "attribution": false, "attributionText": { "ja": "町・字の読みは日本郵便「郵便番号データ」による", "en": "Town name readings from Japan Post postal code data" },
+      "retrievedAt": "2026-10-21", "version": "2026-09-30", "status": "active", "notes": "町・字の読み(ひらがなに変える)。「郵便番号データに限っては日本郵便株式会社は著作権を主張しません。自由に配布していただいて結構です。」(utf-readme.html)。tools/import-yomi.js"
+    },
+    {
       "id": "src-gsi-rdcl", "title": "地理院タイル 道路中心線(experimental_rdcl)", "publisher": "国土地理院", "kind": "government",
       "url": "https://maps.gsi.go.jp/development/ichiran.html", "license": "LicenseRef-gsi-content", "commercialUse": true, "shareAlike": false,
       "attribution": true, "attributionText": { "ja": "「地理院タイル(道路中心線)」(国土地理院)を加工して作成", "en": "Processed from GSI Tiles (road centerlines), Geospatial Information Authority of Japan" },

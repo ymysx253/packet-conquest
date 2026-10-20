@@ -342,7 +342,7 @@ class World {
   // 画面へ送る拠点の形(答え・内部値は含めない)
   pub(n) {
     return {
-      id: n.id, name: n.name, kind: n.kind, genre: n.genre || null, area: n.area || null, lat: n.lat, lon: n.lon, t0: n.t0,
+      id: n.id, name: n.name, kana: n.kana || undefined, kind: n.kind, genre: n.genre || null, area: n.area || null, lat: n.lat, lon: n.lon, t0: n.t0,
       level: n.level, value: this.valueOf(n), baseValue: n.value, subnet: n.subnet, owner: n.owner, defense: this.settle(n).defense,
       isPlayerNode: !!n.isPlayerNode, protectedUntil: n.protectedUntil || 0, hackable: n.hackable !== false, lines: n.lines || [],
       hits: n.hits || 1, progress: n.progress || {}, // 突破に必要な回数と、攻め手ごとの正解回数(第 14 章)
