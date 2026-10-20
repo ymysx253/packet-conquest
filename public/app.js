@@ -118,7 +118,7 @@
       case 'moved':
         S.home = m.home; S.movedAt = m.movedAt; S.moving = false; $('pickBar').hidden = true; S.selected = null; S.question = null; S.result = null;
         if (m.area) $('areaChip').textContent = m.area;
-        S.nodes.clear(); S.edges.clear(); S.far.clear(); S.tiles.clear(); lastViewKey = ''; railCache = null;
+        S.nodes.clear(); S.edges.clear(); S.far.clear(); S.tiles.clear(); lastViewKey = ''; railCache = null; nbCache = null;
         centerOn(worldOf(m.home.lat, m.home.lon), 9); requestView(true); renderQuestion();
         toast('引っ越しました。新しい拠点から広げ直してください');
         break;
@@ -160,7 +160,7 @@
 
   // 受け取ったタイルを取り込み、見えなくなったタイルの拠点を捨てる
   function onTiles(m) {
-    railCache = null; // 拠点とつながりが入れ替わるので、路線の隣どうしを作り直す
+    railCache = null; nbCache = null; // 拠点とつながりが入れ替わるので、路線の隣どうし・囲みの隣を作り直す
     if (m.overview) {
       // 縮小表示: 送られてきた高レベルの拠点だけに入れ替える
       S.nodes.clear(); S.edges.clear(); S.far.clear(); S.tiles.clear(); S.overview = true; S.viewZ = m.z;
@@ -378,6 +378,30 @@
   const RAIL = { ink: '#2B2B2B', paper: '#FFFFFF', shinkansen: '#00897B' };
   const railNode = (id) => S.nodes.get(id) || S.far.get(id) || (S.shkStations && S.shkStations.get(id)); // 読み込んでいない遠い隣の駅・新幹線の駅も含める
   let railCache = null; // 駅 id → [{ id, lines }](路線でつながる隣の駅)。タイルが届くたびに作り直す
+  // 囲み(2026-10-21 ユーザー決定)を地図に出すための、拠点 id → 隣の id(プレイヤーの拠点の線は数えない)。タイルが届くたびに作り直す
+  let nbCache = null;
+  const neighborsOf = (id) => {
+    if (!nbCache) {
+      nbCache = new Map();
+      const push = (k, v) => { let arr = nbCache.get(k); if (!arr) nbCache.set(k, (arr = [])); arr.push(v); };
+      for (const e of S.edges.values()) { const a = S.nodes.get(e.a), b = S.nodes.get(e.b); if ((a && a.isPlayerNode) || (b && b.isPlayerNode)) continue; push(e.a, e.b); push(e.b, e.a); }
+    }
+    return nbCache.get(id) || [];
+  };
+  // 突破に必要な回数 = つながりの本数 −(自分かチームが押さえている隣の数 − 1)。最低 1。選んだ拠点はサーバーが数えた値。
+  // ほかは画面で数える(読み込み範囲の外の隣は、自分の拠点のほかは分からないので数えない)
+  function needFor(n) {
+    if (S.selNb && S.selNb.id === n.id && S.selNb.siege) return S.selNb.siege.need;
+    const hits = n.hits || 1;
+    const ids = new Set([...neighborsOf(n.id), ...(n.routes || []).map((x) => x.to)]);
+    let held = 0;
+    for (const id of ids) {
+      if (S.mine.has(id)) { held++; continue; }
+      const m = S.nodes.get(id) || S.far.get(id);
+      if (m && !m.isPlayerNode && m.owner && (relOf(m) === 'me' || relOf(m) === 'team')) held++;
+    }
+    return Math.max(1, hits - Math.max(0, held - 1));
+  }
   const commonLines = (a, b) => { const bl = b.lines || []; return (a.lines || []).filter((l) => bl.includes(l)); };
   function railLinesOf(na, nb) { // 2 つの駅を結ぶ路線(新幹線があれば新幹線だけ)。路線の線でなければ空
     if (na.genre !== 'station' || nb.genre !== 'station' || na.isPlayerNode || nb.isPlayerNode) return [];
@@ -1240,9 +1264,14 @@
         const font = `${n.isPlayerNode ? 500 : 700} ${snapPx(fs * grow)}px "BIZ UDPGothic", sans-serif`;
         ctx.font = font;
         const tx = snapPx(p.x), ty = snapPx(p.y + top + (12 + LABEL_PLUS) * grow), tw = ctx.measureText(n.name).width, th = snapPx(fs * grow);
+        // 突破に必要な回数を名前の右上に小さく(2026-10-21 ユーザー決定)。自分・チームの拠点、プレイヤーの拠点、ハックできない場所には出さない。囲みで減っていれば色を変える
+        const rel = relOf(n);
+        const need = !n.isPlayerNode && n.hackable !== false && rel !== 'me' && rel !== 'team' ? needFor(n) : null;
+        const needFont = `700 ${snapPx(12)}px "BIZ UDPGothic", sans-serif`;
+        let nw = 0; if (need !== null) { ctx.font = needFont; nw = ctx.measureText(String(need)).width + 2; ctx.font = font; }
         // 名前の優先: 選択中・自分の拠点は必ず。ほかはレベルが高いほど先に置く(縮小時の区・市の名前は Lv8 前後と同じ扱い)
         const lp = isSel ? 1e6 : (n.owner && n.owner === S.me) ? 9e5 : 150 + n.level * 20 + (n.kind === 'GW' ? 15 : 0);
-        labels.push({ prio: lp, must: isSel || (n.owner && n.owner === S.me), box: [tx - tw / 2 - 3, ty - th, tw + 6, th + 5], draw: () => {
+        labels.push({ prio: lp, must: isSel || (n.owner && n.owner === S.me), box: [tx - tw / 2 - 3, ty - th, tw + 6 + nw, th + 5], draw: () => {
           ctx.textAlign = 'center'; ctx.font = font;
           if (isSel) {
             const w = tw + 10, h = th + 6;
@@ -1257,6 +1286,13 @@
           ctx.globalAlpha = (dim ? 0.3 : 1) * Math.max(LABEL_MIN_ALPHA, fl); // 名前は印と同じく遠いと薄くするが、6 割より薄くしない
           ctx.fillStyle = color;
           ctx.fillText(n.name, tx, ty);
+          if (need !== null) {
+            const nx = snapPx(tx + tw / 2 + (isSel ? 6 : 2)), ny = snapPx(ty - th + 10);
+            ctx.font = needFont; ctx.textAlign = 'left';
+            ctx.globalAlpha = dim ? 0.5 : 1; ctx.lineJoin = 'round'; ctx.lineWidth = 3; ctx.strokeStyle = haloFor(C.ink); ctx.strokeText(String(need), nx, ny);
+            ctx.globalAlpha = (dim ? 0.3 : 1) * Math.max(LABEL_MIN_ALPHA, fl);
+            ctx.fillStyle = need < (n.hits || 1) ? (tok('--good') || '#0E8A45') : C.muted; ctx.fillText(String(need), nx, ny);
+          }
           ctx.globalAlpha = 1;
         } });
       }
