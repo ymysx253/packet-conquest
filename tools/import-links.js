@@ -221,7 +221,7 @@ for (;;) {
       }
       const q = pick.q;
       phantomRoutes.push({ mode: 'sea', from: port.id, to: q.id, fromRef: { scheme: 'internal', value: port.id }, toRef: { scheme: 'internal', value: q.id },
-        bidirectional: true, scope: 'domestic', serviceTypes: ['passenger'], status: 'seasonal', hours: phantomHours(routeId({ src: PHANTOM_SRC, mode: 'sea', from: port.id, to: q.id })), src: PHANTOM_SRC,
+        bidirectional: true, scope: 'domestic', serviceTypes: ['passenger'], phantom: true, status: 'seasonal', hours: phantomHours(routeId({ src: PHANTOM_SRC, mode: 'sea', from: port.id, to: q.id })), src: PHANTOM_SRC,
         sourceRecordId: `phantom-${phantomRoutes.length + 1}`, retrievedAt: TODAY, note: `幻の航路: ${port.name} – ${q.name}(${kmText(distKm(port, q))}。1 日 20 分だけ)`,
         id: routeId({ src: PHANTOM_SRC, mode: 'sea', from: port.id, to: q.id }) });
       union(port.id, q.id);

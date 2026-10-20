@@ -91,12 +91,13 @@ function deriveRoutes(byId, files, sources, today = new Date().toISOString().sli
   const out = new Map();
   const skipped = {};
   const skip = (why) => { skipped[why] = (skipped[why] || 0) + 1; };
-  const add = (a, b, mode, metrics, key, hours) => {
+  const add = (a, b, mode, metrics, key, hours, phantom) => {
     if (!out.has(a.id)) out.set(a.id, new Map());
     const m = out.get(a.id);
     const k = `${b.id}|${mode}`;
-    if (!m.has(k)) m.set(k, { to: b.id, mode, name: b.name, lat: b.lat, lon: b.lon, recs: new Map(), hours: hours ? [] : null });
+    if (!m.has(k)) m.set(k, { to: b.id, mode, name: b.name, lat: b.lat, lon: b.lon, recs: new Map(), hours: hours ? [] : null, phantom: true });
     const e = m.get(k);
+    if (!phantom) e.phantom = false; // 幻の航路(ゲームが作る架空の航路。2026-10-20)だけの組なら phantom
     if (metrics) e.recs.set(key, metrics); // 同じ記録を往復で 2 回数えない
     // 使える時間: 時間の決まりの無い記録が 1 つでもあればいつでも使える。全部に決まりがあれば、その時間を合わせたもの
     if (!hours) e.hours = null; else if (e.hours) for (const h of hours) if (!e.hours.some((x) => x.from === h.from && x.to === h.to)) e.hours.push(h);
@@ -127,13 +128,13 @@ function deriveRoutes(byId, files, sources, today = new Date().toISOString().sli
       if (a.hackable === false || b.hackable === false) { skip('端点がハック不可'); continue; }
       if (!a.gateway || !b.gateway) { skip('端点が玄関口(gateway)でない'); continue; }
       const key = `${data.source}|${r.id}`;
-      add(a, b, r.mode, r.metrics, key, r.hours);
-      if (!rules.directed || r.bidirectional !== false) add(b, a, r.mode, r.metrics, key, r.hours); // 航路は接続: 向きを区別しない(設定 directed)
+      add(a, b, r.mode, r.metrics, key, r.hours, r.phantom === true);
+      if (!rules.directed || r.bidirectional !== false) add(b, a, r.mode, r.metrics, key, r.hours, r.phantom === true); // 航路は接続: 向きを区別しない(設定 directed)
     }
   }
   const result = new Map();
   for (const [id, m] of out) {
-    result.set(id, [...m.values()].map(({ recs, hours, ...x }) => { const metrics = sumLatest(recs); return { ...x, ...(metrics ? { metrics } : {}), ...(hours && hours.length ? { hours } : {}) }; })
+    result.set(id, [...m.values()].map(({ recs, hours, phantom, ...x }) => { const metrics = sumLatest(recs); return { ...x, ...(metrics ? { metrics } : {}), ...(hours && hours.length ? { hours } : {}), ...(phantom ? { phantom: true } : {}) }; })
       .sort((x, y) => x.to.localeCompare(y.to) || x.mode.localeCompare(y.mode)));
   }
   return { byNode: result, skipped };

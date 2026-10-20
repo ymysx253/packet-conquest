@@ -702,7 +702,7 @@
     $('npRoutes').hidden = !routes.length;
     $('npRoutesList').replaceChildren(...routes.map((r) => {
       const li = document.createElement('li'); li.tabIndex = 0;
-      li.textContent = `${r.mode === 'air' ? '✈ 空路' : '⚓ 海路'} → ${r.name}` + (r.hours ? `(季節航路: 毎日 ${r.hours.map(jstRange).join('・')} 日本時間${routeOpenNow(r) ? '' : '。いまは運航時間外'})` : '');
+      li.textContent = `${r.mode === 'air' ? '✈ 空路' : '⚓ 海路'} → ${r.name}` + (r.hours ? `(${r.phantom ? '幻の航路' : '季節航路'}: 毎日 ${r.hours.map(jstRange).join('・')} 日本時間${routeOpenNow(r) ? '' : '。いまは運航時間外'})` : ''); // 幻の航路は 1 日 20 分だけ(2026-10-20)
       if (r.hours && !routeOpenNow(r)) li.style.opacity = '0.55';
       const go = () => { centerOn(worldOf(r.lat, r.lon), Math.max(9, zoomRatio())); requestView(true); };
       li.onclick = go; li.onkeydown = (e) => { if (e.key === 'Enter') go(); };
