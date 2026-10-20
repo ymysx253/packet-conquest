@@ -1075,7 +1075,7 @@
       const own = na.owner && na.owner === nb.owner && ownShown(relOf(na)) ? ((ownerStyleOf(na) || {}).frame || ownerColorOf(na)) : null; // チームの線は枠の色
       const ef = Math.min(fadeOf(na), fadeOf(nb)); // 線も、両端の薄い方に合わせて薄く
       const cv = railCurve(na, nb);
-      if (cv) { rails.push({ cv, own, ef }); continue; }
+      if (cv) { rails.push({ cv, own, ef: 1 }); continue; } // 電車の線は駅が薄くても濃く描く(2026-10-21 ユーザー: 一定の倍率では常に出す。拠点を描く倍率 2.5 倍以上で出る)
       if (!S.nodes.has(na.id) || !S.nodes.has(nb.id)) continue; // 読み込んでいない遠い隣へは、路線の線だけ伸ばす
       const a = toScreen(posOf(na)), b = toScreen(posOf(nb));
       const thin = na.isPlayerNode || nb.isPlayerNode;
