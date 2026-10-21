@@ -15,7 +15,7 @@
 | 項目 | 値 | 理由 |
 |---|---|---|
 | サブスクリプション / リソース グループ | Cosmos DB と同じリソース グループ | まとめて管理 |
-| 名前 | `packet-conquest`(取れなければ `packet-conquest-app`) | URL は `https://<名前>.azurewebsites.net` |
+| 名前 | `packet-conquest` | いまの Azure は名前の後ろに自動で文字と地域が付く(例: `https://packet-conquest-xxxx.japaneast-01.azurewebsites.net`)。URL に `japaneast` が入っているかで地域も確かめる |
 | 公開 | コード | |
 | ランタイム スタック | **Node 20 LTS**(無ければ 22 LTS) | `package.json` の engines は 20 以上 |
 | オペレーティング システム | **Linux** | 安く、Node の扱いが素直 |
