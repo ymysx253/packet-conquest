@@ -142,7 +142,20 @@ async function solve(world, p, nodeId) {
   home.fortifiedAt = Date.now() - 30 * DECAY_MS;
   assert.strictEqual(w.levelFor(home, 'fortify'), home.level, '0 より下にはならない');
   assert.strictEqual(w.pub(home).defense, 0);
-  home.defense = 1; home.fortifiedAt = Date.now();
+  // 点数の数え直し(2026-10-21): 点数は今持っている拠点の今の点数(基礎 + 下がったあとの強化)の合計。強化が下がった分は数え直しで減る
+  {
+    await w.recountScores();
+    const base = a.score;
+    home.defense = 5; home.fortifiedAt = Date.now(); a.score = base + 5; await w.persistNode(home);
+    await w.recountScores();
+    assert.strictEqual(a.score, base + 5, '強化した分は点数に入る');
+    home.fortifiedAt = Date.now() - 3 * DECAY_MS - 1000; await w.persistNode(home);
+    await w.recountScores();
+    assert.strictEqual(a.score, base + 2, '強化が 3 段下がると、数え直しで点数も 3 減る');
+    a.score = 9999; await w.recountScores();
+    assert.strictEqual(a.score, base + 2, 'ずれていても、数え直すと今持っている拠点の点数の合計にそろう');
+  }
+  home.defense = 1; home.fortifiedAt = Date.now(); await w.persistNode(home); // 書き換えた強化を保存(数え直しは保存した拠点を数える)
 
   // プレイヤー自身の拠点は占領禁止(保護が切れていても、相手が何拠点持っていても)
   const wsB = fakeWs();
@@ -206,7 +219,8 @@ async function solve(world, p, nodeId) {
   assert.strictEqual(a2.id, a.id, '同じプレイヤー');
   assert.notStrictEqual((await w.join(fakeWs(), 'だれか', 'wrong-token')).id, a.id, '違うコードは新規');
 
-  // 再起動: 保存した内容から復元できる(まとめて読まず、必要なタイルだけ)
+  // 再起動: 保存した内容から復元できる(まとめて読まず、必要なタイルだけ)。テストで強化の段を直接書き換えた分は、数え直してそろえておく(起動したときも数え直す)
+  await w.recountScores();
   const w2 = await new World({ store, minAnswerMs: 0 }).init();
   assert.strictEqual(w2.nodes.size, 0);
   await w2.ensureTiles([home.t0]);

@@ -229,6 +229,7 @@ class World {
     this.uptime = clock && Number.isFinite(clock.uptimeMs) ? clock.uptimeMs : 0;
     this.lastDay = (clock && typeof clock.day === 'string') ? clock.day : dayOf(now()); // 保存してあるので、0 時をまたいだ再起動でも断面を落とさない
     this.lastTick = now();
+    this.recountScores().catch((e) => console.error('点数の数え直しに失敗:', e.message)); // 止まっている間に強化が下がった分をそろえる(待たない)
     return this;
   }
   // 稼働時計を進める(1 分ごと)。前回から TICK_CAP_MS を超えて経っていれば、その分は止まっていたとみなして数えない。
@@ -238,11 +239,46 @@ class World {
     this.uptime += Math.min(TICK_CAP_MS, Math.max(0, t - this.lastTick));
     this.lastTick = t;
     const day = dayOf(t);
-    if (this.lastDay && day !== this.lastDay) { try { await this.snapshotControl(t); } catch (e) { console.error('支配の断面の記録に失敗:', e.message); } }
+    if (this.lastDay && day !== this.lastDay) {
+      try { await this.snapshotControl(t); } catch (e) { console.error('支配の断面の記録に失敗:', e.message); }
+      try { await this.recountScores(); } catch (e) { console.error('点数の数え直しに失敗:', e.message); }
+    }
     this.lastDay = day;
     try { await this.store.saveMeta({ id: 'clock', type: 'meta', uptimeMs: this.uptime, savedAt: t, day }); } catch (e) { console.error('稼働時計の保存に失敗:', e.message); }
     return this.uptime;
   }
+  // 点数の数え直し(2026-10-21 ユーザー決定: 強化も点数になる。強化は 24 時間ごとに 1 段下がるので、点数も下がる)。
+  // 点数 = 今持っている拠点(本拠地を含む)の今の点数(基礎 + 下がったあとの強化の段)の合計。チームの持ち物も同じ。
+  // 取った・奪われた・強化したときはその場で足し引きし、強化が下がった分は日本時間の日付が変わるときと起動したときに数え直してそろえる
+  async recountScores() {
+    const docs = await this.store.ownedNodes();
+    const players = new Map(), teams = new Map(); // 持ち主 → { score, nodes }
+    for (const d of docs) {
+      const n = this.nodes.get(d.id) || { ...d };
+      if (!n.owner) continue;
+      const to = n.ownerIsTeam ? teams : players;
+      const cur = to.get(n.owner) || { score: 0, nodes: 0 };
+      cur.score += this.valueOf(n); cur.nodes += 1;
+      to.set(n.owner, cur);
+    }
+    let changed = 0;
+    for (const [id, v] of players) {
+      const live = this.players.get(id);
+      const p = live || await this.store.loadPlayer(id);
+      if (!p || (p.score === v.score && p.nodesOwned === v.nodes)) continue;
+      p.score = v.score; p.nodesOwned = v.nodes; changed++;
+      if (live) await this.persistPlayer(p); else await this.store.savePlayer(p);
+    }
+    for (const [id, v] of teams) {
+      const t = await this.teamInfo(id);
+      if (!t || (t.heldScore === v.score && t.heldNodes === v.nodes)) continue;
+      t.heldScore = v.score; t.heldNodes = v.nodes; changed++;
+      await this.store.saveTeam(t);
+    }
+    if (changed) await this.emitPlayers();
+    return changed;
+  }
+
   // 支配の断面: 区・市(tier 6)・都道府県(5)・国(3)の control を events に写す。id は ctl-日付-地域 なので同じ日に 2 回走っても上書き
   async snapshotControl(at = now()) {
     const day = dayOf(at);

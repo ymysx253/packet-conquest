@@ -144,6 +144,9 @@ class CosmosStore {
     try { const { resource } = await this.c.meta.item(id, id).read(); return this.strip(resource) || null; } catch (e) { if (e.code === 404) return null; throw e; }
   }
   async saveMeta(doc) { await this.ensure(); await this.c.meta.items.upsert(doc); }
+  async ownedNodes() { // 持ち主のいる拠点を全部(点数の数え直し用。点数に要る項目だけ)
+    return this.query('nodes', { query: 'SELECT c.id, c.owner, c.ownerIsTeam, c.isPlayerNode, c["value"], c.defense, c.fortifiedAt FROM c WHERE IS_DEFINED(c.owner) AND NOT IS_NULL(c.owner)' });
+  }
   async nodesOwnedBy(playerId) {
     const rows = await this.query('nodes', { query: 'SELECT * FROM c WHERE c.owner = @id', parameters: [{ name: '@id', value: playerId }] });
     return rows.map((r) => this.strip(r));
