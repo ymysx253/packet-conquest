@@ -69,6 +69,9 @@ async function solve(world, p, nodeId) {
     assert.ok(nb.t === 'neighbors' && nb.list.length >= tw.adj.length && tw.adj.every((id) => nb.list.some((x) => x.id === id && typeof x.lat === 'number' && x.name)), 'つながり先が名前と位置つきで届く');
     assert.ok(nb.list.some((x) => x.id === home.id), '自分の拠点とのつながりも入る');
     assert.deepStrictEqual((await w.neighbors('st-nope')).list, [], '無い拠点は空'); }
+  // 航路(空路・海路)だけでつながる先には route が付く(画面は黒い直線を引かない。2026-10-21 ユーザー指摘)
+  { const port = NODES.find((n) => n.id === 'pt-s1c9bff7558'); const nb = await w.neighbors(port.id);
+    assert.ok(port.routes.every((r) => nb.list.some((x) => x.id === r.to && x.route)) && port.adj.every((id) => nb.list.some((x) => x.id === id && !x.route)), '利島港: 航路の先だけ route'); }
 
   // 隣だけ攻撃できる
   const [nb] = [...w.adj.get(home.id)];

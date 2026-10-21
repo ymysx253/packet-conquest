@@ -542,7 +542,8 @@ class World {
     const have = ids.map((id) => this.nodes.get(id)).filter(Boolean);
     const missing = ids.filter((id) => !this.nodes.has(id));
     const more = missing.length ? await this.store.nodesBrief(missing) : [];
-    const list = [...have, ...more].filter((m) => m.status !== 'hidden').map((m) => ({ id: m.id, name: m.name, genre: m.genre || null, lat: m.lat, lon: m.lon, owner: m.owner || null, ...(m.owner ? this.ownerLook(m.owner, m.ownerIsTeam) : {}) }));
+    const land = new Set([...(n.adj || []), ...(this.adj.get(nodeId) || [])]); // 航路(空路・海路)だけでつながる先には route を付ける。画面は黒い直線を引かない(航路の線があるため。2026-10-21 ユーザー指摘)
+    const list = [...have, ...more].filter((m) => m.status !== 'hidden').map((m) => ({ id: m.id, name: m.name, genre: m.genre || null, lat: m.lat, lon: m.lon, owner: m.owner || null, ...(land.has(m.id) ? {} : { route: true }), ...(m.owner ? this.ownerLook(m.owner, m.ownerIsTeam) : {}) }));
     const siege = p && !p.guest && this.nodes.has(n.id) ? await this.siege(this.nodes.get(n.id), p) : null; // この人にとっての突破に必要な回数(囲み)
     return { t: 'neighbors', nodeId, list, ...(siege ? { siege } : {}) };
   }

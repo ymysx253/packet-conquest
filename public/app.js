@@ -1250,6 +1250,7 @@
         ctx.lineWidth = Math.max(2, Math.min(4, 1.5 + ratio / 6));
         for (const m of S.selNb.list) {
           const b = toScreen(S.nodes.has(m.id) ? posOf(S.nodes.get(m.id)) : m.w);
+          if (m.route) { if (!S.drawn || !S.drawn.has(m.id)) { ctx.beginPath(); ctx.arc(b.x, b.y, 3.5, 0, Math.PI * 2); ctx.fill(); } continue; } // 空路・海路の先は航路の線があるので黒い直線は引かない(2026-10-21 ユーザー指摘)
           const cv = railNode(m.id) ? railCurve(sel, railNode(m.id)) : null; // 路線の線は同じ曲線でなぞる
           if (cv) railPath(ctx, cv); else { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); }
           ctx.stroke();
