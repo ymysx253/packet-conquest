@@ -9,7 +9,9 @@
 // しくみ:
 //   1. 区・市の境界の面を、約 450 m のます目に塗って「陸か海か」の地図を作る
 //   2. 港の位置から近い海のます目へ出て、陸を通らない最短の道を A* で探す(岸に沿いすぎないよう、岸の隣のます目は少し遠回り扱い)
+//   2'. 岸の隣のます目は 4 倍遠回り扱い(画面の陸地は岸の隣のます目に少しかかるので、なるべく沖を通す。2026-10-21)
 //   3. 道を間引く(間引いた線が陸をまたがないことを確かめながら)。画面はこの点を通るなめらかな曲線を描く
+//   4. 画面が描く曲線(点と点の中ほどを通る 2 次曲線)を同じようにたどり、陸か岸の隣に乗る角には点を足す(2026-10-21 ユーザー指摘: 館山の先で陸を突っ切っていた)
 //   海のます目でつながらない(湖の中の港など)航路は書かない。画面はそのときゆるい弧で描く
 const fs = require('fs');
 const path = require('path');
@@ -144,7 +146,7 @@ function astar(s, t, run) {
       const j = ny * W + nx;
       if (land[j] || closed[j] === run) continue;
       if (dx && dy && land[y * W + nx] && land[ny * W + x]) continue; // 角をすり抜けない
-      const step = Math.hypot(dx * KX * c, dy * KY) * (near[j] ? 1.6 : 1);
+      const step = Math.hypot(dx * KX * c, dy * KY) * (near[j] ? 4 : 1);
       const ng = g[i] + step;
       if (stamp[j] !== run || ng < g[j]) { stamp[j] = run; g[j] = ng; from[j] = i; push(j, ng + h(j)); }
     }
@@ -156,29 +158,76 @@ function astar(s, t, run) {
 }
 
 // ---------- 3. 間引く(線分が陸をまたがないこと) ----------
-const crossesLand = (a, b) => {
+const crossesLand = (a, b, okNear) => {
   const ax = a % W, ay = (a / W) | 0, bx = b % W, by = (b / W) | 0;
   const n = Math.max(Math.abs(bx - ax), Math.abs(by - ay)) * 2;
-  for (let k = 1; k < n; k++) { const x = Math.round(ax + ((bx - ax) * k) / n), y = Math.round(ay + ((by - ay) * k) / n); if (land[y * W + x]) return true; }
+  for (let k = 1; k < n; k++) { const x = Math.round(ax + ((bx - ax) * k) / n), y = Math.round(ay + ((by - ay) * k) / n); const i = y * W + x; if (land[i] || (okNear && near[i] && !okNear.has(i))) return true; }
   return false;
 };
 function thin(cells) {
-  const keep = [cells[0]];
+  const okNear = new Set(); // 道が通った岸の隣とそのすぐ隣は、まっすぐ結んでもよい
+  for (const c of cells) if (near[c]) for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) okNear.add(c + dy * W + dx);
+  const keep = [0];
   let i = 0;
   while (i < cells.length - 1) {
     // いまの点から、陸をまたがずに真っすぐ行ける最も遠い点まで飛ぶ
     let j = Math.min(cells.length - 1, i + 1);
     let lo = j, hi = cells.length - 1;
-    while (lo < hi) { const m = (lo + hi + 1) >> 1; if (!crossesLand(cells[i], cells[m])) lo = m; else hi = m - 1; }
+    while (lo < hi) { const m = (lo + hi + 1) >> 1; if (!crossesLand(cells[i], cells[m], okNear)) lo = m; else hi = m - 1; }
     j = Math.max(j, lo);
-    keep.push(cells[j]); i = j;
+    keep.push(j); i = j;
   }
   return keep;
+}
+// ---------- 4. 画面が描く曲線が陸に乗らないか確かめる(2026-10-21 ユーザー指摘: 館山の先で航路が陸を突っ切っていた) ----------
+// 画面(public/app.js の海路)は点と点の中ほどを通る 2 次曲線で描くので、岬の角では曲線が内側(陸側)に寄る。
+// 同じ曲線をます目の上でたどり、陸に乗る曲がり角は、その前後に A* の道の点を足して角を小さくする(足せなくなるまで)
+const PORT_ZONE = 3; // 港のまわり(約 1.4 km)は港そのものが陸のます目にあるので調べない
+function curveHitsLand(P, A, B, okNear) {
+  // P: ます目の座標 [x, y] の列(先頭が港 A、最後が港 B)。戻り値: 陸に乗った曲線の制御点の番号(1〜P.length-2)の集合
+  const bad = new Set();
+  const inPort = (x, y) => Math.hypot(x - A[0], y - A[1]) < PORT_ZONE || Math.hypot(x - B[0], y - B[1]) < PORT_ZONE;
+  // 岸の隣のます目も陸として扱う(ます目は約 450 m で、岸の隣のます目には画面の陸地が少しかかっていることがある)。
+  // ただし A* の道が通らざるを得なかった岸の隣(港の中・狭い海峡。okNear)とそのすぐ隣は通ってよい
+  const isLand = (x, y) => { const xi = Math.floor(x), yi = Math.floor(y); if (xi < 0 || yi < 0 || xi >= W || yi >= H) return false; const i = yi * W + xi; return land[i] === 1 || (near[i] === 1 && !okNear.has(i)); };
+  const mid = (p, q) => [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2];
+  for (let i = 1; i < P.length - 1; i++) {
+    const s0 = i === 1 ? P[0] : mid(P[i - 1], P[i]), c = P[i], e = mid(P[i], P[i + 1]);
+    const n = Math.max(4, Math.ceil((Math.hypot(c[0] - s0[0], c[1] - s0[1]) + Math.hypot(e[0] - c[0], e[1] - c[1])) * 4));
+    for (let k = 0; k <= n; k++) {
+      const t = k / n, u = 1 - t;
+      const x = u * u * s0[0] + 2 * u * t * c[0] + t * t * e[0], y = u * u * s0[1] + 2 * u * t * c[1] + t * t * e[1];
+      if (!inPort(x, y) && isLand(x, y)) { bad.add(i); break; }
+    }
+  }
+  return bad;
+}
+function smoothSafe(cells, keepIdx, A, B) {
+  // keepIdx: cells の中の残す点の番号(小さい順)。曲線が陸に乗る角の前後に点を足す
+  let idx = keepIdx.slice();
+  const okNear = new Set();
+  for (const c of cells) if (near[c]) for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) okNear.add(c + dy * W + dx);
+  const cxy = (i) => [i % W + 0.5, ((i / W) | 0) + 0.5];
+  for (let round = 0; round < 30; round++) {
+    const P = [A, ...idx.map((i) => cxy(cells[i])), B];
+    const bad = curveHitsLand(P, A, B, okNear);
+    if (!bad.size) return { idx, ok: true };
+    const add = new Set();
+    for (const b of bad) {
+      const k = b - 1; // idx の中の番号
+      if (k > 0 && idx[k] - idx[k - 1] > 1) add.add((idx[k - 1] + idx[k]) >> 1);
+      if (k < idx.length - 1 && idx[k + 1] - idx[k] > 1) add.add((idx[k] + idx[k + 1]) >> 1);
+    }
+    if (!add.size) return { idx, ok: true }; // 残りは A* の道のとなり合うます目どうし(ます目 1 つ未満のかすり。港の出口や狭い海峡)なので、これ以上は直さない
+    idx = [...new Set([...idx, ...add])].sort((a, b) => a - b);
+  }
+  return { idx, ok: false };
 }
 const cellLL = (i) => { const x = i % W, y = (i / W) | 0; return [Number((LAT0 + (y + 0.5) * DLAT).toFixed(4)), Number((LON0 + (x + 0.5) * DLON).toFixed(4))]; };
 
 const paths = {};
 let ok = 0, fail = [], run = 0;
+const landLeft = []; // 点を足しても曲線が陸に乗るもの(報告だけ)
 const seen = new Set();
 for (const r of routes) {
   const [a, b] = [r.from, r.to].sort();
@@ -190,7 +239,9 @@ for (const r of routes) {
   if (s < 0 || t < 0) { fail.push(`${A.name}–${B.name}(海のます目が近くに無い)`); continue; }
   const cells = astar(s, t, ++run);
   if (!cells) { fail.push(`${A.name}–${B.name}(海でつながらない)`); continue; }
-  const pts = thin(cells).map(cellLL);
+  const sm = smoothSafe(cells, thin(cells), [gx(A.lon), gy(A.lat)], [gx(B.lon), gy(B.lat)]);
+  if (!sm.ok) landLeft.push(`${A.name}–${B.name}`);
+  const pts = sm.idx.map((i) => cellLL(cells[i]));
   paths[key] = [[A.lat, A.lon], ...pts, [B.lat, B.lon]];
   ok++;
 }
@@ -198,4 +249,5 @@ const out = { schema: 'pc.seapaths/1', source: 'src-ksj-n03-2026', updatedAt: TO
 fs.writeFileSync(OUT, JSON.stringify(out));
 const pts = Object.values(paths).reduce((s, p) => s + p.length, 0);
 console.log(`海路の道すじ ${ok} 本(点 ${pts})を ${path.relative(ROOT, OUT)} に書いた(${(fs.statSync(OUT).size / 1024).toFixed(0)} KB)`);
+if (landLeft.length) console.log(`曲線が陸に少し乗るもの ${landLeft.length} 本: ${landLeft.slice(0, 20).join(' / ')}`);
 if (fail.length) console.log(`作れなかった ${fail.length} 本: ${fail.join(' / ')}`);
