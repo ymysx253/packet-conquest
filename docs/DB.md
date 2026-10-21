@@ -36,6 +36,7 @@
 | `questions` | `/nodeId` | 固定問題(Lv11 以上の一部)。拠点 × レベルで active を 1 つ | フェーズ 2 | 拠点数 × 数件 |
 | `sessions` | `/playerId` | 長丁場シナリオの途中経過(再開用)。TTL あり | フェーズ 2〜3 | 同時プレイ数 |
 | `events` | `/day` | 出来事の記録(`docs/LOGS.md`)。既定 TTL 90 日、種類ごとに 30 日〜無期限。1 日に DAU × 100 件 | フェーズ 1 手順 9〜10(作成済み。設定は LOGS.md 7.7) | 多い(TTL で回収) |
+| `chats` | `/room` | チャット(2026-10-21)。部屋(`all` / `team:<チーム id>` / `dm:<id>\|<id>`)ごと。`{ id, type: "chat", room, kind, from, fromName, to?, text, at }`。**既定の TTL 7 日**(書き込みは 7 日で消える)。起動時に無ければ作る | 済 | 中 |
 | `sponsors` | `/id` | スポンサー(店・施設)と掲載条件 | 段階 C | 少ない |
 | `teams` | `/id` | チーム(`{ id, type: "team", name, ownerId, maxMembers, memberCount, createdAt, style: { frame, fill, text }, icon, heldNodes, heldScore }`)。heldNodes / heldScore はチームの持ち物の拠点の数と点(2026-10-20。順位に足す)。style は #RRGGBB、icon は用意した記号。リーダー(ownerId)だけ変更可。合計点は players を team で GROUP BY | 手順 8(2026-10-18) | 少ない |
 | `routes` | `/source` | 航路の記録(空路・海路。形は `docs/DATA-FORMAT.md` 第 5 章)。出典ごとに差し替えるので出典で分ける。管理と監査用で、ゲームは `nodes` の `routes`(要約)を使う | 2026-10-19(起動時に SDK が作る) | 国内数百件、世界で数万件 |

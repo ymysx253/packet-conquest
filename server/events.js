@@ -17,6 +17,7 @@ const TTL_BY_KIND = {
   move: 365 * DAY_S, 'team.create': 365 * DAY_S, 'team.join': 365 * DAY_S, 'team.leave': 365 * DAY_S, 'team.style': 90 * DAY_S,
   control: 365 * DAY_S, 'control.daily': -1, reclaim: 365 * DAY_S, rekey: 365 * DAY_S,
   limit: 90 * DAY_S, error: 30 * DAY_S,
+  'chat.report': 365 * DAY_S, 'chat.block': 90 * DAY_S, // チャットの通報(書き込みの写しつき。管理者が見る)とブロック(2026-10-21)
 };
 const DEFAULT_TTL = 90 * DAY_S; // コンテナー既定(defaultTtl)。store-cosmos.js の CONTAINERS と一致させる
 const FLUSH_MS = 1000;

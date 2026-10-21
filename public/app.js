@@ -20,6 +20,7 @@
     start: null, picking: false, searchTimer: null, // 開始地点(選んだ駅・名所)と、地図から選ぶモード
     moving: false, movedAt: null, reach: new Set(), // 引っ越しの選択中 / 最後の引っ越し / 自分の拠点から線でつながっている所有拠点
     rankings: null, me2: null, team: null, cooldownMs: 5000, // ランキング / 自分の集計 / 所属チーム / いまの待ち時間の長さ
+    chat: { tab: 'team', to: null, rooms: new Map(), loaded: new Set(), partners: [], unread: { all: false, team: false, dm: false }, notes: {}, canWrite: {} }, // チャット(2026-10-21)
     mine: new Map(), // 自分が占領している空港・港(航路を持つもの)。画面の外に出ても覚えておき、航路の線を引く
     bounds: new Map(), // 区・市の境界(地域 id → { polys })。public/data/bounds/<都道府県>.json を見えている分だけ読む
     boundsLoaded: new Set(), coarse: null, // 読み込み済みの都道府県 / 縮小時の粗い全国版(japan.json)
@@ -106,6 +107,7 @@
         if (S.team) { S.infoOnly = true; send({ t: 'team', action: 'info' }); }
         store.set('pc-token', m.token); store.set('pc-name', m.name);
         $('codeInput').value = m.token;
+        S.chat.rooms.clear(); S.chat.loaded.clear(); chatOpen(S.chat.tab); send({ t: 'chat', action: 'partners' });
         $('lobby').hidden = true; $('mePanel').hidden = false; $('onlineChip').hidden = false; $('ownView').hidden = false;
         $('lobbyError').textContent = ''; $('meCode').textContent = m.token;
         resize();
@@ -142,7 +144,6 @@
         renderPlayers(); renderSelected();
         break;
       case 'team': {
-        const had = S.team && S.team.id;
         S.team = m.team ? { id: m.team.id, name: m.team.name, max: m.team.maxMembers, count: m.team.memberCount, ownerId: m.team.ownerId, style: m.team.style, icon: m.team.icon } : null;
         renderTeam();
         if (S.styleSaving) { S.styleSaving = false; toast('チームの見た目を保存しました'); }
@@ -152,6 +153,11 @@
       }
       case 'question': S.question = m; S.result = null; S.chosen = null; renderQuestion(); break;
       case 'result': S.result = m; S.cooldownUntil = m.cooldownUntil; if (m.cooldownMs) S.cooldownMs = m.cooldownMs; renderQuestion(); renderSelected(); break;
+      case 'chat': onChat(m.msg); break;
+      case 'chatHistory': { const key = chatKey(m.kind, m.to); S.chat.rooms.set(key, m.list || []); S.chat.loaded.add(key); S.chat.notes[key] = m.note || null; S.chat.canWrite[key] = !!m.canWrite; renderChat(true); break; }
+      case 'chatPartners': S.chat.partners = m.list || []; renderChatTo(); break;
+      case 'chatBlock': { const p = S.chat.partners.find((x) => x.id === m.id); if (p) p.blocked = m.on; else S.chat.partners.push({ id: m.id, name: (S.players.find((x) => x.id === m.id) || {}).name || m.id, blocked: m.on }); renderChatTo(); toast(m.on ? 'ブロックしました。この相手からは届きません' : 'ブロックを解きました'); break; }
+      case 'chatReport': toast('通報しました。管理者が確認します'); break;
       case 'error':
         if (!S.joined) { $('lobbyError').textContent = m.message; S.wantJoin = false; setJoining(false); } else toast(m.message);
         break;
@@ -279,6 +285,9 @@
   const TEAM_ICONS = ['★', '●', '■', '▲', '◆', '♠', '♣', '♥', '♦', '☀', '☾', '☁', '⚡', '❄', '✿', '⚑', '⚙', '☕', '♪', '✈', '⚓', '☯', '✦', '✪'];
   $('teamIcon').replaceChildren(...TEAM_ICONS.map((ic) => { const o = document.createElement('option'); o.value = ic; o.textContent = ic; return o; }));
   function renderTeam() {
+    // チームが変わったら、チームのチャットを読み直す(チームはプレイヤーの一覧の知らせで先に変わることがあるので、ここで比べる)
+    const tid = (S.team && S.team.id) || null;
+    if (S.chat && S.chat.teamId !== tid) { S.chat.teamId = tid; S.chat.rooms.delete('team'); S.chat.loaded.delete('team'); if (S.chat.tab === 'team') chatOpen('team'); else renderChat(); }
     $('teamNone').hidden = !!S.team; $('teamMine').hidden = !S.team;
     // 上の帯のチームのボタン: 所属していればチームのアイコンと名前を、チームの色で
     const tb = $('teamBtn');
@@ -675,6 +684,67 @@
     else S.mine.delete(n.id);
   }
   // サーバーの canAttack と同じ条件(表示用。判定はサーバーが行う)
+  // ---------- チャット(2026-10-21 ユーザー決定) ----------
+  // 全体・チーム・個別。全体は本登録の人だけ書ける(今は準備中)。チームは仲間。個別は誰でも(ブロックできる)。500 字、2 秒に 1 回、7 日残す
+  const chatKey = (kind, to) => (kind === 'dm' ? `dm:${to || ''}` : kind);
+  const curKey = () => chatKey(S.chat.tab, S.chat.to);
+  function chatOpen(kind, to) {
+    S.chat.tab = kind; if (kind === 'dm' && to !== undefined) S.chat.to = to || null;
+    S.chat.unread[kind] = false;
+    const key = curKey();
+    if ((kind !== 'dm' || S.chat.to) && !S.chat.loaded.has(key)) send({ t: 'chat', action: 'history', kind, to: kind === 'dm' ? S.chat.to : undefined });
+    renderChat(true);
+  }
+  function onChat(msg) {
+    const other = msg.kind === 'dm' ? (msg.from === S.me ? msg.to : msg.from) : null;
+    const key = chatKey(msg.kind, other);
+    const list = S.chat.rooms.get(key) || []; list.push(msg); if (list.length > 200) list.shift(); S.chat.rooms.set(key, list);
+    if (msg.kind === 'dm' && !S.chat.partners.some((p) => p.id === other)) { S.chat.partners.push({ id: other, name: msg.from === S.me ? ((S.players.find((x) => x.id === other) || {}).name || other) : msg.fromName, blocked: false }); renderChatTo(); }
+    if (key !== curKey() && msg.from !== S.me) S.chat.unread[msg.kind] = true;
+    renderChat(key === curKey());
+  }
+  function renderChatTo() {
+    const sel = $('chatTo'); const cur = S.chat.to;
+    const opts = [new Option('相手を選ぶ(順位の表の名前を押しても始められます)', '')];
+    for (const p of S.chat.partners) opts.push(new Option(`${p.name}${p.blocked ? '(ブロック中)' : ''}`, p.id));
+    sel.replaceChildren(...opts); sel.value = cur || '';
+    const p = S.chat.partners.find((x) => x.id === cur);
+    $('chatBlock').hidden = !cur; $('chatBlock').textContent = p && p.blocked ? 'ブロックを解く' : 'ブロック';
+  }
+  function renderChat(scroll) {
+    for (const b of document.querySelectorAll('.chat-tabs button')) { const k = b.dataset.kind; b.setAttribute('aria-selected', String(k === S.chat.tab)); b.querySelector('.chat-unread').hidden = !S.chat.unread[k]; }
+    $('chatDm').hidden = S.chat.tab !== 'dm'; if (S.chat.tab === 'dm') renderChatTo();
+    const key = curKey();
+    const list = S.chat.tab === 'dm' && !S.chat.to ? [] : (S.chat.rooms.get(key) || []);
+    const ul = $('chatList'); const atBottom = ul.scrollHeight - ul.scrollTop - ul.clientHeight < 40;
+    ul.replaceChildren(...list.map((m) => {
+      const li = document.createElement('li');
+      const t = document.createElement('time'); const d = new Date(m.at); t.textContent = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+      const who = document.createElement('span'); who.className = 'who' + (m.from === S.me ? ' me' : ''); who.textContent = m.from === S.me ? 'あなた' : m.fromName;
+      const tx = document.createElement('span'); tx.textContent = m.text;
+      li.append(t, who, tx);
+      if (m.from !== S.me) { const rp = document.createElement('button'); rp.type = 'button'; rp.className = 'report'; rp.title = '通報する'; rp.textContent = '⚑'; rp.onclick = () => { if (confirm(`${m.fromName} さんの書き込みを通報しますか?`)) send({ t: 'chat', action: 'report', room: m.room, id: m.id }); }; li.append(rp); }
+      return li;
+    }));
+    if (scroll || atBottom) ul.scrollTop = ul.scrollHeight;
+    let note = S.chat.tab === 'dm' && !S.chat.to ? '相手を選ぶと個別に話せます' : S.chat.tab === 'team' && !S.team ? 'チームに入ると使えます' : S.chat.notes[key] || null;
+    if (!note && S.chat.loaded.has(key) && !list.length) note = 'まだ書き込みはありません(7 日より前のものは消えます)';
+    $('chatNote').hidden = !note; $('chatNote').textContent = note || '';
+    const canWrite = S.chat.tab === 'dm' ? !!S.chat.to : S.chat.tab === 'team' ? !!S.team : !!S.chat.canWrite[key];
+    $('chatInput').disabled = !canWrite; $('chatSend').disabled = !canWrite;
+  }
+  for (const b of document.querySelectorAll('.chat-tabs button')) b.onclick = () => chatOpen(b.dataset.kind);
+  $('chatTo').onchange = () => chatOpen('dm', $('chatTo').value || null);
+  $('chatBlock').onclick = () => { const p = S.chat.partners.find((x) => x.id === S.chat.to); send({ t: 'chat', action: 'block', id: S.chat.to, on: !(p && p.blocked) }); };
+  $('chatForm').onsubmit = (e) => {
+    e.preventDefault();
+    const text = $('chatInput').value.trim(); if (!text) return;
+    send({ t: 'chat', action: 'post', kind: S.chat.tab, to: S.chat.tab === 'dm' ? S.chat.to : undefined, text });
+    $('chatInput').value = '';
+  };
+  // 順位の表の名前を押すと、その人と個別に話す
+  $('scores').addEventListener('click', (e) => { const li = e.target.closest('li[data-pid]'); if (!li || li.dataset.pid === S.me) return; const p = S.players.find((x) => x.id === li.dataset.pid) || {}; if (!S.chat.partners.some((x) => x.id === li.dataset.pid)) S.chat.partners.push({ id: li.dataset.pid, name: p.name || li.dataset.pid, blocked: false }); chatOpen('dm', li.dataset.pid); });
+
   let siegeTimer = null;
   function refreshSiege() { // まとめて 1 回だけ聞き直す
     if (siegeTimer) return;
@@ -712,9 +782,10 @@
     }
     const kind = $('rankKind').value;
     const R = S.rankings || {};
-    const row = (i, color, name, sub, right, dim) => {
+    const row = (i, color, name, sub, right, dim, pid) => {
       const li = document.createElement('li');
       if (dim) li.className = 'offline';
+      if (pid && pid !== S.me) { li.dataset.pid = pid; li.classList.add('can-dm'); li.title = '押すと個別のチャット'; }
       const rank = document.createElement('span'); rank.className = 'rank'; rank.textContent = i + 1;
       const sw = document.createElement('span'); sw.className = 'swatch'; sw.style.background = color || 'transparent';
       const n = document.createElement('span'); n.className = 'pname'; n.textContent = name;
@@ -729,7 +800,7 @@
     } else {
       const list = kind === 'score' ? [...S.players].sort((a, b) => b.score - a.score || b.points - a.points) : kind === 'weekPoints' ? (R.weekPoints || []).filter((p) => (p.weekPoints || 0) > 0) : (R[kind] || []);
       const val = (p) => kind === 'points' ? `${p.points}点` : kind === 'nodes' ? `${p.nodes}拠点` : kind === 'weekPoints' ? `+${p.weekPoints || 0}点` : `${p.score}点`;
-      items = list.slice(0, 15).map((p, i) => row(i, p.color, p.name, p.id === S.me ? 'あなた' : (p.teamName ? p.teamName : `${p.nodes}拠点`), val(p), !p.online));
+      items = list.slice(0, 15).map((p, i) => row(i, p.color, p.name, p.id === S.me ? 'あなた' : (p.teamName ? p.teamName : `${p.nodes}拠点`), val(p), !p.online, p.id));
       if (!items.length) { const li = document.createElement('li'); li.className = 'offline'; li.textContent = kind === 'weekPoints' ? '今週はまだ誰も獲得していません' : 'まだ順位がありません'; items = [li]; }
     }
     $('scoreTitle').textContent = kind === 'weekPoints' && R.week ? `順位(${R.week} の週)` : '順位';

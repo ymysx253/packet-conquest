@@ -31,6 +31,8 @@ const TYPES = {
 const store = createStore();
 const events = new EventLog(store); // 出来事の記録(docs/LOGS.md)。まとめ書き、失敗してもゲームを止めない
 const world = new World({ store, events });
+const { Chat } = require('./chat');
+const chat = new Chat(world, store, events); // チャット(2026-10-21)
 const limiter = new RateLimiter(); // 接続元ごとの新規作成・復帰の回数制限(SECURITY.md F2)
 // 想定外の例外だけ error として記録する。world.js の規則による拒否は素の Error(message だけ)なので、
 // それ以外(TypeError などの別のクラス、code を持つ SDK やネットワークの例外、expected: false と明示したもの)を「想定外」とみなす
@@ -49,7 +51,7 @@ function originAllowed(req) {
 }
 // F3: 1 接続あたりのメッセージ数の上限(1 秒に 20 まで。超えたら切断)と、種別ごとの形の検査
 const MSG_PER_SEC = 20;
-const MSG_TYPES = new Set(['join', 'view', 'ask', 'answer', 'search', 'rekey', 'move', 'team', 'neighbors']); // neighbors: 選んだ拠点のつながり先(2026-10-19)
+const MSG_TYPES = new Set(['join', 'view', 'ask', 'answer', 'search', 'rekey', 'move', 'team', 'neighbors', 'chat']); // neighbors: 選んだ拠点のつながり先(2026-10-19)
 // F5: セキュリティヘッダ。スクリプトは自サイトのファイルだけ(インラインは禁止)、スタイルとフォントは Google Fonts を許可
 const SECURITY_HEADERS = {
   'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' ws: wss:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
@@ -176,7 +178,17 @@ async function handle(ws, msg) {
     }
     case 'view': await world.setView(player, Array.isArray(msg.tiles) ? msg.tiles.slice(0, 120).filter((x) => typeof x === 'string' && x.length <= 24) : [], msg.z); break;
     case 'ask': if (typeof msg.nodeId !== 'string' || msg.nodeId.length > 40) return; send(ws, await world.ask(player, msg.nodeId)); break;
-    case 'neighbors': if (typeof msg.nodeId !== 'string' || msg.nodeId.length > 40) return; send(ws, await world.neighbors(msg.nodeId, player)); break; // 選んだ拠点のつながり先(位置と名前だけ)
+    case 'neighbors': if (typeof msg.nodeId !== 'string' || msg.nodeId.length > 40) return; send(ws, await world.neighbors(msg.nodeId, player)); break;
+    case 'chat': { // チャット(server/chat.js): 送る・履歴・個別の相手・ブロック・通報
+      const kind = ['all', 'team', 'dm'].includes(msg.kind) ? msg.kind : null;
+      const to = typeof msg.to === 'string' ? msg.to.slice(0, 40) : undefined;
+      if (msg.action === 'post') { if (!kind || typeof msg.text !== 'string' || msg.text.length > 2000) return; await chat.post(player, { kind, to, text: msg.text }); }
+      else if (msg.action === 'history') { if (!kind) return; send(ws, await chat.history(player, { kind, to })); }
+      else if (msg.action === 'partners') send(ws, await chat.partners(player));
+      else if (msg.action === 'block') send(ws, await chat.block(player, typeof msg.id === 'string' ? msg.id.slice(0, 40) : '', !!msg.on));
+      else if (msg.action === 'report') send(ws, await chat.report(player, { room: typeof msg.room === 'string' ? msg.room.slice(0, 100) : '', id: typeof msg.id === 'string' ? msg.id.slice(0, 40) : '' }));
+      break;
+    } // 選んだ拠点のつながり先(位置と名前だけ)
     case 'answer': {
       if (typeof msg.qid !== 'string' || msg.qid.length > 40) return;
       // 4 択は choice(0〜3)、入力式は inputs(文字列 12 個まで、各 1,000 文字まで。欄ごとの上限は world.answer で)

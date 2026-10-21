@@ -42,6 +42,7 @@ class MemoryStore {
     this.regions = new Map();
     this.meta = new Map();
     this.teams = new Map();
+    this.chats = []; // チャット(2026-10-21)。7 日より古いものは書くときに捨てる
     this.events = new Map(); // `${day}|${id}` → 出来事(追加順)
   }
   _index(n) {
@@ -93,6 +94,11 @@ class MemoryStore {
     }
     return [...agg.values()].sort((a, b) => b.score - a.score || b.points - a.points).slice(0, n);
   }
+  // ---------- チャット(server/chat.js) ----------
+  async saveChat(doc) { const cut = Date.now() - 7 * 24 * 60 * 60 * 1000; this.chats = this.chats.filter((m) => m.at >= cut); this.chats.push({ ...doc }); }
+  async loadChats(room, since, n = 100) { return this.chats.filter((m) => m.room === room && m.at >= since).slice(-n).map((m) => ({ ...m })); }
+  async loadChat(room, id) { const m = this.chats.find((x) => x.room === room && x.id === id); return m ? { ...m } : null; }
+  async dmPartners(pid, since) { const s = new Set(); for (const m of this.chats) if (m.kind === 'dm' && m.at >= since && (m.from === pid || m.to === pid)) s.add(m.from === pid ? m.to : m.from); return [...s]; }
   async loadTeam(id) { const t = this.teams.get(id); return t ? { ...t } : null; }
   async teamMembers(teamId, n = 20) { return [...this.players.values()].filter((p) => p.team === teamId).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0)).slice(0, n).map((p) => ({ ...p })); }
   async saveTeam(doc) { this.teams.set(doc.id, { ...doc }); }

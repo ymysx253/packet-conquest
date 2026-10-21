@@ -121,8 +121,34 @@ body {
 .ln.rail { height: 3px; border: 1.5px solid #2B2B2B; background: repeating-linear-gradient(90deg, #2B2B2B 0 6px, #FFFFFF 6px 12px); }
 .ln.rail.shinkansen { border-color: #00897B; background: repeating-linear-gradient(90deg, #00897B 0 6px, #FFFFFF 6px 12px); }
 
-.side { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
-.side > .panel { flex: 0 0 auto; }
+.side { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: 0; overflow: hidden; }
+.side-main { display: flex; flex-direction: column; gap: 12px; flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.side-main > .panel { flex: 0 0 auto; }
+/* チャット(2026-10-21): 右の欄の下(スマホは地図の下の欄の下)にいつも出す */
+.chat { flex: 0 0 42%; min-height: 200px; display: flex; flex-direction: column; gap: 6px; padding-bottom: 10px; }
+.chat-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.chat-head .label { margin: 0; }
+.chat-tabs { display: flex; border: 2px solid var(--ink); border-radius: 8px; overflow: hidden; }
+.chat-tabs button { border: 0; border-left: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 700 12px/1 "BIZ UDPGothic", sans-serif; padding: 6px 10px; cursor: pointer; position: relative; }
+.chat-tabs button:first-child { border-left: 0; }
+.chat-tabs button[aria-selected="true"] { background: var(--ink); color: var(--surface); }
+.chat-unread { display: inline-block; min-width: 8px; height: 8px; margin-left: 4px; border-radius: 50%; background: var(--bad); vertical-align: middle; }
+.chat-unread[hidden] { display: none; }
+.chat-dm { display: flex; gap: 6px; align-items: center; }
+.chat-dm[hidden] { display: none; }
+.chat-dm select { flex: 1 1 auto; min-width: 0; font-size: 13px; padding: 4px; border: 2px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
+.chat-list { list-style: none; margin: 0; padding: 4px 6px; flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--line); border-radius: 8px; font-size: 13px; }
+.chat-list li { padding: 3px 0; overflow-wrap: anywhere; }
+.chat-list .who { font-weight: 700; margin-right: 6px; }
+.chat-list .who.me { color: var(--accent-ink, var(--ink)); }
+.chat-list time { color: var(--muted); font-size: 12px; margin-right: 6px; }
+.chat-list .report { border: 0; background: none; color: var(--muted); font-size: 12px; cursor: pointer; padding: 0 4px; }
+.chat-note { margin: 0; font-size: 12px; color: var(--muted); }
+.chat-note[hidden] { display: none; }
+.chat-form { display: flex; gap: 6px; }
+.chat-form input { flex: 1 1 auto; min-width: 0; font-size: 14px; padding: 6px 8px; border: 2px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
+@media (max-width: 880px) { .chat { flex-basis: 55%; min-height: 160px; } }
+.scores li.can-dm .pname { cursor: pointer; text-decoration: underline dotted; }
 /* 凡例のダイアログ */
 .dlg { overflow-y: auto; overscroll-behavior: contain; border: 0; border-radius: 16px; padding: 20px 22px; width: min(520px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); background: var(--surface); color: var(--ink); box-shadow: 0 20px 50px rgba(10, 20, 30, 0.25); }
 .dlg::backdrop { background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(2px); }

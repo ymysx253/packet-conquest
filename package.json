@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node server/index.js",
-    "test": "node test/check.js && node test/basics.js && node test/calc.js && node test/transport.js && node test/map.js && node test/routes.js && node test/shapes.js && node test/terms.js && node test/normalize.js && node test/vlsm.js && node test/world.js && node test/events.js && node test/limits.js && node test/abuse.js && node test/cosmos.js",
+    "test": "node test/check.js && node test/basics.js && node test/calc.js && node test/transport.js && node test/map.js && node test/routes.js && node test/shapes.js && node test/terms.js && node test/normalize.js && node test/vlsm.js && node test/world.js && node test/chat.js && node test/events.js && node test/limits.js && node test/abuse.js && node test/cosmos.js",
     "db:setup": "node tools/db-setup.js",
     "test:e2e": "node test/e2e.js"
   },

@@ -14,6 +14,7 @@ const CONTAINERS = [
   { id: 'questions', partitionKey: { paths: ['/nodeId'] } },
   { id: 'meta', partitionKey: { paths: ['/id'] } }, // 小さな設定・状態(稼働時計 clock)。無ければ起動時に作る(共有スループット)
   { id: 'teams', partitionKey: { paths: ['/id'] } }, // チーム(第 3.11 節)。無ければ起動時に作る
+  { id: 'chats', partitionKey: { paths: ['/room'] }, defaultTtl: 604800 }, // チャット(2026-10-21)。部屋(all / team:<id> / dm:<id>|<id>)ごと。7 日で自動で消える
   { id: 'routes', partitionKey: { paths: ['/source'] } }, // 航路の記録(docs/DATA-FORMAT.md 第 5・7 章)。管理と監査用で、ゲームは拠点の要約を使う。出典ごとに差し替える
   // 出来事の記録(docs/LOGS.md 第 3・7.7 節)。既定 TTL 90 日(ドキュメントの ttl で種類ごとに上書き)、インデックスは絞り込みに使う項目だけ。
   // createIfNotExists は既にあるコンテナーの設定を変えないので、本番(作成済み)の TTL とインデックスはポータルから合わせる(LOGS.md 7.7)
@@ -211,6 +212,20 @@ class CosmosStore {
       query: 'SELECT c.team, SUM(c.score) AS score, SUM(c.points) AS points, SUM(c.nodesOwned) AS nodes, COUNT(1) AS members FROM c WHERE IS_DEFINED(c.team) AND c.team != null GROUP BY c.team',
     });
     return rows.sort((a, b) => (b.score || 0) - (a.score || 0) || (b.points || 0) - (a.points || 0)).slice(0, n);
+  }
+  // ---------- チャット(server/chat.js) ----------
+  async saveChat(doc) { await this.ensure(); await this.c.chats.items.create(doc); }
+  async loadChats(room, since, n = 100) {
+    const rows = await this.query('chats', { query: 'SELECT TOP @n * FROM c WHERE c.room = @r AND c.at >= @s ORDER BY c.at DESC', parameters: [{ name: '@n', value: n }, { name: '@r', value: room }, { name: '@s', value: since }] }, { partitionKey: room });
+    return rows.map((r) => this.strip(r)).reverse();
+  }
+  async loadChat(room, id) {
+    await this.ensure();
+    try { const { resource } = await this.c.chats.item(id, room).read(); return this.strip(resource) || null; } catch (e) { if (e.code === 404) return null; throw e; }
+  }
+  async dmPartners(pid, since) {
+    const rows = await this.query('chats', { query: 'SELECT c["from"] AS f, c["to"] AS t FROM c WHERE c.kind = "dm" AND c.at >= @s AND (c["from"] = @p OR c["to"] = @p)', parameters: [{ name: '@s', value: since }, { name: '@p', value: pid }] });
+    return [...new Set(rows.map((r) => (r.f === pid ? r.t : r.f)))];
   }
   async loadTeam(id) {
     await this.ensure();

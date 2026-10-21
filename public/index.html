@@ -59,6 +59,7 @@
   </section>
 
   <aside class="side">
+    <div class="side-main">
 
 
     <section class="panel" id="nodePanel" hidden aria-labelledby="npTitle">
@@ -109,6 +110,29 @@
     <section class="panel" aria-labelledby="logTitle">
       <h2 id="logTitle" class="label">通信ログ</h2>
       <ul class="log" id="log"></ul>
+    </section>
+    </div>
+
+    <!-- チャット(2026-10-21): いつも出す。全体・チーム・個別 -->
+    <section class="panel chat" id="chatPanel" aria-labelledby="chatTitle">
+      <div class="chat-head">
+        <h2 id="chatTitle" class="label">チャット</h2>
+        <div class="chat-tabs" role="tablist">
+          <button type="button" role="tab" data-kind="all">全体<span class="chat-unread" hidden></span></button>
+          <button type="button" role="tab" data-kind="team">チーム<span class="chat-unread" hidden></span></button>
+          <button type="button" role="tab" data-kind="dm">個別<span class="chat-unread" hidden></span></button>
+        </div>
+      </div>
+      <div class="chat-dm" id="chatDm" hidden>
+        <select id="chatTo" aria-label="個別の相手"><option value="">相手を選ぶ(順位の表の名前を押しても始められます)</option></select>
+        <button type="button" class="btn small" id="chatBlock" hidden>ブロック</button>
+      </div>
+      <ul class="chat-list" id="chatList" aria-live="polite"></ul>
+      <p class="chat-note" id="chatNote" hidden></p>
+      <form class="chat-form" id="chatForm" autocomplete="off">
+        <input id="chatInput" maxlength="500" placeholder="500 字まで。電話番号・住所など個人情報は書かないでください" aria-label="チャットに書く">
+        <button type="submit" class="btn small primary" id="chatSend">送る</button>
+      </form>
     </section>
   </aside>
 </main>

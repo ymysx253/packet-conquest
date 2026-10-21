@@ -93,6 +93,15 @@ const SEED = tokyo.NODES.filter((n) => n.region.startsWith('tokyo-'));
     const w2 = await new World({ store, minAnswerMs: 0 }).init();
     const b = await w2.join(fakeWs(), 'テスト', a.token);
     assert.strictEqual(b.id, a.id); assert.strictEqual(b.nodesOwned, 2);
+    // チャット(2026-10-21): chats(部屋ごと、7 日で消える)に書いて読める
+    const room = `dm:${a.id}|zz-test`;
+    await store.saveChat({ id: `t${Date.now()}`, type: 'chat', room, kind: 'dm', from: a.id, fromName: 'テスト', to: 'zz-test', text: 'テスト', at: Date.now() });
+    const chats = await store.loadChats(room, Date.now() - 60000, 10);
+    assert.ok(chats.length === 1 && chats[0].text === 'テスト', 'チャットを部屋ごとに読める');
+    assert.strictEqual((await store.loadChat(room, chats[0].id)).text, 'テスト');
+    assert.ok((await store.dmPartners(a.id, Date.now() - 60000)).includes('zz-test'), '個別の相手');
+    const ownedAll = await store.ownedNodes();
+    assert.ok(ownedAll.some((n) => n.owner === a.id), '持ち主のいる拠点を全部(点数の数え直し)');
     console.log(`cosmos ok: database ${dbName}, ${await store.countNodes()} nodes`);
   } finally {
     // テスト用データベースは消す(本番 packet-conquest には触らない)
