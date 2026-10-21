@@ -109,6 +109,9 @@ wss.on('connection', (ws, req) => {
   ws.on('pong', () => { ws.isAlive = true; });
   // 1 接続のメッセージは順番に処理する(view と ask が入れ違わないように)
   let chain = Promise.resolve();
+  // 見ている範囲(view)は最後のものだけ処理する(2026-10-21 ユーザー指摘: 拡大から広域へ縮小すると、途中の段の読み込みが順番待ちになり、広域の地図がなかなか出なかった)。
+  // 差分(added / dropped)はサーバーが覚えている前の範囲から作るので、途中を飛ばしても画面はずれない
+  let viewSeq = 0;
   // F3: 1 秒あたりのメッセージ数(トークン バケット)。超えたら切る
   let tokens = MSG_PER_SEC, lastRefill = Date.now();
   ws.on('message', (raw) => {
@@ -124,7 +127,8 @@ wss.on('connection', (ws, req) => {
     let msg;
     try { msg = JSON.parse(raw); } catch { return; }
     if (!msg || typeof msg !== 'object' || typeof msg.t !== 'string' || !MSG_TYPES.has(msg.t)) return;
-    chain = chain.then(() => handle(ws, msg)).catch((e) => {
+    const seq = msg.t === 'view' ? ++viewSeq : 0;
+    chain = chain.then(() => (seq && seq !== viewSeq ? null : handle(ws, msg))).catch((e) => {
       if (isUnexpected(e)) events.add('error', { playerId: ws.player ? ws.player.id : undefined, detail: { op: msg.t, message: String((e && e.message) || e).slice(0, 200) } });
       send(ws, { t: 'error', message: (e && e.message) || 'エラーが発生しました' });
     });
