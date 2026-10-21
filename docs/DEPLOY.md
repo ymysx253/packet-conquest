@@ -134,7 +134,14 @@ Web ソケット: Linux の App Service にはこの項目が無い(切り替え
 1. App Service → 左メニュー「開発ツール」→「高度なツール」→「移動」(新しいタブで Kudu Dashboard が開く。基本認証は無効のままでよい。ポータルと同じ Microsoft アカウントで入る)
 2. 左メニュー「CONFIGURATION」の「**Deployments**」を押す(右の「Environment」の「Deployments」からも同じ画面)。上に「Deploy your Node.js 24-lts app」と出て、手順が「1 Upload → 2 Deploy」の 2 段になっている
 3. 「1 Upload」の「Upload Your Application」の点線の枠に `packet-conquest-deploy.zip` を**ドラッグ&ドロップ**する(「Browse Files」で選んでもよい。上限 1 GB)
-4. 「2 Deploy」に進んだら、画面のボタンで配置を始める。App Service 側で `npm install` が走るので 1〜3 分待つ
+4. 「2 Deploy」(Review & Deploy)で次を確かめ、右下の「**Deploy**」を押す。App Service 側で `npm install` が走るので 1〜3 分待つ
+   | 項目 | 値 | 理由 |
+   |---|---|---|
+   | RUNTIME | Node.js 24-lts(「Configured」と出ていればよい) | |
+   | FILE | `packet-conquest-deploy.zip`(約 10 MB) | |
+   | Skip Server-Side Build (Pre Built App) | **チェックしない**(既定のまま) | チェックすると `npm install` が走らず、`node_modules` の無い zip なので起動しない |
+   | DEPLOYMENT TAG (OPTIONAL) | zip を作ったときのコミット(`git log --oneline -1` の先頭の 7 文字。例: `6ca1950`)。空でもよい | 「History」でどの版を置いたか見分けられる |
+   | File Structure | 中身の一覧(見るだけ)。`server/`、`public/`、`package.json` があり、`.env` と `node_modules` が無いこと | 接続文字列を zip に入れない |
 5. 結果は右上の「**History**」(または Dashboard の「Deployments」→「Last Deployment」)で見られる
 6. 終わったら App Service の「概要」→「参照」で開く。`https://<既定のホスト名>/healthz` が `ok players=0 ...` を返せば起動している
 
