@@ -38,7 +38,7 @@
 | `ALLOWED_ORIGINS` | `https://packet-conquest.com,https://www.packet-conquest.com` | ドメインを付けるまでは空でよい(同じホストからの接続は常に通る) |
 | `LOG_SALT` | 長い乱数の文字列(例: 32 文字以上。生成した値はここ以外に書かない) | 出来事の記録(`docs/LOGS.md` 3.4)で接続元を日替わりのハッシュにする塩。未設定でも動くが起動時の乱数になり、再起動すると同じ日の値が揃わなくなる |
 | `SCM_DO_BUILD_DURING_DEPLOYMENT` | `true` | zip を置いたときに App Service 側で `npm install` を走らせる |
-| `WEBSITE_RUN_FROM_PACKAGE` | 設定しない | 設定すると上のビルドが走らない |
+| `WEBSITE_RUN_FROM_PACKAGE` | **作らない**(変数そのものを一覧に入れない。自動で入っていたら削除) | あると zip が読み取り専用のまま動き、上のビルド(`npm install`)が走らないので起動しない |
 
 **全般設定**(「構成」→「全般設定」タブ)
 
