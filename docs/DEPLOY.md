@@ -129,12 +129,17 @@ Web ソケット: Linux の App Service にはこの項目が無い(切り替え
 
 ## 4. 配置する(Kudu の Zip Push Deploy)
 
-1. App Service → 左メニュー「開発ツール」→「高度なツール」→「移動」(新しいタブで Kudu が開く。基本認証は無効のままでよい。ポータルと同じ Microsoft アカウントで入る。認証のエラーで置けないときだけ 2-2 の「SCM 基本認証の発行資格情報」にチェックを入れる)
-2. 上のメニュー「Tools」→「Zip Push Deploy」
-3. ページに zip を**ドラッグ&ドロップ**する。`npm install` が走るので 1〜3 分待つ
-4. 終わったら App Service の「概要」→「参照」で開く。`https://<名前>.azurewebsites.net/healthz` が `ok players=0 ...` を返せば起動している
+2026-10-21 時点の Linux の App Service では、Kudu を開くと新しい画面(Kudu Dashboard)が出る。新しい画面には zip を置く入口が見当たらないので、古い画面か直接の URL を使う。
 
-うまくいかないとき: 左メニュー「監視」→「ログ ストリーム」でサーバーの出力(起動時の「保存: Cosmos DB packet-conquest」の行、エラー)を見る。
+1. App Service → 左メニュー「開発ツール」→「高度なツール」→「移動」(新しいタブで Kudu Dashboard が開く。基本認証は無効のままでよい。ポータルと同じ Microsoft アカウントで入る。認証のエラーで置けないときだけ 2-2 の「SCM 基本認証の発行資格情報」にチェックを入れる)
+2. zip を置く画面を開く。どちらでもよい
+   - 右上の「**Old UI**」→ 上のメニュー「**Tools**」→「**Zip Push Deploy**」
+   - ブラウザで `https://packet-conquest-hta6bsazdegfa4a7.scm.japaneast-01.azurewebsites.net/ZipDeployUI` を直接開く(既定のホスト名の `.japaneast-01` の前に `.scm` を入れた形)
+3. ページに zip を**ドラッグ&ドロップ**する。`npm install` が走るので 1〜3 分待つ
+4. 結果は Kudu Dashboard の「Deployments」→「Last Deployment」で見られる
+5. 終わったら App Service の「概要」→「参照」で開く。`https://<既定のホスト名>/healthz` が `ok players=0 ...` を返せば起動している
+
+うまくいかないとき: Kudu Dashboard の「Log Stream」、または App Service の左メニュー「監視」→「ログ ストリーム」でサーバーの出力(起動時の「保存: Cosmos DB packet-conquest」の行、エラー)を見る。
 
 ## 5. 動作確認
 
