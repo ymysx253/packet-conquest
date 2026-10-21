@@ -17,10 +17,10 @@
 | サブスクリプション / リソース グループ | Cosmos DB と同じリソース グループ | まとめて管理 |
 | 名前 | `packet-conquest` | いまの Azure は名前の後ろに自動で文字と地域が付く(例: `https://packet-conquest-xxxx.japaneast-01.azurewebsites.net`)。URL に `japaneast` が入っているかで地域も確かめる |
 | 公開 | コード | |
-| ランタイム スタック | **Node 20 LTS**(無ければ 22 LTS) | `package.json` の engines は 20 以上 |
+| ランタイム スタック | **Node 24 LTS**(無ければ 22 LTS) | Node 20 は 2026-04 でサポート終了。手元の確認は Node 24 |
 | オペレーティング システム | **Linux** | 安く、Node の扱いが素直 |
 | リージョン | **Japan East** | Cosmos DB と同じ(遅延と転送費) |
-| プラン | **Basic B1** | WebSocket と Always On が使える最小。Free F1 では Always On が無く、しばらくすると止まる。費用の目安は月 2,000 円前後(従量) |
+| プラン | **Basic B1**(既定で Premium V3 P0V3 が選ばれるので「価格プランを確認する」で変える) | WebSocket と Always On が使える最小。Free F1 では Always On が無く、しばらくすると止まる。費用の目安は月 2,000 円前後(従量) |
 | ゾーン冗長 | 無効 | |
 
 「確認および作成」→「作成」。
