@@ -5,7 +5,7 @@
 ## 0. 前提
 
 - Cosmos DB アカウント `packet-conquest`(Japan East、無料枠、合計 1000 RU/s)とデータベース `packet-conquest` は作成済み(`docs/DB.md` 第 10 章)
-- ドメイン `packet-conquest.com` は取得予定(第 11 章)。無くても `*.azurewebsites.net` で動く
+- ドメイン `packet-conquest.com` は 2026-10-21 に取得済み(第 6 章)。無くても `*.azurewebsites.net` で動く
 - サーバーは `PORT` 環境変数で待ち受け、保存先は `COSMOS_CONNECTION_STRING` と `COSMOS_DATABASE` で決まる。WebSocket は `/ws`
 
 ## 1. App Service を作る
@@ -143,13 +143,65 @@ Web ソケット: Linux の App Service にはこの項目が無い(切り替え
 3. 別の端末(スマホ)でも開き、復帰コードで戻れることを確認
 4. 起動ログに「休眠アカウントを回収」が出ていないこと(初回は 0 件のはず)
 
-## 6. ドメインと HTTPS(packet-conquest.com を取ったら)
+## 6. ドメインと HTTPS(packet-conquest.com)
 
-1. App Service → 「設定」→「カスタム ドメイン」→「カスタム ドメインの追加」
-2. 画面に出る **TXT レコード**(`asuid.<ドメイン>`)と **CNAME**(`www` → `<名前>.azurewebsites.net`)、裸ドメイン用の **A レコード**(App Service の IP)を、ドメインの管理画面(レジストラ)の DNS に登録する
-3. 検証が通ったら追加し、「バインドの追加」→ **App Service マネージド証明書**(無料)→ SNI SSL
-4. `ALLOWED_ORIGINS` にドメインを入れて保存(再起動)
-5. `www` と裸ドメインの両方を追加する
+ドメイン `packet-conquest.com` は 2026-10-21 に取得済み(ネームサーバー `ns1.dns.ne.jp` / `ns2.dns.ne.jp`。DNS の設定はドメインを取ったところの管理画面で行う)。Azure の「App Service ドメイン」では買っていないので、Azure 側は「その他のすべてのドメイン サービス」を選ぶ。
+画面に出る順に、変えない項目も含めて全部書く。裸のドメイン(`packet-conquest.com`)と `www.packet-conquest.com` の 2 つを、同じ手順で 1 つずつ追加する。
+
+### 6-1. Azure で確認 ID と IP アドレスを控える
+
+App Service → 左メニュー「設定」→「カスタム ドメイン」。画面の上に次の 2 つが出ている(右のボタンでコピーできる)。
+
+| 項目 | 使い道 |
+|---|---|
+| IP アドレス | 裸のドメインの A レコードの値(6-3)。カンマ区切りで 2 つ出ていても、使うのは 6-2 のダイアログに出る 1 つ |
+| カスタム ドメイン確認 ID | TXT レコード `asuid` / `asuid.www` の値(6-3)。このドメインを持っているのが自分だと Azure に示す |
+
+### 6-2. カスタム ドメインの追加(1 つ目: packet-conquest.com)
+
+「＋ カスタム ドメインの追加」(「App Service ドメインの購入」ではない)。右にダイアログが出る。
+
+| 項目 | 値 | 理由 |
+|---|---|---|
+| ドメイン プロバイダー | **その他のすべてのドメイン サービス**(既定は「App Service ドメイン」なので変える) | ドメインは Azure の外で取った |
+| TLS または SSL 証明書 | **App Service マネージド証明書**(既定のまま) | 無料。自動で更新される |
+| TLS/SSL の種類 | **SNI SSL**(既定のまま) | 「IP ベースの SSL」は有料で、いまのブラウザには要らない |
+| ドメイン | `packet-conquest.com` | |
+| ホスト名レコードの種類 | **A レコード**(裸のドメイン。`www` のときは CNAME) | 裸のドメインには CNAME を置けない決まりがある |
+| ドメインの検証 | 下に「A」と「TXT」の 2 行が出る。これを 6-3 で DNS に登録してから「検証」 | |
+
+検証が両方とも緑になったら「追加」。証明書は最大 10 分ほどで付き、一覧の状態が「セキュリティ保護付き」になる。
+
+### 6-3. DNS に登録する(ドメインを取ったところの管理画面)
+
+| 種類 | ホスト名(名前) | 値 | TTL |
+|---|---|---|---|
+| A | 空欄(`@` と書く画面もある) | 6-2 のダイアログに出た IP アドレス | 既定のまま(3600 など) |
+| TXT | `asuid` | カスタム ドメイン確認 ID | 既定のまま |
+| CNAME | `www` | `packet-conquest-hta6bsazdegfa4a7.japaneast-01.azurewebsites.net` | 既定のまま |
+| TXT | `asuid.www` | カスタム ドメイン確認 ID(上と同じ値) | 既定のまま |
+
+DNS の反映には数分〜1 時間ほどかかることがある。「検証」が赤のときは少し待ってからやり直す。
+
+### 6-4. 2 つ目: www.packet-conquest.com
+
+6-2 と同じダイアログで、ドメインを `www.packet-conquest.com`、ホスト名レコードの種類を **CNAME** にする。ほかは 6-2 と同じ。
+
+### 6-5. 許可するつなぎ元を足す
+
+左メニュー「設定」→「環境変数」→「アプリ設定」で `ALLOWED_ORIGINS` を作り、値を `https://packet-conquest.com,https://www.packet-conquest.com` にして「適用」→「確認」(再起動する)。
+
+### 6-6. 確かめる
+
+1. `https://packet-conquest.com/healthz` と `https://www.packet-conquest.com/healthz` が `ok players=...` を返す
+2. ブラウザで開き、鍵のマークが出て、上の帯が「接続中」になる
+3. 一覧で 2 つとも「セキュリティ保護付き」
+
+### 6-7. 気をつけること
+
+- App Service のプランを別の系列(例: B → P)に変えると IP アドレスが変わることがある。そのときは A レコードを新しい IP に直す(カスタム ドメインの画面の IP アドレスで確かめる)
+- 確認 ID の TXT レコードは消さない(証明書の更新に使う)
+- マネージド証明書は英数字・ダッシュ・ピリオドのドメインだけ(日本語ドメインは使えない)
 
 ## 7. 配置のやり直し(更新)
 
