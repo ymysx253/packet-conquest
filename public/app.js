@@ -120,7 +120,7 @@
       case 'moved':
         S.home = m.home; S.movedAt = m.movedAt; S.moving = false; $('pickBar').hidden = true; S.selected = null; S.question = null; S.result = null;
         if (m.area) $('areaChip').textContent = m.area;
-        S.nodes.clear(); S.edges.clear(); S.far.clear(); S.tiles.clear(); lastViewKey = ''; railCache = null; nbCache = null;
+        S.nodes.clear(); S.edges.clear(); S.far.clear(); S.tiles.clear(); lastViewKey = ''; railCache = null; nbCache = null; adjCache = null;
         centerOn(worldOf(m.home.lat, m.home.lon), 9); requestView(true); renderQuestion();
         toast('引っ越しました。新しい拠点から広げ直してください');
         break;
@@ -167,7 +167,7 @@
 
   // 受け取ったタイルを取り込み、見えなくなったタイルの拠点を捨てる
   function onTiles(m) {
-    railCache = null; nbCache = null; // 拠点とつながりが入れ替わるので、路線の隣どうし・囲みの隣を作り直す
+    railCache = null; nbCache = null; adjCache = null; // 拠点とつながりが入れ替わるので、路線の隣どうし・囲みの隣を作り直す
     if (m.overview) {
       // 縮小表示: 送られてきた高レベルの拠点だけに入れ替える
       S.nodes.clear(); S.edges.clear(); S.far.clear(); S.tiles.clear(); S.overview = true; S.viewZ = m.z;
@@ -458,8 +458,25 @@
     const ta = railTangent(na, nb, ls), tb = railTangent(nb, na, ls);
     return { a, b, c1: { x: a.x + ta.x * L, y: a.y + ta.y * L }, c2: { x: b.x + tb.x * L, y: b.y + tb.y * L }, shinkansen: ls[0].includes('新幹線') };
   }
-  const railPath = (ctx, cv) => {
-    ctx.beginPath(); ctx.moveTo(cv.a.x, cv.a.y);
+  // 路線の線の広がり(平面座標の [x0, y0, x1, y1])。画面の外の線を、形を作る前に飛ばすのに使う(2026-10-21: 全部の線を毎回描いていて重かった)。路線の線でなければ null
+  const railBoxCache = new Map();
+  function railBox(na, nb) {
+    if (!railLinesOf(na, nb).length) return null;
+    const key = na.id < nb.id ? `${na.id}|${nb.id}` : `${nb.id}|${na.id}`;
+    const pts = S.railPaths && S.railPaths.get(key);
+    const pa = posOf(na), pb = posOf(nb);
+    const hit = railBoxCache.get(key);
+    if (hit && hit.pts === pts && hit.ax === pa.x && hit.ay === pa.y && hit.bx === pb.x && hit.by === pb.y) return hit.box;
+    let x0 = Math.min(pa.x, pb.x), y0 = Math.min(pa.y, pb.y), x1 = Math.max(pa.x, pb.x), y1 = Math.max(pa.y, pb.y);
+    for (const q of pts || []) { if (q.x < x0) x0 = q.x; if (q.x > x1) x1 = q.x; if (q.y < y0) y0 = q.y; if (q.y > y1) y1 = q.y; }
+    const pad = pts ? 0 : Math.hypot(pb.x - pa.x, pb.y - pa.y) / 3; // 線路の形が無いときの曲線は、両端から 1/3 までふくらむ
+    const box = [x0 - pad, y0 - pad, x1 + pad, y1 + pad];
+    railBoxCache.set(key, { pts, ax: pa.x, ay: pa.y, bx: pb.x, by: pb.y, box });
+    return box;
+  }
+  const railPath = (ctx, cv, begin = true) => { // begin = false: 今の線に足す(同じ色・太さの線を 1 回でまとめて描く)
+    if (begin) ctx.beginPath();
+    ctx.moveTo(cv.a.x, cv.a.y);
     if (!cv.path) { ctx.bezierCurveTo(cv.c1.x, cv.c1.y, cv.c2.x, cv.c2.y, cv.b.x, cv.b.y); return; }
     // 線路の点を、点と点の中ほどを通るなめらかな線でつなぐ(海路と同じ描き方)
     const q = [cv.a, ...cv.path, cv.b];
@@ -655,10 +672,15 @@
     send({ t: 'ask', nodeId: n.id });
   }
 
+  // 拠点 id → 線でつながる隣の id。タイルが届いたとき(線が変わるとき)だけ作り直す(2026-10-21: 毎回すべての線を調べていて、1 こまで 線の数 × 線の数 の計算になり、ドラッグがかくかくだった)
+  let adjCache = null;
   function adjacent(id) {
-    const out = [];
-    for (const e of S.edges.values()) { if (e.a === id) out.push(e.b); else if (e.b === id) out.push(e.a); }
-    return out;
+    if (!adjCache) {
+      adjCache = new Map();
+      const push = (k, v) => { let arr = adjCache.get(k); if (!arr) adjCache.set(k, (arr = [])); arr.push(v); };
+      for (const e of S.edges.values()) { push(e.a, e.b); push(e.b, e.a); }
+    }
+    return adjCache.get(id) || [];
   }
   // 自分の拠点から、見えている所有拠点を線でたどって届く拠点(表示用。判定はサーバー)
   function computeReach() {
@@ -1193,32 +1215,49 @@
     ctx.lineCap = 'round';
     const lineScale = Math.min(1, Math.max(0.4, ratio / 4));
     const rails = [];
+    // 画面の外(少し余白を取る)の線は描かない。同じ色・太さ・濃さの線は 1 本の線にまとめて 1 回で描く(2026-10-21 ユーザー指摘: ドラッグがかくかく。1 こまで 2,000 回以上描いていた)
+    const vlo = toWorld(-40, -40), vhi = toWorld(V.w + 40, V.h + 40);
+    const offView = (b) => b[2] < vlo.x || b[0] > vhi.x || b[3] < vlo.y || b[1] > vhi.y;
+    const lineGroups = new Map(); // '色|太さ|濃さ' → [[a, b], …]
     for (const e of S.edges.values()) {
       if (S.shkKeys.has(e.a < e.b ? `${e.a}|${e.b}` : `${e.b}|${e.a}`)) continue; // 新幹線の線は下でまとめて描く
       const na = railNode(e.a), nb = railNode(e.b);
       if (!na || !nb || !visibleNode(na) || !visibleNode(nb)) continue; // 描かない町・字への線も描かない
       const own = na.owner && na.owner === nb.owner && ownShown(relOf(na)) ? ((ownerStyleOf(na) || {}).frame || ownerColorOf(na)) : null; // チームの線は枠の色
       const ef = Math.min(fadeOf(na), fadeOf(nb)); // 線も、両端の薄い方に合わせて薄く
-      const cv = railCurve(na, nb);
-      if (cv) { rails.push({ cv, own, ef: 1 }); continue; } // 電車の線は駅が薄くても濃く描く(2026-10-21 ユーザー: 一定の倍率では常に出す。拠点を描く倍率 2.5 倍以上で出る)
+      const rb = railBox(na, nb);
+      if (rb) { // 電車の線は駅が薄くても濃く描く(2026-10-21 ユーザー: 一定の倍率では常に出す。拠点を描く倍率 2.5 倍以上で出る)
+        if (offView(rb)) continue;
+        const cv = railCurve(na, nb);
+        if (cv) rails.push({ cv, own, ef: 1 });
+        continue;
+      }
       if (!S.nodes.has(na.id) || !S.nodes.has(nb.id)) continue; // 読み込んでいない遠い隣へは、路線の線だけ伸ばす
-      const a = toScreen(posOf(na)), b = toScreen(posOf(nb));
+      const pa = posOf(na), pb = posOf(nb);
+      if (offView([Math.min(pa.x, pb.x), Math.min(pa.y, pb.y), Math.max(pa.x, pb.x), Math.max(pa.y, pb.y)])) continue;
+      const a = toScreen(pa), b = toScreen(pb);
       const thin = na.isPlayerNode || nb.isPlayerNode;
       const town = na.genre === 'town' || nb.genre === 'town'; // 町・字の線は細く薄く(路線の線を主役にする)
-      ctx.strokeStyle = own || C.line;
-      ctx.lineWidth = (own ? (thin || town ? 4 : 7) : (thin ? 2.5 : town ? 1.5 : 4)) * lineScale;
-      ctx.globalAlpha = (town && !own ? 0.55 : 1) * ef;
-      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-      ctx.globalAlpha = 1;
+      const gk = `${own || C.line}|${(own ? (thin || town ? 4 : 7) : (thin ? 2.5 : town ? 1.5 : 4)) * lineScale}|${Math.round((town && !own ? 0.55 : 1) * ef * 20) / 20}`; // 濃さは 20 段に丸めてまとめやすく
+      if (!lineGroups.has(gk)) lineGroups.set(gk, []);
+      lineGroups.get(gk).push([a, b]);
     }
+    for (const [gk, segs] of lineGroups) {
+      const [col, w, al] = gk.split('|');
+      ctx.strokeStyle = col; ctx.lineWidth = Number(w); ctx.globalAlpha = Number(al);
+      ctx.beginPath();
+      for (const [a, b] of segs) { ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); }
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
     // 新幹線の線: 読み込み範囲に関係なく、画面にかかるものを描く(持ち主の色は、読み込んでいる駅の分だけ分かる)
     if (!S.overview) for (const [a, b] of S.shkEdges) {
       const na = railNode(a), nb = railNode(b);
       if (!na || !nb) continue;
+      const rb = railBox(na, nb);
+      if (!rb || offView(rb)) continue; // 画面にかからない
       const cv = railCurve(na, nb);
       if (!cv) continue;
-      const xs = [cv.a.x, cv.b.x, ...(cv.path || []).map((q) => q.x)], ys = [cv.a.y, cv.b.y, ...(cv.path || []).map((q) => q.y)];
-      if (Math.max(...xs) < -20 || Math.min(...xs) > V.w + 20 || Math.max(...ys) < -20 || Math.min(...ys) > V.h + 20) continue; // 画面にかからない
       const own = na.owner && na.owner === nb.owner && ownShown(relOf(na)) ? ((ownerStyleOf(na) || {}).frame || ownerColorOf(na)) : null;
       rails.push({ cv, own, ef: 1 });
     }
@@ -1230,12 +1269,19 @@
       ctx.save(); ctx.lineCap = 'butt';
       for (const pass of [0, 1, 2]) {
         ctx.setLineDash(pass === 2 ? [dash, dash] : []);
+        const groups = new Map(); // 同じ色・太さ・濃さの線は 1 回で描く(破線の模様は線ごとに始まるので見た目は同じ)
         for (const r of rails) {
-          ctx.globalAlpha = r.ef;
           const col = r.own || (r.cv.shinkansen ? RAIL.shinkansen : RAIL.ink);
-          ctx.strokeStyle = pass === 1 ? RAIL.paper : col;
-          ctx.lineWidth = r.own ? (pass === 0 ? Wo : innerO) : (pass === 0 ? W : inner);
-          railPath(ctx, r.cv); ctx.stroke();
+          const gk = `${pass === 1 ? RAIL.paper : col}|${r.own ? (pass === 0 ? Wo : innerO) : (pass === 0 ? W : inner)}|${r.ef}`;
+          if (!groups.has(gk)) groups.set(gk, []);
+          groups.get(gk).push(r);
+        }
+        for (const [gk, list] of groups) {
+          const [col, w, al] = gk.split('|');
+          ctx.strokeStyle = col; ctx.lineWidth = Number(w); ctx.globalAlpha = Number(al);
+          ctx.beginPath();
+          for (const r of list) railPath(ctx, r.cv, false);
+          ctx.stroke();
         }
       }
       ctx.restore();
