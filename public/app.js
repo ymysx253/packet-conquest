@@ -1162,11 +1162,10 @@
         const A = o.id === x ? o : r, B = o.id === x ? r : o; // 向きをそろえる(同じ航路はどちらから見ても同じ曲線)
         pairs.set(key, { key, a: worldOf(A.lat, A.lon), b: worldOf(B.lat, B.lon), mode: r.mode, state: st });
       };
-      if (S.joined) for (const o of S.mine.values()) for (const r of o.routes) add(o, r, 'one');
-      if (ownShown('team')) for (const n of S.nodes.values()) if (n.routes && n.routes.length && relOf(n) === 'team') for (const r of n.routes) add(n, r, 'one');
+      // 押さえている空港・港でも、いつも出すのではなく選んだときだけ出す(2026-10-22 ユーザー決定: 航路は長いので地図の邪魔になる)
       // 選んだ空港・港の航路は、その拠点が画面の外に出て読み込みから外れても出し続ける(selectedNode が覚えている)
       const sel = selectedNode();
-      if (sel && sel.routes && routesKnown(sel)) for (const r of sel.routes) add(sel, r, 'sel'); // 押さえていない空港・港を選んでも航路は出さない(2026-10-22)
+      if (sel && sel.routes && routesKnown(sel)) for (const r of sel.routes) add(sel, r, 'one'); // 押さえていない空港・港を選んでも航路は出さない(2026-10-22)。行き先も押さえていれば太い実線
       if (pairs.size) {
         ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
         for (const p of [...pairs.values()].sort((u, v) => rank[u.state] - rank[v.state])) {
