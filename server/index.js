@@ -168,6 +168,7 @@ async function handle(ws, msg) {
       else if (msg.action === 'join') { const t = await world.joinTeam(player, msg.teamId); send(ws, { t: 'team', team: world.pubTeam(t) }); }
       else if (msg.action === 'leave') { await world.leaveTeam(player); send(ws, { t: 'team', team: null }); }
       else if (msg.action === 'style') { const t = await world.styleTeam(player, { frame: msg.frame, fill: msg.fill, text: msg.text, icon: msg.icon }); send(ws, { t: 'team', team: world.pubTeam(t) }); }
+      else if (msg.action === 'members') send(ws, await world.teamMemberList(player)); // チーム内の順位(2026-10-21)
       else if (msg.action === 'info') { const t = player.team ? await world.teamInfo(player.team) : null; send(ws, { t: 'team', team: world.pubTeam(t) }); }
       break;
     }

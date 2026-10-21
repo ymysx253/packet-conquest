@@ -155,6 +155,7 @@
       case 'result': S.result = m; S.cooldownUntil = m.cooldownUntil; if (m.cooldownMs) S.cooldownMs = m.cooldownMs; renderQuestion(); renderSelected(); break;
       case 'chat': onChat(m.msg); break;
       case 'chatHistory': { const key = chatKey(m.kind, m.to); S.chat.rooms.set(key, m.list || []); S.chat.loaded.add(key); S.chat.notes[key] = m.note || null; S.chat.canWrite[key] = !!m.canWrite; renderChat(true); break; }
+      case 'teamMembers': S.chat.members = m.list || []; S.chat.membersAt = Date.now(); renderChat(); break;
       case 'chatPartners': S.chat.partners = m.list || []; renderChatTo(); break;
       case 'chatBlock': { const p = S.chat.partners.find((x) => x.id === m.id); if (p) p.blocked = m.on; else S.chat.partners.push({ id: m.id, name: (S.players.find((x) => x.id === m.id) || {}).name || m.id, blocked: m.on }); renderChatTo(); toast(m.on ? 'ブロックしました。この相手からは届きません' : 'ブロックを解きました'); break; }
       case 'chatReport': toast('通報しました。管理者が確認します'); break;
@@ -510,6 +511,7 @@
   watchDpr();
   if (window.ResizeObserver) new ResizeObserver(() => resize()).observe($('mapWrap')); // 欄の開け閉めで枠の大きさが変わったときも
   // 凡例(レベルの形・持ち主・出典)はダイアログで出す(2026-10-19 ユーザー指摘)
+  $('rankBtn').onclick = () => { renderPlayers(); const d = $('rankDialog'); if (d.showModal) d.showModal(); else d.setAttribute('open', ''); }; // 順位はダイアログ(2026-10-21)
   $('legendBtn').onclick = () => { const d = $('legendDialog'); if (d.showModal) d.showModal(); else d.setAttribute('open', ''); };
   const clampK = (k) => Math.min(BASE_K * ZOOM_MAX, Math.max(BASE_K * ZOOM_MIN, k));
   function zoomAt(factor, sx, sy) {
@@ -689,6 +691,7 @@
   const chatKey = (kind, to) => (kind === 'dm' ? `dm:${to || ''}` : kind);
   const curKey = () => chatKey(S.chat.tab, S.chat.to);
   function chatOpen(kind, to) {
+    if (kind === 'members') { S.chat.tab = 'members'; if (S.team) send({ t: 'team', action: 'members' }); renderChat(true); return; } // チーム内の順位(2026-10-21)
     S.chat.tab = kind; if (kind === 'dm' && to !== undefined) S.chat.to = to || null;
     S.chat.unread[kind] = false;
     const key = curKey();
@@ -712,8 +715,17 @@
     $('chatBlock').hidden = !cur; $('chatBlock').textContent = p && p.blocked ? 'ブロックを解く' : 'ブロック';
   }
   function renderChat(scroll) {
-    for (const b of document.querySelectorAll('.chat-tabs button')) { const k = b.dataset.kind; b.setAttribute('aria-selected', String(k === S.chat.tab)); b.querySelector('.chat-unread').hidden = !S.chat.unread[k]; }
+    for (const b of document.querySelectorAll('.chat-tabs button')) { const k = b.dataset.kind; b.setAttribute('aria-selected', String(k === S.chat.tab)); const u = b.querySelector('.chat-unread'); if (u) u.hidden = !S.chat.unread[k]; }
     $('chatDm').hidden = S.chat.tab !== 'dm'; if (S.chat.tab === 'dm') renderChatTo();
+    $('chatForm').hidden = S.chat.tab === 'members';
+    if (S.chat.tab === 'members') { // チームの仲間を点数の多い順に。最後に来た日も
+      const ul = $('chatList');
+      const ago = (t) => { if (!t) return ''; const d = Math.floor((Date.now() - t) / 86400000); return d <= 0 ? '今日' : `${d} 日前`; };
+      ul.replaceChildren(...(S.chat.members || []).map((p, i) => { const li = document.createElement('li'); li.className = 'member'; li.textContent = `${i + 1}. ${p.name}${p.id === S.me ? '(あなた)' : ''}  ${p.score}点・${p.nodes}拠点  ${p.online ? '接続中' : `最後に来た日: ${ago(p.lastSeen)}`}`; return li; }));
+      const note = !S.team ? 'チームに入ると、仲間の順位が出ます' : !(S.chat.members || []).length ? '読み込み中…' : null;
+      $('chatNote').hidden = !note; $('chatNote').textContent = note || '';
+      return;
+    }
     const key = curKey();
     const list = S.chat.tab === 'dm' && !S.chat.to ? [] : (S.chat.rooms.get(key) || []);
     const ul = $('chatList'); const atBottom = ul.scrollHeight - ul.scrollTop - ul.clientHeight < 40;
@@ -743,7 +755,7 @@
     $('chatInput').value = '';
   };
   // 順位の表の名前を押すと、その人と個別に話す
-  $('scores').addEventListener('click', (e) => { const li = e.target.closest('li[data-pid]'); if (!li || li.dataset.pid === S.me) return; const p = S.players.find((x) => x.id === li.dataset.pid) || {}; if (!S.chat.partners.some((x) => x.id === li.dataset.pid)) S.chat.partners.push({ id: li.dataset.pid, name: p.name || li.dataset.pid, blocked: false }); chatOpen('dm', li.dataset.pid); });
+  $('scores').addEventListener('click', (e) => { const li = e.target.closest('li[data-pid]'); if (!li || li.dataset.pid === S.me) return; const p = S.players.find((x) => x.id === li.dataset.pid) || {}; if (!S.chat.partners.some((x) => x.id === li.dataset.pid)) S.chat.partners.push({ id: li.dataset.pid, name: p.name || li.dataset.pid, blocked: false }); const rd = $('rankDialog'); if (rd.open) rd.close(); chatOpen('dm', li.dataset.pid); });
 
   let siegeTimer = null;
   function refreshSiege() { // まとめて 1 回だけ聞き直す

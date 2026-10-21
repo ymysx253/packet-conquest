@@ -361,3 +361,6 @@ body.manual-page { background: var(--bg); color: var(--ink); max-width: 860px; m
 .manual code { font-family: var(--font-mono); font-size: 13px; }
 
 .board-foot .btn { white-space: nowrap; flex: 0 0 auto; }
+.chat-form[hidden] { display: none; }
+.chat-list li.member { white-space: pre-wrap; }
+#rankDialog .rank-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }

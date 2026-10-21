@@ -23,6 +23,7 @@
     <span class="pscore" id="meScore"></span>
     <span class="hint me-stats"><span id="meNodes"></span> ・ 累計 <span id="mePoints"></span>点</span>
     <button type="button" class="btn small team-btn" id="teamBtn" aria-haspopup="dialog">チーム</button>
+    <button type="button" class="btn small" id="rankBtn" aria-haspopup="dialog">順位</button>
     <button type="button" class="btn small" id="meMenuBtn" aria-haspopup="dialog">復帰コード・引っ越し</button>
   </div>
   <div class="status">
@@ -87,19 +88,7 @@
     </section>
 
 
-    <section class="panel" aria-labelledby="scoreTitle">
-      <div class="rank-head">
-        <h2 id="scoreTitle" class="label">順位</h2>
-        <select id="rankKind" aria-label="ランキングの種類">
-          <option value="score">総合: 現在の点数</option>
-          <option value="points">総合: 累計点</option>
-          <option value="nodes">総合: 拠点数</option>
-          <option value="weekPoints">今週の獲得点</option>
-          <option value="teams">チーム(合計点)</option>
-        </select>
-      </div>
-      <ol class="scores" id="scores"></ol>
-    </section>
+
 
     <section class="panel" aria-labelledby="logTitle">
       <h2 id="logTitle" class="label">通信ログ</h2>
@@ -115,6 +104,7 @@
           <button type="button" role="tab" data-kind="all">全体<span class="chat-unread" hidden></span></button>
           <button type="button" role="tab" data-kind="team">チーム<span class="chat-unread" hidden></span></button>
           <button type="button" role="tab" data-kind="dm">個別<span class="chat-unread" hidden></span></button>
+          <button type="button" role="tab" data-kind="members">仲間</button>
         </div>
       </div>
       <div class="chat-dm" id="chatDm" hidden>
@@ -177,6 +167,25 @@
   <p class="hint"><a href="shapes.html" target="_blank" rel="noopener">形の一覧(Lv1〜999)を別の画面で開く</a></p>
   <h3 class="label">出典</h3>
   <p class="credit">地図は「国土数値情報(鉄道・行政区域・湖沼・港湾間流通量)」(国土交通省)、政府統計の総合窓口(e-Stat)「国勢調査 小地域境界」「航空輸送統計調査」(総務省統計局・国土交通省)、「地理院タイル(道路中心線)」(国土地理院。島が道でつながっているかの判定)を加工して作成。名所の一部は Wikidata による。都道府県庁舎の一部の位置は「位置参照情報ダウンロードサービス」(国土交通省)をもとに作成。町・字の読みは日本郵便「郵便番号データ」による。記載の製品名・プロトコル名は各社の商標または登録商標です</p>
+  <form method="dialog" class="dlg-actions"><button class="btn primary">閉じる</button></form>
+</dialog>
+
+<!-- 順位(2026-10-21 ユーザー決定: 上の帯の「順位」ボタンでダイアログ) -->
+<dialog class="dlg" id="rankDialog" aria-labelledby="scoreTitle">
+  <div class="rank-body">
+      <div class="rank-head">
+        <h2 id="scoreTitle" class="dlg-title">順位</h2>
+        <select id="rankKind" aria-label="ランキングの種類">
+          <option value="score">総合: 現在の点数</option>
+          <option value="points">総合: 累計点</option>
+          <option value="nodes">総合: 拠点数</option>
+          <option value="weekPoints">今週の獲得点</option>
+          <option value="teams">チーム(合計点)</option>
+        </select>
+      </div>
+      <ol class="scores" id="scores"></ol>
+    </div>
+  <p class="hint">名前を押すと、その人と個別にチャットできます</p>
   <form method="dialog" class="dlg-actions"><button class="btn primary">閉じる</button></form>
 </dialog>
 

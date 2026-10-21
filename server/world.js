@@ -103,6 +103,14 @@ class World {
     if (t) { this.teamNames.set(t.id, t.name); const pt = this.pubTeam(t); this.teamLooks.set(t.id, { style: pt.style, icon: pt.icon }); }
     return t;
   }
+  // チーム内の順位(2026-10-21 ユーザー決定): 仲間を点数の多い順に。最後に来た日も出す(動いていない仲間を外すときの目安)
+  async teamMemberList(p) {
+    if (!p.team) return { t: 'teamMembers', list: [] };
+    const docs = await this.store.teamMembers(p.team, TEAM_MAX_MEMBERS * 5);
+    const list = docs.map((d) => { const live = this.players.get(d.id); const q = live || d; return { id: q.id, name: q.name, color: q.color, score: q.score || 0, nodes: q.nodesOwned || 0, online: !!(live && live.online), lastSeen: q.lastSeen || null }; })
+      .sort((x, y) => y.score - x.score || y.nodes - x.nodes);
+    return { t: 'teamMembers', team: p.team, list };
+  }
   async createTeam(p, name, maxMembers) {
     if (p.team) throw new Error('チームに所属している間は、新しいチームを作れません(先に脱退してください)');
     const nm = String(name || '').replace(/[\u0000-\u001f\u007f<>]/g, '').trim().slice(0, 16);

@@ -45,6 +45,11 @@ const got = (ws) => ws.sent.filter((m) => m.t === 'chat').map((m) => m.msg);
   assert.ok(got(wa).some((m) => m.kind === 'team' && m.text === '作戦です'), 'チームの仲間に届く');
   assert.ok(!got(wc).some((m) => m.kind === 'team'), 'チームの外には届かない');
 
+  // チーム内の順位(2026-10-21): 仲間を点数の多い順に
+  const ml = await w.teamMemberList(a);
+  assert.ok(ml.list.length === 2 && ml.list.every((m) => [a.id, b.id].includes(m.id)) && ml.list[0].score >= ml.list[1].score && 'lastSeen' in ml.list[0], 'チームの仲間の一覧(点数順、最後に来た日)');
+  assert.strictEqual((await w.teamMemberList(c)).list.length, 0, 'チームに入っていなければ空');
+
   // 個別: 2 人にだけ届く。ブロックすると届かない
   pass();
   await chat.post(c, { kind: 'dm', to: a.id, text: 'はじめまして' });
