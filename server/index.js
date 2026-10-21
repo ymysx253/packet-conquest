@@ -160,6 +160,7 @@ async function handle(ws, msg) {
     ws.player = player;
     await world.regionIndex(); // 右上の都道府県名のため(メモリに無ければ 1 回だけ読む)
     send(ws, await world.welcome(player));
+    send(ws, await world.myRoutes(player)); // 自分の空港・港の航路(2026-10-22: 航路は押さえた人にだけ渡す)
     await world.emitPlayers();
     return;
   }

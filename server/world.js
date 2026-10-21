@@ -394,7 +394,7 @@ class World {
       tags: n.tags && n.tags.length ? n.tags : undefined, // 細分と指定(観光地の「温泉」「特別名勝」など)
       ...(n.owner ? this.ownerLook(n.owner, n.ownerIsTeam) : {}), // 持ち主のチームと色(自分・チーム・ほかの人を見分ける。2026-10-19)。チームの持ち物ならチームの見た目と名前(2026-10-20)
       ...(isAlwaysOpen(n.hours) ? {} : { hours: n.hours, open: openAt(n.hours) }), // 開いている時間が決まっている拠点だけ(サーバーの時計で判定した結果つき)
-      routes: n.routes && n.routes.length ? n.routes.map((r) => (r.hours ? { ...r, open: routeOpen(r) } : r)) : undefined, // 航路(空港・港)。行き先 { to, mode, name, lat, lon }。季節航路は hours と、いま使えるか(open。サーバーの時計)
+      // 航路(空港・港の行き先)は配らない(2026-10-22 ユーザー決定: 航路は押さえてからでないと分からない)。押さえている人には myRoutes(自分の空港・港の航路)と neighbors(選んだ拠点)で渡す
     };
   }
   send(p, msg) { if (p.ws && p.ws.readyState === 1) p.ws.send(JSON.stringify(msg)); }
@@ -402,6 +402,22 @@ class World {
   emitNode(n) {
     const msg = { t: 'nodes', nodes: [this.pub(n)] };
     for (const p of this.players.values()) if (p.online && p.view.has(n.t0)) this.send(p, msg);
+    // 空港・港の持ち主が変わったら、新しい持ち主と前の持ち主に自分の航路を送り直す
+    if (n.routes && n.routes.length) for (const p of this.players.values()) if (p.online && (n.owner === p.id || (p.routePorts && p.routePorts.has(n.id)))) this.myRoutes(p).then((m) => this.send(p, m)).catch(() => {});
+  }
+  // 自分が持っている空港・港の航路(2026-10-22 ユーザー決定: 航路は押さえた人にだけ渡す)。参加したときと、空港・港の持ち主が変わったときに送る。
+  // 画面はこれで航路の先を攻撃できるかを出す(判定はサーバー)
+  async myRoutes(p) {
+    const byId = new Map();
+    for (const d of await this.store.nodesOwnedByAny([p.id])) byId.set(d.id, this.nodes.get(d.id) || d);
+    for (const n of this.nodes.values()) if (n.owner === p.id) byId.set(n.id, n);
+    const ports = [];
+    for (const n of byId.values()) {
+      if (n.owner !== p.id || n.ownerIsTeam || !n.routes || !n.routes.length) continue;
+      ports.push({ id: n.id, name: n.name, lat: n.lat, lon: n.lon, routes: n.routes.map((r) => ({ to: r.to, mode: r.mode, name: r.name, lat: r.lat, lon: r.lon, ...(r.hours ? { hours: r.hours, open: routeOpen(r), phantom: !!r.phantom } : {}) })) });
+    }
+    p.routePorts = new Set(ports.map((x) => x.id));
+    return { t: 'myRoutes', ports };
   }
   // 週の集計欄を今週のものにそろえる(週が変わっていたら 0 から)
   bumpWeek(p) {
@@ -545,7 +561,9 @@ class World {
     const missing = ids.filter((id) => !this.nodes.has(id));
     const more = missing.length ? await this.store.nodesBrief(missing) : [];
     const land = new Set([...(n.adj || []), ...(this.adj.get(nodeId) || [])]); // 航路(空路・海路)だけでつながる先には route を付ける。画面は黒い直線を引かない(航路の線があるため。2026-10-21 ユーザー指摘)
-    const list = [...have, ...more].filter((m) => m.status !== 'hidden').map((m) => ({ id: m.id, name: m.name, genre: m.genre || null, lat: m.lat, lon: m.lon, owner: m.owner || null, ...(land.has(m.id) ? {} : { route: true }), ...(m.owner ? this.ownerLook(m.owner, m.ownerIsTeam) : {}) }));
+    const rOf = new Map(routesKnown ? (n.routes || []).map((r) => [r.to, r]) : []);
+    const routeInfo = (r) => ({ route: true, mode: r.mode, ...(r.hours ? { hours: r.hours, open: routeOpen(r), phantom: !!r.phantom } : {}) }); // 航路の種類(空路・海路)と、季節航路・幻の航路の時間
+    const list = [...have, ...more].filter((m) => m.status !== 'hidden').map((m) => ({ id: m.id, name: m.name, genre: m.genre || null, lat: m.lat, lon: m.lon, owner: m.owner || null, ...(land.has(m.id) ? {} : rOf.has(m.id) ? routeInfo(rOf.get(m.id)) : { route: true }), ...(m.owner ? this.ownerLook(m.owner, m.ownerIsTeam) : {}) }));
     const siege = p && !p.guest && this.nodes.has(n.id) ? await this.siege(this.nodes.get(n.id), p) : null; // この人にとっての突破に必要な回数(囲み)
     return { t: 'neighbors', nodeId, list, ...(siege ? { siege } : {}) };
   }

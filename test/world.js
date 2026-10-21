@@ -506,7 +506,9 @@ async function solve(world, p, nodeId) {
   assert.ok(!(await w.canAttack(rp.id, C2.id)), '空港を占領していなければ航路の先は攻撃できない');
   H.owner = rp.id; w.addEdge(rp.homeNodeId, H.id, w.nodes.get(rp.homeNodeId).t0); rp.reach = null;
   assert.ok(await w.canAttack(rp.id, C2.id), '占領した空港から空路の先を攻撃できる');
-  assert.ok(w.pub(C2).routes.some((r) => r.to === H.id), '航路は配信される(画面が線を引く)');
+  assert.ok(!('routes' in w.pub(C2)) && !('routes' in w.pub(H)), '航路は全員には配らない(2026-10-22: 押さえてからでないと分からない)');
+  { const mr = await w.myRoutes(rp); assert.ok(mr.t === 'myRoutes' && mr.ports.some((o) => o.id === H.id && o.routes.some((r) => r.to === C2.id && r.mode === 'air')), '押さえた空港の航路は持ち主に届く(myRoutes)'); }
+  { const mr = await w.myRoutes(rp); assert.ok(!mr.ports.some((o) => o.id === C2.id), '押さえていない空港の航路は届かない'); }
   assert.strictEqual(C2.hits, Math.max(1, C2.adj.length + new Set(C2.routes.map((x) => x.to).filter((t) => !C2.adj.includes(t))).size), '航路も突破回数に数える(2026-10-19 ユーザー決定)');
   assert.ok(H.hits > H.adj.length + 30, '羽田は航路が多いので突破に要る回数も多い');
   const saved = [H.routes, C2.routes];
@@ -527,7 +529,8 @@ async function solve(world, p, nodeId) {
     const I = w.nodes.get(ito.id);
     I.owner = sp.id; w.addEdge(sp.homeNodeId, I.id, w.nodes.get(sp.homeNodeId).t0); sp.reach = null;
     assert.strictEqual(await w.canAttack(sp.id, mot.id), routeOpen(r, Date.now()), '季節航路はサーバーの時計で使える時間の中だけ攻撃に使える');
-    assert.ok(w.pub(I).routes.find((x) => x.to === mot.id).open === routeOpen(r, Date.now()), '配信に、いま使えるか(open)が付く');
+    { const mr = await w.myRoutes(sp); const x = mr.ports.find((o) => o.id === I.id).routes.find((y) => y.to === mot.id); assert.ok(x.open === routeOpen(r, Date.now()) && x.hours, '持ち主に届く航路に、いま使えるか(open)と時間が付く'); }
+    { const nb = await w.neighbors(I.id, sp); const x = nb.list.find((y) => y.id === mot.id); assert.ok(x && x.route && x.mode === 'sea' && x.open === routeOpen(r, Date.now()), '選んだ空港・港のつながり先にも航路の種類と open が付く'); }
     I.owner = null; sp.reach = null;
   }
 

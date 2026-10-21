@@ -66,6 +66,8 @@
   const ownShown = (rel) => !!rel && (S.ownView === 'all' || rel === 'me' || (rel === 'team' && S.ownView === 'team'));
   // 航路はたどり着いて(自分かチームが空港・港を押さえて)はじめて分かる(2026-10-22 ユーザー指摘: 開始地点を選ぶ前から空路・海路が見えていた。説明書 4.5)。参加前は出さない
   const routesKnown = (n) => !!(S.joined && n && n.owner && (n.owner === S.me || relOf(n) === 'team'));
+  // 選んだ空港・港の航路: サーバーが選んだ拠点のつながり先(neighbors)で、押さえているときだけ教えてくれる分
+  const routesOfSelected = (n) => (routesKnown(n) && S.selNb && S.selNb.id === n.id ? S.selNb.list.filter((x) => x.route && x.mode).map((x) => ({ to: x.id, mode: x.mode, name: x.name, lat: x.lat, lon: x.lon, hours: x.hours, phantom: x.phantom })) : []);
 
   // ---------- 初期表示 ----------
   $('nameInput').value = store.get('pc-name') || '';
@@ -130,6 +132,7 @@
         S.token = m.token; store.set('pc-token', m.token); $('codeInput').value = m.token; $('meCode').textContent = m.token;
         toast('復帰コードを新しくしました。控え直してください');
         break;
+      case 'myRoutes': S.mine = new Map((m.ports || []).map((o) => [o.id, o])); break; // 自分の空港・港の航路(2026-10-22: 航路は押さえた人にだけ届く)
       case 'nodes':
         for (const n of m.nodes) {
           if (n.status === 'gone') { S.nodes.delete(n.id); if (S.selected === n.id) S.selected = null; continue; }
@@ -405,7 +408,8 @@
   function needFor(n) {
     if (S.selNb && S.selNb.id === n.id && S.selNb.siege) return S.selNb.siege.need;
     const hits = n.hits || 1;
-    const ids = new Set([...neighborsOf(n.id), ...(n.routes || []).map((x) => x.to)]);
+    const mineHere = S.mine.get(n.id);
+    const ids = new Set([...neighborsOf(n.id), ...(mineHere ? mineHere.routes.map((x) => x.to) : []), ...[...S.mine.values()].filter((o) => o.routes.some((r) => r.to === n.id)).map((o) => o.id)]); // 航路の先は分かっている分だけ(航路は押さえた人にだけ届く)
     let held = 0;
     for (const id of ids) {
       if (S.mine.has(id)) { held++; continue; }
@@ -705,9 +709,8 @@
   const routeOpenNow = (r) => openNow(r.hours);
   const jstRange = (h) => { const f = (s) => { const x = (+s.slice(0, 2) + 9) % 24; return `${x}:${s.slice(3)}`; }; return `${f(h.from)}〜${f(h.to)}`; }; // UTC → 日本時間の表示
   // 航路を持つ自分の空港・港を覚える(占領が外れたら忘れる)
-  function rememberRoutes(n) {
-    if (n.owner === S.me && Array.isArray(n.routes) && n.routes.length) S.mine.set(n.id, { id: n.id, name: n.name, lat: n.lat, lon: n.lon, routes: n.routes });
-    else S.mine.delete(n.id);
+  function rememberRoutes(n) { // 航路そのものはサーバーの myRoutes で届く。ここでは奪われた空港・港を忘れるだけ
+    if (n.owner !== S.me) S.mine.delete(n.id);
   }
   // サーバーの canAttack と同じ条件(表示用。判定はサーバーが行う)
   // ---------- チャット(2026-10-21 ユーザー決定) ----------
@@ -797,7 +800,8 @@
     if (n.owner && !n.ownerIsTeam) { const o = playerById(n.owner); if (o && o.nodes <= 3 && o.newbie) return false; }
     if (adjacent(id).some((a) => ownerOf(a) === S.me && S.reach.has(a))) return true;
     // 航路の先: 自分が占領している空港・港から航路がある(画面の外の空港でもよい。最終の判定はサーバー)
-    return (n.routes || []).some((r) => routeOpenNow(r) && S.mine.has(r.to) && (S.reach.has(r.to) || !S.nodes.has(r.to)));
+    for (const o of S.mine.values()) if (o.routes.some((r) => r.to === id && routeOpenNow(r)) && (S.reach.has(o.id) || !S.nodes.has(o.id))) return true;
+    return false;
   }
 
   // ---------- 描画: パネル ----------
@@ -876,7 +880,7 @@
     const lines = Array.isArray(n.lines) ? n.lines : [];
     $('npLines').hidden = !lines.length;
     $('npLinesList').replaceChildren(...lines.map((l) => { const li = document.createElement('li'); li.textContent = l; return li; }));
-    const routes = routesKnown(n) && Array.isArray(n.routes) ? n.routes : []; // 押さえていない空港・港の行き先は出さない
+    const routes = routesOfSelected(n); // 押さえていない空港・港の行き先は出さない(サーバーも教えない)
     $('npRoutes').hidden = !routes.length;
     $('npRoutesList').replaceChildren(...routes.map((r) => {
       const li = document.createElement('li'); li.tabIndex = 0;
@@ -1165,7 +1169,7 @@
       // 押さえている空港・港でも、いつも出すのではなく選んだときだけ出す(2026-10-22 ユーザー決定: 航路は長いので地図の邪魔になる)
       // 選んだ空港・港の航路は、その拠点が画面の外に出て読み込みから外れても出し続ける(selectedNode が覚えている)
       const sel = selectedNode();
-      if (sel && sel.routes && routesKnown(sel)) for (const r of sel.routes) add(sel, r, 'one'); // 押さえていない空港・港を選んでも航路は出さない(2026-10-22)。行き先も押さえていれば太い実線
+      if (sel) for (const r of routesOfSelected(sel)) add(sel, r, 'one'); // 押さえていない空港・港を選んでも航路は出さない(2026-10-22)。行き先も押さえていれば太い実線
       if (pairs.size) {
         ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
         for (const p of [...pairs.values()].sort((u, v) => rank[u.state] - rank[v.state])) {
