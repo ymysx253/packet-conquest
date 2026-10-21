@@ -1421,8 +1421,7 @@
   // ---------- 待ち時間 ----------
   function tickUi() {
     const cd = S.cooldownUntil - now();
-    $('cool').hidden = cd <= 0;
-    if (cd > 0) $('coolBar').style.transform = `scaleX(${Math.min(1, cd / (S.cooldownMs || 5000))})`;
+    // 待ち時間は問題のダイアログに出す(右の欄の「あなたの番」は 2026-10-21 になくし、遊び方の説明は説明書のページへ移した)
     // 問題ダイアログにも出す(2026-10-20 ユーザー指摘)。答えたあとの「続けて解く」があるときだけ。待ち時間が終わったら押せるようにする
     const next = $('qNext'), showCool = cd > 0 && !next.hidden;
     $('qCool').hidden = !showCool;

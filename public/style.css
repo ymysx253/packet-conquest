@@ -345,3 +345,19 @@ body {
 .options { grid-template-columns: 1fr; }
 .options .opt { font-size: 14px; }
 @media (min-width: 881px) { .options.two { grid-template-columns: 1fr 1fr; } }
+
+/* 説明書のページ(public/manual.html。tools/build-manual.js が docs/MANUAL.md から作る。2026-10-21) */
+body.manual-page { background: var(--bg); color: var(--ink); max-width: 860px; margin: 0 auto; padding: 16px; line-height: 1.75; font-size: 15px; }
+.manual-head h1 { font-size: 24px; margin: 8px 0; }
+.manual-toc ul { list-style: none; margin: 8px 0 16px; padding: 0; columns: 2; font-size: 14px; }
+@media (max-width: 600px) { .manual-toc ul { columns: 1; } }
+.manual h2 { font-size: 19px; margin: 28px 0 8px; padding-bottom: 4px; border-bottom: 2px solid var(--line); }
+.manual h3 { font-size: 16px; margin: 18px 0 6px; }
+.manual ul, .manual ol { padding-left: 1.4em; }
+.manual-table { overflow-x: auto; }
+.manual table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 8px 0; }
+.manual th, .manual td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+.manual th { background: var(--surface); }
+.manual code { font-family: var(--font-mono); font-size: 13px; }
+
+.board-foot .btn { white-space: nowrap; flex: 0 0 auto; }
