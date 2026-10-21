@@ -127,19 +127,20 @@ Web ソケット: Linux の App Service にはこの項目が無い(切り替え
 1. プロジェクトの `make-zip.cmd` をダブルクリック → `packet-conquest-deploy.zip` ができる(`node_modules`、`.env`、`data`、`.git` は入らない)
 2. 入っているもの: `server/`、`public/`、`tools/`、`test/`、`docs/`、`infra/`、`package.json`、`package-lock.json` など
 
-## 4. 配置する(Kudu の Zip Push Deploy)
+## 4. 配置する(Kudu の Deployments)
 
-2026-10-21 時点の Linux の App Service では、Kudu を開くと新しい画面(Kudu Dashboard)が出る。新しい画面には zip を置く入口が見当たらないので、古い画面か直接の URL を使う。
+2026-10-21 時点の Linux の App Service では、Kudu を開くと新しい画面(Kudu Dashboard)が出る。zip はこの画面の「Deployments」から置く。
 
-1. App Service → 左メニュー「開発ツール」→「高度なツール」→「移動」(新しいタブで Kudu Dashboard が開く。基本認証は無効のままでよい。ポータルと同じ Microsoft アカウントで入る。認証のエラーで置けないときだけ 2-2 の「SCM 基本認証の発行資格情報」にチェックを入れる)
-2. zip を置く画面を開く。どちらでもよい
-   - 右上の「**Old UI**」→ 上のメニュー「**Tools**」→「**Zip Push Deploy**」
-   - ブラウザで `https://packet-conquest-hta6bsazdegfa4a7.scm.japaneast-01.azurewebsites.net/ZipDeployUI` を直接開く(既定のホスト名の `.japaneast-01` の前に `.scm` を入れた形)
-3. ページに zip を**ドラッグ&ドロップ**する。`npm install` が走るので 1〜3 分待つ
-4. 結果は Kudu Dashboard の「Deployments」→「Last Deployment」で見られる
-5. 終わったら App Service の「概要」→「参照」で開く。`https://<既定のホスト名>/healthz` が `ok players=0 ...` を返せば起動している
+1. App Service → 左メニュー「開発ツール」→「高度なツール」→「移動」(新しいタブで Kudu Dashboard が開く。基本認証は無効のままでよい。ポータルと同じ Microsoft アカウントで入る)
+2. 左メニュー「CONFIGURATION」の「**Deployments**」を押す(右の「Environment」の「Deployments」からも同じ画面)。上に「Deploy your Node.js 24-lts app」と出て、手順が「1 Upload → 2 Deploy」の 2 段になっている
+3. 「1 Upload」の「Upload Your Application」の点線の枠に `packet-conquest-deploy.zip` を**ドラッグ&ドロップ**する(「Browse Files」で選んでもよい。上限 1 GB)
+4. 「2 Deploy」に進んだら、画面のボタンで配置を始める。App Service 側で `npm install` が走るので 1〜3 分待つ
+5. 結果は右上の「**History**」(または Dashboard の「Deployments」→「Last Deployment」)で見られる
+6. 終わったら App Service の「概要」→「参照」で開く。`https://<既定のホスト名>/healthz` が `ok players=0 ...` を返せば起動している
 
-うまくいかないとき: Kudu Dashboard の「Log Stream」、または App Service の左メニュー「監視」→「ログ ストリーム」でサーバーの出力(起動時の「保存: Cosmos DB packet-conquest」の行、エラー)を見る。
+古い画面を使うときは、Kudu Dashboard の右上「Old UI」→「Tools」→「Zip Push Deploy」でも置ける。
+
+うまくいかないとき: Kudu Dashboard の「Log Stream」、または App Service の左メニュー「監視」→「ログ ストリーム」でサーバーの出力(起動時の「保存: Cosmos DB packet-conquest」の行、エラー)を見る。認証のエラーで置けないときだけ 2-2 の「SCM 基本認証の発行資格情報」にチェックを入れる。
 
 ## 5. 動作確認
 
