@@ -538,7 +538,9 @@ class World {
   async neighbors(nodeId, p = null) {
     let n = this.nodes.get(nodeId);
     if (!n) { const d = await this.store.loadNode(nodeId); if (!d || d.status !== 'public') return { t: 'neighbors', nodeId, list: [] }; n = d; }
-    const ids = [...new Set([...(n.adj || []), ...(this.adj.get(nodeId) || []), ...(n.routes || []).map((r) => r.to)])].slice(0, 200);
+    // 航路の行き先は、その空港・港を自分かチームが押さえているときだけ教える(2026-10-22 ユーザー指摘: 航路はたどり着くまで分からない)
+    const routesKnown = !!(p && !p.guest && (await this.heldBy(n, p)));
+    const ids = [...new Set([...(n.adj || []), ...(this.adj.get(nodeId) || []), ...(routesKnown ? (n.routes || []).map((r) => r.to) : [])])].slice(0, 200);
     const have = ids.map((id) => this.nodes.get(id)).filter(Boolean);
     const missing = ids.filter((id) => !this.nodes.has(id));
     const more = missing.length ? await this.store.nodesBrief(missing) : [];

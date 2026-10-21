@@ -64,6 +64,8 @@
   // 地図の上の切り替え「自分だけ / チームまで / 全員」: 持ち主の色と陣地のにじみを、どこまで出すか
   const OWN_VIEWS = ['me', 'team', 'all'];
   const ownShown = (rel) => !!rel && (S.ownView === 'all' || rel === 'me' || (rel === 'team' && S.ownView === 'team'));
+  // 航路はたどり着いて(自分かチームが空港・港を押さえて)はじめて分かる(2026-10-22 ユーザー指摘: 開始地点を選ぶ前から空路・海路が見えていた。説明書 4.5)。参加前は出さない
+  const routesKnown = (n) => !!(S.joined && n && n.owner && (n.owner === S.me || relOf(n) === 'team'));
 
   // ---------- 初期表示 ----------
   $('nameInput').value = store.get('pc-name') || '';
@@ -874,7 +876,7 @@
     const lines = Array.isArray(n.lines) ? n.lines : [];
     $('npLines').hidden = !lines.length;
     $('npLinesList').replaceChildren(...lines.map((l) => { const li = document.createElement('li'); li.textContent = l; return li; }));
-    const routes = Array.isArray(n.routes) ? n.routes : [];
+    const routes = routesKnown(n) && Array.isArray(n.routes) ? n.routes : []; // 押さえていない空港・港の行き先は出さない
     $('npRoutes').hidden = !routes.length;
     $('npRoutesList').replaceChildren(...routes.map((r) => {
       const li = document.createElement('li'); li.tabIndex = 0;
@@ -1160,11 +1162,11 @@
         const A = o.id === x ? o : r, B = o.id === x ? r : o; // 向きをそろえる(同じ航路はどちらから見ても同じ曲線)
         pairs.set(key, { key, a: worldOf(A.lat, A.lon), b: worldOf(B.lat, B.lon), mode: r.mode, state: st });
       };
-      for (const o of S.mine.values()) for (const r of o.routes) add(o, r, 'one');
+      if (S.joined) for (const o of S.mine.values()) for (const r of o.routes) add(o, r, 'one');
       if (ownShown('team')) for (const n of S.nodes.values()) if (n.routes && n.routes.length && relOf(n) === 'team') for (const r of n.routes) add(n, r, 'one');
       // 選んだ空港・港の航路は、その拠点が画面の外に出て読み込みから外れても出し続ける(selectedNode が覚えている)
       const sel = selectedNode();
-      if (sel && sel.routes) for (const r of sel.routes) add(sel, r, 'sel');
+      if (sel && sel.routes && routesKnown(sel)) for (const r of sel.routes) add(sel, r, 'sel'); // 押さえていない空港・港を選んでも航路は出さない(2026-10-22)
       if (pairs.size) {
         ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
         for (const p of [...pairs.values()].sort((u, v) => rank[u.state] - rank[v.state])) {

@@ -70,8 +70,17 @@ async function solve(world, p, nodeId) {
     assert.ok(nb.list.some((x) => x.id === home.id), '自分の拠点とのつながりも入る');
     assert.deepStrictEqual((await w.neighbors('st-nope')).list, [], '無い拠点は空'); }
   // 航路(空路・海路)だけでつながる先には route が付く(画面は黒い直線を引かない。2026-10-21 ユーザー指摘)
-  { const port = NODES.find((n) => n.id === 'pt-s1c9bff7558'); const nb = await w.neighbors(port.id);
-    assert.ok(port.routes.every((r) => nb.list.some((x) => x.id === r.to && x.route)) && port.adj.every((id) => nb.list.some((x) => x.id === id && !x.route)), '利島港: 航路の先だけ route'); }
+  // 航路の行き先は、その空港・港を自分かチームが押さえているときだけ教える(2026-10-22 ユーザー指摘: たどり着くまで分からない)
+  { const port = NODES.find((n) => n.id === 'pt-s1c9bff7558');
+    await w.ensureTiles([tileOf(port.lat, port.lon, 0)]);
+    const nb0 = await w.neighbors(port.id, a);
+    assert.ok(port.routes.every((r) => !nb0.list.some((x) => x.id === r.to)) && port.adj.every((id) => nb0.list.some((x) => x.id === id && !x.route)), '利島港: 押さえていなければ航路の先は出ない');
+    const g = await w.neighbors(port.id);
+    assert.ok(port.routes.every((r) => !g.list.some((x) => x.id === r.to)), '利島港: 参加前(だれでもない)にも航路の先は出ない');
+    const pn = w.nodes.get(port.id); pn.owner = a.id;
+    const nb = await w.neighbors(port.id, a);
+    pn.owner = null;
+    assert.ok(port.routes.every((r) => nb.list.some((x) => x.id === r.to && x.route)) && port.adj.every((id) => nb.list.some((x) => x.id === id && !x.route)), '利島港: 押さえていれば航路の先も出る(route 付き)'); }
 
   // 隣だけ攻撃できる
   const [nb] = [...w.adj.get(home.id)];

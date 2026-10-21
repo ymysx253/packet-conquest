@@ -45,7 +45,8 @@
     R.shk = (shk && shk.edges) || []; R.shkStations = (shk && shk.stations) || {};
     R.shkKeys = new Set(R.shk.map(([a, b]) => (a < b ? `${a}|${b}` : `${b}|${a}`)));
     updateRails();
-    map.getSource('sea').setData(fc(Object.values(sea ? sea.paths : {}).map((pts) => ({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: pts.map(([la, lo]) => [lo, la]) } }))));
+    // 航路は空港・港を押さえてはじめて分かるので、試しのページ(参加しない)では出さない(2026-10-22 ユーザー指摘)。形の描き方は本番の画面に入れるときに使う
+    void sea;
     map.getSource('water').setData(fc((water ? water.water : []).map((w) => ({ type: 'Feature', properties: {}, geometry: { type: 'MultiPolygon', coordinates: w.polys.map((r) => [r]) } }))));
     const land = [];
     await Promise.all(PREFS.map(async (p) => {
