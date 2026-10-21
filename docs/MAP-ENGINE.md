@@ -69,3 +69,59 @@
 ## 6. 試し(2026-10-22)
 
 `public/map-try.html`(手元のサーバーで `http://localhost:3002/map-try.html`)。背景(陸・境界・湖・線路・新幹線・海路)を MapLibre 4.7.1(`public/vendor/maplibre/`。安全設定に合わせた CSP 版)で、拠点を canvas で重ねて描く。データは今の JSON をそのまま使い、拠点はサーバーに見ている範囲を頼む(参加しない)。本番の画面には入れていない。
+
+## 7. 実装の約束(2026-10-22 決定。段 0)
+
+ユーザー決定(2026-10-22): **案 A で進める**。N03 は手元の 2026 年 1 月版(全国・間引く前)を使う(新しいダウンロードは不要)。**WebGL が使えない端末には対応しない**(今の描き方への切り替えは作らない)。サブエージェントで並べて進める。
+
+ベクトルタイルの道具(geojson-vt など)は使わず、**都道府県ごとの細かい境界ファイル**を MapLibre の GeoJSON の源として読む(MapLibre が端末の中で倍率ごとに間引く)。追加のダウンロードが要らず、配る形も今と同じ静的ファイルで済む。
+
+### 7.1 担当と受け持つファイル(同じファイルを 2 人で直さない)
+
+| 担当 | 受け持つファイル | 中身 |
+|---|---|---|
+| 1 データ | `tools/import-boundaries.js`、`public/data/bounds-hi/` | 細かい境界(約 10 m に間引き)を都道府県ごとに書く。形は 7.2 |
+| 2 背景 | `public/map-base.js`(新規) | MapLibre の地図(陸・海・区市の境界・湖・地域の支配の色)。外への約束は 7.3 |
+| 3 画面 | `public/app.js`、`public/index.html`、`public/style.css` | 今の canvas を地図の上に重ねる層にして、投影・拡大縮小・ドラッグ・タップ・見ている範囲の頼み方を 7.3 の約束で動かす。線路・つながり・拠点・名前・航路・陣地・選択は今のまま canvas で描く |
+| Claude | まとめ・確認 | 3 つを合わせ、手元で動かして直す。テスト・説明書・手順書・クレジット |
+
+### 7.2 細かい境界ファイル(担当 1 → 担当 2)
+
+- `public/data/bounds-hi/<都道府県 id>.json`(id は `public/data/bounds/index.json` の prefs のキーと同じ。例: `tokyo`)
+- 形: `{ "pref": "tokyo", "name": "東京都", "updatedAt": "YYYY-MM-DD", "regions": { "<地域 id>": { "name": "千代田区", "multipolygon": [ [ [ [経度, 緯度], … ](外側の輪), [ … ](穴), … ], … ] } } }`
+  - 地域 id は今の `public/data/bounds/<都道府県>.json` の regions のキーと同じ(サーバーの地域 id と同じ。地域の支配の色分けに使う)
+  - `multipolygon` は GeoJSON の MultiPolygon の coordinates と同じ並び(穴を持てる)
+  - 座標は小数 5 桁(約 1 m)。隣の地域との境目は両側で同じ形に間引く(今の `simplifyRun` と同じ考え。すき間を作らない)
+- `public/data/bounds-hi/index.json`: `{ "prefs": { "<都道府県 id>": { "name", "file", "bbox": [西, 南, 東, 北], "bytes" } } }`
+- 大きさの目安: 全国で 60 MB 以内(超えるなら間引きを粗くして報告)
+
+### 7.3 背景の約束(担当 2 が作り、担当 3 が使う)
+
+`public/map-base.js` は、グローバルの `PCMapBase` を 1 つだけ出す(ビルド不要。`index.html` で `vendor/maplibre/maplibre-gl-csp.js` の後、`app.js` の前に読む)。
+
+```js
+const mb = PCMapBase.create({
+  container,            // 地図を入れる要素(HTMLElement)。担当 3 はこの上に今の canvas を重ねる(pointer-events: none)
+  center: [lon, lat], zoom, minZoom: 4, maxZoom: 18,
+  colors: { water, land, line, lineStrong }, // 画面の色(CSS の --water など)。setColors で後から変えられる(ダークモード)
+});
+await mb.ready;                         // 地図と粗い全国版の陸地を読み終えたら解決
+mb.map;                                 // maplibregl.Map(必要なら直接使ってよい)
+mb.project(lon, lat)  // → { x, y }(container の左上からの CSS px)
+mb.unproject(x, y)    // → { lon, lat }
+mb.getZoom()          // MapLibre の zoom
+mb.pxPerDegLon()      // 画面の中心で経度 1 度が何 px か(今の画面の拡大率に直すのに使う)
+mb.getBounds()        // → { west, south, east, north }
+mb.jumpTo({ center: [lon, lat], zoom })
+mb.zoomBy(delta, { x, y }?)             // + / − ボタン用
+mb.on('move' | 'moveend' | 'render' | 'click', fn) // click は fn({ x, y }) で、ドラッグでないタップのときだけ
+mb.setColors(colors)
+mb.setRegionControls([{ id, fill, frame }]) // 地域の支配の色(id は 7.2 の地域 id)。渡さなかった地域は色なし
+mb.setOverview(boolean)                 // 縮小表示(段 1〜4)のときは区・市の輪郭を薄く・細く(今の画面と同じ考え)
+```
+
+- 陸地: 縮小しているときは `public/data/bounds/japan.json`(粗い全国版)、MapLibre の zoom 8 以上で見えている都道府県の `bounds-hi` を読み足して重ねる(読んだ県は粗い版で塗らない)
+- 湖・湾: `public/data/water.json`(今のまま)
+- 線路・つながり・拠点・航路は描かない(担当 3 の canvas が描く)
+- 文字(地名)は描かない(日本語の字形データを使わないため。名前は担当 3 の canvas が描く)
+- 今の拡大率との対応: 今の画面の倍率 ratio は `mb.pxPerDegLon() / (1000 * KX * 1.1)`(`KX` は `app.js` の経度の縮め方。緯度 36° 付近の cos)。段の境目は今の ratio の値(2.5 / 0.7 / 0.18 / 0.05)をそのまま使う
