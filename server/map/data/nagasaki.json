@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "nagasaki",
   "name": "長崎県",
-  "version": 87,
+  "version": 88,
   "updatedAt": "2026-10-19",
   "note": "長崎県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {

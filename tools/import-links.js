@@ -30,7 +30,7 @@ const LANDMARK_MAX_LINKS = 8;
 const { landmarkLinkCount, L } = require('./levels'); // 名所のつながりの上限(レベルが 8 を超える象徴拠点でも 8 本まで)
 
 const distKm = (a, b) => { const R = 6371, toRad = (d) => (d * Math.PI) / 180; const dLat = toRad(b.lat - a.lat), dLon = toRad(b.lon - a.lon); const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLon / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
-const vkey = (c) => `${c[0].toFixed(6)},${c[1].toFixed(6)}`;
+const vkey = (c) => `${c[0].toFixed(5)},${c[1].toFixed(5)}`; // 約 1 m でそろえる(区間の端がわずかにずれているところがある。袋井駅〜御厨駅は 0.000002 度ずれていて線が切れていた。2026-10-21)
 const lineKey = (p) => `${p.N02_004} ${p.N02_003}`;
 
 // ---------- 拠点マスター(全ファイルをまとめる) ----------

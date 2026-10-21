@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "tokyo",
   "name": "東京",
-  "version": 98,
+  "version": 99,
   "updatedAt": "2026-10-19",
   "note": "東京の拠点マスター。名前は地名ではなく正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。genre は名所のジャンル、kind はゲーム内の役割。hackable: false は存在するがハック不可(寺社など)。位置は緯度・経度(おおよそ)。ゲーム内のネットワークと機器はすべて架空。level は 1〜999(東京は 1〜5)。Cosmos DB の nodes コンテナーと同じ項目(設計書 8.7)。",
   "kinds": {
