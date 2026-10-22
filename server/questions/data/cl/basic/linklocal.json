@@ -1,0 +1,13 @@
+{
+  "note": "自動で付くアドレス(169.254.0.0/16)についての文(Lv99)。attrs.true = 正しい文か、why = 解説",
+  "rows": [
+    {"id":"dhcp-fail","ja":"DHCP サーバーから借りられないと、PC が 169.254 で始まるアドレスを自分で付けることがある","attrs":{"true":true,"why":"DHCP の返事が無いとき、169.254.0.0/16 の中から自分で選んで付ける(リンクローカル)。"},"source":"RFC 3927","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"not-global","ja":"169.254 で始まるアドレスは、インターネットで通用するグローバルアドレスである","attrs":{"true":false,"why":"169.254.0.0/16 は同じリンク(LAN)の中だけで使うリンクローカルアドレス。"},"source":"RFC 3927","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"no-route","ja":"169.254 で始まるアドレス宛のパケットを、ルーターは別の網へ送らない","attrs":{"true":true,"why":"リンクローカルは同じリンクの中だけで使う。ルーターは先へ送らない。"},"source":"RFC 3927 第 7 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"check","ja":"PC のアドレスが 169.254 で始まっていたら、DHCP サーバーやケーブルのつながりを確かめるとよい","attrs":{"true":true,"why":"DHCP サーバーに届いていない(または返事が来ない)印なので、まず DHCP とつながりを確かめる。"},"source":"RFC 3927","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"by-dhcp","ja":"169.254 で始まるアドレスは、DHCP サーバーが配ったものである","attrs":{"true":false,"why":"DHCP から借りられなかったときに、機器が自分で付けたもの。"},"source":"RFC 3927","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"same-lan","ja":"同じ LAN で 169.254 のアドレスを持つ機器どうしなら、通信できることがある","attrs":{"true":true,"why":"リンクローカルは同じリンクの中の通信には使える。"},"source":"RFC 3927","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"range-16","ja":"機器が自分で付けるアドレスの範囲は 169.254.0.0/16 である","attrs":{"true":true,"why":"RFC 3927 の範囲は 169.254.0.0/16(最初と最後の /24 は使わない)。"},"source":"RFC 3927","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"range-127","ja":"機器が自分で付けるアドレスの範囲は 127.0.0.0/8 である","attrs":{"true":false,"why":"127.0.0.0/8 は自分自身を表すループバック。自分で付けるのは 169.254.0.0/16。"},"source":"RFC 1122・RFC 3927","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

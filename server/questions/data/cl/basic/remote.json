@@ -1,0 +1,10 @@
+{
+  "note": "遠くの機器を使うしくみ(Lv147)。attrs.desc = 説明",
+  "rows": [
+    {"id":"rdp","ja":"リモートデスクトップ","attrs":{"desc":"離れた PC の画面を手元に映し、キーボードやマウスで操作する"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"vpn","ja":"VPN","attrs":{"desc":"インターネットの上に暗号化した通り道を作り、離れた所から社内の網につながっているように使う"},"source":"RFC 4026","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ssh","ja":"SSH","attrs":{"desc":"離れた機器に、通信を暗号化して文字(コマンド)でログインし、操作する"},"source":"RFC 4251","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"telnet","ja":"Telnet","attrs":{"desc":"離れた機器に文字でログインするが、通信を暗号化しない(今は避ける)"},"source":"RFC 854","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ftp","ja":"FTP","attrs":{"desc":"ファイルを送ったり受け取ったりする(画面の操作はしない)"},"source":"RFC 959","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "note": "ACL の暗黙の拒否についての文(Lv128)。attrs.true = 正しい文か、why = 解説。行の並びは「上から順に見て、最初に合った行で決まる」ゲーム内の ACL(よくある ACL と同じ)",
+  "rows": [
+    {"id":"nomatch-pass","ja":"ACL の、どの行にも当たらないパケットは通る","attrs":{"true":false,"why":"最後に見えない「すべて拒否」の行があるものとして扱うので、どの行にも当たらないパケットは捨てられる。"},"source":"一般的な ACL の動き(暗黙の拒否)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"nomatch-drop","ja":"ACL の、どの行にも当たらないパケットは捨てられる","attrs":{"true":true,"why":"最後の見えない「すべて拒否」(暗黙の拒否)に当たる。"},"source":"一般的な ACL の動き(暗黙の拒否)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"hidden-line","ja":"ACL の最後には、書いていなくても「すべて拒否」の行があるものとして扱う","attrs":{"true":true,"why":"これを暗黙の拒否と呼ぶ。"},"source":"一般的な ACL の動き(暗黙の拒否)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"permit-any","ja":"ACL の最後に「permit any」を書くと、それより上の行に当たらないパケットはすべて通る","attrs":{"true":true,"why":"permit any がすべてに合うので、暗黙の拒否まで届かない。"},"source":"一般的な ACL の動き","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"deny-only","ja":"「deny」の行だけを並べた ACL では、すべてのパケットが捨てられる","attrs":{"true":true,"why":"deny に当たれば捨て、当たらなければ暗黙の拒否で捨てる。どれも通らない。"},"source":"一般的な ACL の動き(暗黙の拒否)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"deny-only-pass","ja":"「deny」の行だけを並べた ACL では、deny に当たらないパケットは通る","attrs":{"true":false,"why":"deny に当たらなくても、最後の暗黙の拒否で捨てられる。通したいなら permit の行が要る。"},"source":"一般的な ACL の動き(暗黙の拒否)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"shown","ja":"暗黙の拒否の行は、設定の一覧にいつも表示される","attrs":{"true":false,"why":"暗黙の拒否は書かれていない(見えない)行として扱う。"},"source":"一般的な ACL の動き(暗黙の拒否)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"first-match","ja":"ACL は上から順に見て、最初に合った行で通すか捨てるかが決まる","attrs":{"true":true,"why":"合った時点で決まり、その下の行は見ない。"},"source":"一般的な ACL の動き","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

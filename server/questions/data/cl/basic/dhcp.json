@@ -1,0 +1,9 @@
+{
+  "note": "DHCP でアドレスを借りる 4 手順(Lv117)。attrs.step = 順番、from = 送る側(client / server)、ja = メッセージ名、meaning = 意味",
+  "rows": [
+    {"id":"discover","ja":"DHCP Discover","attrs":{"step":1,"from":"client","meaning":"アドレスを貸してくれるサーバーを探す"},"source":"RFC 2131 第 3.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"offer","ja":"DHCP Offer","attrs":{"step":2,"from":"server","meaning":"貸せるアドレスを申し出る"},"source":"RFC 2131 第 3.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"request","ja":"DHCP Request","attrs":{"step":3,"from":"client","meaning":"申し出のアドレスを使いたいと頼む"},"source":"RFC 2131 第 3.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ack","ja":"DHCP Ack","attrs":{"step":4,"from":"server","meaning":"貸すことを認める(承認)"},"source":"RFC 2131 第 3.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

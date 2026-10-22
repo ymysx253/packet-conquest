@@ -1,0 +1,9 @@
+{
+  "note": "TCP/IP の 4 階層(Lv71・72)。attrs.order = 下から何番目、osi = 当たる OSI の層、role = 役割。リンク層はネットワークインターフェース層とも呼ぶ",
+  "rows": [
+    {"id":"link","ja":"リンク層","attrs":{"order":1,"alt":"ネットワークインターフェース層","osi":[1,2],"role":"同じ網の中で、隣の機器へ届ける(イーサネットなど)"},"source":"RFC 1122 第 1.1.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"internet","ja":"インターネット層","attrs":{"order":2,"osi":[3],"role":"網をまたいで宛先の機器へ届ける(IP)"},"source":"RFC 1122 第 1.1.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"transport","ja":"トランスポート層","attrs":{"order":3,"osi":[4],"role":"アプリどうしの通信をポート番号で分けて運ぶ(TCP・UDP)"},"source":"RFC 1122 第 1.1.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"app","ja":"アプリケーション層","attrs":{"order":4,"osi":[5,6,7],"role":"Web やメールなど、アプリのやりとりのきまり(HTTP・DNS など)"},"source":"RFC 1122 第 1.1.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "note": "IaaS・PaaS・SaaS(Lv143・144)。type model: 形(ja = 名前、attrs.desc)。type layer: 管理するもの(ja = 名前、attrs.user = 使う側が管理する形の一覧)。type ex: 場面(attrs.answer = 形)",
+  "rows": [
+    {"id":"m-iaas","ja":"IaaS","attrs":{"type":"model","desc":"仮想マシンやネットワークなど機械の部分だけを借り、OS から上は自分で入れて管理する"},"source":"NIST SP 800-145","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"m-paas","ja":"PaaS","attrs":{"type":"model","desc":"OS や実行環境まで用意してもらい、自分で作ったアプリを載せて動かす"},"source":"NIST SP 800-145","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"m-saas","ja":"SaaS","attrs":{"type":"model","desc":"出来上がったアプリを、インターネット越しにそのまま使う"},"source":"NIST SP 800-145","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l-facility","ja":"データセンターの建物と電源","attrs":{"type":"layer","user":[]},"source":"NIST SP 800-145・責任共有の一般的な分け方","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l-hw","ja":"物理のサーバーとネットワーク機器","attrs":{"type":"layer","user":[]},"source":"NIST SP 800-145・責任共有の一般的な分け方","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l-hv","ja":"仮想マシンを動かす土台(ハイパーバイザー)","attrs":{"type":"layer","user":[]},"source":"NIST SP 800-145・責任共有の一般的な分け方","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l-os","ja":"OS(更新を当てることを含む)","attrs":{"type":"layer","user":["IaaS"]},"source":"NIST SP 800-145・責任共有の一般的な分け方","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l-mw","ja":"アプリを動かす実行環境やミドルウェア","attrs":{"type":"layer","user":["IaaS"]},"source":"NIST SP 800-145・責任共有の一般的な分け方","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l-app","ja":"アプリそのもの","attrs":{"type":"layer","user":["IaaS","PaaS"]},"source":"NIST SP 800-145・責任共有の一般的な分け方","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l-account","ja":"利用者の ID と、だれに何を使わせるかの設定","attrs":{"type":"layer","user":["IaaS","PaaS","SaaS"]},"source":"責任共有の一般的な分け方","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-mail","ja":"Web ブラウザで使うメールのサービスを、会社で契約して使う","attrs":{"type":"ex","answer":"SaaS"},"source":"NIST SP 800-145","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-office","ja":"表計算や文書作りのアプリを、インストールせずにブラウザで使う","attrs":{"type":"ex","answer":"SaaS"},"source":"NIST SP 800-145","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-myapp","ja":"自分たちで書いた Web アプリのプログラムを置くだけで、OS の面倒は見なくてよい","attrs":{"type":"ex","answer":"PaaS"},"source":"NIST SP 800-145","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-db","ja":"データベースの実行環境を借り、その上で自分のアプリのデータを扱う。OS の管理はしない","attrs":{"type":"ex","answer":"PaaS"},"source":"NIST SP 800-145","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-vm","ja":"仮想マシンを借りて、好きな OS を入れて自分で管理する","attrs":{"type":"ex","answer":"IaaS"},"source":"NIST SP 800-145","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-patch","ja":"借りた仮想マシンの OS の更新を、自分たちで当てる","attrs":{"type":"ex","answer":"IaaS"},"source":"NIST SP 800-145","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "note": "仮想デスクトップ(Lv148)。type term: 用語(ja = 名前、attrs.desc)。type tf: attrs.true・why",
+  "rows": [
+    {"id":"vdi","ja":"仮想デスクトップ(VDI)","attrs":{"type":"term","desc":"デスクトップの環境をサーバー側の仮想マシンで動かし、手元の端末には画面だけを届ける"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"thin","ja":"シンクライアント","attrs":{"type":"term","desc":"表示と入力だけをする軽い端末で、手元にデータを残さない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"fat","ja":"ファットクライアント","attrs":{"type":"term","desc":"アプリもデータも手元の PC に持って動かす"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"daas","ja":"DaaS","attrs":{"type":"term","desc":"仮想デスクトップを、クラウドのサービスとして借りて使う"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-server","ja":"仮想デスクトップでは、作ったファイルは手元の端末ではなくサーバー側に残る","attrs":{"type":"tf","true":true,"why":"デスクトップそのものがサーバー側で動くので、データもサーバー側にある。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-lost","ja":"仮想デスクトップなら、手元の端末をなくしても、中のデータが漏れにくい","attrs":{"type":"tf","true":true,"why":"手元の端末にはデータを残さないので、端末をなくしても漏れにくい。"},"source":"一般的な性質","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-offline","ja":"仮想デスクトップは、ネットワークにつながっていなくても、いつもどおり使える","attrs":{"type":"tf","true":false,"why":"画面と操作をネットワークで送るので、つながらないと使えない。"},"source":"一般的な性質","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-local","ja":"仮想デスクトップでは、アプリは手元の端末の CPU で動く","attrs":{"type":"tf","true":false,"why":"アプリはサーバー側の仮想マシンで動き、手元には画面だけが届く。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-thin","ja":"シンクライアントの端末には、仕事のデータをふつう置かない","attrs":{"type":"tf","true":true,"why":"シンクライアントは表示と入力だけをする端末で、データはサーバー側に置く。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-fat","ja":"ファットクライアントでは、アプリもデータも手元の PC に置いて使う","attrs":{"type":"tf","true":true,"why":"手元の PC でアプリを動かし、データも手元に持つ。仮想デスクトップとは逆の考え方。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-manage","ja":"仮想デスクトップでは、多くの人のデスクトップを、サーバー側でまとめて管理できる","attrs":{"type":"tf","true":true,"why":"デスクトップがサーバー側に集まっているので、更新や設定をまとめて行える。"},"source":"一般的な性質","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

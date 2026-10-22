@@ -1,0 +1,12 @@
+{
+  "note": "PoE についての文(Lv136)。attrs.true = 正しい文か、why = 解説",
+  "rows": [
+    {"id":"power","ja":"PoE は、LAN ケーブルでデータと一緒に電気も送る","attrs":{"true":true,"why":"PoE(Power over Ethernet)は、より対線で電力も送るしくみ。"},"source":"IEEE 802.3 Clause 33","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ap","ja":"PoE を使うと、無線 LAN のアクセスポイントやカメラを、コンセントの無い天井などに置きやすい","attrs":{"true":true,"why":"LAN ケーブル 1 本で電源もまかなえるので、置き場所を選びやすい。"},"source":"一般的な使い方","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"wireless","ja":"PoE は、電気を無線で送るしくみである","attrs":{"true":false,"why":"PoE は LAN ケーブル(より対線)で電気を送る。"},"source":"IEEE 802.3 Clause 33","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"nodata","ja":"PoE のケーブルでは、電気だけが送られ、データは送れない","attrs":{"true":false,"why":"電気とデータを同じケーブルで送る。"},"source":"IEEE 802.3 Clause 33","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"pse","ja":"PoE で電気を送る側(PoE に対応したスイッチなど)を、給電側(PSE)と呼ぶ","attrs":{"true":true,"why":"電気を送る側が PSE、受ける側(AP やカメラ)が PD。"},"source":"IEEE 802.3 Clause 33","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"detect","ja":"PoE のスイッチは、相手が PoE に対応しているかを確かめてから電気を送る","attrs":{"true":true,"why":"給電の前に、相手が受電の機器かどうかを調べる(検出)。対応していない機器には送らない。"},"source":"IEEE 802.3 Clause 33.2.5","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"broken","ja":"PoE に対応していない PC を PoE のスイッチにつなぐと、必ず壊れる","attrs":{"true":false,"why":"規格どおりのスイッチは、相手が受電の機器でないと電気を送らない。"},"source":"IEEE 802.3 Clause 33.2.5","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

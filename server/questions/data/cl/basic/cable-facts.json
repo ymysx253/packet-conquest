@@ -1,0 +1,12 @@
+{
+  "note": "LAN ケーブルについての文(Lv135)。attrs.true = 正しい文か、why = 解説",
+  "rows": [
+    {"id":"100m","ja":"より対線の 1000BASE-T や 10GBASE-T は、1 本 100 m までで使う","attrs":{"true":true,"why":"どちらも 1 区間の長さの上限は 100 m。"},"source":"IEEE 802.3","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"1km","ja":"より対線の LAN ケーブルは、1 本 1 km まで延ばして 1000BASE-T を使える","attrs":{"true":false,"why":"より対線は 100 m まで。遠くは光ファイバーを使う。"},"source":"IEEE 802.3","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"6a-10g","ja":"カテゴリ 6A のケーブルなら、10GBASE-T を 100 m で使える","attrs":{"true":true,"why":"カテゴリ 6A は 10GBASE-T を 100 m で使うためのカテゴリ。"},"source":"ANSI/TIA-568.2-D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"5e-10g","ja":"カテゴリ 5e のケーブルで、10GBASE-T を 100 m で使える","attrs":{"true":false,"why":"10GBASE-T を 100 m で使うにはカテゴリ 6A 以上が要る。5e は 1000BASE-T まで。"},"source":"ANSI/TIA-568.2-D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"5e-1g","ja":"カテゴリ 5e のケーブルで、1000BASE-T を 100 m で使える","attrs":{"true":true,"why":"5e は 1000BASE-T をよく使うカテゴリ。"},"source":"ANSI/TIA-568.2-D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"3-1g","ja":"カテゴリ 3 のケーブルで、1000BASE-T を使える","attrs":{"true":false,"why":"カテゴリ 3 は 10BASE-T 向け。1000BASE-T には足りない。"},"source":"IEEE 802.3 Clause 40","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"bigger","ja":"カテゴリの数字が大きいほど、高い周波数(速い通信)に耐えられる","attrs":{"true":true,"why":"5e → 6 → 6A → 8 の順に、より高い周波数まで決められている。"},"source":"ANSI/TIA-568.2-D","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

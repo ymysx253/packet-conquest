@@ -1,0 +1,17 @@
+{
+  "note": "認証・認可・記録(Lv126)。type def: 定義(ja = 名前、attrs.desc)。type ex: 場面(attrs.answer = 当たるもの)",
+  "rows": [
+    {"id":"d-authn","ja":"認証","attrs":{"type":"def","desc":"相手が本人かどうかを確かめる"},"source":"RFC 4949(authentication)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"d-authz","ja":"認可","attrs":{"type":"def","desc":"確かめた相手に、何をしてよいかを決めて許す"},"source":"RFC 4949(authorization)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"d-acct","ja":"アカウンティング(記録)","attrs":{"type":"def","desc":"だれが、いつ、何をしたかを記録する"},"source":"RFC 2989(AAA)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"d-enc","ja":"暗号化","attrs":{"type":"def","desc":"データを、鍵を持つ人にしか読めない形に変える"},"source":"RFC 4949(encryption)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-pass","ja":"ID とパスワードを入れて、本人かどうかを確かめる","attrs":{"type":"ex","answer":"認証"},"source":"RFC 4949","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-finger","ja":"指紋を読み取って、本人かどうかを確かめる","attrs":{"type":"ex","answer":"認証"},"source":"RFC 4949","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-card","ja":"社員証の IC カードをかざして、本人かどうかを確かめる","attrs":{"type":"ex","answer":"認証"},"source":"RFC 4949","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-admin","ja":"ログインした人のうち、管理者だけが設定の画面を開ける","attrs":{"type":"ex","answer":"認可"},"source":"RFC 4949","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-readonly","ja":"同じ部署の人には、共有フォルダを読むことだけを許す","attrs":{"type":"ex","answer":"認可"},"source":"RFC 4949","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-role","ja":"役割ごとに、使ってよい機能を分けて許す","attrs":{"type":"ex","answer":"認可"},"source":"RFC 4949","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-log","ja":"だれがいつログインし、何を変えたかを記録に残す","attrs":{"type":"ex","answer":"アカウンティング(記録)"},"source":"RFC 2989","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-time","ja":"だれがどれだけの時間つないでいたかを記録する","attrs":{"type":"ex","answer":"アカウンティング(記録)"},"source":"RFC 2989","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

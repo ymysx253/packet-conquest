@@ -1,0 +1,12 @@
+{
+  "note": "HTTP のメソッドを使う場面(Lv120)。attrs.answer = メソッド。ほかのメソッドでも普通にする場面は入れない",
+  "rows": [
+    {"id":"ex-page","ja":"ブラウザでニュースのページを開いて読む","attrs":{"answer":"GET"},"source":"RFC 9110 第 9.3.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ex-search","ja":"URL に検索の言葉を付けて、検索結果のページを見る","attrs":{"answer":"GET"},"source":"RFC 9110 第 9.3.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ex-form","ja":"会員登録のフォームに名前を書いて「送信」を押す","attrs":{"answer":"POST"},"source":"RFC 9110 第 9.3.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ex-post","ja":"掲示板に新しい書き込みを送る","attrs":{"answer":"POST"},"source":"RFC 9110 第 9.3.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ex-remove","ja":"サーバーにある自分のファイルを消すよう頼む","attrs":{"answer":"DELETE"},"source":"RFC 9110 第 9.3.5 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ex-size","ja":"中身は受け取らずに、ファイルの大きさや更新日だけを確かめる","attrs":{"answer":"HEAD"},"source":"RFC 9110 第 9.3.2 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ex-replace","ja":"決まった場所のファイルを、手元の新しい内容で丸ごと置き換える","attrs":{"answer":"PUT"},"source":"RFC 9110 第 9.3.4 節","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

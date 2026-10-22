@@ -1,0 +1,19 @@
+{
+  "note": "共通鍵暗号と公開鍵暗号(Lv130・131)。type qa: attrs.answer・wrongs(どれも正しくない)・why。type tf: attrs.true・why。level = 使うレベル",
+  "rows": [
+    {"id":"q-same","ja":"暗号化と復号(元に戻すこと)に、同じ鍵を使う方式は?","attrs":{"type":"qa","level":130,"answer":"共通鍵暗号","wrongs":["公開鍵暗号","ハッシュ関数","電子署名"],"why":"同じ鍵を送る側と受ける側で持つので「共通鍵」。公開鍵暗号は対になった 2 つの鍵を使う。"},"source":"一般的な定義(NIST SP 800-175B)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-pair","ja":"公開鍵と秘密鍵の、対になった 2 つの鍵を使う方式は?","attrs":{"type":"qa","level":130,"answer":"公開鍵暗号","wrongs":["共通鍵暗号","ハッシュ関数","ワンタイムパスワード"],"why":"片方の鍵で暗号化したものは、対のもう片方でしか戻せない。"},"source":"一般的な定義(NIST SP 800-175B)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-aes","ja":"AES はどの方式の暗号?","attrs":{"type":"qa","level":130,"answer":"共通鍵暗号","wrongs":["公開鍵暗号","ハッシュ関数","電子署名"],"why":"AES は同じ鍵で暗号化と復号をする共通鍵暗号。"},"source":"FIPS 197","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-rsa","ja":"RSA はどの方式の暗号?","attrs":{"type":"qa","level":130,"answer":"公開鍵暗号","wrongs":["共通鍵暗号","ハッシュ関数","チェックサム"],"why":"RSA は公開鍵と秘密鍵の対を使う公開鍵暗号。"},"source":"RFC 8017","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-fast","ja":"共通鍵暗号と公開鍵暗号のうち、ふつう処理が速いのは?","attrs":{"type":"qa","level":130,"answer":"共通鍵暗号","wrongs":["公開鍵暗号","どちらも同じ速さ","比べられない"],"why":"共通鍵暗号の方が計算が軽く速い。だから大きなデータは共通鍵で暗号化することが多い。"},"source":"一般的な性質(NIST SP 800-175B)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-issue","ja":"共通鍵暗号で、いちばん困りやすいことは?","attrs":{"type":"qa","level":130,"answer":"同じ鍵を、相手に安全に渡すこと","wrongs":["鍵が 2 つになって管理が増えること","暗号化したデータを戻せないこと","処理がとても遅いこと"],"why":"同じ鍵を両方が持つ必要があるので、盗まれずに渡す方法が問題になる。"},"source":"一般的な性質","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-same","ja":"共通鍵暗号では、暗号化と復号に同じ鍵を使う","attrs":{"type":"tf","level":130,"true":true,"why":"同じ鍵を両方で持つ。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-public","ja":"共通鍵暗号の鍵は、だれに見せてもよい","attrs":{"type":"tf","level":130,"true":false,"why":"共通鍵を知られると、だれでも復号できてしまう。秘密にしておく。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-hash","ja":"ハッシュ関数で作った値から、元のデータに戻せる","attrs":{"type":"tf","level":130,"true":false,"why":"ハッシュ値は元に戻せない要約。暗号とは違う。"},"source":"FIPS 180-4","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-open","ja":"相手の公開鍵で暗号化したデータを、元に戻せる鍵は?","attrs":{"type":"qa","level":131,"answer":"相手の秘密鍵","wrongs":["相手の公開鍵","自分の公開鍵","自分の秘密鍵"],"why":"公開鍵で暗号化したものは、対になった秘密鍵でしか戻せない。その秘密鍵は相手だけが持つ。"},"source":"一般的な定義(NIST SP 800-175B)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-share","ja":"人に配ってよいのは、どちらの鍵?","attrs":{"type":"qa","level":131,"answer":"公開鍵","wrongs":["秘密鍵","公開鍵と秘密鍵の両方","どちらも配ってはいけない"],"why":"公開鍵は配ってよい。秘密鍵は自分だけが持つ。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-keep","ja":"自分だけが持ち、人に渡してはいけないのは?","attrs":{"type":"qa","level":131,"answer":"秘密鍵","wrongs":["公開鍵","公開鍵と秘密鍵の両方","どちらも渡してよい"],"why":"秘密鍵を知られると、自分宛の暗号を読まれたり、自分の名前で署名されたりする。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-pub-open","ja":"公開鍵で暗号化したデータは、同じ公開鍵で元に戻せる","attrs":{"type":"tf","level":131,"true":false,"why":"戻せるのは対になった秘密鍵だけ。公開鍵はだれでも持てるので、それで戻せたら秘密にならない。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-pair","ja":"公開鍵と秘密鍵は、対になっている","attrs":{"type":"tf","level":131,"true":true,"why":"片方で暗号化したものは、対のもう片方で戻す。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

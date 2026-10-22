@@ -1,0 +1,11 @@
+{
+  "note": "ping の結果の行と意味(Lv137)。attrs.line = 出力の行のひな形({ip} = 宛先、{gw} = 知らせてきたルーター、{name} = 名前)、meaning = 意味。出力は架空の機器の例(よくある形にそろえた)",
+  "rows": [
+    {"id":"reply","ja":"返事が来た","attrs":{"line":"Reply from {ip}: bytes=32 time={ms}ms TTL={ttl}","meaning":"宛先まで届き、返事が戻ってきた"},"source":"RFC 792(Echo Reply)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"timeout","ja":"時間切れ","attrs":{"line":"Request timed out.","meaning":"決めた時間の中に返事が来なかった"},"source":"RFC 792・一般的な ping の出力","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"host-unreach","ja":"ホストに届かない","attrs":{"line":"Reply from {gw}: Destination host unreachable.","meaning":"宛先の機器まで届けられない、という知らせが返ってきた"},"source":"RFC 792(Destination Unreachable, code 1)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"net-unreach","ja":"網に届かない","attrs":{"line":"Reply from {gw}: Destination net unreachable.","meaning":"宛先の網への道(経路)が無い、という知らせが返ってきた"},"source":"RFC 792(Destination Unreachable, code 0)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ttl","ja":"TTL が切れた","attrs":{"line":"Reply from {gw}: TTL expired in transit.","meaning":"途中で TTL が 0 になって捨てられた、という知らせが返ってきた"},"source":"RFC 792(Time Exceeded, code 0)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"noname","ja":"名前が引けない","attrs":{"line":"Ping request could not find host {name}. Please check the name and try again.","meaning":"名前から IP アドレスを調べられなかった(DNS で引けなかった)"},"source":"一般的な ping の出力","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

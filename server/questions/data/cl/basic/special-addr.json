@@ -1,0 +1,14 @@
+{
+  "note": "特別な IPv4 アドレスとその使い道(Lv99・100)。attrs.addr = アドレスか範囲、use = 使い道、kind = range(範囲)/ addr(1 つのアドレス)",
+  "rows": [
+    {"id":"bcast","ja":"限定ブロードキャスト","attrs":{"addr":"255.255.255.255","kind":"addr","use":"同じ LAN の全員宛(ルーターは先へ送らない)"},"source":"RFC 919・RFC 1812 第 5.3.5.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"loop","ja":"ループバック","attrs":{"addr":"127.0.0.1","kind":"addr","use":"自分自身宛(外へは出ない)"},"source":"RFC 1122 第 3.2.1.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"this","ja":"このホスト(まだアドレスが無い)","attrs":{"addr":"0.0.0.0","kind":"addr","use":"自分のアドレスがまだ決まっていない機器が、送信元に使う"},"source":"RFC 1122 第 3.2.1.3 節・RFC 2131","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"linklocal","ja":"リンクローカル","attrs":{"addr":"169.254.0.0/16","kind":"range","use":"DHCP から借りられないとき、機器が自分で付けるアドレスの範囲"},"source":"RFC 3927","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"loopnet","ja":"ループバックの範囲","attrs":{"addr":"127.0.0.0/8","kind":"range","use":"自分自身を表すアドレスの範囲"},"source":"RFC 1122 第 3.2.1.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"mcast","ja":"マルチキャストの範囲","attrs":{"addr":"224.0.0.0/4","kind":"range","use":"決めたグループ宛(マルチキャスト)に使う範囲"},"source":"RFC 5771","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"p10","ja":"プライベート(10)","attrs":{"addr":"10.0.0.0/8","kind":"range","use":"組織の中で自由に使うプライベートアドレスの範囲"},"source":"RFC 1918","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"p192","ja":"プライベート(192.168)","attrs":{"addr":"192.168.0.0/16","kind":"range","use":"組織の中で自由に使うプライベートアドレスの範囲"},"source":"RFC 1918","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"doc","ja":"文書用","attrs":{"addr":"192.0.2.0/24","kind":"range","use":"説明書や例に書くための範囲"},"source":"RFC 5737","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

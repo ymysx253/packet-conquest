@@ -1,0 +1,11 @@
+{
+  "note": "遠くの機器を使う場面(Lv147)。attrs.answer = 当たるしくみ",
+  "rows": [
+    {"id":"e-screen","ja":"家から会社の自分の PC の画面を出して、いつものアプリを操作する","attrs":{"answer":"リモートデスクトップ"},"source":"一般的な使い方","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-only-screen","ja":"手元には画面の絵だけが届き、ファイルは離れた PC に置いたままで作業する","attrs":{"answer":"リモートデスクトップ"},"source":"一般的な使い方","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-cmd","ja":"サーバーにコマンドを打って設定を直す。打った文字は暗号化して送られる","attrs":{"answer":"SSH"},"source":"RFC 4251","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-plain","ja":"昔の機器に文字でログインする。パスワードが暗号化されずに流れる","attrs":{"answer":"Telnet"},"source":"RFC 854","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-tunnel","ja":"出張先から、社内の網にいるのと同じように社内のサーバーを使う","attrs":{"answer":"VPN"},"source":"RFC 4026","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-wifi","ja":"外の Wi-Fi を使うとき、社内までの通信をまとめて暗号化した通り道に通す","attrs":{"answer":"VPN"},"source":"RFC 4026","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

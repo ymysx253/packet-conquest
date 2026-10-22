@@ -1,0 +1,19 @@
+{
+  "note": "プロトコルと層(Lv71・74〜77)。attrs.osi = OSI の層、tcpip = TCP/IP の層の id、header = カプセル化の問題で使うヘッダの呼び名。層の分け方で意見が分かれるもの(ARP・TLS など)は入れない",
+  "rows": [
+    {"id":"ethernet","ja":"イーサネット","attrs":{"osi":2,"tcpip":"link","header":"イーサネットヘッダ"},"source":"IEEE 802.3","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ppp","ja":"PPP","attrs":{"osi":2,"tcpip":"link"},"source":"RFC 1661","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ipv4","ja":"IP","attrs":{"osi":3,"tcpip":"internet","header":"IP ヘッダ"},"source":"RFC 791","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ipv6","ja":"IPv6","attrs":{"osi":3,"tcpip":"internet"},"source":"RFC 8200","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"icmp","ja":"ICMP","attrs":{"osi":3,"tcpip":"internet"},"source":"RFC 792","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"tcp","ja":"TCP","attrs":{"osi":4,"tcpip":"transport","header":"TCP ヘッダ"},"source":"RFC 9293","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"udp","ja":"UDP","attrs":{"osi":4,"tcpip":"transport","header":"UDP ヘッダ"},"source":"RFC 768","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"http","ja":"HTTP","attrs":{"osi":7,"tcpip":"app"},"source":"RFC 9110","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"dns","ja":"DNS","attrs":{"osi":7,"tcpip":"app"},"source":"RFC 1034・RFC 1035","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"smtp","ja":"SMTP","attrs":{"osi":7,"tcpip":"app"},"source":"RFC 5321","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ssh","ja":"SSH","attrs":{"osi":7,"tcpip":"app"},"source":"RFC 4251","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"dhcp","ja":"DHCP","attrs":{"osi":7,"tcpip":"app"},"source":"RFC 2131","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ftp","ja":"FTP","attrs":{"osi":7,"tcpip":"app"},"source":"RFC 959","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"pop3","ja":"POP3","attrs":{"osi":7,"tcpip":"app"},"source":"RFC 1939","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

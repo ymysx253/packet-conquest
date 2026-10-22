@@ -1,0 +1,8 @@
+{
+  "note": "PoE(LAN ケーブルでの給電)の規格(Lv136)。attrs.nick = 呼び名、watt = 給電側(PSE)の 1 ポートあたりの最大電力(W)",
+  "rows": [
+    {"id":"af","ja":"IEEE 802.3af","attrs":{"nick":"PoE","watt":"15.4"},"source":"IEEE 802.3af(Clause 33)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"at","ja":"IEEE 802.3at","attrs":{"nick":"PoE+","watt":"30"},"source":"IEEE 802.3at","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"bt4","ja":"IEEE 802.3bt(タイプ 4)","attrs":{"nick":"PoE++","watt":"90"},"source":"IEEE 802.3bt","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

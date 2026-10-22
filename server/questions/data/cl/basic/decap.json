@@ -1,0 +1,11 @@
+{
+  "note": "受け取る側でヘッダを外すことについての文(Lv77)。attrs.true = 正しい文か、why = 解説",
+  "rows": [
+    {"id":"down-up","ja":"受け取る側は、下の層から順にヘッダを外していく","attrs":{"true":true,"why":"いちばん外側(下の層)のイーサネットヘッダから外し、IP、TCP の順に開けていく。"},"source":"ISO/IEC 7498-1・RFC 1122","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"up-down","ja":"受け取る側は、上の層から順にヘッダを外していく","attrs":{"true":false,"why":"外側にあるのは下の層のヘッダなので、下の層から順に外す。"},"source":"ISO/IEC 7498-1・RFC 1122","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"reverse","ja":"受け取る側は、送る側が包んだのと逆の順にヘッダを外す","attrs":{"true":true,"why":"送る側は上の層から包み、受け取る側は外側(下の層)から開ける。"},"source":"ISO/IEC 7498-1","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"any","ja":"受け取る側では、ヘッダを外す順番は決まっておらず、どれから外してもよい","attrs":{"true":false,"why":"外側から順に開けないと中のヘッダは読めない。下の層から順に外す。"},"source":"ISO/IEC 7498-1","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"app-last","ja":"アプリにデータが渡されるのは、ヘッダをすべて外したあとである","attrs":{"true":true,"why":"トランスポート層のヘッダまで外してから、中のデータをアプリに渡す。"},"source":"RFC 1122","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"app-first","ja":"受け取る側は、イーサネットヘッダを外す前に、データをアプリに渡す","attrs":{"true":false,"why":"イーサネットヘッダはいちばん外側なので最初に外す。アプリに渡すのは最後。"},"source":"RFC 1122","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

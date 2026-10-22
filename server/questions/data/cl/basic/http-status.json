@@ -1,0 +1,19 @@
+{
+  "note": "HTTP のステータスコード(Lv121・122)。attrs.code = 番号、desc = 意味",
+  "rows": [
+    {"id":"200","ja":"200 OK","attrs":{"code":200,"desc":"頼みが成功した"},"source":"RFC 9110 第 15.3.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"201","ja":"201 Created","attrs":{"code":201,"desc":"頼みが成功し、新しいものが作られた"},"source":"RFC 9110 第 15.3.2 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"204","ja":"204 No Content","attrs":{"code":204,"desc":"成功したが、返す本文は無い"},"source":"RFC 9110 第 15.3.5 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"301","ja":"301 Moved Permanently","attrs":{"code":301,"desc":"ずっと別の場所(URL)に移った"},"source":"RFC 9110 第 15.4.2 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"302","ja":"302 Found","attrs":{"code":302,"desc":"今は一時的に別の場所(URL)にある"},"source":"RFC 9110 第 15.4.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"304","ja":"304 Not Modified","attrs":{"code":304,"desc":"前から変わっていないので、手元に持っているものを使ってよい"},"source":"RFC 9110 第 15.4.5 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"400","ja":"400 Bad Request","attrs":{"code":400,"desc":"頼み方(要求の書き方)がおかしい"},"source":"RFC 9110 第 15.5.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"401","ja":"401 Unauthorized","attrs":{"code":401,"desc":"認証(本人の確認)が要る"},"source":"RFC 9110 第 15.5.2 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"403","ja":"403 Forbidden","attrs":{"code":403,"desc":"見る権限が無いので断る"},"source":"RFC 9110 第 15.5.4 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"404","ja":"404 Not Found","attrs":{"code":404,"desc":"頼まれたものが見つからない"},"source":"RFC 9110 第 15.5.5 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"500","ja":"500 Internal Server Error","attrs":{"code":500,"desc":"サーバーの中で思わぬ誤りが起きた"},"source":"RFC 9110 第 15.6.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"502","ja":"502 Bad Gateway","attrs":{"code":502,"desc":"中継するサーバーが、先のサーバーからおかしな返事を受け取った"},"source":"RFC 9110 第 15.6.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"503","ja":"503 Service Unavailable","attrs":{"code":503,"desc":"混んでいるか止めているので、今は使えない"},"source":"RFC 9110 第 15.6.4 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"504","ja":"504 Gateway Timeout","attrs":{"code":504,"desc":"中継するサーバーが、先のサーバーの返事を待ちきれなかった"},"source":"RFC 9110 第 15.6.5 節","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

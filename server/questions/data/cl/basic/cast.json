@@ -1,0 +1,19 @@
+{
+  "note": "届け方の種類(Lv109)。type kind: 種類(ja = 名前、attrs.desc = 説明)。type ex: 例(ja = 例、attrs.answer = 種類の名前)",
+  "rows": [
+    {"id":"k-uni","ja":"ユニキャスト","attrs":{"type":"kind","desc":"決まった 1 台にだけ送る"},"source":"RFC 1122・RFC 4291","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"k-bc","ja":"ブロードキャスト","attrs":{"type":"kind","desc":"同じ LAN の全員に送る"},"source":"RFC 919・RFC 1122","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"k-mc","ja":"マルチキャスト","attrs":{"type":"kind","desc":"参加を決めたグループの機器にだけ送る"},"source":"RFC 1112・RFC 4291","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"k-any","ja":"エニーキャスト","attrs":{"type":"kind","desc":"同じアドレスを持つ何台かのうち、いちばん近い 1 台に届く"},"source":"RFC 4291 第 2.6 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-ffmac","ja":"宛先 MAC アドレスが ff:ff:ff:ff:ff:ff のフレーム","attrs":{"type":"ex","answer":"ブロードキャスト"},"source":"IEEE 802.3","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-255","ja":"宛先 IP アドレスが 255.255.255.255 のパケット","attrs":{"type":"ex","answer":"ブロードキャスト"},"source":"RFC 919","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-arpreq","ja":"ARP の問い合わせ(「この IP の機器はだれ?」)","attrs":{"type":"ex","answer":"ブロードキャスト"},"source":"RFC 826","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-discover","ja":"IPv4 の DHCP で、PC が最初に送る DHCP Discover","attrs":{"type":"ex","answer":"ブロードキャスト"},"source":"RFC 2131","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-224","ja":"宛先 IP アドレスが 224.0.0.0〜239.255.255.255 の中のパケット","attrs":{"type":"ex","answer":"マルチキャスト"},"source":"RFC 5771","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-ff02","ja":"宛先が ff02::1 のような ff で始まる IPv6 アドレス","attrs":{"type":"ex","answer":"マルチキャスト"},"source":"RFC 4291 第 2.7 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-v6nobc","ja":"IPv6 にはブロードキャストが無い。その代わりに使う届け方","attrs":{"type":"ex","answer":"マルチキャスト"},"source":"RFC 4291 第 2 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-web","ja":"PC が、決まった 1 台の Web サーバーにページを頼む","attrs":{"type":"ex","answer":"ユニキャスト"},"source":"RFC 1122","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-arprep","ja":"ARP の答え(問い合わせた機器だけに返す)","attrs":{"type":"ex","answer":"ユニキャスト"},"source":"RFC 826","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-near","ja":"同じアドレスを何か所かに置き、利用者からいちばん近いサーバーに届くようにする","attrs":{"type":"ex","answer":"エニーキャスト"},"source":"RFC 4786","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

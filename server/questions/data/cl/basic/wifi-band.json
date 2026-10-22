@@ -1,0 +1,14 @@
+{
+  "note": "無線 LAN の周波数帯(Lv132)。ja = 問い、attrs.answer = 2.4 GHz / 5 GHz / 6 GHz のうち当てはまるただ 1 つ、stmt = ○× の文のひな形({band} に帯域を入れる。answer のときだけ正しい)、why = 解説",
+  "rows": [
+    {"id":"oven","ja":"電子レンジと同じ帯域で、干渉を受けやすいのは?","attrs":{"answer":"2.4 GHz","stmt":"2.4・5・6 GHz のうち、電子レンジと同じ帯域で干渉を受けやすいのは {band} 帯である","why":"電子レンジは 2.4 GHz 帯の電波を使うので、2.4 GHz 帯の無線 LAN が影響を受けやすい。"},"source":"一般的な性質(ISM 帯)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"bt","ja":"Bluetooth と同じ帯域を使うのは?","attrs":{"answer":"2.4 GHz","stmt":"2.4・5・6 GHz のうち、Bluetooth と同じ帯域なのは {band} 帯である","why":"Bluetooth は 2.4 GHz 帯を使う。"},"source":"Bluetooth Core Specification","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"far","ja":"壁などの障害物にいちばん強く、遠くまで届きやすいのは?","attrs":{"answer":"2.4 GHz","stmt":"2.4・5・6 GHz のうち、壁などの障害物にいちばん強く遠くまで届きやすいのは {band} 帯である","why":"周波数が低いほど、回り込みやすく遠くまで届きやすい。3 つのうち 2.4 GHz がいちばん低い。"},"source":"一般的な性質","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"11b","ja":"IEEE 802.11b と 802.11g が使う帯域は?","attrs":{"answer":"2.4 GHz","stmt":"IEEE 802.11b と 802.11g が使うのは {band} 帯である","why":"11b・11g は 2.4 GHz 帯だけを使う。"},"source":"IEEE 802.11","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"11a","ja":"IEEE 802.11a が使う帯域は?","attrs":{"answer":"5 GHz","stmt":"IEEE 802.11a が使うのは {band} 帯である","why":"11a は 5 GHz 帯だけを使う。"},"source":"IEEE 802.11","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"11ac","ja":"IEEE 802.11ac(Wi-Fi 5)が使う帯域は?","attrs":{"answer":"5 GHz","stmt":"IEEE 802.11ac(Wi-Fi 5)が使うのは {band} 帯である","why":"11ac は 5 GHz 帯だけを使う。"},"source":"IEEE 802.11ac","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"dfs","ja":"気象レーダーなどを避けるため、電波を出す前に確かめる決まり(DFS)のチャネルがあるのは?","attrs":{"answer":"5 GHz","stmt":"2.4・5・6 GHz のうち、気象レーダーなどを避ける決まり(DFS)のチャネルがあるのは {band} 帯である","why":"5 GHz 帯の一部のチャネルはレーダーと重なるので、DFS が要る。"},"source":"電波法関係審査基準・IEEE 802.11h","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"6e","ja":"Wi-Fi 6E で新しく使えるようになった帯域は?","attrs":{"answer":"6 GHz","stmt":"Wi-Fi 6E で新しく使えるようになったのは {band} 帯である","why":"Wi-Fi 6E は Wi-Fi 6(802.11ax)を 6 GHz 帯に広げたもの。"},"source":"Wi-Fi Alliance(Wi-Fi 6E)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"few","ja":"チャネルの数がいちばん少なく、重なりやすいので混みやすいのは?","attrs":{"answer":"2.4 GHz","stmt":"2.4・5・6 GHz のうち、チャネルの数がいちばん少なく混みやすいのは {band} 帯である","why":"2.4 GHz 帯は幅が狭く、重ならないチャネルは 3〜4 個ほどしか取れない。"},"source":"一般的な性質","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "note": "回線交換とパケット交換(Lv81)。attrs.kind = circuit(回線交換)/ packet(パケット交換)。仮想回線など、両方に当てはまりうる説明は入れない",
+  "rows": [
+    {"id":"c-hold","ja":"通信している間、相手までの道(回線)をずっと占めたままにする","attrs":{"kind":"circuit"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"c-idle","ja":"話していない間も、回線を占めたままになる","attrs":{"kind":"circuit"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"c-phone","ja":"昔からの固定電話で使われてきた方式","attrs":{"kind":"circuit"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"c-rate","ja":"通信の間、決まった速さがずっと確保される","attrs":{"kind":"circuit"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"c-noshare","ja":"つないでいる間は、その回線をほかの通信と分け合わない","attrs":{"kind":"circuit"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"p-split","ja":"データを小さなまとまりに分け、それぞれに宛先を付けて送る","attrs":{"kind":"packet"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"p-share","ja":"1 本の回線を、たくさんの通信で分け合って使う","attrs":{"kind":"packet"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"p-delay","ja":"混んでいると、届くのが遅れることがある","attrs":{"kind":"packet"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"p-internet","ja":"インターネットで使われている方式","attrs":{"kind":"packet"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"p-free","ja":"送るデータが無い間は、ほかの通信がその回線を使える","attrs":{"kind":"packet"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

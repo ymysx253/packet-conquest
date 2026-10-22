@@ -1,0 +1,14 @@
+{
+  "note": "CIDR についての文(Lv96)。attrs.true = 正しい文か、why = 解説",
+  "rows": [
+    {"id":"classless","ja":"CIDR では、クラスにしばられず /n で好きな長さに区切れる","attrs":{"true":true,"why":"CIDR(クラスレス)は、プレフィックス長 /n でネットワーク部の長さを決める。"},"source":"RFC 4632","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"prefix-slash","ja":"CIDR では、ネットワーク部の長さを「/」のあとの数で書く","attrs":{"true":true,"why":"192.168.10.0/24 の /24 は、先頭 24 ビットがネットワーク部であることを表す。"},"source":"RFC 4632 第 3.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"aggregate","ja":"CIDR では、続いたいくつかのネットワークを 1 つの経路にまとめて書ける","attrs":{"true":true,"why":"経路集約(スーパーネット)は CIDR で書けるようになった。"},"source":"RFC 4632 第 2 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"only-class","ja":"CIDR では、区切りは /8・/16・/24 のどれかに限られる","attrs":{"true":false,"why":"/8・/16・/24 に限るのはクラスの考え方。CIDR は /0〜/32 のどこでも区切れる。"},"source":"RFC 4632","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"class-size","ja":"CIDR でも、ネットワークの大きさはアドレスの先頭の数(クラス)で決まる","attrs":{"true":false,"why":"CIDR では大きさをプレフィックス長で決め、先頭の数(クラス)は使わない。"},"source":"RFC 4632","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"same-as-class","ja":"CIDR は、クラス A・B・C の区切りをそのまま使うしくみである","attrs":{"true":false,"why":"CIDR はクラスを使わない(クラスレス)しくみ。"},"source":"RFC 4632","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"mask-equal","ja":"/24 と書くのと、マスク 255.255.255.0 と書くのは同じ意味である","attrs":{"true":true,"why":"/24 は先頭 24 ビットが 1 のマスク、つまり 255.255.255.0。"},"source":"RFC 4632 第 3.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"less-routes","ja":"CIDR を使うと、経路表の行を減らせることがある","attrs":{"true":true,"why":"続いた網を 1 行にまとめられるので、経路表が小さくなる。"},"source":"RFC 4632 第 2 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"name","ja":"CIDR の C は「クラス」の頭文字である","attrs":{"true":false,"why":"CIDR は Classless Inter-Domain Routing の略で、C は Classless(クラスなし)。"},"source":"RFC 4632","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

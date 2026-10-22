@@ -1,0 +1,17 @@
+{
+  "note": "認証の要素(Lv127)。attrs.factor = 知識(知っていること)/ 所持(持っているもの)/ 生体(本人の体の特徴)",
+  "rows": [
+    {"id":"password","ja":"パスワード","attrs":{"factor":"知識"},"source":"NIST SP 800-63B 第 5.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"pin","ja":"暗証番号(PIN)","attrs":{"factor":"知識"},"source":"NIST SP 800-63B","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"secretq","ja":"秘密の質問の答え","attrs":{"factor":"知識"},"source":"NIST SP 800-63B","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"passphrase","ja":"長い合い言葉(パスフレーズ)","attrs":{"factor":"知識"},"source":"NIST SP 800-63B","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"sms","ja":"スマホに届く確認コード","attrs":{"factor":"所持"},"source":"NIST SP 800-63B 第 5.1.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"iccard","ja":"IC カードの社員証","attrs":{"factor":"所持"},"source":"NIST SP 800-63B","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"token","ja":"ワンタイムパスワードを出す専用の小さな機器","attrs":{"factor":"所持"},"source":"NIST SP 800-63B 第 5.1.4 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"appcode","ja":"スマホの認証アプリに出る 6 けたの数","attrs":{"factor":"所持"},"source":"NIST SP 800-63B 第 5.1.4 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"finger","ja":"指紋","attrs":{"factor":"生体"},"source":"NIST SP 800-63B 第 5.2.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"face","ja":"顔","attrs":{"factor":"生体"},"source":"NIST SP 800-63B 第 5.2.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"vein","ja":"手のひらの静脈","attrs":{"factor":"生体"},"source":"NIST SP 800-63B 第 5.2.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"iris","ja":"目の虹彩","attrs":{"factor":"生体"},"source":"NIST SP 800-63B 第 5.2.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}
