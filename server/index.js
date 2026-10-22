@@ -265,5 +265,10 @@ for (const sig of ['SIGTERM', 'SIGINT']) {
 world.init().then(async () => {
   const n = await world.reclaimIdle().catch((e) => { console.error('休眠の回収に失敗:', e.message); return 0; });
   if (n) console.log(`休眠アカウントを ${n} 件回収`);
+  // テスト用の敵(2026-10-22): SIM_BOTS にシナリオのファイル(tools/scenarios/*.json)があれば動かす。本番のデータベースでは動かない(server/bots.js)
+  if (process.env.SIM_BOTS) {
+    const db = process.env.STORE !== 'memory' && process.env.COSMOS_CONNECTION_STRING ? (process.env.COSMOS_DATABASE || 'packet-conquest') : null;
+    require('./bots').startBots(world, path.resolve(process.env.SIM_BOTS), { databaseName: db }).catch((e) => console.error('テスト用の敵を動かせません:', e.message));
+  }
   server.listen(PORT, () => console.log(`パケット陣取り / Packet Conquest: http://localhost:${PORT}(保存: ${process.env.STORE !== 'memory' && process.env.COSMOS_CONNECTION_STRING ? 'Cosmos DB ' + (process.env.COSMOS_DATABASE || 'packet-conquest') : 'メモリ'})`));
 }).catch((e) => { console.error('起動に失敗:', e); process.exit(1); });

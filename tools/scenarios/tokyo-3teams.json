@@ -1,0 +1,13 @@
+{
+  "note": "テスト用の敵(2026-10-22 ユーザー依頼): 3 チーム × 5 人を東京の中心(外神田・日本橋室町・日本橋人形町。互いに 1〜2 km)に置く。見ている間だけ動かす(server/bots.js)",
+  "paceSec": [8, 20],
+  "thinkSec": [3, 8],
+  "accuracy": 0.7,
+  "fortifyRate": 0.15,
+  "focusRate": 0.6,
+  "teams": [
+    { "name": "テスト敵A", "start": "tw-13101-034001", "members": 5 },
+    { "name": "テスト敵B", "start": "tw-13102-013001", "members": 5 },
+    { "name": "テスト敵C", "start": "tw-13102-020001", "members": 5 }
+  ]
+}

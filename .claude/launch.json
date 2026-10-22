@@ -4,20 +4,37 @@
     {
       "name": "packet-conquest",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["server/index.js"],
+      "runtimeArgs": [
+        "server/index.js"
+      ],
       "port": 3000
     },
     {
       "name": "packet-conquest-3001",
       "runtimeExecutable": "cmd",
-      "runtimeArgs": ["/c", "set PORT=3001&& node server/index.js"],
+      "runtimeArgs": [
+        "/c",
+        "set PORT=3001&& node server/index.js"
+      ],
       "port": 3001
     },
     {
       "name": "packet-conquest-memory",
       "runtimeExecutable": "cmd",
-      "runtimeArgs": ["/c", "set PORT=3002&& set STORE=memory&& node server/index.js"],
+      "runtimeArgs": [
+        "/c",
+        "set PORT=3002&& set STORE=memory&& node server/index.js"
+      ],
       "port": 3002
+    },
+    {
+      "name": "packet-conquest-sim",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": [
+        "/c",
+        "set PORT=3003&& set STORE=memory&& set SIM_BOTS=tools/scenarios/tokyo-3teams.json&& node server/index.js"
+      ],
+      "port": 3003
     }
   ]
 }
