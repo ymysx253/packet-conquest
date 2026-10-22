@@ -116,7 +116,7 @@ async function solve(world, p, nodeId) {
 
   // 回数制: つながりの本数(hits)だけ正解すると奪取。途中は侵入の進捗が配信される。集計値が増え、見ている人に差分が届く
   const target = w.nodes.get(nb);
-  assert.strictEqual(target.hits, target.adj.length, '必要回数 = つながりの本数');
+  assert.strictEqual(target.hits, Math.ceil(Math.sqrt(target.adj.length)), '必要回数 = √つながりの本数(切り上げ。2026-10-22)');
   assert.ok(q.options && target.hits >= 1);
   const before = wsA.sent.length;
   for (let i = 1; i < target.hits; i++) {
@@ -509,8 +509,8 @@ async function solve(world, p, nodeId) {
   assert.ok(!('routes' in w.pub(C2)) && !('routes' in w.pub(H)), '航路は全員には配らない(2026-10-22: 押さえてからでないと分からない)');
   { const mr = await w.myRoutes(rp); assert.ok(mr.t === 'myRoutes' && mr.ports.some((o) => o.id === H.id && o.routes.some((r) => r.to === C2.id && r.mode === 'air')), '押さえた空港の航路は持ち主に届く(myRoutes)'); }
   { const mr = await w.myRoutes(rp); assert.ok(!mr.ports.some((o) => o.id === C2.id), '押さえていない空港の航路は届かない'); }
-  assert.strictEqual(C2.hits, Math.max(1, C2.adj.length + new Set(C2.routes.map((x) => x.to).filter((t) => !C2.adj.includes(t))).size), '航路も突破回数に数える(2026-10-19 ユーザー決定)');
-  assert.ok(H.hits > H.adj.length + 30, '羽田は航路が多いので突破に要る回数も多い');
+  assert.strictEqual(C2.links, Math.max(1, C2.adj.length + new Set(C2.routes.map((x) => x.to).filter((t) => !C2.adj.includes(t))).size), '航路も突破回数に数える(2026-10-19 ユーザー決定)');
+  assert.ok(H.links > H.adj.length + 30 && H.hits === Math.ceil(Math.sqrt(H.links)) && H.hits >= 7 && H.hits <= 9, '羽田は航路が多いので突破に要る回数も多い(√なので 8 回ほど。2026-10-22)');
   const saved = [H.routes, C2.routes];
   H.routes = []; C2.routes = []; rp.reach = null;
   assert.ok(!(await w.canAttack(rp.id, C2.id)), '航路が無ければ遠くの空港は攻撃できない');

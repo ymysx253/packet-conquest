@@ -3,6 +3,7 @@
 // JSON の項目は Cosmos DB の nodes コンテナーと同じ(設計書 8.7)。将来は DB から読む。
 
 const fs = require('fs');
+const { hitsFromLinks } = require('./hits');
 const path = require('path');
 const { buildLinks, nearest, tileFields, addrOf } = require('./geo');
 const { loadSources } = require('./sources');
@@ -236,7 +237,7 @@ function loadRegion(region) {
   } else {
     for (const { a, b } of buildLinks(NODES.filter((n) => n.hackable && n.status === 'public'), 3)) { ADJ[a].add(b); ADJ[b].add(a); }
   }
-  for (const n of NODES) { n.adj = [...ADJ[n.id]].sort(); ADJ[n.id] = n.adj; n.hits = Math.max(1, n.adj.length); }
+  for (const n of NODES) { n.adj = [...ADJ[n.id]].sort(); ADJ[n.id] = n.adj; n.links = Math.max(1, n.adj.length); n.hits = hitsFromLinks(n.links); }
   const EDGES = [];
   for (const n of NODES) for (const m of n.adj) if (n.id < m) EDGES.push({ a: n.id, b: m });
   const AREAS = [...new Set(NODES.map((n) => n.area))];
@@ -264,7 +265,7 @@ function loadAll() {
   // 全体で adj をそろえる(存在しない相手は落とす。両向きに)
   const ADJ = Object.fromEntries(NODES.map((n) => [n.id, new Set()]));
   for (const n of NODES) for (const m of n.adjMaster || n.adj || []) if (byId[m] && n.hackable && byId[m].hackable && n.status === 'public' && byId[m].status === 'public') { ADJ[n.id].add(m); ADJ[m].add(n.id); }
-  for (const n of NODES) { n.adj = [...ADJ[n.id]].sort(); ADJ[n.id] = n.adj; n.hits = Math.max(1, n.adj.length); delete n.adjMaster; }
+  for (const n of NODES) { n.adj = [...ADJ[n.id]].sort(); ADJ[n.id] = n.adj; n.links = Math.max(1, n.adj.length); n.hits = hitsFromLinks(n.links); delete n.adjMaster; }
   // 航路(DATA-FORMAT.md 第 5 章): 拠点から独立した記録から、ゲームで使える航路だけを拠点ごとの要約にする。
   // 航路も突破回数に数える(2026-10-19 ユーザー決定: 奪うのが大変 = 維持が大変)。陸の線と同じ相手は 1 本として数える
   const ROUTE_FILES = readRouteFiles();
@@ -272,7 +273,8 @@ function loadAll() {
   for (const n of NODES) {
     n.routes = routes.byNode.get(n.id) || [];
     const extra = new Set(n.routes.map((r) => r.to).filter((t) => !n.adj.includes(t)));
-    n.hits = Math.max(1, n.adj.length + extra.size);
+    n.links = Math.max(1, n.adj.length + extra.size); // つながりの本数(陸の線 + 航路の行き先)
+    n.hits = hitsFromLinks(n.links); // 突破に要る正解の回数 = √(つながりの本数) の切り上げ(2026-10-22 ユーザー決定。server/map/hits.js)
   }
   // 名前(2026-10-21 ユーザー決定): names は言語ごとの名前(ja 漢字、en 英語)。kana は日本語の名前の読み(ひらがな)。
   // 読みと英語は tools/import-yomi.js が作る derived/yomi.json から。読みは「拠点の情報」に出す(地図には出さない)。英語は英語の表示を作ったときに使う
@@ -305,7 +307,7 @@ function nodeDocs(nodes, now = Date.now()) {
     t0: m.t0, t1: m.t1, t2: m.t2, t3: m.t3, t4: m.t4,
     level: m.level, value: m.value, hackable: m.hackable !== false, lines: m.lines || [], tags: m.tags || [],
     company: m.company || null, codes: m.codes || {}, src: m.src || null, gateway: m.gateway || null, names: m.names || null, kana: m.kana || null,
-    adj: m.adj || [], hits: m.hits || Math.max(1, (m.adj || []).length), // つながりと、突破に必要な正解の回数(第 14 章)
+    adj: m.adj || [], links: m.links || Math.max(1, (m.adj || []).length), hits: m.hits || hitsFromLinks(m.links || (m.adj || []).length), // つながりと、その本数、突破に必要な正解の回数(第 14 章。2026-10-22 から √本数の切り上げ)
     routes: m.routes || [], // 航路(空路・海路)。行き先 { to, mode, name, lat, lon }。占領した空港・港から行き先を攻撃できる
     // 開いている時間(2026-10-19 ユーザー決定)。DB で管理する設定(設定画面で変える)。マスターの入れ直しでは上書きしない(tools/db-setup.js)。既定は 1 日中
     hours: m.hours || [{ from: '00:00', to: '00:00' }],

@@ -4,7 +4,7 @@
 //   - タイルごとのキャッシュ(拠点とリンク)。リンクは周囲のタイルの拠点とだけ計算する
 //   - プレイヤーごとに「見ているタイル」を持ち、拠点が変わったらそのタイルを見ている人だけに差分を送る
 //   - プレイヤーの点数と拠点数はプレイヤー ドキュメントの集計値(score, nodesOwned)
-//   - 突破に必要な正解の回数 = つながりの本数(hits)。進捗は拠点ごとに攻め手(プレイヤーかチーム)別に持つ(設計書 第 14 章)
+//   - 突破に必要な正解の回数 hits = √(つながりの本数 links) の切り上げ(2026-10-22。前はつながりの本数そのもの)。進捗は拠点ごとに攻め手(プレイヤーかチーム)別に持つ(設計書 第 14 章)
 //   - 強化は 24 時間ごとに 1 下がる。地域の支配は配下の 3/4 以上で、所有が変わるたびに集計する
 
 const crypto = require('crypto');
@@ -17,7 +17,8 @@ const TOKYO_MASTER = JSON.parse(require('fs').readFileSync(require('path').join(
 const SPAWN_CENTER = TOKYO_MASTER.spawn ? { lat: TOKYO_MASTER.spawn.lat, lon: TOKYO_MASTER.spawn.lon, radiusKm: TOKYO_MASTER.spawn.radiusKm, name: TOKYO_MASTER.spawn.name } : null;
 const { nodeDocs, regionDocs } = require('./map/load');
 const { distanceKm, tilesAround, tileOf, tileFields, parseTile, tileSize, addrOf, MIN_LEVEL_BY_Z } = require('./map/geo');
-const { routeOpen, openAt, isAlwaysOpen } = require('./map/routes'); // 季節航路と拠点の開いている時間(2026-10-19。サーバーの時計の UTC)
+const { routeOpen, openAt, isAlwaysOpen } = require('./map/routes');
+const { hitsFromLinks } = require('./map/hits'); // 突破に要る正解の回数(2026-10-22) // 季節航路と拠点の開いている時間(2026-10-19。サーバーの時計の UTC)
 const { getQuestion, hasGenerator, QUESTION_RANGES } = require('./questions');
 const { judge } = require('./questions/normalize');
 const { dayOf, noopEvents } = require('./events');
@@ -345,7 +346,9 @@ class World {
     const n = { ...doc };
     if (!n.base) Object.assign(n, addrOf(n.id));
     if (!Array.isArray(n.adj)) n.adj = [];
-    if (!n.hits) n.hits = n.isPlayerNode ? 1 : Math.max(1, n.adj.length);
+    // 突破に要る回数(2026-10-22 ユーザー決定: √つながりの本数の切り上げ。server/map/hits.js)。DB に links が無い古いドキュメントは、前の hits(= つながりの本数)を本数として使う
+    if (n.isPlayerNode) n.hits = 1;
+    else { if (!n.links) n.links = n.hits || Math.max(1, n.adj.length); n.hits = hitsFromLinks(n.links); }
     if (!n.progress || typeof n.progress !== 'object') n.progress = {};
     if (!Array.isArray(n.routes)) n.routes = []; // 航路(空港・港だけ)
     const t = n.t0 || tileOf(n.lat, n.lon, 0);
