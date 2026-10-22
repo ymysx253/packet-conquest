@@ -18,4 +18,5 @@ assert.ok(S.sizeScale(1) === 1 && Math.abs(S.sizeScale(100) - 1.2) < 1e-9, 'レ�
 assert.strictEqual(S.describe(0).level, 1); assert.strictEqual(S.describe(500).level, 100, '上限で止まる');
 for (let lv = 1; lv <= 10; lv++) assert.strictEqual(S.describe(lv).deco, 0, 'Lv1〜10 は飾りなし(白抜き)');
 for (let lv = 91; lv <= 100; lv++) assert.strictEqual(S.describe(lv).ring, 'gear', '神レベルはギザギザの輪');
+for (let lv = 1; lv <= 100; lv++) assert.strictEqual(S.describe(lv).filled, false, `Lv${lv}: 塗りつぶしは使わない(2026-10-23 ユーザー指摘)`);
 console.log('shapes100 ok: 100 unique patterns, outer ≤ 1.65r, size ≤ 1.2x');

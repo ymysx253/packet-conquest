@@ -3,8 +3,8 @@
 // 原則: 100 のレベルがすべて違う模様になる。大きさはほとんど変えない(外に付く飾りは 1 つまで。外接半径は本体の 1.65 倍まで)。
 //
 //   1 の位(レベル − 1 の 1 の位) → 本体の形(10 種。今の形と同じ: 円 … 二重の星)
-//   10 の位                      → 飾り(10 種): 白抜き / 中心の点 / 内側の線 / 塗り / 塗り + 白い点 / 外輪 / 塗り + 外輪 / 点線の輪 / 塗り + 点線の輪 / 塗り + ギザギザの輪(神)
-//   段(入門〜専門・神)は飾りの順に合わせて、上の段ほど塗り・外の輪が出る
+//   10 の位                      → 飾り(10 種): 白抜き / 中心の点 / 内側の線 / 中心の十字 / 内側の線 + 点 / 外輪 / 外輪 + 点 / 点線の輪 / 点線の輪 + 内側の線 / ギザギザの輪 + 点(神)
+//   塗りつぶしは使わない(2026-10-23 ユーザー指摘: 地図で見ると圧迫感がある)。上の段ほど外の輪が出る
 //
 // ゲーム画面にはまだ使っていない(拠点の格 → 1〜100 の割り当てが決まってから入れ替える)。一覧は shapes100.html
 // Node でもテストできるよう、module.exports にも出す。
@@ -15,8 +15,8 @@
     6: '六角形', 7: '星(5点)', 8: '星(6点)', 9: '星(8点)', 10: '二重の星',
   };
   const DECO_NAMES = {
-    0: '白抜き', 1: '中心の点', 2: '内側の線', 3: '塗り', 4: '塗り + 白い点',
-    5: '外輪', 6: '塗り + 外輪', 7: '点線の輪', 8: '塗り + 点線の輪', 9: '塗り + ギザギザの輪',
+    0: '白抜き', 1: '中心の点', 2: '内側の線', 3: '中心の十字', 4: '内側の線 + 点',
+    5: '外輪', 6: '外輪 + 点', 7: '点線の輪', 8: '点線の輪 + 内側の線', 9: 'ギザギザの輪 + 点',
   };
   const STAGES = [['入門', 1, 15], ['初級', 16, 35], ['中級', 36, 60], ['上級', 61, 78], ['専門', 79, 89], ['神', 90, 100]];
 
@@ -28,9 +28,10 @@
       level: lv,
       shape: (n % 10) + 1,
       deco,
-      filled: [3, 4, 6, 8, 9].includes(deco),
-      dot: deco === 1 || deco === 4,            // 中心の点(白抜きなら線の色、塗りなら背景色)
-      inner: deco === 2,                         // 内側に同じ形の小さい線
+      filled: false,                             // 塗りつぶしは使わない(2026-10-23 ユーザー指摘)
+      dot: [1, 4, 6, 9].includes(deco),          // 中心の点(線の色)
+      inner: deco === 2 || deco === 4 || deco === 8, // 内側に同じ形の小さい線
+      cross: deco === 3,                         // 中心の十字
       ring: deco === 5 || deco === 6 ? 'solid' : deco === 7 || deco === 8 ? 'dash' : deco === 9 ? 'gear' : null,
       stage: (STAGES.find(([, lo, hi]) => lv >= lo && lv <= hi) || STAGES[0])[0],
     };
@@ -91,7 +92,8 @@
     const d = describe(level);
     if (d.shape === 10) { c.beginPath(); star(c, p, r * 0.72, r * 0.3, 5); c.lineWidth = 1.5; c.strokeStyle = d.filled ? surface : color; c.stroke(); }
     if (d.inner) { c.beginPath(); SHAPES[d.shape](c, p, r * 0.55); c.lineWidth = 1.5; c.strokeStyle = color; c.stroke(); }
-    if (d.dot) { c.beginPath(); c.arc(p.x, p.y, Math.max(2, r * 0.22), 0, Math.PI * 2); c.fillStyle = d.filled ? surface : color; c.fill(); }
+    if (d.cross) { const k = r * 0.42; c.beginPath(); c.moveTo(p.x - k, p.y); c.lineTo(p.x + k, p.y); c.moveTo(p.x, p.y - k); c.lineTo(p.x, p.y + k); c.lineWidth = 1.8; c.strokeStyle = color; c.stroke(); }
+    if (d.dot) { c.beginPath(); c.arc(p.x, p.y, Math.max(2, r * (d.inner ? 0.16 : 0.22)), 0, Math.PI * 2); c.fillStyle = color; c.fill(); }
     if (d.ring) {
       c.strokeStyle = color; c.lineWidth = 1.5;
       c.beginPath();
