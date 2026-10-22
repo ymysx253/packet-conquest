@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Dela+Gothic+One&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="vendor/maplibre/maplibre-gl.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="app">
@@ -36,7 +37,9 @@
 <main class="layout">
   <section class="board" aria-label="ネットワーク地図">
     <div class="map-wrap" id="mapWrap">
-      <canvas id="map"></canvas>
+      <!-- 背景の地図(陸・海・区市の境界・湖・地域の支配の色)は MapLibre が描く。拠点などはその上に重ねる canvas に描く(2026-10-22 案 A) -->
+      <div class="map-base" id="mapBase"></div>
+      <canvas id="map" aria-hidden="true"></canvas>
       <div class="zoom" aria-label="地図の拡大縮小">
         <button type="button" class="zbtn" id="zoomIn" aria-label="拡大" title="拡大">+</button>
         <button type="button" class="zbtn" id="zoomOut" aria-label="縮小" title="縮小">−</button>
@@ -56,7 +59,7 @@
     <div class="board-foot">
       <button type="button" class="btn small" id="legendBtn" aria-haspopup="dialog">凡例(レベルの形)</button>
       <a class="btn small" href="manual.html" target="_blank" rel="noopener">説明書</a>
-      <p class="credit-short">出典: 国土数値情報・e-Stat・航空輸送統計調査(国土交通省・総務省統計局)、Wikidata(詳しくは凡例)</p>
+      <p class="credit-short">出典: 国土数値情報・e-Stat・航空輸送統計調査(国土交通省・総務省統計局)、Wikidata。地図の表示は MapLibre GL JS(BSD-3)(詳しくは凡例)</p>
     </div>
   </section>
 
@@ -166,7 +169,7 @@
   </ul>
   <p class="hint"><a href="shapes.html" target="_blank" rel="noopener">形の一覧(Lv1〜999)を別の画面で開く</a></p>
   <h3 class="label">出典</h3>
-  <p class="credit">地図は「国土数値情報(鉄道・行政区域・湖沼・港湾間流通量)」(国土交通省)、政府統計の総合窓口(e-Stat)「国勢調査 小地域境界」「航空輸送統計調査」(総務省統計局・国土交通省)、「地理院タイル(道路中心線)」(国土地理院。島が道でつながっているかの判定)を加工して作成。名所の一部は Wikidata による。都道府県庁舎の一部の位置は「位置参照情報ダウンロードサービス」(国土交通省)をもとに作成。町・字の読みは日本郵便「郵便番号データ」による。記載の製品名・プロトコル名は各社の商標または登録商標です</p>
+  <p class="credit">地図は「国土数値情報(鉄道・行政区域・湖沼・港湾間流通量)」(国土交通省)、政府統計の総合窓口(e-Stat)「国勢調査 小地域境界」「航空輸送統計調査」(総務省統計局・国土交通省)、「地理院タイル(道路中心線)」(国土地理院。島が道でつながっているかの判定)を加工して作成。名所の一部は Wikidata による。都道府県庁舎の一部の位置は「位置参照情報ダウンロードサービス」(国土交通省)をもとに作成。町・字の読みは日本郵便「郵便番号データ」による。地図の表示には MapLibre GL JS(BSD-3-Clause ライセンス。Copyright MapLibre contributors)を使っています。記載の製品名・プロトコル名は各社の商標または登録商標です</p>
   <form method="dialog" class="dlg-actions"><button class="btn primary">閉じる</button></form>
 </dialog>
 
@@ -281,6 +284,8 @@
 </dialog>
 
 <div class="toast" id="toast" role="status" hidden></div>
+<script src="vendor/maplibre/maplibre-gl-csp.js"></script>
+<script src="map-base.js"></script>
 <script src="shapes.js"></script>
 <script src="app.js"></script>
 </body>

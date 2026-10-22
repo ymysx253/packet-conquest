@@ -22,8 +22,7 @@
     rankings: null, me2: null, team: null, cooldownMs: 5000, // ランキング / 自分の集計 / 所属チーム / いまの待ち時間の長さ
     chat: { tab: 'team', to: null, rooms: new Map(), loaded: new Set(), partners: [], unread: { all: false, team: false, dm: false }, notes: {}, canWrite: {} }, // チャット(2026-10-21)
     mine: new Map(), // 自分が占領している空港・港(航路を持つもの)。画面の外に出ても覚えておき、航路の線を引く
-    bounds: new Map(), // 区・市の境界(地域 id → { polys })。public/data/bounds/<都道府県>.json を見えている分だけ読む
-    boundsLoaded: new Set(), coarse: null, // 読み込み済みの都道府県 / 縮小時の粗い全国版(japan.json)
+    // 区・市の境界・陸・湖は背景の部品(map-base.js)が読んで描く(2026-10-22 案 A)。ここでは地域の支配の色を渡すだけ
   };
   const TOKYO = { lat: 35.68124, lon: 139.76712 }; // 参加前に地図から選ぶときの初期位置(東京駅のあたり。既定の開始地点「丸の内」の隣)
   const store = {
@@ -178,10 +177,10 @@
       S.nodes.clear(); S.edges.clear(); S.far.clear(); S.tiles.clear(); S.overview = true; S.viewZ = m.z;
       for (const n of m.nodes) { S.nodes.set(n.id, n); rememberRoutes(n); } // 縮小表示にも自分の空港・港が届くので、航路の線を出せる
       S.regions = Array.isArray(m.regions) ? m.regions : [];
-      if (m.z >= 3) loadCoarse(); else for (const g of S.regions) loadBounds(g.pref);
+      pushRegions(); // 境界は背景の部品が読む。ここでは支配の色だけ渡す
       return;
     }
-    if (S.overview) { S.nodes.clear(); S.edges.clear(); S.far.clear(); S.tiles.clear(); S.overview = false; S.regions = []; }
+    if (S.overview) { S.nodes.clear(); S.edges.clear(); S.far.clear(); S.tiles.clear(); S.overview = false; S.regions = []; pushRegions(); }
     S.viewZ = 0;
     for (const t of m.dropped) {
       S.tiles.delete(t);
@@ -189,8 +188,6 @@
     }
     for (const t of m.added) S.tiles.add(t);
     for (const n of m.nodes) { S.nodes.set(n.id, n); rememberRoutes(n); }
-    // 拡大したままでも、見えている拠点の都道府県の境界を読む(縮小表示を経ないと読まれなかった。2026-10-19)
-    for (const pref of new Set(m.nodes.map((n) => (n.region || '').split('-')[0]).filter(Boolean))) loadBounds(pref);
     for (const e of m.edges) S.edges.set(e.a < e.b ? `${e.a}|${e.b}` : `${e.b}|${e.a}`, e);
     for (const [k, e] of S.edges) if (!S.nodes.has(e.a) && !S.nodes.has(e.b)) S.edges.delete(k);
     for (const e of m.edges) if (e.far) S.far.set(e.far.id, e.far);
@@ -328,34 +325,21 @@
   };
 
   // ---------- 区・市の境界(地域の支配の色分け。第 13 章・第 14.2 節) ----------
-  // 都道府県ごとの詳細ファイルは、サーバーから届いた地域の pref を見て必要なぶんだけ取る。縮小時(z3〜4)は粗い全国版を 1 回だけ取る
-  const projectPolys = (polys) => polys.map((ring) => ring.map(([lon, lat]) => worldOf(lat, lon)));
-  function loadBounds(pref) {
-    if (!pref || S.boundsLoaded.has(pref)) return;
-    S.boundsLoaded.add(pref);
-    fetch(`data/bounds/${pref}.json`).then((r) => (r.ok ? r.json() : null)).then((d) => {
-      if (!d || !d.regions) return;
-      for (const [id, g] of Object.entries(d.regions)) S.bounds.set(id, { id, name: g.name, pref, polys: projectPolys(g.polys) });
-      S.boundsReady.add(pref); // 海の塗り分けで、この県は細かい版を使う
-    }).catch(() => { /* 境界が無くても遊べる */ });
+  // 陸・海・区市の境界・湖は背景の部品(map-base.js)が読んで描く(2026-10-22 案 A。docs/MAP-ENGINE.md 第 7.3 節)。
+  // ここでは届いた地域の支配者の色と、縮小表示かどうかだけを渡す(同じ中身なら渡し直さない)
+  let regionKey = '';
+  function pushRegions() {
+    if (!mb || !mbReady) return; // 背景の用意ができたら、そのときの分をまとめて渡す
+    const list = (S.regions || []).filter((g) => g.controller).map((g) => {
+      const c = g.controller;
+      return { id: g.id, fill: c.style ? c.style.fill : c.color, frame: c.style ? c.style.frame : c.color };
+    });
+    const key = `${S.overview ? 1 : 0}|${JSON.stringify(list)}`;
+    if (key === regionKey) return;
+    regionKey = key;
+    mb.setOverview(!!S.overview);
+    mb.setRegionControls(list);
   }
-  S.boundsReady = new Set(); // 細かい境界を読み終えた都道府県
-  function loadCoarse() {
-    if (S.coarse) return;
-    S.coarse = new Map();
-    fetch('data/bounds/japan.json').then((r) => (r.ok ? r.json() : null)).then((d) => {
-      if (!d || !d.regions) return;
-      for (const [id, g] of Object.entries(d.regions)) S.coarse.set(id, { id, name: g.name, pref: g.pref, polys: projectPolys(g.polys) });
-    }).catch(() => { /* 無くても遊べる */ });
-  }
-  loadBounds('tokyo'); // 開始地点の既定は東京
-  loadCoarse(); // 粗い全国版はいつも読む(海を水色にするとき、陸地の下地に使う。2026-10-19)
-  // 湖・湾の形(2026-10-19): 薄い水色で塗る。全国で 1 ファイル(tools/import-towns.js が書く)
-  S.water = [];
-  fetch('data/water.json').then((r) => (r.ok ? r.json() : null)).then((d) => {
-    if (!d || !Array.isArray(d.water)) return;
-    S.water = d.water.map((w) => ({ id: w.id, name: w.name, polys: projectPolys(w.polys) }));
-  }).catch(() => { /* 無くても遊べる */ });
 
   // 海路の道すじ(2026-10-19): 海路は陸をまたがず海の上を通る曲線で描く(tools/build-sea-paths.js が書く)。キーは港の id(小さい順)
   S.seaPaths = new Map();
@@ -491,7 +475,10 @@
   };
 
   // ---------- 地図: 拡大縮小と移動 ----------
-  // k: 平面座標 → 画面ピクセルの倍率。tx, ty: 画面の左上にある平面座標。BASE_K は「1 倍」(1° ≈ 1100 px)
+  // 背景の地図(陸・海・区市の境界・湖・地域の支配の色)は MapLibre(public/map-base.js の PCMapBase)が描き、拡大縮小・ドラッグ・ピンチも任せる(2026-10-22 案 A。docs/MAP-ENGINE.md 第 7.3 節)。
+  // この canvas はその上に重ねる層(pointer-events: none)で、線路・つながり・拠点・名前・航路・陣地・選択を今のまま描く。
+  // 画面の位置は MapLibre の投影(Web メルカトル)で出す。平面座標(worldOf)は距離や向きの計算と、線の形の覚え方にだけ使う
+  // 倍率の物差しは今のまま: BASE_K は「1 倍」(1° ≈ 1100 px)。今の倍率 ratio = 経度 1 度の px ÷(1000 × KX × BASE_K)
   const BASE_K = 1.1;
   // 地図の文字をくっきり(2026-10-20 ユーザー指摘: ぼやける)。表示倍率 125% などでは CSS の 1px が画面の点 1.25 個になるので、
   // 文字の大きさと置く位置を画面の点の単位にそろえる。文字のまわりは地の色で縁取る(線と重なっても読める)。名前は薄くても 6 割の濃さ
@@ -503,11 +490,55 @@
   };
   const LABEL_MIN_ALPHA = 0.6;
   const LABEL_PLUS = 2; // 地図の文字(拠点と地域の名前)を 2px 大きく。いちばん小さい文字(プレイヤーの拠点の名前)が 12px になる(2026-10-20 ユーザー指摘: 小さくて見えない。最低 12px)
-  const V = { k: BASE_K, tx: 0, ty: 0, w: 0, h: 0 };
-  const ZOOM_MIN = 0.02, ZOOM_MAX = 150; // 1 倍に対する比。0.02 倍で日本全体が入る。拡大は 150 倍まで(2026-10-19 に 50 から上げた。ユーザー指摘)
-  const toScreen = (p) => ({ x: (p.x - V.tx) * V.k, y: (p.y - V.ty) * V.k });
-  const toWorld = (sx, sy) => ({ x: sx / V.k + V.tx, y: sy / V.k + V.ty });
-  const zoomRatio = () => V.k / BASE_K;
+  const V = { w: 0, h: 0 }; // 地図の入れ物の大きさ(CSS px)
+  // MapLibre の zoom と今の倍率の対応: 1 倍のときの zoom(MapLibre の世界は zoom 0 で 512 px)。最初の位置を決めるのにだけ使い、あとは今の zoom からの差で動かす
+  const ZOOM_AT_RATIO1 = Math.log2((1000 * KX * BASE_K * 360) / 512);
+  const ZOOM_STEP = Math.log2(1.4); // + / − ボタン 1 回で 1.4 倍(今までと同じ)
+  const baseColors = () => {
+    const css = getComputedStyle(document.documentElement), tok = (n) => css.getPropertyValue(n).trim();
+    return { water: tok('--water') || '#D6ECFA', land: tok('--land') || '#F7F9FA', line: tok('--line') || '#CBD3DC', lineStrong: tok('--line-strong') || '#8A97A6' };
+  };
+  let mb = null, mbReady = false;
+  try {
+    mb = window.PCMapBase.create({ container: $('mapBase'), center: [TOKYO.lon, TOKYO.lat], zoom: ZOOM_AT_RATIO1 + Math.log2(9), minZoom: 4, maxZoom: 18, colors: baseColors() });
+  } catch (e) {
+    mb = null; // WebGL が使えない端末には対応しない(2026-10-22 ユーザー決定)。そのことだけ伝える
+    $('lobbyError').textContent = window.PCMapBase ? 'この端末(ブラウザー)では地図を表示できません。WebGL が使える新しいブラウザーで開いてください' : '地図の部品を読み込めませんでした。ページを読み込み直してください';
+  }
+  if (mb) {
+    // 地図は回さない・傾けない(今までの地図と同じ。画面の外の線を飛ばす計算も、地図が北を上にしている前提)。約束の外なので MapLibre を直接使う
+    const m = mb.map;
+    if (m) {
+      if (m.dragRotate) m.dragRotate.disable();
+      if (m.touchZoomRotate && m.touchZoomRotate.disableRotation) m.touchZoomRotate.disableRotation();
+      if (m.touchPitch) m.touchPitch.disable();
+      if (m.keyboard && m.keyboard.disableRotation) m.keyboard.disableRotation();
+    }
+    mb.ready.then(() => { mbReady = true; mb.setColors(baseColors()); regionKey = ''; pushRegions(); }).catch(() => { /* 背景が出なくても拠点は描く */ });
+  }
+  // 1 こまの間だけ使う値: 今の倍率(平面座標 1 単位が何 px か)と、速い投影。1 こまで線路の点など数万回投影するので、
+  // こまの始めに MapLibre の投影から「経度はそのまま、緯度はメルカトルの式」の拡大と平行移動を出し、画面の隅の点で合っているか確かめてから使う(合わなければ毎回 mb.project)
+  let kFrame = null, fastProj = null;
+  const mercY = (lat) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
+  function beginFrame() {
+    kFrame = mb.pxPerDegLon() / (1000 * KX); fastProj = null;
+    const c = mb.unproject(V.w / 2, V.h / 2), a = mb.unproject(V.w * 0.9, V.h * 0.1), b = mb.unproject(V.w * 0.1, V.h * 0.9);
+    const pc = mb.project(c.lon, c.lat), pa = mb.project(a.lon, a.lat), pb = mb.project(b.lon, b.lat);
+    const m0 = mercY(c.lat), dl = a.lon - c.lon, dm = mercY(a.lat) - m0;
+    if (!dl || !dm) return;
+    const f = { lon0: c.lon, m0, x0: pc.x, y0: pc.y, sx: (pa.x - pc.x) / dl, sy: (pa.y - pc.y) / dm };
+    if (Math.abs(f.x0 + (b.lon - f.lon0) * f.sx - pb.x) < 0.5 && Math.abs(f.y0 + (mercY(b.lat) - m0) * f.sy - pb.y) < 0.5) fastProj = f;
+  }
+  function endFrame() { kFrame = null; fastProj = null; }
+  // 平面座標 → 画面(地図の入れ物の左上からの CSS px)。画面 → 平面座標
+  const toScreen = (p) => {
+    const lon = p.x / (1000 * KX), lat = -p.y / 1000;
+    if (fastProj) return { x: fastProj.x0 + (lon - fastProj.lon0) * fastProj.sx, y: fastProj.y0 + (mercY(lat) - fastProj.m0) * fastProj.sy };
+    const q = mb.project(lon, lat); return { x: q.x, y: q.y };
+  };
+  const toWorld = (sx, sy) => { const g = mb.unproject(sx, sy); return worldOf(g.lat, g.lon); };
+  const pxPerUnit = () => kFrame || (mb ? mb.pxPerDegLon() / (1000 * KX) : BASE_K); // 平面座標 1 単位(0.001°)が何 px か(今までの V.k)
+  const zoomRatio = () => pxPerUnit() / BASE_K;
   // 縮小するほど印を小さく。日本全体が見える倍率(段 3・4)では 0.2 倍まで(大きな印が細い陸地を覆い隠していた。2026-10-19)
   const shrink = () => { const r = zoomRatio(); return Math.min(1, Math.max(r < 0.18 ? 0.2 : 0.35, r / 6)); };
   const radiusOf = (n) => shrink() * (n.isPlayerNode ? 8
@@ -518,14 +549,15 @@
 
   function resize() {
     const box = $('mapWrap');
-    // 地図は枠(画面の残りの高さ)いっぱい(2026-10-19: ページを縦に伸ばさない)
+    // 地図は枠(画面の残りの高さ)いっぱい(2026-10-19: ページを縦に伸ばさない)。重ねる canvas も背景の地図と同じ大きさ
     const w = Math.max(200, box.clientWidth);
     const h = Math.max(200, box.clientHeight);
     const dpr = window.devicePixelRatio || 1;
     canvas.style.width = `${w}px`; canvas.style.height = `${h}px`;
     canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (V.w) { const c = toWorld(V.w / 2, V.h / 2); V.w = w; V.h = h; centerOn(c); } else { V.w = w; V.h = h; }
+    V.w = w; V.h = h;
+    if (mb && mb.map && mb.map.resize) mb.map.resize(); // 背景も今すぐ合わせる(見ている範囲をすぐ正しく頼むため。中心は MapLibre が保つ)
     requestView();
   }
   window.addEventListener('resize', resize);
@@ -536,16 +568,11 @@
   // 凡例(レベルの形・持ち主・出典)はダイアログで出す(2026-10-19 ユーザー指摘)
   $('rankBtn').onclick = () => { renderPlayers(); const d = $('rankDialog'); if (d.showModal) d.showModal(); else d.setAttribute('open', ''); }; // 順位はダイアログ(2026-10-21)
   $('legendBtn').onclick = () => { const d = $('legendDialog'); if (d.showModal) d.showModal(); else d.setAttribute('open', ''); };
-  const clampK = (k) => Math.min(BASE_K * ZOOM_MAX, Math.max(BASE_K * ZOOM_MIN, k));
-  function zoomAt(factor, sx, sy) {
-    const before = toWorld(sx, sy);
-    V.k = clampK(V.k * factor);
-    V.tx = before.x - sx / V.k; V.ty = before.y - sy / V.k;
-    requestView();
-  }
+  // 平面座標 p を真ん中に。ratio を渡せばその倍率に(MapLibre の zoom は今の zoom からの差で出す。最小・最大は MapLibre が守る)
   function centerOn(p, ratio) {
-    if (ratio) V.k = clampK(BASE_K * ratio);
-    V.tx = p.x - V.w / 2 / V.k; V.ty = p.y - V.h / 2 / V.k;
+    if (!mb) return;
+    const g = latLonOf(p.x, p.y);
+    mb.jumpTo({ center: [g.lon, g.lat], zoom: ratio ? mb.getZoom() + Math.log2(ratio / zoomRatio()) : mb.getZoom() });
     requestView();
   }
   function centerOnMine() {
@@ -557,14 +584,9 @@
   const renderOwnView = () => { for (const b of document.querySelectorAll('#ownView button')) b.setAttribute('aria-pressed', String(b.dataset.v === S.ownView)); };
   for (const b of document.querySelectorAll('#ownView button')) b.onclick = () => { S.ownView = b.dataset.v; try { localStorage.setItem('pc.ownView', S.ownView); } catch (e) { /* 覚えられなくても動く */ } renderOwnView(); };
   renderOwnView();
-  $('zoomIn').onclick = () => zoomAt(1.4, V.w / 2, V.h / 2);
-  $('zoomOut').onclick = () => zoomAt(1 / 1.4, V.w / 2, V.h / 2);
+  $('zoomIn').onclick = () => { if (mb) mb.zoomBy(ZOOM_STEP); };
+  $('zoomOut').onclick = () => { if (mb) mb.zoomBy(-ZOOM_STEP); };
   $('zoomHome').onclick = centerOnMine;
-  canvas.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    const rect = canvas.getBoundingClientRect();
-    zoomAt(Math.exp(-e.deltaY * 0.0015), e.clientX - rect.left, e.clientY - rect.top);
-  }, { passive: false });
 
   // ---------- 見えている範囲のタイルをサーバーに頼む ----------
   // 拡大率 → タイルの段(DESIGN.md 第 13 章)。広いほど粗い段で、高いレベルの拠点だけ
@@ -578,9 +600,10 @@
   }
   const TILE_LAT = 0.025, TILE_LON = 0.03;
   function tilesInView(z) {
-    const a = latLonOf(V.tx, V.ty), b = latLonOf(V.tx + V.w / V.k, V.ty + V.h / V.k);
+    if (!mb) return [];
+    const b = mb.getBounds();
     const s = { lat: TILE_LAT * 4 ** z, lon: TILE_LON * 4 ** z };
-    const minLat = Math.min(a.lat, b.lat), maxLat = Math.max(a.lat, b.lat), minLon = Math.min(a.lon, b.lon), maxLon = Math.max(a.lon, b.lon);
+    const minLat = Math.min(b.south, b.north), maxLat = Math.max(b.south, b.north), minLon = Math.min(b.west, b.east), maxLon = Math.max(b.west, b.east);
     const pad = z === 0 ? 1 : 0; // 細かい段は周囲 1 周も先読み
     const y0 = Math.floor(minLat / s.lat) - pad, y1 = Math.floor(maxLat / s.lat) + pad;
     const x0 = Math.floor(minLon / s.lon) - pad, x1 = Math.floor(maxLon / s.lon) + pad;
@@ -588,65 +611,37 @@
     for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) out.push(`t${z}:${y}:${x}`);
     return out;
   }
-  let viewTimer = null, lastViewKey = '';
+  // 地図が止まって 150 ms で頼む。動かし続けている間も 0.5 秒に 1 回は頼む(MapLibre の move のたびに呼ばれる)
+  let viewTimer = null, viewDue = 0, lastViewKey = '';
+  function sendView(force) {
+    if (!mb) return;
+    let z = zoomTier();
+    let tiles = tilesInView(z);
+    while (tiles.length > 80 && z < 4) { z++; tiles = tilesInView(z); }
+    const key = `${z}:${tiles.join(',')}`;
+    if (!force && key === lastViewKey) return;
+    lastViewKey = key;
+    send({ t: 'view', z, tiles });
+  }
   function requestView(force) {
     if (!S.joined && !S.picking) return;
+    const t = performance.now();
+    if (force) { clearTimeout(viewTimer); viewTimer = setTimeout(() => { viewTimer = null; sendView(true); }, 0); return; }
+    if (!viewTimer) viewDue = t + 500;
     clearTimeout(viewTimer);
-    viewTimer = setTimeout(() => {
-      let z = zoomTier();
-      let tiles = tilesInView(z);
-      while (tiles.length > 80 && z < 4) { z++; tiles = tilesInView(z); }
-      const key = `${z}:${tiles.join(',')}`;
-      if (!force && key === lastViewKey) return;
-      lastViewKey = key;
-      send({ t: 'view', z, tiles });
-    }, force ? 0 : 150);
+    viewTimer = setTimeout(() => { viewTimer = null; sendView(false); }, Math.max(0, Math.min(150, viewDue - t)));
   }
+  if (mb) { mb.on('move', () => requestView()); mb.on('moveend', () => requestView()); }
 
-  // ドラッグで移動、2 本指でピンチ。動かさずに離したらタップ扱い
-  const pointers = new Map();
-  let gesture = null;
-  const local = (e) => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
-  canvas.addEventListener('pointerdown', (e) => {
-    canvas.setPointerCapture(e.pointerId);
-    pointers.set(e.pointerId, local(e));
-    const pts = [...pointers.values()];
-    if (pts.length === 1) gesture = { type: 'drag', start: pts[0], tx: V.tx, ty: V.ty, moved: false };
-    else if (pts.length === 2) {
-      const mid = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
-      gesture = { type: 'pinch', dist: Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y), k: V.k, world: toWorld(mid.x, mid.y), moved: true };
-    }
+  // ドラッグ・ピンチ・ホイールは MapLibre に任せる。動かさずに離したとき(タップ)だけ、背景の部品が click で知らせる
+  if (mb) mb.on('click', (e) => tapAt({ x: e.x, y: e.y }));
+  // 押せる拠点の上では指の形に(マウスだけ。ドラッグ中は MapLibre の手の形のまま)。カーソルは MapLibre の canvas に付けるので直接使う
+  $('mapWrap').addEventListener('pointermove', (e) => {
+    if (!mb || !mb.map || e.buttons || e.pointerType !== 'mouse') return;
+    const r = canvas.getBoundingClientRect();
+    const n = nodeAt({ x: e.clientX - r.left, y: e.clientY - r.top });
+    mb.map.getCanvas().style.cursor = n && (canAttack(n.id) || ownerOf(n.id) === S.me) ? 'pointer' : '';
   });
-  canvas.addEventListener('pointermove', (e) => {
-    if (!pointers.has(e.pointerId)) {
-      const n = nodeAt(local(e));
-      canvas.style.cursor = n && (canAttack(n.id) || ownerOf(n.id) === S.me) ? 'pointer' : 'grab';
-      return;
-    }
-    pointers.set(e.pointerId, local(e));
-    const pts = [...pointers.values()];
-    if (!gesture) return;
-    if (gesture.type === 'drag' && pts.length === 1) {
-      const dx = pts[0].x - gesture.start.x, dy = pts[0].y - gesture.start.y;
-      if (Math.hypot(dx, dy) > 4) gesture.moved = true;
-      if (gesture.moved) { V.tx = gesture.tx - dx / V.k; V.ty = gesture.ty - dy / V.k; canvas.style.cursor = 'grabbing'; requestView(); }
-    } else if (gesture.type === 'pinch' && pts.length === 2) {
-      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
-      const mid = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
-      V.k = clampK((gesture.k * dist) / Math.max(1, gesture.dist));
-      V.tx = gesture.world.x - mid.x / V.k; V.ty = gesture.world.y - mid.y / V.k;
-      requestView();
-    }
-  });
-  const endPointer = (e) => {
-    const was = pointers.get(e.pointerId);
-    pointers.delete(e.pointerId);
-    if (gesture && gesture.type === 'drag' && !gesture.moved && was && e.type === 'pointerup') tapAt(was);
-    gesture = pointers.size === 1 ? { type: 'drag', start: [...pointers.values()][0], tx: V.tx, ty: V.ty, moved: true } : null;
-    canvas.style.cursor = 'grab';
-  };
-  canvas.addEventListener('pointerup', endPointer);
-  canvas.addEventListener('pointercancel', endPointer);
 
   // 拠点を選ぶ: どの拠点でも情報パネルに出す。攻撃・強化できる拠点なら出題も求める
   function tapAt(pt) {
@@ -1069,12 +1064,26 @@
   buildLegend();
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
     $('legend').querySelectorAll('li:has(canvas)').forEach((li) => li.remove()); buildLegend();
+    if (mb && mbReady) mb.setColors(baseColors()); // 背景の地図の色もダークモードに合わせる
   });
 
   // ---------- 描画: 地図 ----------
-  function draw(t) {
-    requestAnimationFrame(draw);
+  // 重ねる層は、MapLibre が背景を描くたび(render)に同じこまの中で描き直す(地図と拠点がずれないように)。
+  // 地図が止まっている間は、攻撃できる拠点の点滅などのために、こまごと(requestAnimationFrame)に描く
+  let lastBaseDraw = -1e9;
+  function frame(t) {
+    requestAnimationFrame(frame);
     tickUi();
+    if (t - lastBaseDraw < 50) return; // 背景が描き続けている間は、そちらの render で描く(1 こまで 2 回描かない)
+    draw(t);
+  }
+  if (mb) mb.on('render', () => { const t = performance.now(); lastBaseDraw = t; draw(t); });
+  function draw(t) {
+    if (!mb || !V.w) return;
+    beginFrame();
+    try { drawLayer(t); } finally { endFrame(); }
+  }
+  function drawLayer(t) {
     const css = getComputedStyle(document.documentElement);
     const tok = (n) => css.getPropertyValue(n).trim();
     const C = { surface: tok('--surface'), ink: tok('--ink'), muted: tok('--muted'), line: tok('--line'), strong: tok('--line-strong'), accent: tok('--accent') };
@@ -1083,72 +1092,7 @@
     const ratio = zoomRatio();
     const grow = V.w < 600 ? 1.15 : 1;
 
-    // 海(2026-10-19 ユーザー指摘: 湖と同じ色に): 下地を水色にして、陸地(区・市の面)を陸の色で塗る。
-    // 陸地は粗い全国版(約 1 km)を下地にし、読み込んである都道府県は細かい版で重ねる。全国版が届くまでは今までどおり(全部陸の色)
-    if (S.coarse && S.coarse.size) {
-      ctx.fillStyle = tok('--water') || '#D6ECFA'; ctx.fillRect(0, 0, V.w, V.h);
-      ctx.fillStyle = tok('--land') || '#F7F9FA';
-      const lo = toWorld(0, 0), hi = toWorld(V.w, V.h);
-      const detailed = !(S.overview && S.viewZ >= 3); // 細かい境界を使う倍率か
-      const fillLand = (set, coarse) => {
-        for (const b of set.values()) {
-          if (!b.polys[0] || !b.polys[0][0]) continue;
-          if (coarse && detailed && S.boundsReady.has(b.pref)) continue; // 細かい版を読んだ県は粗い版で塗らない(海岸が約 1 km ずれるため)
-          if (!b.bbox) { let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity; for (const ring of b.polys) for (const q of ring) { if (q.x < x0) x0 = q.x; if (q.x > x1) x1 = q.x; if (q.y < y0) y0 = q.y; if (q.y > y1) y1 = q.y; } b.bbox = [x0, y0, x1, y1]; }
-          if (b.bbox[2] < lo.x || b.bbox[0] > hi.x || b.bbox[3] < lo.y || b.bbox[1] > hi.y) continue;
-          ctx.beginPath();
-          for (const ring of b.polys) { for (let i = 0; i < ring.length; i++) { const q = toScreen(ring[i]); if (i) ctx.lineTo(q.x, q.y); else ctx.moveTo(q.x, q.y); } ctx.closePath(); }
-          ctx.fill('evenodd');
-        }
-      };
-      fillLand(S.coarse, true);
-      if (detailed) fillLand(S.bounds, false);
-    }
-
-    // 区・市の境界: 支配者がいればその色で薄く塗る。縮小時は輪郭も濃く。z3 以上は粗い全国版
-    const boundSet = S.overview && S.viewZ >= 3 && S.coarse ? S.coarse : S.bounds;
-    if (boundSet && boundSet.size) {
-      const ctl = new Map((S.regions || []).map((g) => [g.id, g.controller]));
-      ctx.lineJoin = 'round';
-      const lo = toWorld(0, 0), hi = toWorld(V.w, V.h);
-      for (const b of boundSet.values()) {
-        // 画面の外の地域は描かない(全国を読んだときの負荷を抑える)
-        const r0 = b.polys[0] && b.polys[0][0];
-        if (!r0) continue;
-        if (!b.bbox) { let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity; for (const ring of b.polys) for (const q of ring) { if (q.x < x0) x0 = q.x; if (q.x > x1) x1 = q.x; if (q.y < y0) y0 = q.y; if (q.y > y1) y1 = q.y; } b.bbox = [x0, y0, x1, y1]; }
-        if (b.bbox[2] < lo.x || b.bbox[0] > hi.x || b.bbox[3] < lo.y || b.bbox[1] > hi.y) continue;
-        const c = ctl.get(b.id);
-        ctx.beginPath();
-        for (const ring of b.polys) {
-          for (let i = 0; i < ring.length; i++) { const q = toScreen(ring[i]); if (i) ctx.lineTo(q.x, q.y); else ctx.moveTo(q.x, q.y); }
-          ctx.closePath();
-        }
-        const fillCol = c ? (c.style ? c.style.fill : c.color) : null, frameCol = c ? (c.style ? c.style.frame : c.color) : null;
-        if (fillCol) { ctx.fillStyle = fillCol; ctx.globalAlpha = S.overview ? 0.32 : 0.12; ctx.fill(); ctx.globalAlpha = 1; }
-        // 輪郭: 縮小するほど細く薄く(日本全体では 1,900 の区・市の輪郭が陸を覆い、陸まで水色に見えた。2026-10-19)。支配者がいる地域はその色ではっきり
-        const far = S.overview ? (S.viewZ >= 4 ? 2 : S.viewZ >= 3 ? 1 : 0) : 0;
-        ctx.strokeStyle = frameCol || C.line;
-        ctx.lineWidth = S.overview ? (c ? 2 : [1.5, 0.8, 0.5][far]) : 1;
-        ctx.globalAlpha = c ? 0.9 : S.overview ? [0.9, 0.45, 0.25][far] : 0.5;
-        ctx.stroke(); ctx.globalAlpha = 1;
-      }
-    }
-
-    // 湖・湾(2026-10-19): 薄い水色で塗る。島は穴として抜く(even-odd)。画面の外のものは描かない
-    if (S.water && S.water.length) {
-      const lo = toWorld(0, 0), hi = toWorld(V.w, V.h);
-      ctx.fillStyle = tok('--water') || '#D6ECFA';
-      for (const w of S.water) {
-        if (!w.bbox) { let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity; for (const ring of w.polys) for (const q of ring) { if (q.x < x0) x0 = q.x; if (q.x > x1) x1 = q.x; if (q.y < y0) y0 = q.y; if (q.y > y1) y1 = q.y; } w.bbox = [x0, y0, x1, y1]; }
-        if (w.bbox[2] < lo.x || w.bbox[0] > hi.x || w.bbox[3] < lo.y || w.bbox[1] > hi.y) continue;
-        ctx.beginPath();
-        for (const ring of w.polys) {
-          for (let i = 0; i < ring.length; i++) { const q = toScreen(ring[i]); if (i) ctx.lineTo(q.x, q.y); else ctx.moveTo(q.x, q.y); }
-          ctx.closePath();
-        }
-        ctx.fill('evenodd');
-      }
-    }
+    // 海・陸・区市の境界・湖・地域の支配の色は背景の部品(MapLibre)が下に描く(2026-10-22 案 A)。ここからは重ねる層
 
     // 航路(2026-10-19 ユーザー決定): 実際の空路・海路を、占領したときに曲線で出す(空路は紫の弧、海路はオレンジで海の上を通る線)
     //   片方の端を自分(切り替えで出すならチームも)が持つ → 点線(行き先を攻撃できる)/ 両端とも → 太い実線 / 空港・港を選んだとき → その航路を薄く
@@ -1322,7 +1266,7 @@
     let drawList = sorted;
     if (S.overview) {
       // ます目は地図に固定する(画面に固定するとドラッグのたびに残る拠点が入れ替わり、ちらついた。2026-10-19 ユーザー指摘)
-      const cell = 34 * grow, cw = cell / V.k, best = new Map();
+      const cell = 34 * grow, cw = cell / pxPerUnit(), best = new Map();
       for (const n of sorted) {
         const p = toScreen(posOf(n));
         if (p.x < -60 || p.y < -60 || p.x > V.w + 60 || p.y > V.h + 60) continue;
@@ -1499,5 +1443,5 @@
   }
 
   resize();
-  requestAnimationFrame(draw);
+  requestAnimationFrame(frame);
 })();

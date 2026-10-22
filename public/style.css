@@ -84,8 +84,10 @@ body {
 .board-foot { display: flex; align-items: center; gap: 10px; margin-top: 6px; flex: 0 0 auto; min-width: 0; }
 .credit-short { margin: 0; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .map-wrap { position: relative; overflow: hidden; border-radius: 8px; background: color-mix(in srgb, var(--bg) 40%, var(--surface)); flex: 1 1 auto; min-height: 0; }
-#map { display: block; position: absolute; left: 0; top: 0; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
-.zoom { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; }
+/* 重なり順(2026-10-22 案 A): 背景の地図(MapLibre)0 → 拠点を描く canvas 1(押せない。操作は下の地図が受ける)→ ボタン・切り替え・説明 2 → 選ぶときの帯 3 */
+.map-base { position: absolute; inset: 0; z-index: 0; background: var(--water); }
+#map { display: block; position: absolute; left: 0; top: 0; z-index: 1; pointer-events: none; user-select: none; -webkit-user-select: none; }
+.zoom { position: absolute; top: 10px; right: 10px; z-index: 2; display: flex; flex-direction: column; gap: 6px; }
 .zbtn {
   width: 36px; height: 36px; border-radius: 8px; border: 2px solid var(--ink);
   background: var(--surface); color: var(--ink); font: 700 18px/1 var(--font-mono); cursor: pointer;
@@ -97,7 +99,7 @@ body {
 .own-view button:first-child { border-left: 0; }
 .own-view button:hover { background: var(--bg); }
 .own-view button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
-.map-hint { position: absolute; left: 10px; bottom: 6px; margin: 0; font-size: 12px; color: var(--muted); pointer-events: none; }
+.map-hint { position: absolute; left: 10px; bottom: 6px; z-index: 2; margin: 0; font-size: 12px; color: var(--muted); pointer-events: none; }
 .credit { margin: 6px 0 0; font-size: 12px; color: var(--muted); }
 .legend {
   list-style: none; margin: 8px 0 0; padding: 0;
