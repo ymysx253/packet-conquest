@@ -1,0 +1,14 @@
+{
+  "note": "FactBank(新しい番号 Lv65「つながらないとき」)。行 = 確かめること(ja)と見る順の段(attrs.layer: 1 = 線・無線、2 = アドレス、3 = 名前)。段ごとに 1 つずつ選んで並べ替えの問題にする",
+  "rows": [
+    {"id":"cable","ja":"LAN ケーブルがしっかり差さっているか","attrs":{"layer":1},"source":"一般的な切り分けの手順(下の層から順に確かめる。OSI 参照モデルの順)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"wifi","ja":"無線 LAN につながっているか","attrs":{"layer":1},"source":"一般的な切り分けの手順(下の層から順に確かめる。OSI 参照モデルの順)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"lamp","ja":"LAN の差し口のランプがついているか","attrs":{"layer":1},"source":"一般的な切り分けの手順(下の層から順に確かめる。OSI 参照モデルの順)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ip","ja":"IP アドレスが付いているか","attrs":{"layer":2},"source":"一般的な切り分けの手順(下の層から順に確かめる。OSI 参照モデルの順)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"dhcp","ja":"DHCP からアドレスをもらえているか","attrs":{"layer":2},"source":"一般的な切り分けの手順(下の層から順に確かめる。OSI 参照モデルの順)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"gw","ja":"デフォルトゲートウェイに届くか","attrs":{"layer":2},"source":"一般的な切り分けの手順(下の層から順に確かめる。OSI 参照モデルの順)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"dns","ja":"ドメイン名から IP アドレスを調べられるか","attrs":{"layer":3},"source":"一般的な切り分けの手順(下の層から順に確かめる。OSI 参照モデルの順)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"dns-server","ja":"DNS サーバーが名前の問い合わせに答えるか","attrs":{"layer":3},"source":"一般的な切り分けの手順(下の層から順に確かめる。OSI 参照モデルの順)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"name","ja":"名前で相手を引けるか","attrs":{"layer":3},"source":"一般的な切り分けの手順(下の層から順に確かめる。OSI 参照モデルの順)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

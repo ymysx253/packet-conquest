@@ -1,0 +1,11 @@
+{
+  "note": "FactBank(新しい番号 Lv32「LAN ケーブルの差し口」)。行 = 問いの文(ja)・正解(attrs.answer)・誤答の候補(attrs.wrong。どれも正解にならないもの)・理由(attrs.why)。誤答の候補から選んで n 択にする",
+  "rows": [
+    {"id":"shape","ja":"LAN ケーブル(銅線)の先の差し込み口(コネクター)はどれ?","attrs":{"answer":"RJ-45","wrong":["USB-C","HDMI","RJ-11","電源プラグ"],"why":"LAN ケーブルの先は RJ-45。RJ-11 は電話線のコネクターで、RJ-45 より小さい。"},"source":"ANSI/TIA-568(8P8C モジュラーコネクター。ふつう RJ-45 と呼ぶ)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"name","ja":"PC の LAN の差し口に差すコネクターの名前はどれ?","attrs":{"answer":"RJ-45","wrong":["USB-A","USB-C","HDMI","DisplayPort"],"why":"LAN の差し口は RJ-45。USB・HDMI・DisplayPort は別の差し口。"},"source":"ANSI/TIA-568(8P8C モジュラーコネクター。ふつう RJ-45 と呼ぶ)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"pins","ja":"RJ-45 のコネクターに並ぶ線は何本?","attrs":{"answer":"8 本","wrong":["2 本","4 本","6 本","12 本"],"why":"RJ-45 には 8 本の線が並ぶ。"},"source":"ANSI/TIA-568(8P8C モジュラーコネクター。ふつう RJ-45 と呼ぶ)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"where","ja":"RJ-45 のコネクターを差すのはどこ?","attrs":{"answer":"PC やスイッチの LAN の差し口","wrong":["電源のコンセント","テレビの HDMI の差し口","スマホの充電の差し口","電話機の差し口"],"why":"RJ-45 は LAN の差し口に差す。電話機の差し口は RJ-11。"},"source":"ANSI/TIA-568(8P8C モジュラーコネクター。ふつう RJ-45 と呼ぶ)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"cable","ja":"RJ-45 のコネクターが付いているケーブルはどれ?","attrs":{"answer":"LAN ケーブル(銅線)","wrong":["HDMI ケーブル","USB ケーブル","電源コード","イヤホンのコード"],"why":"RJ-45 は LAN ケーブル(銅線)の先に付く。"},"source":"ANSI/TIA-568(8P8C モジュラーコネクター。ふつう RJ-45 と呼ぶ)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"look","ja":"RJ-45 のコネクターの形はどれ?","attrs":{"answer":"四角くて、つめでカチッと止まる","wrong":["丸くて、ねじって止める","細長くて、上下どちらでも差せる","平たくて、両側をねじで止める"],"why":"RJ-45 は四角い形で、つめで止まる。上下どちらでも差せるのは USB-C。"},"source":"ANSI/TIA-568(8P8C モジュラーコネクター。ふつう RJ-45 と呼ぶ)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

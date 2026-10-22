@@ -1,0 +1,10 @@
+{
+  "note": "FactBank(新しい番号 Lv56「メールを送る」)。行 = 問いの文(ja)・正解(attrs.answer)・誤答の候補(attrs.wrong。どれも正解にならないもの)・理由(attrs.why)。誤答の候補から選んで n 択にする",
+  "rows": [
+    {"id":"send","ja":"メールアプリが、送信用のサーバーにメールを送るときの決まりはどれ?","attrs":{"answer":"SMTP","wrong":["POP","IMAP","HTTP","DHCP","DNS"],"why":"メールを送るのは SMTP。POP・IMAP は受け取る決まり。"},"source":"RFC 5321(SMTP)・RFC 1939(POP3)・RFC 9051(IMAP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"relay","ja":"メールのサーバーから別のメールのサーバーへ、メールを届けるときの決まりはどれ?","attrs":{"answer":"SMTP","wrong":["POP","IMAP","DHCP","DNS","SSID"],"why":"サーバーどうしでメールを届けるのも SMTP。"},"source":"RFC 5321(SMTP)・RFC 1939(POP3)・RFC 9051(IMAP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"use","ja":"SMTP は何に使う?","attrs":{"answer":"メールを送る","wrong":["メールアプリでメールを受け取って読む","Web ページを見る","アドレスを自動で配る","名前から IP アドレスを調べる"],"why":"SMTP は送る決まり。受け取って読むのは POP や IMAP。"},"source":"RFC 5321(SMTP)・RFC 1939(POP3)・RFC 9051(IMAP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"split","ja":"メールの決まりの分け方で正しいのはどれ?","attrs":{"answer":"送るのは SMTP、受け取るのは POP や IMAP","wrong":["送るのは POP、受け取るのは SMTP","送るのも受け取るのも HTTP だけ","送るのは DNS、受け取るのは DHCP","送るのも受け取るのも SMTP だけ"],"why":"送るのは SMTP、メールアプリで受け取るのは POP や IMAP。"},"source":"RFC 5321(SMTP)・RFC 1939(POP3)・RFC 9051(IMAP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"m","ja":"SMTP の「M」は何?","attrs":{"answer":"Mail(メール)","wrong":["Mobile","Map","Music","Mouse"],"why":"Simple Mail Transfer Protocol。M は Mail。"},"source":"RFC 5321(SMTP)・RFC 1939(POP3)・RFC 9051(IMAP)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

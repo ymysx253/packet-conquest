@@ -1,0 +1,11 @@
+{
+  "note": "FactBank(新しい番号 Lv39「MAC アドレスとは」)。行 = 問いの文(ja)・正解(attrs.answer)・誤答の候補(attrs.wrong。どれも正解にならないもの)・理由(attrs.why)。誤答の候補から選んで n 択にする",
+  "rows": [
+    {"id":"name","ja":"ネットワークにつなぐ部品ごとに付く、48 ビットの番号はどれ?","attrs":{"answer":"MAC アドレス","wrong":["IP アドレス","SSID","URL","ドメイン名","パスワード"],"why":"MAC アドレスは部品ごとに作るときに付く 48 ビットの番号。IP アドレスは網の上の住所。"},"source":"IEEE 802(MAC アドレス = EUI-48)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"port","ja":"LAN の差し口の部品に、作るときに付けられている番号はどれ?","attrs":{"answer":"MAC アドレス","wrong":["IP アドレス","SSID","URL","ドメイン名","パスワード"],"why":"部品を作るときに付けられるのが MAC アドレス。"},"source":"IEEE 802(MAC アドレス = EUI-48)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"bits","ja":"MAC アドレスは何ビット?","attrs":{"answer":"48 ビット","wrong":["8 ビット","16 ビット","32 ビット","128 ビット"],"why":"MAC アドレスは 48 ビット(16 進 2 けた × 6)。32 ビットは IPv4、128 ビットは IPv6。"},"source":"IEEE 802(MAC アドレス = EUI-48)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"when","ja":"MAC アドレスは、ふつういつ付けられている?","attrs":{"answer":"部品を作るとき","wrong":["Web ページを開くたび","メールを送るたび","買った人が名前を決めたとき","ケーブルを抜くたび"],"why":"部品を作るときに付けられる。"},"source":"IEEE 802(MAC アドレス = EUI-48)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"scope","ja":"MAC アドレスを主に使うのはどの範囲?","attrs":{"answer":"同じ LAN の中","wrong":["世界中のインターネット全体","国と国のネットワークの間","Web ページの場所を書くとき","電話の番号を調べるとき"],"why":"MAC アドレスは同じ LAN の中で相手を見分けるのに使う。網をまたぐ届け先は IP アドレス。"},"source":"IEEE 802(MAC アドレス = EUI-48)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"desc","ja":"MAC アドレスの説明として正しいのはどれ?","attrs":{"answer":"ネットワークの部品ごとに付く番号","wrong":["無線 LAN のネットワークの名前","Web ページの場所を表す文字","回線の速さの単位","名前から番号を調べるしくみ"],"why":"MAC アドレスは部品ごとの番号。無線 LAN の名前は SSID、Web ページの場所は URL。"},"source":"IEEE 802(MAC アドレス = EUI-48)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "note": "FactBank(新しい番号 Lv66「ping」)。行 = 問いの文(ja)・正解(attrs.answer)・誤答の候補(attrs.wrong。どれも正解にならないもの)・理由(attrs.why)。誤答の候補から選んで n 択にする",
+  "rows": [
+    {"id":"term","ja":"相手に届くかを確かめるコマンドはどれ?","attrs":{"answer":"ping","wrong":["ipconfig","nslookup","dir","cd","echo"],"why":"ping は相手に返事を求め、返事が来れば届くとわかる。ipconfig は自分のアドレスを見る、nslookup は名前を調べる。"},"source":"RFC 792(ICMP のエコー要求・応答)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ok","ja":"ping の返事が来たら、何がわかる?","attrs":{"answer":"相手まで届き、返事も戻ってくる","wrong":["相手のパスワード","相手の機器の値段","相手の画面の中身","相手の SSID"],"why":"返事が来れば、行きも帰りも届いている。"},"source":"RFC 792(ICMP のエコー要求・応答)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"time","ja":"ping でわかるものはどれ?","attrs":{"answer":"返事が戻るまでの時間","wrong":["相手のパスワード","相手の機器の値段","相手が見ている Web ページ","相手のメールの中身"],"why":"ping は返事までの時間も表示する。"},"source":"RFC 792(ICMP のエコー要求・応答)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ng","ja":"ping の返事が来ないとき、考えられることはどれ?","attrs":{"answer":"途中か相手の所で止まっていて、届いていない","wrong":["相手まで必ず届いている","回線が速すぎる","パスワードが長すぎる","画面が明るすぎる"],"why":"返事が来ないのは、途中で止まったか、相手が返事をしないから。"},"source":"RFC 792(ICMP のエコー要求・応答)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"sends","ja":"ping が相手に送るのはどれ?","attrs":{"answer":"「届いたら返事して」という小さな合図","wrong":["大きなファイル","パスワードを聞く合図","メールの本文","Web ページ全体"],"why":"小さな合図(エコー要求)を送り、返事(エコー応答)を待つ。"},"source":"RFC 792(ICMP のエコー要求・応答)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"arg","ja":"ping のあとに続けて書くのはどれ?","attrs":{"answer":"確かめたい相手のアドレスか名前","wrong":["自分のパスワード","無線 LAN の SSID","ファイルの名前","ケーブルの長さ"],"why":"例: ping 192.0.2.1 のように、相手のアドレスか名前を書く。"},"source":"RFC 792(ICMP のエコー要求・応答)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"example","ja":"ping 192.0.2.1 と打つと、何を確かめる?","attrs":{"answer":"192.0.2.1 に届くか","wrong":["192.0.2.1 の持ち主の名前","自分の IP アドレス","192.0.2.1 のパスワード","192.0.2.1 の Web ページの中身"],"why":"ping は書いた相手に届くかを確かめる。"},"source":"RFC 792(ICMP のエコー要求・応答)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

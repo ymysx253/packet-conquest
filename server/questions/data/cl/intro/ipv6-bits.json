@@ -1,0 +1,10 @@
+{
+  "note": "FactBank(新しい番号 Lv47「IPv6 は何ビット」)。行 = 問いの文(ja)・正解(attrs.answer)・誤答の候補(attrs.wrong。どれも正解にならないもの)・理由(attrs.why)。誤答の候補から選んで n 択にする",
+  "rows": [
+    {"id":"bits","ja":"IPv6 アドレスは何ビット?","attrs":{"answer":"128 ビット","wrong":["16 ビット","32 ビット","48 ビット","64 ビット","256 ビット"],"why":"IPv6 は 128 ビット(16 ビット × 8)。32 ビットは IPv4、48 ビットは MAC アドレス。"},"source":"RFC 4291(IPv6 のアドレスは 128 ビット)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"bytes","ja":"IPv6 アドレスは何バイト?","attrs":{"answer":"16 バイト","wrong":["4 バイト","6 バイト","8 バイト","32 バイト","128 バイト"],"why":"128 ビット ÷ 8 = 16 バイト。"},"source":"RFC 4291(IPv6 のアドレスは 128 ビット)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"groups","ja":"IPv6 アドレスは、省略しないとコロンで区切った組がいくつ並ぶ?","attrs":{"answer":"8 組","wrong":["4 組","6 組","16 組","32 組"],"why":"16 ビットずつ 8 組並ぶ。"},"source":"RFC 4291(IPv6 のアドレスは 128 ビット)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"group-bits","ja":"IPv6 の 1 組(コロンとコロンの間)は何ビット?","attrs":{"answer":"16 ビット","wrong":["4 ビット","8 ビット","32 ビット","64 ビット"],"why":"16 進 4 けた = 16 ビット。128 ÷ 8 = 16。"},"source":"RFC 4291(IPv6 のアドレスは 128 ビット)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"times","ja":"IPv6 アドレスのビット数は、IPv4 アドレスの何倍?","attrs":{"answer":"4 倍","wrong":["2 倍","8 倍","16 倍","96 倍"],"why":"128 ÷ 32 = 4 倍。"},"source":"RFC 4291(IPv6 のアドレスは 128 ビット)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

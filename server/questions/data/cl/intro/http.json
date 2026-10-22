@@ -1,0 +1,12 @@
+{
+  "note": "FactBank(新しい番号 Lv53「HTTP」)。行 = 問いの文(ja)・正解(attrs.answer)・誤答の候補(attrs.wrong。どれも正解にならないもの)・理由(attrs.why)。誤答の候補から選んで n 択にする",
+  "rows": [
+    {"id":"term","ja":"ブラウザと Web サーバーがページをやりとりするときの決まりはどれ?","attrs":{"answer":"HTTP","wrong":["SMTP","DHCP","DNS","IMAP","SSID"],"why":"Web のやりとりは HTTP。SMTP はメールを送る、DHCP はアドレスを配る、DNS は名前を調べる。"},"source":"RFC 9110(HTTP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"request","ja":"HTTP で、ブラウザがサーバーに送るのはどれ?","attrs":{"answer":"ページを求める頼み(リクエスト)","wrong":["配る IP アドレス","メールの受け取りの合図","無線 LAN の名前","電源の信号"],"why":"ブラウザが頼み(リクエスト)を送り、サーバーが返事(レスポンス)を返す。"},"source":"RFC 9110(HTTP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"response","ja":"HTTP で、Web サーバーが返すのはどれ?","attrs":{"answer":"頼まれたページ(レスポンス)","wrong":["無線 LAN のパスワード","PC の MAC アドレス","配られた IP アドレス","光の信号"],"why":"サーバーは頼まれたページを返事として返す。"},"source":"RFC 9110(HTTP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"desc","ja":"HTTP の説明として正しいのはどれ?","attrs":{"answer":"Web のページをやりとりするための決まり","wrong":["メールを送るための決まり","名前から IP アドレスを調べるしくみ","アドレスを自動で配るしくみ","無線 LAN の名前"],"why":"HTTP は Web の決まり。"},"source":"RFC 9110(HTTP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"scheme","ja":"URL の「http://」の部分が表すのはどれ?","attrs":{"answer":"やりとりに HTTP を使うこと","wrong":["相手の IP アドレス","ページのファイル名","無線 LAN の名前","回線の速さ"],"why":"URL の最初の部分は、やりとりに使う決まりを表す。"},"source":"RFC 9110(HTTP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"app","ja":"HTTP で Web ページを見るのに使うアプリはどれ?","attrs":{"answer":"ブラウザ","wrong":["電卓","カメラ","時計","メモ帳"],"why":"ブラウザが HTTP でページを頼み、表示する。"},"source":"RFC 9110(HTTP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"p","ja":"HTTP の「P」は何?","attrs":{"answer":"Protocol(決まり)","wrong":["Password","Printer","Packet","Phone"],"why":"HyperText Transfer Protocol。P は Protocol(通信の決まり)。"},"source":"RFC 9110(HTTP)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

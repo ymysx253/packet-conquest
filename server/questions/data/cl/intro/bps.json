@@ -1,0 +1,10 @@
+{
+  "note": "FactBank(新しい番号 Lv21「bps とは」)。行 = 問いの文(ja)・正解(attrs.answer)・誤答の候補(attrs.wrong。どれも正解にならないもの)・理由(attrs.why)。誤答の候補から選んで n 択にする",
+  "rows": [
+    {"id":"def","ja":"bps が表すのはどれ?","attrs":{"answer":"1 秒に送れるビットの数","wrong":["1 秒に送れるバイトの数","1 分に送れるパケットの数","ケーブルの長さ","つながっている機器の数","1 時間に使う電気の量"],"why":"bps は bits per second。1 秒あたりのビットの数で、回線の速さを表す。バイトではなくビット。"},"source":"一般的な定義(bits per second、SI 接頭語)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ps","ja":"bps の「ps」は何の意味?","attrs":{"answer":"1 秒あたり(per second)","wrong":["1 分あたり","1 時間あたり","1 パケットあたり","1 台あたり"],"why":"ps は per second(1 秒あたり)。"},"source":"一般的な定義(bits per second、SI 接頭語)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"b","ja":"bps の「b」は何?","attrs":{"answer":"ビット(bit)","wrong":["バイト(byte)","ボックス(box)","ブラウザ(browser)","ボタン(button)"],"why":"小文字の b はビット。bps は 1 秒あたりのビット数。"},"source":"一般的な定義(bits per second、SI 接頭語)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"kbps","ja":"1 kbps は、1 秒に何ビット送れる速さ?","attrs":{"answer":"1,000 ビット","wrong":["8 ビット","10 ビット","100 ビット","1,000,000 ビット"],"why":"k は 1,000 倍。1 kbps = 1 秒に 1,000 ビット。"},"source":"一般的な定義(bits per second、SI 接頭語)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"unit","ja":"回線の速さを表す単位はどれ?","attrs":{"answer":"Mbps","wrong":["MB","GHz","mm","kg","W"],"why":"Mbps は 1 秒に何百万ビット送れるか。MB はデータの量、GHz は周波数。"},"source":"一般的な定義(bits per second、SI 接頭語)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

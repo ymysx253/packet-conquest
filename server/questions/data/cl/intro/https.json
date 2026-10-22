@@ -1,0 +1,12 @@
+{
+  "note": "FactBank(新しい番号 Lv59「HTTPS」)。行 = 問いの文(ja)・正解(attrs.answer)・誤答の候補(attrs.wrong。どれも正解にならないもの)・理由(attrs.why)。誤答の候補から選んで n 択にする",
+  "rows": [
+    {"id":"term","ja":"暗号化した Web のやりとりはどれ?","attrs":{"answer":"HTTPS","wrong":["HTTP","SMTP","DHCP","DNS","POP"],"why":"HTTPS は HTTP のやりとりを暗号化したもの。HTTP だけでは暗号化されない。"},"source":"RFC 2818(HTTP over TLS)・RFC 9110","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"s","ja":"HTTPS の「S」は何?","attrs":{"answer":"Secure(安全)","wrong":["Speed(速さ)","Server(サーバー)","Simple(かんたん)","Small(小さい)"],"why":"HTTP Secure。暗号化して安全にやりとりする。"},"source":"RFC 2818(HTTP over TLS)・RFC 9110","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"merit","ja":"HTTPS を使うよさはどれ?","attrs":{"answer":"途中で盗み見られにくい","wrong":["通信が必ず速くなる","ケーブルが要らなくなる","パスワードが要らなくなる","アドレスが自動で配られる"],"why":"暗号化するので、途中で盗み見られたり書きかえられたりしにくい。"},"source":"RFC 2818(HTTP over TLS)・RFC 9110","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"login","ja":"ログインのパスワードを入れるページで使うべきなのはどれ?","attrs":{"answer":"HTTPS","wrong":["HTTP","SMTP","POP","DHCP"],"why":"大事な情報を送るページは、暗号化する HTTPS を使う。"},"source":"RFC 2818(HTTP over TLS)・RFC 9110","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"diff","ja":"HTTP と HTTPS の違いで正しいのはどれ?","attrs":{"answer":"HTTPS はやりとりを暗号化する","wrong":["HTTPS はメールを送る決まり","HTTP のほうが安全","HTTPS は無線だけで使う","HTTP は暗号化し、HTTPS はしない"],"why":"HTTPS は HTTP を暗号化したもの。"},"source":"RFC 2818(HTTP over TLS)・RFC 9110","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"desc","ja":"HTTPS の説明として正しいのはどれ?","attrs":{"answer":"HTTP のやりとりを暗号化したもの","wrong":["メールを送る決まり","アドレスを自動で配るしくみ","名前から IP アドレスを調べるしくみ","無線 LAN の名前"],"why":"HTTPS は暗号化した HTTP。"},"source":"RFC 2818(HTTP over TLS)・RFC 9110","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"url","ja":"HTTPS のページの URL は、どう始まる?","attrs":{"answer":"https://","wrong":["http://","www.","mail://","ssid://"],"why":"https:// で始まる URL は HTTPS を使う。http:// は暗号化しない HTTP。"},"source":"RFC 2818(HTTP over TLS)・RFC 9110","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

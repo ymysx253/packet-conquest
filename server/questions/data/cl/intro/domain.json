@@ -1,0 +1,12 @@
+{
+  "note": "FactBank(新しい番号 Lv49「ドメイン名」)。行 = 問いの文(ja)・正解(attrs.answer)・誤答の候補(attrs.wrong。どれも正解にならないもの)・理由(attrs.why)。誤答の候補から選んで n 択にする",
+  "rows": [
+    {"id":"term","ja":"www.shop.example のような名前を何という?","attrs":{"answer":"ドメイン名","wrong":["IP アドレス","MAC アドレス","SSID","パスワード","bps"],"why":"人が覚えやすいように付けた名前がドメイン名。"},"source":"RFC 1034(ドメイン名)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"why","ja":"ドメイン名があるわけはどれ?","attrs":{"answer":"数の IP アドレスより、人が覚えやすいから","wrong":["通信を速くするため","ケーブルを短くするため","電池を長持ちさせるため","パスワードの代わりにするため"],"why":"数の並びより名前のほうが覚えやすい。"},"source":"RFC 1034(ドメイン名)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"d1","ja":"ドメイン名はどれ?","attrs":{"answer":"shop.example","wrong":["192.0.2.10","02:1a:2b:3c:4d:5e","2001:db8::1","100 Mbps"],"why":"shop.example はドメイン名。192.0.2.10 は IPv4 アドレス、02:1a:… は MAC アドレス、2001:db8::1 は IPv6 アドレス、100 Mbps は速さ。"},"source":"RFC 1034(ドメイン名)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"d2","ja":"ドメイン名はどれ?","attrs":{"answer":"mail.school.example","wrong":["192.0.2.10","02:1a:2b:3c:4d:5e","2001:db8::1","100 Mbps"],"why":"mail.school.example はドメイン名。192.0.2.10 は IPv4 アドレス、02:1a:… は MAC アドレス、2001:db8::1 は IPv6 アドレス、100 Mbps は速さ。"},"source":"RFC 1034(ドメイン名)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"d3","ja":"ドメイン名はどれ?","attrs":{"answer":"www.city.example","wrong":["192.0.2.10","02:1a:2b:3c:4d:5e","2001:db8::1","100 Mbps"],"why":"www.city.example はドメイン名。192.0.2.10 は IPv4 アドレス、02:1a:… は MAC アドレス、2001:db8::1 は IPv6 アドレス、100 Mbps は速さ。"},"source":"RFC 1034(ドメイン名)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"d4","ja":"ドメイン名はどれ?","attrs":{"answer":"news.example","wrong":["192.0.2.10","02:1a:2b:3c:4d:5e","2001:db8::1","100 Mbps"],"why":"news.example はドメイン名。192.0.2.10 は IPv4 アドレス、02:1a:… は MAC アドレス、2001:db8::1 は IPv6 アドレス、100 Mbps は速さ。"},"source":"RFC 1034(ドメイン名)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"sep","ja":"ドメイン名の区切りに使う記号はどれ?","attrs":{"answer":"点(.)","wrong":["コロン(:)","アットマーク(@)","スラッシュ(/)","カンマ(,)"],"why":"www.shop.example のように点で区切る。"},"source":"RFC 1034(ドメイン名)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}
