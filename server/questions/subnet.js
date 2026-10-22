@@ -1,11 +1,19 @@
 'use strict';
 // サブネット計算の問題をその場で生成する。答えは計算で求めるので常に正確。
 
-const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
-const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+// 乱数の元。ふだん(今のゲームの出題)は Math.random のまま。新しい番号の口(cl/levels-legacy.js)だけが withRng で
+// seed 付きの rng(rng.js の makeRng)に一時的に差し替えて作る(2026-10-22。同じ seed で同じ問題を作り直せるように)
+let source = null;
+const random = () => (source ? source() : Math.random());
+function withRng(rng, fn) {
+  const prev = source; source = rng.next;
+  try { return fn(); } finally { source = prev; }
+}
+const rand = (a, b) => a + Math.floor(random() * (b - a + 1));
+const pick = (arr) => arr[Math.floor(random() * arr.length)];
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(random() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
@@ -54,10 +62,11 @@ function buildOptions(correct, candidates, filler) {
 }
 
 // base: 架空ネットワークの先頭アドレス。span: その中で使うアドレス数(既定は /16 ぶん)
-function makeQuestion(difficulty, base, span = 65534) {
+// opts(新しい番号の口だけが使う): type = 型を 1 つに決める、prefixes = プレフィックスの候補を絞る。渡さなければ今までどおり
+function makeQuestion(difficulty, base, span = 65534, opts = {}) {
   const d = Math.max(1, Math.min(3, difficulty));
-  const type = pick(TYPES[d]);
-  const p = type === 'mask' && d === 1 ? pick([8, 16, 24]) : pick(PREFIXES[d]);
+  const type = opts.type || pick(TYPES[d]);
+  const p = opts.prefixes ? pick(opts.prefixes) : type === 'mask' && d === 1 ? pick([8, 16, 24]) : pick(PREFIXES[d]);
   const ip = (base + rand(1, Math.max(2, span))) >>> 0;
   const size = 2 ** (32 - p);
   const net = netOf(ip, p);
@@ -117,4 +126,4 @@ function makeQuestion(difficulty, base, span = 65534) {
   return q;
 }
 
-module.exports = { makeQuestion, toIp, maskOf, netOf, bcastOf, buildOptions, rand, pick, shuffle, PREFIXES };
+module.exports = { makeQuestion, toIp, maskOf, netOf, bcastOf, buildOptions, rand, pick, shuffle, random, withRng, PREFIXES, TYPES };

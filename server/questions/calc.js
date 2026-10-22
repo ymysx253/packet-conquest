@@ -87,9 +87,9 @@ function explainBlock(ip, p) {
 
 // ---------- Lv11 2 進 ⇄ 10 進 ----------
 const BOUNDARY8 = [0, 1, 127, 128, 254, 255];
-function params11(rng) {
+function params11(rng, node, o = {}) {
   const n = rng.rand(1, 8) === 1 ? rng.pick(BOUNDARY8) : rng.rand(0, 255);
-  return { n, dir: rng.pick(['bin2dec', 'dec2bin']) };
+  return { n, dir: o.dir || rng.pick(['bin2dec', 'dec2bin']) };
 }
 function build11({ n, dir }) {
   const bin = bin8(n);
@@ -111,9 +111,9 @@ function build11({ n, dir }) {
 }
 
 // ---------- Lv12 16 進 ⇄ 2 進 ⇄ 10 進 ----------
-function params12(rng) {
-  const unit = rng.pick(['hextet', 'byte']);
-  const dir = rng.pick(['hex2bin', 'bin2hex', 'hex2dec']);
+function params12(rng, node, o = {}) {
+  const unit = o.unit || rng.pick(['hextet', 'byte']);
+  const dir = o.dir || rng.pick(['hex2bin', 'bin2hex', 'hex2dec']);
   if (unit === 'hextet') { const groups = v6Groups(rng), idx = rng.rand(1, 8); return { unit, dir, value: groups[idx - 1], groups, idx }; }
   const mac = macFor(rng, rng.pick(['doc', 'local'])), idx = rng.rand(1, 6);
   return { unit, dir, value: parseInt(mac.split(':')[idx - 1], 16), mac, idx };
@@ -147,9 +147,9 @@ function build12({ unit, dir, value, groups, mac, idx }) {
 
 // ---------- Lv13 MAC アドレスの構造 ----------
 const MAC_ASKS = ['oui', 'nic', 'local', 'group'];
-function params13(rng) {
+function params13(rng, node, o = {}) {
   const kind = rng.pick(['doc', 'local']);
-  const asks = rng.shuffle(MAC_ASKS).slice(0, 2).sort((a, b) => MAC_ASKS.indexOf(a) - MAC_ASKS.indexOf(b));
+  const asks = o.asks ? o.asks.slice() : rng.shuffle(MAC_ASKS).slice(0, 2).sort((a, b) => MAC_ASKS.indexOf(a) - MAC_ASKS.indexOf(b));
   return { mac: macFor(rng, kind), kind, asks };
 }
 function build13({ mac, kind, asks }) {
@@ -264,8 +264,8 @@ function build18({ parent, p1, p2, n }) {
 // ---------- Lv19 IPv6 ----------
 const V6_PREFIXES = [36, 40, 44, 52, 56, 60];
 function v6Mask(groups, p) { return groups.map((g, i) => { const keep = Math.max(0, Math.min(16, p - 16 * i)); return keep === 0 ? 0 : (g & ((0xffff << (16 - keep)) & 0xffff)); }); }
-function params19(rng) {
-  if (rng.pick(['prefix', 'nth']) === 'prefix') return { mode: 'prefix', groups: v6Groups(rng), p: rng.pick(V6_PREFIXES) };
+function params19(rng, node, o = {}) {
+  if ((o.mode || rng.pick(['prefix', 'nth'])) === 'prefix') return { mode: 'prefix', groups: v6Groups(rng), p: rng.pick(V6_PREFIXES) };
   const pp = rng.pick([48, 56]);
   const groups = [0x2001, 0x0db8, rng.rand(0, 0xffff), pp === 56 ? rng.rand(0, 0xff) << 8 : 0, 0, 0, 0, 0];
   return { mode: 'nth', groups, pp, n: rng.rand(1, 256) };
@@ -310,9 +310,11 @@ function build20({ ip, p }) {
 const PARAMS = { 11: params11, 12: params12, 13: params13, 14: params14, 15: params15, 16: params16, 17: params17, 18: params18, 19: params19, 20: params20 };
 const BUILDERS = { 11: build11, 12: build12, 13: build13, 14: build14, 15: build15, 16: build16, 17: build17, 18: build18, 19: build19, 20: build20 };
 
-function make(level, node, rng) {
+// opts: 新しい番号の口(cl/levels-legacy.js)が型を 1 つに決めるときだけ渡す(11: dir、12: unit・dir、13: asks、19: mode)。
+// 渡さなければ今までどおり(同じ seed なら同じ問題)
+function make(level, node, rng, opts = {}) {
   if (!PARAMS[level]) throw new Error(`Lv${level} は calc.js の範囲(${RANGE.join('〜')})外です`);
-  const q = BUILDERS[level](PARAMS[level](rng, node));
+  const q = BUILDERS[level](PARAMS[level](rng, node, opts));
   q.level = level;
   q.seed = rng.seed;
   return q;

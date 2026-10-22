@@ -10,7 +10,8 @@
 // 表を使う問題は q.table = { headers, rows } を付け、画面側が表として描く。
 // q.meta はテスト用の真の値で、クライアントには送らない(world.ask が payload に含めない)。
 
-const { toIp, maskOf, netOf, bcastOf, buildOptions, rand, pick, shuffle } = require('./subnet');
+// 乱数は subnet.js の rand・pick・shuffle・random(ふだんは Math.random。新しい番号の口は withRng で seed 付きに差し替える)
+const { toIp, maskOf, netOf, bcastOf, buildOptions, rand, pick, shuffle, random } = require('./subnet');
 
 const fmt = (n) => n.toLocaleString('ja-JP');
 const wildcardOf = (p) => (~maskOf(p)) >>> 0;
@@ -81,8 +82,8 @@ function randomV6() {
   g[0] = 0x2001; g[1] = 0x0db8; // 文書用 2001:db8::/32
   const zeroStart = rand(2, 5), zeroLen = rand(2, 7 - zeroStart);
   for (let i = zeroStart; i < zeroStart + zeroLen; i++) g[i] = 0;
-  if (Math.random() < 0.5) g[7] = 0; // 短いゼロの候補も作る
-  if (Math.random() < 0.4) g[2] = 0;
+  if (random() < 0.5) g[7] = 0; // 短いゼロの候補も作る
+  if (random() < 0.4) g[2] = 0;
   return g;
 }
 function v6Compress(base) {
@@ -147,7 +148,7 @@ function routeTable(base) {
     { prefix: `${toIp(net16)}/16`, net: net16, p: 16, hop: hops[1] },
     { prefix: `${toIp(net24)}/24`, net: net24, p: 24, hop: hops[2] },
   ];
-  if (Math.random() < 0.6) rows.push({ prefix: `${toIp(net28)}/28`, net: net28, p: 28, hop: hops[3] });
+  if (random() < 0.6) rows.push({ prefix: `${toIp(net28)}/28`, net: net28, p: 28, hop: hops[3] });
   // 宛先: いずれかの行に一致する(最長一致で答えが決まる)
   const target = pick(rows);
   let dst;
@@ -212,7 +213,7 @@ function acl(base) {
   const lines = [
     { no: 10, action: pick(['deny', 'permit']), proto: svc.proto, src: `${toIp(inside)}/24`, srcNet: inside, srcP: 24, dst: 'any', port: svc.port },
   ];
-  if (Math.random() < 0.7) lines.push({ no: 20, action: 'permit', proto: 'ip', src: 'any', dst: 'any', port: null });
+  if (random() < 0.7) lines.push({ no: 20, action: 'permit', proto: 'ip', src: 'any', dst: 'any', port: null });
   // パケット: 行 10 に当たる / 行 20 に当たる / 暗黙の拒否 のいずれか
   const which = pick(lines.length === 2 ? ['l10', 'l20', 'l20b'] : ['l10', 'implicit', 'implicit2']);
   let pkt;

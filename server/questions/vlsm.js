@@ -260,9 +260,9 @@ const DRAW = {
       requests: [{ name: '新規 A', hosts: b.size - 2 }],
     };
   },
-  30(rng, node) {
+  30(rng, node, o = {}) {
     const parent = pickParent(rng, node, 20, 22);
-    const form = rng.next() < 0.5 ? 'plan' : 'free';
+    const form = o.form || (rng.next() < 0.5 ? 'plan' : 'free'); // o.form: 新しい番号の口が型を 1 つに決めるときだけ
     // plan は欄数 6 まで(LAN 4 + リンク 1〜2、または LAN 5 + リンク 1)。free は LAN 4〜6 + リンク 1〜3 で、未使用ブロックは 2〜6 個(/30 の端数で細かいブロックが増えるため 6 まで許す)
     const [nLan, nLink] = form === 'plan' ? rng.pick([[4, 1], [4, 2], [5, 1]]) : [rng.rand(4, 6), rng.rand(1, 3)];
     const cands = hostCands(parent.size, { min: 3 });
@@ -462,9 +462,10 @@ function build(level, params) {
   if (!f) throw new Error(`vlsm.js はレベル ${level} を持たない`);
   return f(params);
 }
-function make(level, node, rng) {
+// opts: 新しい番号の口(cl/levels-legacy.js)が型を 1 つに決めるときだけ渡す(30: form)。渡さなければ今までどおり
+function make(level, node, rng, opts = {}) {
   const lv = Math.max(RANGE[0], Math.min(RANGE[1], level));
-  const params = DRAW[lv](rng, node);
+  const params = DRAW[lv](rng, node, opts);
   const q = build(lv, params);
   return { ...q, level: lv, seed: rng.seed, generatorVersion: VERSION };
 }
