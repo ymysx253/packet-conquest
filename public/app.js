@@ -63,6 +63,10 @@
   };
   // 地図の上の切り替え「自分だけ / チームまで / 全員」: 持ち主の色と陣地のにじみを、どこまで出すか
   const OWN_VIEWS = ['me', 'team', 'all'];
+  // 線の両端が同じ側か(2026-10-22 ユーザー指摘: 同じチームの別の人が取った隣どうしの線が灰色のままで、1 人が続けて取った道すじだけに色が付いていた)。
+  // 同じ人、または同じチーム(仲間の拠点・チームの持ち物)なら同じ側
+  const teamOfNode = (n) => (n.ownerIsTeam ? n.owner : n.ownerTeam || ((playerById(n.owner) || {}).team) || null);
+  const sameSide = (a, b) => !!(a.owner && b.owner && (a.owner === b.owner || (teamOfNode(a) && teamOfNode(a) === teamOfNode(b))));
   const ownShown = (rel) => !!rel && (S.ownView === 'all' || rel === 'me' || (rel === 'team' && S.ownView === 'team'));
   // 航路はたどり着いて(自分かチームが空港・港を押さえて)はじめて分かる(2026-10-22 ユーザー指摘: 開始地点を選ぶ前から空路・海路が見えていた。説明書 4.5)。参加前は出さない
   const routesKnown = (n) => !!(S.joined && n && n.owner && (n.owner === S.me || relOf(n) === 'team'));
@@ -1219,7 +1223,7 @@
       if (S.shkKeys.has(e.a < e.b ? `${e.a}|${e.b}` : `${e.b}|${e.a}`)) continue; // 新幹線の線は下でまとめて描く
       const na = railNode(e.a), nb = railNode(e.b);
       if (!na || !nb || !visibleNode(na) || !visibleNode(nb)) continue; // 描かない町・字への線も描かない
-      const own = na.owner && na.owner === nb.owner && ownShown(relOf(na)) ? ((ownerStyleOf(na) || {}).frame || ownerColorOf(na)) : null; // チームの線は枠の色
+      const own = sameSide(na, nb) && ownShown(relOf(na)) ? ((ownerStyleOf(na) || {}).frame || ownerColorOf(na)) : null; // チームの線は枠の色
       const ef = Math.min(fadeOf(na), fadeOf(nb)); // 線も、両端の薄い方に合わせて薄く
       const rb = railBox(na, nb);
       if (rb) { // 電車の線は駅が薄くても濃く描く(2026-10-21 ユーザー: 一定の倍率では常に出す。拠点を描く倍率 2.5 倍以上で出る)
@@ -1254,7 +1258,7 @@
       if (!rb || offView(rb)) continue; // 画面にかからない
       const cv = railCurve(na, nb);
       if (!cv) continue;
-      const own = na.owner && na.owner === nb.owner && ownShown(relOf(na)) ? ((ownerStyleOf(na) || {}).frame || ownerColorOf(na)) : null;
+      const own = sameSide(na, nb) && ownShown(relOf(na)) ? ((ownerStyleOf(na) || {}).frame || ownerColorOf(na)) : null;
       rails.push({ cv, own, ef: 1 });
     }
     if (rails.length) {
