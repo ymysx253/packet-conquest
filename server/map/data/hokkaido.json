@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "hokkaido",
   "name": "北海道",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "北海道の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -7929,22 +7929,22 @@
 
     { "id": "tw-01700-000000", "name": "蘂取村", "genre": "town", "kind": "TOWN", "area": "蘂取村", "region": "hokkaido-01700", "lat": 45.40247, "lon": 148.64451, "level": 1, "value": 1, "src": "src-ksj-n03-2026", "status": "hidden", "hiddenReason": "disputed" },
 
-    { "id": "pp-tw-01223-072000", "name": "弁天島港(仮)", "genre": "port", "kind": "GW", "area": "根室市", "region": "hokkaido-01223", "lat": 43.34205, "lon": 145.57586, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01223-072000"] },
-    { "id": "pp-tw-01223-073000", "name": "ユルリ島・モユルリ島港(仮)", "genre": "port", "kind": "GW", "area": "根室市", "region": "hokkaido-01223", "lat": 43.22102, "lon": 145.59568, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01223-073000"] },
+    { "id": "pp-tw-01223-072000", "name": "弁天島港(仮)", "genre": "port", "kind": "GW", "area": "根室市", "region": "hokkaido-01223", "lat": 43.34189, "lon": 145.57621, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01223-072000"] },
+    { "id": "pp-tw-01223-073000", "name": "ユルリ島・モユルリ島港(仮)", "genre": "port", "kind": "GW", "area": "根室市", "region": "hokkaido-01223", "lat": 43.22109, "lon": 145.5955, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01223-073000"] },
 
-    { "id": "pp-tw-01331-033000", "name": "大島港(仮)", "genre": "port", "kind": "GW", "area": "松前町", "region": "hokkaido-01331", "lat": 41.51939, "lon": 139.37812, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01331-033000"] },
+    { "id": "pp-tw-01331-033000", "name": "大島港(仮)", "genre": "port", "kind": "GW", "area": "松前町", "region": "hokkaido-01331", "lat": 41.51937, "lon": 139.37809, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01331-033000"] },
 
-    { "id": "pp-tw-01662-011100", "name": "小島(厚岸町)港(仮)", "genre": "port", "kind": "GW", "area": "厚岸町", "region": "hokkaido-01662", "lat": 42.97478, "lon": 144.87867, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01662-011100"] },
-    { "id": "pp-tw-01662-011200", "name": "大黒島港(仮)", "genre": "port", "kind": "GW", "area": "厚岸町", "region": "hokkaido-01662", "lat": 42.96131, "lon": 144.8741, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01662-011200"] },
+    { "id": "pp-tw-01662-011100", "name": "小島(厚岸町)港(仮)", "genre": "port", "kind": "GW", "area": "厚岸町", "region": "hokkaido-01662", "lat": 42.97489, "lon": 144.87855, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01662-011100"] },
+    { "id": "pp-tw-01662-011200", "name": "大黒島港(仮)", "genre": "port", "kind": "GW", "area": "厚岸町", "region": "hokkaido-01662", "lat": 42.96125, "lon": 144.8738, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01662-011200"] },
     { "id": "pp-tw-01662-048000", "name": "厚岸湾港(仮)", "genre": "port", "kind": "GW", "area": "厚岸町", "region": "hokkaido-01662", "lat": 43.02999, "lon": 144.79637, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01662-048000"] },
 
-    { "id": "pp-tw-01663-018000", "name": "小島(浜中町)港(仮)", "genre": "port", "kind": "GW", "area": "浜中町", "region": "hokkaido-01663", "lat": 43.06338, "lon": 145.12228, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01663-018000"] },
-    { "id": "pp-tw-01663-019000", "name": "嶮暮帰港(仮)", "genre": "port", "kind": "GW", "area": "浜中町", "region": "hokkaido-01663", "lat": 43.05312, "lon": 145.10899, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01663-019000"] },
+    { "id": "pp-tw-01663-018000", "name": "小島(浜中町)港(仮)", "genre": "port", "kind": "GW", "area": "浜中町", "region": "hokkaido-01663", "lat": 43.06337, "lon": 145.12176, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01663-018000"] },
+    { "id": "pp-tw-01663-019000", "name": "嶮暮帰港(仮)", "genre": "port", "kind": "GW", "area": "浜中町", "region": "hokkaido-01663", "lat": 43.05294, "lon": 145.1092, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01663-019000"] },
 
-    { "id": "pp-tw-01691-048000", "name": "野付港(仮)", "genre": "port", "kind": "GW", "area": "別海町", "region": "hokkaido-01691", "lat": 43.58026, "lon": 145.32914, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01691-048000"] },
+    { "id": "pp-tw-01691-048000", "name": "野付港(仮)", "genre": "port", "kind": "GW", "area": "別海町", "region": "hokkaido-01691", "lat": 43.58023, "lon": 145.3295, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01691-048000"] },
 
-    { "id": "pp-ts-q12088977", "name": "螻向崎港(仮)", "genre": "port", "kind": "GW", "area": "泊村", "region": "hokkaido-01696", "lat": 43.65386, "lon": 145.53882, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["ts-q12088977"] },
+    { "id": "pp-ts-q12088977", "name": "螻向崎港(仮)", "genre": "port", "kind": "GW", "area": "泊村", "region": "hokkaido-01696", "lat": 43.65374, "lon": 145.53876, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["ts-q12088977"] },
 
-    { "id": "pp-tw-01331-034000", "name": "小島(松前町)港(仮)", "genre": "port", "kind": "GW", "area": "松前町", "region": "hokkaido-01331", "lat": 41.36199, "lon": 139.79869, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01331-034000"] }
+    { "id": "pp-tw-01331-034000", "name": "小島(松前町)港(仮)", "genre": "port", "kind": "GW", "area": "松前町", "region": "hokkaido-01331", "lat": 41.36196, "lon": 139.79794, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-01331-034000"] }
   ]
 }

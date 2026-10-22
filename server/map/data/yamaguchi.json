@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "yamaguchi",
   "name": "山口県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "山口県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -1827,37 +1827,37 @@
     { "id": "st-007768", "name": "木与駅", "genre": "station", "kind": "HUB", "area": "阿武町", "region": "yamaguchi-35502", "lat": 34.53279, "lon": 131.50348, "level": 10, "value": 10, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-007675", "st-007836", "tw-35502-001000", "tw-35502-002000"] },
     { "id": "st-007836", "name": "奈古駅", "genre": "station", "kind": "HUB", "area": "阿武町", "region": "yamaguchi-35502", "lat": 34.50322, "lon": 131.47312, "level": 10, "value": 10, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-007768", "st-007904", "tw-35502-001000"] },
 
-    { "id": "pp-tw-35201-102000", "name": "六連島港(仮)", "genre": "port", "kind": "GW", "area": "下関市", "region": "yamaguchi-35201", "lat": 33.97047, "lon": 130.86486, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35201-102000"] },
+    { "id": "pp-tw-35201-102000", "name": "六連島港(仮)", "genre": "port", "kind": "GW", "area": "下関市", "region": "yamaguchi-35201", "lat": 33.97049, "lon": 130.86492, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35201-102000"] },
 
-    { "id": "pp-tw-35204-044000", "name": "大島(萩市)港(仮)", "genre": "port", "kind": "GW", "area": "萩市", "region": "yamaguchi-35204", "lat": 34.49283, "lon": 131.41268, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35204-044000"] },
-    { "id": "pp-tw-35204-045000", "name": "相島港(仮)", "genre": "port", "kind": "GW", "area": "萩市", "region": "yamaguchi-35204", "lat": 34.50656, "lon": 131.29223, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35204-045000"] },
-    { "id": "pp-tw-35204-071000", "name": "肥島港(仮)", "genre": "port", "kind": "GW", "area": "萩市", "region": "yamaguchi-35204", "lat": 34.48526, "lon": 131.38141, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35204-071000"] },
-    { "id": "pp-tw-35204-072000", "name": "羽島(萩市)港(仮)", "genre": "port", "kind": "GW", "area": "萩市", "region": "yamaguchi-35204", "lat": 34.46618, "lon": 131.37746, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35204-072000"] },
-    { "id": "pp-tw-35204-073000", "name": "尾島港(仮)", "genre": "port", "kind": "GW", "area": "萩市", "region": "yamaguchi-35204", "lat": 34.49962, "lon": 131.34529, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35204-073000"] },
-    { "id": "pp-tw-35204-083000", "name": "櫃島港(仮)", "genre": "port", "kind": "GW", "area": "萩市", "region": "yamaguchi-35204", "lat": 34.51532, "lon": 131.39099, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35204-083000"] },
+    { "id": "pp-tw-35204-044000", "name": "大島(萩市)港(仮)", "genre": "port", "kind": "GW", "area": "萩市", "region": "yamaguchi-35204", "lat": 34.49277, "lon": 131.41265, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35204-044000"] },
+    { "id": "pp-tw-35204-045000", "name": "相島港(仮)", "genre": "port", "kind": "GW", "area": "萩市", "region": "yamaguchi-35204", "lat": 34.50645, "lon": 131.29177, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35204-045000"] },
+    { "id": "pp-tw-35204-071000", "name": "肥島港(仮)", "genre": "port", "kind": "GW", "area": "萩市", "region": "yamaguchi-35204", "lat": 34.48539, "lon": 131.38157, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35204-071000"] },
+    { "id": "pp-tw-35204-072000", "name": "羽島(萩市)港(仮)", "genre": "port", "kind": "GW", "area": "萩市", "region": "yamaguchi-35204", "lat": 34.4669, "lon": 131.37643, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35204-072000"] },
+    { "id": "pp-tw-35204-073000", "name": "尾島港(仮)", "genre": "port", "kind": "GW", "area": "萩市", "region": "yamaguchi-35204", "lat": 34.49942, "lon": 131.34543, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35204-073000"] },
+    { "id": "pp-tw-35204-083000", "name": "櫃島港(仮)", "genre": "port", "kind": "GW", "area": "萩市", "region": "yamaguchi-35204", "lat": 34.51625, "lon": 131.39077, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35204-083000"] },
 
-    { "id": "pp-tw-35206-055001", "name": "野島野島港(仮)", "genre": "port", "kind": "GW", "area": "防府市", "region": "yamaguchi-35206", "lat": 33.94602, "lon": 131.69682, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35206-055001"] },
+    { "id": "pp-tw-35206-055001", "name": "野島野島港(仮)", "genre": "port", "kind": "GW", "area": "防府市", "region": "yamaguchi-35206", "lat": 33.94619, "lon": 131.69675, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35206-055001"] },
 
-    { "id": "pp-tw-35210-001000", "name": "牛島港(仮)", "genre": "port", "kind": "GW", "area": "光市", "region": "yamaguchi-35210", "lat": 33.86306, "lon": 132.02032, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35210-001000"] },
+    { "id": "pp-tw-35210-001000", "name": "牛島港(仮)", "genre": "port", "kind": "GW", "area": "光市", "region": "yamaguchi-35210", "lat": 33.86278, "lon": 132.01993, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35210-001000"] },
 
-    { "id": "pp-tw-35215-122001", "name": "富田港(仮)", "genre": "port", "kind": "GW", "area": "周南市", "region": "yamaguchi-35215", "lat": 34.03775, "lon": 131.76196, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35215-122001"] },
+    { "id": "pp-tw-35215-122001", "name": "富田港(仮)", "genre": "port", "kind": "GW", "area": "周南市", "region": "yamaguchi-35215", "lat": 34.03726, "lon": 131.76201, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35215-122001"] },
 
-    { "id": "pp-tw-35305-003000", "name": "笠佐島港(仮)", "genre": "port", "kind": "GW", "area": "周防大島町", "region": "yamaguchi-35305", "lat": 33.94491, "lon": 132.15659, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35305-003000"] },
-    { "id": "pp-tw-35305-022000", "name": "浮島港(仮)", "genre": "port", "kind": "GW", "area": "周防大島町", "region": "yamaguchi-35305", "lat": 33.95381, "lon": 132.35426, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35305-022000"] },
+    { "id": "pp-tw-35305-003000", "name": "笠佐島港(仮)", "genre": "port", "kind": "GW", "area": "周防大島町", "region": "yamaguchi-35305", "lat": 33.94496, "lon": 132.15657, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35305-003000"] },
+    { "id": "pp-tw-35305-022000", "name": "浮島港(仮)", "genre": "port", "kind": "GW", "area": "周防大島町", "region": "yamaguchi-35305", "lat": 33.95372, "lon": 132.35423, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35305-022000"] },
 
-    { "id": "pp-tw-35343-011000", "name": "馬島港(仮)", "genre": "port", "kind": "GW", "area": "田布施町", "region": "yamaguchi-35343", "lat": 33.89366, "lon": 132.04734, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35343-011000"] },
+    { "id": "pp-tw-35343-011000", "name": "馬島港(仮)", "genre": "port", "kind": "GW", "area": "田布施町", "region": "yamaguchi-35343", "lat": 33.89357, "lon": 132.04746, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35343-011000"] },
 
-    { "id": "pp-tw-35344-011000", "name": "佐合島港(仮)", "genre": "port", "kind": "GW", "area": "平生町", "region": "yamaguchi-35344", "lat": 33.88031, "lon": 132.05897, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35344-011000"] },
+    { "id": "pp-tw-35344-011000", "name": "佐合島港(仮)", "genre": "port", "kind": "GW", "area": "平生町", "region": "yamaguchi-35344", "lat": 33.88046, "lon": 132.0592, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35344-011000"] },
 
-    { "id": "pp-tw-35201-314000", "name": "蓋井島港(仮)", "genre": "port", "kind": "GW", "area": "下関市", "region": "yamaguchi-35201", "lat": 34.09966, "lon": 130.78775, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35201-314000"] },
+    { "id": "pp-tw-35201-314000", "name": "蓋井島港(仮)", "genre": "port", "kind": "GW", "area": "下関市", "region": "yamaguchi-35201", "lat": 34.09973, "lon": 130.78755, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35201-314000"] },
 
-    { "id": "pp-tw-35204-046000", "name": "見島港(仮)", "genre": "port", "kind": "GW", "area": "萩市", "region": "yamaguchi-35204", "lat": 34.76161, "lon": 131.15005, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35204-046000"] },
+    { "id": "pp-tw-35204-046000", "name": "見島港(仮)", "genre": "port", "kind": "GW", "area": "萩市", "region": "yamaguchi-35204", "lat": 34.76319, "lon": 131.15241, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35204-046000"] },
 
-    { "id": "pp-tw-35208-037001", "name": "柱島港(仮)", "genre": "port", "kind": "GW", "area": "岩国市", "region": "yamaguchi-35208", "lat": 34.01321, "lon": 132.41643, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35208-037001"] },
+    { "id": "pp-tw-35208-037001", "name": "柱島港(仮)", "genre": "port", "kind": "GW", "area": "岩国市", "region": "yamaguchi-35208", "lat": 34.01314, "lon": 132.41656, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35208-037001"] },
 
-    { "id": "pp-tw-35212-011000", "name": "平郡港(仮)", "genre": "port", "kind": "GW", "area": "柳井市", "region": "yamaguchi-35212", "lat": 33.81461, "lon": 132.21396, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35212-011000"] },
+    { "id": "pp-tw-35212-011000", "name": "平郡港(仮)", "genre": "port", "kind": "GW", "area": "柳井市", "region": "yamaguchi-35212", "lat": 33.81455, "lon": 132.21389, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35212-011000"] },
 
-    { "id": "pp-tw-35341-003000", "name": "祝島港(仮)", "genre": "port", "kind": "GW", "area": "上関町", "region": "yamaguchi-35341", "lat": 33.79489, "lon": 131.97798, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35341-003000"] },
-    { "id": "pp-tw-35341-004000", "name": "八島港(仮)", "genre": "port", "kind": "GW", "area": "上関町", "region": "yamaguchi-35341", "lat": 33.73891, "lon": 132.14606, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35341-004000"] }
+    { "id": "pp-tw-35341-003000", "name": "祝島港(仮)", "genre": "port", "kind": "GW", "area": "上関町", "region": "yamaguchi-35341", "lat": 33.79526, "lon": 131.97806, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35341-003000"] },
+    { "id": "pp-tw-35341-004000", "name": "八島港(仮)", "genre": "port", "kind": "GW", "area": "上関町", "region": "yamaguchi-35341", "lat": 33.73909, "lon": 132.14588, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-35341-004000"] }
   ]
 }

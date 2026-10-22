@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "kagoshima",
   "name": "鹿児島県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "鹿児島県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -1658,27 +1658,27 @@
     { "id": "tw-46535-008000", "name": "麦屋", "genre": "town", "kind": "TOWN", "area": "与論町", "region": "kagoshima-46535", "lat": 27.03149, "lon": 128.44128, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "46535008000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-46535-006000", "tw-46535-009000"], "adj": ["tw-46535-006000", "tw-46535-009000"] },
     { "id": "tw-46535-009000", "name": "古里(与論町)", "genre": "town", "kind": "TOWN", "area": "与論町", "region": "kagoshima-46535", "lat": 27.03172, "lon": 128.44936, "level": 4, "value": 4, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "46535009000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-46535-008000"], "adj": ["tw-46535-008000"] },
 
-    { "id": "pp-tw-46201-718000", "name": "新島町港(仮)", "genre": "port", "kind": "GW", "area": "鹿児島市", "region": "kagoshima-46201", "lat": 31.61815, "lon": 130.72196, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46201-718000"] },
+    { "id": "pp-tw-46201-718000", "name": "新島町港(仮)", "genre": "port", "kind": "GW", "area": "鹿児島市", "region": "kagoshima-46201", "lat": 31.61799, "lon": 130.72192, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46201-718000"] },
 
-    { "id": "pp-tw-46213-025000", "name": "馬毛島港(仮)", "genre": "port", "kind": "GW", "area": "西之表市", "region": "kagoshima-46213", "lat": 30.74095, "lon": 130.86762, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46213-025000"] },
+    { "id": "pp-tw-46213-025000", "name": "馬毛島港(仮)", "genre": "port", "kind": "GW", "area": "西之表市", "region": "kagoshima-46213", "lat": 30.74079, "lon": 130.86766, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46213-025000"] },
 
-    { "id": "pp-tw-46304-004000", "name": "小宝島港(仮)", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.22123, "lon": 129.32211, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46304-004000"] },
-    { "id": "pp-tw-46304-008000", "name": "トカラ平瀬港(仮)", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 30.04104, "lon": 130.06445, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46304-008000"] },
-    { "id": "pp-tw-46304-010000", "name": "上ノ根島港(仮)", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 28.83445, "lon": 129.00273, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46304-010000"] },
-    { "id": "pp-tw-46304-011000", "name": "横当島港(仮)", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 28.80586, "lon": 128.99321, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46304-011000"] },
+    { "id": "pp-tw-46304-004000", "name": "小宝島港(仮)", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.22151, "lon": 129.3224, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46304-004000"] },
+    { "id": "pp-tw-46304-008000", "name": "トカラ平瀬港(仮)", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 30.04389, "lon": 130.06391, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46304-008000"] },
+    { "id": "pp-tw-46304-010000", "name": "上ノ根島港(仮)", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 28.83433, "lon": 129.00233, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46304-010000"] },
+    { "id": "pp-tw-46304-011000", "name": "横当島港(仮)", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 28.80574, "lon": 128.99338, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46304-011000"] },
 
-    { "id": "pp-tw-46524-009000", "name": "屋鈍港(仮)", "genre": "port", "kind": "GW", "area": "宇検村", "region": "kagoshima-46524", "lat": 28.2858, "lon": 129.2014, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46524-009000"] },
+    { "id": "pp-tw-46524-009000", "name": "屋鈍港(仮)", "genre": "port", "kind": "GW", "area": "宇検村", "region": "kagoshima-46524", "lat": 28.28594, "lon": 129.20163, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46524-009000"] },
 
-    { "id": "pp-tw-46525-007000", "name": "与路港(仮)", "genre": "port", "kind": "GW", "area": "瀬戸内町", "region": "kagoshima-46525", "lat": 28.0541, "lon": 129.17366, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46525-007000"] },
+    { "id": "pp-tw-46525-007000", "name": "与路港(仮)", "genre": "port", "kind": "GW", "area": "瀬戸内町", "region": "kagoshima-46525", "lat": 28.05403, "lon": 129.17334, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46525-007000"] },
 
-    { "id": "pp-tw-46303-001000", "name": "黒島港(仮)", "genre": "port", "kind": "GW", "area": "三島村", "region": "kagoshima-46303", "lat": 30.81588, "lon": 129.94455, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46303-001000"] },
-    { "id": "pp-tw-46303-002000", "name": "硫黄島港(仮)", "genre": "port", "kind": "GW", "area": "三島村", "region": "kagoshima-46303", "lat": 30.79192, "lon": 130.27697, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46303-002000"] },
-    { "id": "pp-tw-46303-003000", "name": "竹島港(仮)", "genre": "port", "kind": "GW", "area": "三島村", "region": "kagoshima-46303", "lat": 30.80893, "lon": 130.41521, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46303-003000"] },
+    { "id": "pp-tw-46303-001000", "name": "黒島港(仮)", "genre": "port", "kind": "GW", "area": "三島村", "region": "kagoshima-46303", "lat": 30.81589, "lon": 129.94462, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46303-001000"] },
+    { "id": "pp-tw-46303-002000", "name": "硫黄島港(仮)", "genre": "port", "kind": "GW", "area": "三島村", "region": "kagoshima-46303", "lat": 30.79177, "lon": 130.27666, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46303-002000"] },
+    { "id": "pp-tw-46303-003000", "name": "竹島港(仮)", "genre": "port", "kind": "GW", "area": "三島村", "region": "kagoshima-46303", "lat": 30.80919, "lon": 130.41513, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46303-003000"] },
 
-    { "id": "pp-tw-46304-003000", "name": "口之島港(仮)", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.97645, "lon": 129.93187, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46304-003000"] },
-    { "id": "pp-tw-46304-009000", "name": "臥蛇島港(仮)", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.90114, "lon": 129.55165, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46304-009000"] },
-    { "id": "pp-tw-46304-006000", "name": "平島港(仮)", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.68462, "lon": 129.53917, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46304-006000"] },
+    { "id": "pp-tw-46304-003000", "name": "口之島港(仮)", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.97664, "lon": 129.93172, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46304-003000"] },
+    { "id": "pp-tw-46304-009000", "name": "臥蛇島港(仮)", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.90096, "lon": 129.55189, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46304-009000"] },
+    { "id": "pp-tw-46304-006000", "name": "平島港(仮)", "genre": "port", "kind": "GW", "area": "十島村", "region": "kagoshima-46304", "lat": 29.68429, "lon": 129.53955, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46304-006000"] },
 
-    { "id": "pp-tw-46525-020000", "name": "池地港(仮)", "genre": "port", "kind": "GW", "area": "瀬戸内町", "region": "kagoshima-46525", "lat": 28.04128, "lon": 129.20622, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46525-020000"] }
+    { "id": "pp-tw-46525-020000", "name": "池地港(仮)", "genre": "port", "kind": "GW", "area": "瀬戸内町", "region": "kagoshima-46525", "lat": 28.04132, "lon": 129.20635, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-46525-020000"] }
   ]
 }

@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "oita",
   "name": "大分県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "大分県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -1738,8 +1738,8 @@
     { "id": "st-009425", "name": "豊後森駅", "genre": "station", "kind": "HUB", "area": "玖珠町", "region": "oita-44462", "lat": 33.28288, "lon": 131.15482, "level": 10, "value": 10, "lines": ["九州旅客鉄道 久大線"], "adj": ["st-009426", "st-009456", "ts-q10359310", "tw-44462-002000", "tw-44462-006000"] },
     { "id": "st-009426", "name": "北山田駅", "genre": "station", "kind": "HUB", "area": "玖珠町", "region": "oita-44462", "lat": 33.28196, "lon": 131.10052, "level": 10, "value": 10, "lines": ["九州旅客鉄道 久大線"], "adj": ["st-009425", "st-009445", "tw-44462-012000", "tw-44462-014000"] },
 
-    { "id": "pp-tw-44205-104000", "name": "大島港(仮)", "genre": "port", "kind": "GW", "area": "佐伯市", "region": "oita-44205", "lat": 32.96515, "lon": 132.06967, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-44205-104000"] },
+    { "id": "pp-tw-44205-104000", "name": "大島港(仮)", "genre": "port", "kind": "GW", "area": "佐伯市", "region": "oita-44205", "lat": 32.96501, "lon": 132.06897, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-44205-104000"] },
 
-    { "id": "pp-tw-44207-038000", "name": "保戸島港(仮)", "genre": "port", "kind": "GW", "area": "津久見市", "region": "oita-44207", "lat": 33.10026, "lon": 132.00625, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-44207-038000"] }
+    { "id": "pp-tw-44207-038000", "name": "保戸島港(仮)", "genre": "port", "kind": "GW", "area": "津久見市", "region": "oita-44207", "lat": 33.10018, "lon": 132.00629, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-44207-038000"] }
   ]
 }

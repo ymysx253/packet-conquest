@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "ishikawa",
   "name": "石川県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "石川県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -2629,7 +2629,7 @@
     { "id": "tw-17463-082001", "name": "小木", "genre": "town", "kind": "TOWN", "area": "能登町", "region": "ishikawa-17463", "lat": 37.30548, "lon": 137.2181, "level": 5, "value": 5, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "17463082001"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-17463-014000", "tw-17463-015000", "tw-17463-081001"], "contains": ["lm-q11583492", "lm-q125995463"], "adj": ["lm-q11583492", "lm-q125995463", "tw-17463-014000", "tw-17463-015000", "tw-17463-081001"] },
     { "id": "tw-17463-083000", "name": "山中(能登町)", "genre": "town", "kind": "TOWN", "area": "能登町", "region": "ishikawa-17463", "lat": 37.32192, "lon": 137.18875, "level": 2, "value": 2, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "17463083000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-17463-012000", "tw-17463-062001", "tw-17463-064000"], "adj": ["tw-17463-012000", "tw-17463-062001", "tw-17463-064000"] },
 
-    { "id": "pp-tw-17204-055000", "name": "舳倉島港(仮)", "genre": "port", "kind": "GW", "area": "輪島市", "region": "ishikawa-17204", "lat": 37.85007, "lon": 136.92133, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-17204-055000"] },
-    { "id": "pp-tw-17204-056000", "name": "七ツ島港(仮)", "genre": "port", "kind": "GW", "area": "輪島市", "region": "ishikawa-17204", "lat": 37.61216, "lon": 136.89953, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-17204-056000"] }
+    { "id": "pp-tw-17204-055000", "name": "舳倉島港(仮)", "genre": "port", "kind": "GW", "area": "輪島市", "region": "ishikawa-17204", "lat": 37.85041, "lon": 136.92049, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-17204-055000"] },
+    { "id": "pp-tw-17204-056000", "name": "七ツ島港(仮)", "genre": "port", "kind": "GW", "area": "輪島市", "region": "ishikawa-17204", "lat": 37.61238, "lon": 136.89961, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-17204-056000"] }
   ]
 }

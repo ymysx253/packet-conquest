@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "hiroshima",
   "name": "広島県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "広島県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -2465,16 +2465,16 @@
     { "id": "tw-34545-036000", "name": "中平", "genre": "town", "kind": "TOWN", "area": "神石高原町", "region": "hiroshima-34545", "lat": 34.78923, "lon": 133.3415, "level": 2, "value": 2, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "34545036000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-34545-034000", "tw-34545-037000"], "adj": ["tw-34545-034000", "tw-34545-037000"] },
     { "id": "tw-34545-037000", "name": "有木", "genre": "town", "kind": "TOWN", "area": "神石高原町", "region": "hiroshima-34545", "lat": 34.80265, "lon": 133.35516, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "34545037000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-34545-019000", "tw-34545-034000", "tw-34545-035000", "tw-34545-036000"], "adj": ["tw-34545-019000", "tw-34545-034000", "tw-34545-035000", "tw-34545-036000"] },
 
-    { "id": "pp-tw-34103-014000", "name": "仁保町港(仮)", "genre": "port", "kind": "GW", "area": "広島市南区", "region": "hiroshima-34103", "lat": 34.3138, "lon": 132.46067, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-34103-014000"] },
+    { "id": "pp-tw-34103-014000", "name": "仁保町港(仮)", "genre": "port", "kind": "GW", "area": "広島市南区", "region": "hiroshima-34103", "lat": 34.31386, "lon": 132.46059, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-34103-014000"] },
 
-    { "id": "pp-tw-34202-232000", "name": "斎島港(仮)", "genre": "port", "kind": "GW", "area": "呉市", "region": "hiroshima-34202", "lat": 34.11897, "lon": 132.79292, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-34202-232000"] },
+    { "id": "pp-tw-34202-232000", "name": "斎島港(仮)", "genre": "port", "kind": "GW", "area": "呉市", "region": "hiroshima-34202", "lat": 34.11898, "lon": 132.79282, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-34202-232000"] },
 
-    { "id": "pp-tw-34205-048000", "name": "百島町港(仮)", "genre": "port", "kind": "GW", "area": "尾道市", "region": "hiroshima-34205", "lat": 34.37812, "lon": 133.25795, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-34205-048000"] },
+    { "id": "pp-tw-34205-048000", "name": "百島町港(仮)", "genre": "port", "kind": "GW", "area": "尾道市", "region": "hiroshima-34205", "lat": 34.3784, "lon": 133.25786, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-34205-048000"] },
 
-    { "id": "pp-tw-34215-035000", "name": "沖美町岡大王港(仮)", "genre": "port", "kind": "GW", "area": "江田島市", "region": "hiroshima-34215", "lat": 34.16653, "lon": 132.38421, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-34215-035000"] },
+    { "id": "pp-tw-34215-035000", "name": "沖美町岡大王港(仮)", "genre": "port", "kind": "GW", "area": "江田島市", "region": "hiroshima-34215", "lat": 34.16676, "lon": 132.38423, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-34215-035000"] },
 
-    { "id": "pp-tw-34207-120000", "name": "走島町港(仮)", "genre": "port", "kind": "GW", "area": "福山市", "region": "hiroshima-34207", "lat": 34.34341, "lon": 133.44581, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-34207-120000"] },
+    { "id": "pp-tw-34207-120000", "name": "走島町港(仮)", "genre": "port", "kind": "GW", "area": "福山市", "region": "hiroshima-34207", "lat": 34.34326, "lon": 133.44532, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-34207-120000"] },
 
-    { "id": "pp-tw-34213-104001", "name": "宮島町港(仮)", "genre": "port", "kind": "GW", "area": "廿日市市", "region": "hiroshima-34213", "lat": 34.28066, "lon": 132.34606, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-34213-104001"] }
+    { "id": "pp-tw-34213-104001", "name": "宮島町港(仮)", "genre": "port", "kind": "GW", "area": "廿日市市", "region": "hiroshima-34213", "lat": 34.28067, "lon": 132.34654, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-34213-104001"] }
   ]
 }

@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "ehime",
   "name": "愛媛県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "愛媛県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -1879,33 +1879,33 @@
     { "id": "tw-38506-062000", "name": "鹿島", "genre": "town", "kind": "TOWN", "area": "愛南町", "region": "ehime-38506", "lat": 32.94524, "lon": 132.44911, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "38506062000"}]}, "src": "src-estat-boundary-2020", "adj": ["pp-tw-38506-062000"] },
     { "id": "tw-38506-063000", "name": "高茂(愛南町)", "genre": "town", "kind": "TOWN", "area": "愛南町", "region": "ehime-38506", "lat": 32.92035, "lon": 132.48141, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "38506063000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-38506-049000", "tw-38506-051000", "tw-38506-061000"], "adj": ["tw-38506-049000", "tw-38506-051000", "tw-38506-061000"] },
 
-    { "id": "pp-tw-38201-312000", "name": "安居島港(仮)", "genre": "port", "kind": "GW", "area": "松山市", "region": "ehime-38201", "lat": 34.07237, "lon": 132.71095, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38201-312000"] },
+    { "id": "pp-tw-38201-312000", "name": "安居島港(仮)", "genre": "port", "kind": "GW", "area": "松山市", "region": "ehime-38201", "lat": 34.07254, "lon": 132.7098, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38201-312000"] },
 
-    { "id": "pp-tw-38202-028000", "name": "今治村港(仮)", "genre": "port", "kind": "GW", "area": "今治市", "region": "ehime-38202", "lat": 34.02324, "lon": 133.09356, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38202-028000"] },
-    { "id": "pp-tw-38202-111000", "name": "来島港(仮)", "genre": "port", "kind": "GW", "area": "今治市", "region": "ehime-38202", "lat": 34.12345, "lon": 132.98048, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38202-111000"] },
-    { "id": "pp-tw-38202-179000", "name": "吉海町津島港(仮)", "genre": "port", "kind": "GW", "area": "今治市", "region": "ehime-38202", "lat": 34.14961, "lon": 132.99825, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38202-179000"] },
-    { "id": "pp-tw-38202-190000", "name": "宮窪町四阪島港(仮)", "genre": "port", "kind": "GW", "area": "今治市", "region": "ehime-38202", "lat": 34.10525, "lon": 133.18183, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38202-190000"] },
-    { "id": "pp-tw-38202-212000", "name": "関前大下港(仮)", "genre": "port", "kind": "GW", "area": "今治市", "region": "ehime-38202", "lat": 34.19367, "lon": 132.92892, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38202-212000"] },
+    { "id": "pp-tw-38202-028000", "name": "今治村港(仮)", "genre": "port", "kind": "GW", "area": "今治市", "region": "ehime-38202", "lat": 34.02295, "lon": 133.09388, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38202-028000"] },
+    { "id": "pp-tw-38202-111000", "name": "来島港(仮)", "genre": "port", "kind": "GW", "area": "今治市", "region": "ehime-38202", "lat": 34.12328, "lon": 132.98031, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38202-111000"] },
+    { "id": "pp-tw-38202-179000", "name": "吉海町津島港(仮)", "genre": "port", "kind": "GW", "area": "今治市", "region": "ehime-38202", "lat": 34.14935, "lon": 132.99809, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38202-179000"] },
+    { "id": "pp-tw-38202-190000", "name": "宮窪町四阪島港(仮)", "genre": "port", "kind": "GW", "area": "今治市", "region": "ehime-38202", "lat": 34.10486, "lon": 133.18173, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38202-190000"] },
+    { "id": "pp-tw-38202-212000", "name": "関前大下港(仮)", "genre": "port", "kind": "GW", "area": "今治市", "region": "ehime-38202", "lat": 34.19385, "lon": 132.92903, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38202-212000"] },
 
-    { "id": "pp-tw-38203-083000", "name": "戸島港(仮)", "genre": "port", "kind": "GW", "area": "宇和島市", "region": "ehime-38203", "lat": 33.20646, "lon": 132.37181, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38203-083000"] },
+    { "id": "pp-tw-38203-083000", "name": "戸島港(仮)", "genre": "port", "kind": "GW", "area": "宇和島市", "region": "ehime-38203", "lat": 33.20669, "lon": 132.37189, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38203-083000"] },
 
-    { "id": "pp-tw-38204-033001", "name": "大島(八幡浜市)港(仮)", "genre": "port", "kind": "GW", "area": "八幡浜市", "region": "ehime-38204", "lat": 33.37861, "lon": 132.35807, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38204-033001"] },
+    { "id": "pp-tw-38204-033001", "name": "大島(八幡浜市)港(仮)", "genre": "port", "kind": "GW", "area": "八幡浜市", "region": "ehime-38204", "lat": 33.37835, "lon": 132.35829, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38204-033001"] },
 
-    { "id": "pp-tw-38207-045000", "name": "長浜町青島港(仮)", "genre": "port", "kind": "GW", "area": "大洲市", "region": "ehime-38207", "lat": 33.73708, "lon": 132.48232, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38207-045000"] },
+    { "id": "pp-tw-38207-045000", "name": "長浜町青島港(仮)", "genre": "port", "kind": "GW", "area": "大洲市", "region": "ehime-38207", "lat": 33.73712, "lon": 132.48245, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38207-045000"] },
 
-    { "id": "pp-tw-38356-001100", "name": "弓削百貫港(仮)", "genre": "port", "kind": "GW", "area": "上島町", "region": "ehime-38356", "lat": 34.30029, "lon": 133.27543, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38356-001100"] },
-    { "id": "pp-tw-38356-013000", "name": "弓削豊島港(仮)", "genre": "port", "kind": "GW", "area": "上島町", "region": "ehime-38356", "lat": 34.23157, "lon": 133.25749, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38356-013000"] },
-    { "id": "pp-tw-38356-016000", "name": "高井神島港(仮)", "genre": "port", "kind": "GW", "area": "上島町", "region": "ehime-38356", "lat": 34.1969, "lon": 133.2684, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38356-016000"] },
-    { "id": "pp-tw-38356-026000", "name": "江の島港(仮)", "genre": "port", "kind": "GW", "area": "上島町", "region": "ehime-38356", "lat": 34.17004, "lon": 133.35922, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38356-026000"] },
+    { "id": "pp-tw-38356-001100", "name": "弓削百貫港(仮)", "genre": "port", "kind": "GW", "area": "上島町", "region": "ehime-38356", "lat": 34.3004, "lon": 133.27556, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38356-001100"] },
+    { "id": "pp-tw-38356-013000", "name": "弓削豊島港(仮)", "genre": "port", "kind": "GW", "area": "上島町", "region": "ehime-38356", "lat": 34.23182, "lon": 133.25764, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38356-013000"] },
+    { "id": "pp-tw-38356-016000", "name": "高井神島港(仮)", "genre": "port", "kind": "GW", "area": "上島町", "region": "ehime-38356", "lat": 34.19687, "lon": 133.26835, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38356-016000"] },
+    { "id": "pp-tw-38356-026000", "name": "江の島港(仮)", "genre": "port", "kind": "GW", "area": "上島町", "region": "ehime-38356", "lat": 34.16999, "lon": 133.35917, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38356-026000"] },
 
-    { "id": "pp-tw-38442-026000", "name": "黒島(伊方町)港(仮)", "genre": "port", "kind": "GW", "area": "伊方町", "region": "ehime-38442", "lat": 33.45564, "lon": 132.35151, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38442-026000"] },
+    { "id": "pp-tw-38442-026000", "name": "黒島(伊方町)港(仮)", "genre": "port", "kind": "GW", "area": "伊方町", "region": "ehime-38442", "lat": 33.45558, "lon": 132.35171, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38442-026000"] },
 
-    { "id": "pp-tw-38506-062000", "name": "鹿島港(仮)", "genre": "port", "kind": "GW", "area": "愛南町", "region": "ehime-38506", "lat": 32.9477, "lon": 132.44838, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38506-062000"] },
+    { "id": "pp-tw-38506-062000", "name": "鹿島港(仮)", "genre": "port", "kind": "GW", "area": "愛南町", "region": "ehime-38506", "lat": 32.94761, "lon": 132.44803, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38506-062000"] },
 
-    { "id": "pp-tw-38203-084000", "name": "日振島港(仮)", "genre": "port", "kind": "GW", "area": "宇和島市", "region": "ehime-38203", "lat": 33.16777, "lon": 132.29045, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38203-084000"] },
+    { "id": "pp-tw-38203-084000", "name": "日振島港(仮)", "genre": "port", "kind": "GW", "area": "宇和島市", "region": "ehime-38203", "lat": 33.16776, "lon": 132.29041, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38203-084000"] },
 
-    { "id": "pp-tw-38506-050000", "name": "麦ケ浦港(仮)", "genre": "port", "kind": "GW", "area": "愛南町", "region": "ehime-38506", "lat": 32.91802, "lon": 132.51363, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38506-050000"] },
+    { "id": "pp-tw-38506-050000", "name": "麦ケ浦港(仮)", "genre": "port", "kind": "GW", "area": "愛南町", "region": "ehime-38506", "lat": 32.918, "lon": 132.51376, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38506-050000"] },
 
-    { "id": "pp-tw-38356-024000", "name": "春日港(仮)", "genre": "port", "kind": "GW", "area": "上島町", "region": "ehime-38356", "lat": 34.17708, "lon": 133.32772, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38356-024000"] }
+    { "id": "pp-tw-38356-024000", "name": "春日港(仮)", "genre": "port", "kind": "GW", "area": "上島町", "region": "ehime-38356", "lat": 34.17684, "lon": 133.32781, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-38356-024000"] }
   ]
 }

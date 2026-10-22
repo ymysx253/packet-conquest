@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "tokushima",
   "name": "徳島県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "徳島県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -773,8 +773,8 @@
     { "id": "st-008545", "name": "阿波加茂駅", "genre": "station", "kind": "HUB", "area": "東みよし町", "region": "tokushima-36489", "lat": 34.03678, "lon": 133.92636, "level": 10, "value": 10, "lines": ["四国旅客鉄道 徳島線"], "adj": ["st-008548", "st-008559", "tw-36208-005000", "tw-36489-007000"] },
     { "id": "st-008548", "name": "三加茂駅", "genre": "station", "kind": "HUB", "area": "東みよし町", "region": "tokushima-36489", "lat": 34.03583, "lon": 133.94879, "level": 10, "value": 10, "lines": ["四国旅客鉄道 徳島線"], "adj": ["st-008544", "st-008545", "tw-36489-005000"] },
 
-    { "id": "pp-tw-36204-010200", "name": "伊島町港(仮)", "genre": "port", "kind": "GW", "area": "阿南市", "region": "tokushima-36204", "lat": 33.849, "lon": 134.80908, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-36204-010200"] },
+    { "id": "pp-tw-36204-010200", "name": "伊島町港(仮)", "genre": "port", "kind": "GW", "area": "阿南市", "region": "tokushima-36204", "lat": 33.84915, "lon": 134.80914, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-36204-010200"] },
 
-    { "id": "pp-tw-36383-006000", "name": "牟岐浦港(仮)", "genre": "port", "kind": "GW", "area": "牟岐町", "region": "tokushima-36383", "lat": 33.63923, "lon": 134.4951, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-36383-006000"] }
+    { "id": "pp-tw-36383-006000", "name": "牟岐浦港(仮)", "genre": "port", "kind": "GW", "area": "牟岐町", "region": "tokushima-36383", "lat": 33.63921, "lon": 134.49551, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-36383-006000"] }
   ]
 }

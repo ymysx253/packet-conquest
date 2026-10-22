@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "tochigi",
   "name": "栃木県",
-  "version": 89,
+  "version": 90,
   "updatedAt": "2026-10-19",
   "note": "栃木県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {

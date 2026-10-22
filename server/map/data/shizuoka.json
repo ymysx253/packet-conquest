@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "shizuoka",
   "name": "静岡県",
-  "version": 90,
+  "version": 91,
   "updatedAt": "2026-10-19",
   "note": "静岡県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -3223,6 +3223,6 @@
     { "id": "st-006537", "name": "円田駅", "genre": "station", "kind": "HUB", "area": "森町", "region": "shizuoka-22461", "lat": 34.82087, "lon": 137.90765, "level": 10, "value": 10, "lines": ["天竜浜名湖鉄道 天竜浜名湖線"], "adj": ["st-006515", "st-006553", "tw-22461-016050", "tw-22461-017072", "tw-22461-018073", "tw-22461-021081"] },
     { "id": "st-006553", "name": "遠江一宮駅", "genre": "station", "kind": "HUB", "area": "森町", "region": "shizuoka-22461", "lat": 34.81808, "lon": 137.88907, "level": 10, "value": 10, "lines": ["天竜浜名湖鉄道 天竜浜名湖線"], "adj": ["st-006510", "st-006537", "tw-22211-240000", "tw-22211-241000", "tw-22216-028000", "tw-22461-015061", "tw-22461-018073", "tw-22461-019074"] },
 
-    { "id": "pp-tw-22205-060000", "name": "初島港(仮)", "genre": "port", "kind": "GW", "area": "熱海市", "region": "shizuoka-22205", "lat": 35.03727, "lon": 139.16779, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-22205-060000"] }
+    { "id": "pp-tw-22205-060000", "name": "初島港(仮)", "genre": "port", "kind": "GW", "area": "熱海市", "region": "shizuoka-22205", "lat": 35.0371, "lon": 139.16762, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-22205-060000"] }
   ]
 }

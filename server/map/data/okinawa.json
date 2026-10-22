@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "okinawa",
   "name": "沖縄県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "沖縄県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -972,33 +972,33 @@
     { "id": "lm-q708517", "name": "与那国空港", "genre": "airport", "kind": "GW", "area": "与那国町", "region": "okinawa-47382", "lat": 24.4675, "lon": 122.97972, "level": 150, "value": 150, "codes": {"iata": "OGN", "icao": "ROYN", "wikidata": "Q708517"}, "src": "src-wikidata", "gateway": {"type": "airport", "scope": "domestic"}, "adj": ["tw-47382-001000"] },
     { "id": "tw-47382-001000", "name": "与那国", "genre": "town", "kind": "TOWN", "area": "与那国町", "region": "okinawa-47382", "lat": 24.45541, "lon": 122.98894, "level": 5, "value": 5, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "47382001000"}]}, "src": "src-estat-boundary-2020", "contains": ["lm-q708517", "ts-q11526783", "ts-q18337414", "ts-q5034876"], "adj": ["lm-q708517", "ts-q11526783", "ts-q18337414", "ts-q5034876"] },
 
-    { "id": "pp-tw-47211-044000", "name": "潮乃森港(仮)", "genre": "port", "kind": "GW", "area": "沖縄市", "region": "okinawa-47211", "lat": 26.30275, "lon": 127.83563, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47211-044000"] },
+    { "id": "pp-tw-47211-044000", "name": "潮乃森港(仮)", "genre": "port", "kind": "GW", "area": "沖縄市", "region": "okinawa-47211", "lat": 26.30284, "lon": 127.83552, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47211-044000"] },
 
-    { "id": "pp-tw-47214-017000", "name": "平良字大神港(仮)", "genre": "port", "kind": "GW", "area": "宮古島市", "region": "okinawa-47214", "lat": 24.91312, "lon": 125.30686, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47214-017000"] },
+    { "id": "pp-tw-47214-017000", "name": "平良字大神港(仮)", "genre": "port", "kind": "GW", "area": "宮古島市", "region": "okinawa-47214", "lat": 24.91362, "lon": 125.30702, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47214-017000"] },
 
-    { "id": "pp-tw-47215-028000", "name": "知念字久高港(仮)", "genre": "port", "kind": "GW", "area": "南城市", "region": "okinawa-47215", "lat": 26.16383, "lon": 127.89402, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47215-028000"] },
+    { "id": "pp-tw-47215-028000", "name": "知念字久高港(仮)", "genre": "port", "kind": "GW", "area": "南城市", "region": "okinawa-47215", "lat": 26.16397, "lon": 127.89406, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47215-028000"] },
 
-    { "id": "pp-tw-47354-005000", "name": "阿真港(仮)", "genre": "port", "kind": "GW", "area": "座間味村", "region": "okinawa-47354", "lat": 26.21694, "lon": 127.24966, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47354-005000"] },
+    { "id": "pp-tw-47354-005000", "name": "阿真港(仮)", "genre": "port", "kind": "GW", "area": "座間味村", "region": "okinawa-47354", "lat": 26.21813, "lon": 127.24991, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47354-005000"] },
 
-    { "id": "pp-tw-47358-004000", "name": "ラサ港(仮)", "genre": "port", "kind": "GW", "area": "北大東村", "region": "okinawa-47358", "lat": 24.47116, "lon": 131.18811, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47358-004000"] },
+    { "id": "pp-tw-47358-004000", "name": "ラサ港(仮)", "genre": "port", "kind": "GW", "area": "北大東村", "region": "okinawa-47358", "lat": 24.47091, "lon": 131.18814, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47358-004000"] },
 
-    { "id": "pp-tw-47381-007000", "name": "崎山(竹富町)港(仮)", "genre": "port", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.2816, "lon": 123.6999, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47381-007000"] },
-    { "id": "pp-tw-47381-008000", "name": "鳩間港(仮)", "genre": "port", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.46916, "lon": 123.82458, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47381-008000"] },
+    { "id": "pp-tw-47381-007000", "name": "崎山(竹富町)港(仮)", "genre": "port", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.28203, "lon": 123.69996, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47381-007000"] },
+    { "id": "pp-tw-47381-008000", "name": "鳩間港(仮)", "genre": "port", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.46888, "lon": 123.82497, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47381-008000"] },
 
-    { "id": "pp-tw-47213-055000", "name": "勝連津堅港(仮)", "genre": "port", "kind": "GW", "area": "うるま市", "region": "okinawa-47213", "lat": 26.24501, "lon": 127.93745, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47213-055000"] },
+    { "id": "pp-tw-47213-055000", "name": "勝連津堅港(仮)", "genre": "port", "kind": "GW", "area": "うるま市", "region": "okinawa-47213", "lat": 26.24505, "lon": 127.93756, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47213-055000"] },
 
-    { "id": "pp-tw-47353-003000", "name": "前島(渡嘉敷村)港(仮)", "genre": "port", "kind": "GW", "area": "渡嘉敷村", "region": "okinawa-47353", "lat": 26.21189, "lon": 127.445, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47353-003000"] },
+    { "id": "pp-tw-47353-003000", "name": "前島(渡嘉敷村)港(仮)", "genre": "port", "kind": "GW", "area": "渡嘉敷村", "region": "okinawa-47353", "lat": 26.2117, "lon": 127.44491, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47353-003000"] },
 
-    { "id": "pp-tw-47361-027000", "name": "鳥島港(仮)", "genre": "port", "kind": "GW", "area": "久米島町", "region": "okinawa-47361", "lat": 27.86403, "lon": 128.23494, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47361-027000"] },
+    { "id": "pp-tw-47361-027000", "name": "鳥島港(仮)", "genre": "port", "kind": "GW", "area": "久米島町", "region": "okinawa-47361", "lat": 27.86389, "lon": 128.23492, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47361-027000"] },
 
-    { "id": "pp-tw-47375-003000", "name": "水納港(仮)", "genre": "port", "kind": "GW", "area": "多良間村", "region": "okinawa-47375", "lat": 24.74905, "lon": 124.69639, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47375-003000"] },
+    { "id": "pp-tw-47375-003000", "name": "水納港(仮)", "genre": "port", "kind": "GW", "area": "多良間村", "region": "okinawa-47375", "lat": 24.74917, "lon": 124.69654, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47375-003000"] },
 
-    { "id": "pp-tw-47381-011000", "name": "黒島港(仮)", "genre": "port", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.24989, "lon": 124.00814, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47381-011000"] },
-    { "id": "pp-tw-47381-010000", "name": "竹富港(仮)", "genre": "port", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.32707, "lon": 124.09924, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47381-010000"] },
-    { "id": "pp-tw-47381-012000", "name": "新城(竹富町)港(仮)", "genre": "port", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.23617, "lon": 123.95286, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47381-012000"] },
+    { "id": "pp-tw-47381-011000", "name": "黒島港(仮)", "genre": "port", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.25011, "lon": 124.00791, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47381-011000"] },
+    { "id": "pp-tw-47381-010000", "name": "竹富港(仮)", "genre": "port", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.32704, "lon": 124.09916, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47381-010000"] },
+    { "id": "pp-tw-47381-012000", "name": "新城(竹富町)港(仮)", "genre": "port", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.23653, "lon": 123.95304, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47381-012000"] },
 
-    { "id": "pp-tw-47354-002000", "name": "阿嘉(座間味村)港(仮)", "genre": "port", "kind": "GW", "area": "座間味村", "region": "okinawa-47354", "lat": 26.20464, "lon": 127.27035, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47354-002000"] },
+    { "id": "pp-tw-47354-002000", "name": "阿嘉(座間味村)港(仮)", "genre": "port", "kind": "GW", "area": "座間味村", "region": "okinawa-47354", "lat": 26.20496, "lon": 127.27064, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47354-002000"] },
 
-    { "id": "pp-tw-47381-001000", "name": "上原(竹富町)港(仮)", "genre": "port", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.39377, "lon": 123.8149, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47381-001000"] }
+    { "id": "pp-tw-47381-001000", "name": "上原(竹富町)港(仮)", "genre": "port", "kind": "GW", "area": "竹富町", "region": "okinawa-47381", "lat": 24.39356, "lon": 123.81514, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-47381-001000"] }
   ]
 }

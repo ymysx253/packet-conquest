@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "aichi",
   "name": "愛知県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "愛知県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -6450,9 +6450,9 @@
     { "id": "tw-23563-005001", "name": "古真立", "genre": "town", "kind": "TOWN", "area": "豊根村", "region": "aichi-23563", "lat": 35.12702, "lon": 137.78176, "level": 2, "value": 2, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "23563005001"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-23562-004000", "tw-23563-006000"], "adj": ["tw-23562-004000", "tw-23563-006000"] },
     { "id": "tw-23563-006000", "name": "富山(豊根村)", "genre": "town", "kind": "TOWN", "area": "豊根村", "region": "aichi-23563", "lat": 35.1829, "lon": 137.79071, "level": 2, "value": 2, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "23563006000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-23563-004001", "tw-23563-005001"], "contains": ["st-005391"], "adj": ["st-005391", "tw-23563-004001", "tw-23563-005001"] },
 
-    { "id": "pp-tw-23213-724029", "name": "一色町佐久島港(仮)", "genre": "port", "kind": "GW", "area": "西尾市", "region": "aichi-23213", "lat": 34.72054, "lon": 137.04753, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-23213-724029"] },
+    { "id": "pp-tw-23213-724029", "name": "一色町佐久島港(仮)", "genre": "port", "kind": "GW", "area": "西尾市", "region": "aichi-23213", "lat": 34.7205, "lon": 137.04838, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-23213-724029"] },
 
-    { "id": "pp-tw-23445-008000", "name": "篠島港(仮)", "genre": "port", "kind": "GW", "area": "南知多町", "region": "aichi-23445", "lat": 34.68163, "lon": 137.01013, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-23445-008000"] },
-    { "id": "pp-tw-23445-009000", "name": "日間賀島港(仮)", "genre": "port", "kind": "GW", "area": "南知多町", "region": "aichi-23445", "lat": 34.70274, "lon": 137.00491, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-23445-009000"] }
+    { "id": "pp-tw-23445-008000", "name": "篠島港(仮)", "genre": "port", "kind": "GW", "area": "南知多町", "region": "aichi-23445", "lat": 34.68188, "lon": 137.01004, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-23445-008000"] },
+    { "id": "pp-tw-23445-009000", "name": "日間賀島港(仮)", "genre": "port", "kind": "GW", "area": "南知多町", "region": "aichi-23445", "lat": 34.70257, "lon": 137.00487, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-23445-009000"] }
   ]
 }

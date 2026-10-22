@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "kumamoto",
   "name": "熊本県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "熊本県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -2150,8 +2150,8 @@
     { "id": "tw-43531-007000", "name": "富岡", "genre": "town", "kind": "TOWN", "area": "苓北町", "region": "kumamoto-43531", "lat": 32.52631, "lon": 130.02963, "level": 5, "value": 5, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "43531007000"}]}, "src": "src-estat-boundary-2020", "adj": ["tw-43531-003000"] },
     { "id": "tw-43531-008000", "name": "都呂々", "genre": "town", "kind": "TOWN", "area": "苓北町", "region": "kumamoto-43531", "lat": 32.45191, "lon": 130.05671, "level": 4, "value": 4, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "43531008000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-43215-032100", "tw-43215-072000", "tw-43531-005000"], "adj": ["tw-43215-032100", "tw-43215-072000", "tw-43531-005000"] },
 
-    { "id": "pp-tw-43212-005000", "name": "湯島港(仮)", "genre": "port", "kind": "GW", "area": "上天草市", "region": "kumamoto-43212", "lat": 32.60339, "lon": 130.33187, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-43212-005000"] },
+    { "id": "pp-tw-43212-005000", "name": "湯島港(仮)", "genre": "port", "kind": "GW", "area": "上天草市", "region": "kumamoto-43212", "lat": 32.60352, "lon": 130.33176, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-43212-005000"] },
 
-    { "id": "pp-tw-43215-051000", "name": "竹島港(仮)", "genre": "port", "kind": "GW", "area": "天草市", "region": "kumamoto-43215", "lat": 32.33019, "lon": 130.30032, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-43215-051000"] }
+    { "id": "pp-tw-43215-051000", "name": "竹島港(仮)", "genre": "port", "kind": "GW", "area": "天草市", "region": "kumamoto-43215", "lat": 32.32995, "lon": 130.29973, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-43215-051000"] }
   ]
 }
