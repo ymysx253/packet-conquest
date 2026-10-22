@@ -1,0 +1,221 @@
+{
+  "note": "FactBank(上級 Lv281「SPF」・Lv282「DKIM」)。送信元を確かめる仕組み(group=auth)と、topic=spf / dkim の文。checkedBy の無い行は使わない",
+  "rows": [
+    {
+      "id": "ma-spf",
+      "ja": "SPF",
+      "attrs": {
+        "group": "auth",
+        "desc": "送ってよいサーバーの IP アドレスをドメインの DNS に書いておき、受信側が、送ってきたサーバーの IP と照らす"
+      },
+      "source": "RFC 7208",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ma-dkim",
+      "ja": "DKIM",
+      "attrs": {
+        "group": "auth",
+        "desc": "送信側がメールに電子署名を付け、受信側が、署名したドメインの DNS に置いた公開鍵で確かめる"
+      },
+      "source": "RFC 6376",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ma-dmarc",
+      "ja": "DMARC",
+      "attrs": {
+        "group": "auth",
+        "desc": "SPF・DKIM の結果と、見えている差出人(From)のドメインがそろうかを見て、合わないときの扱いをドメインの持ち主が DNS で宣言する"
+      },
+      "source": "RFC 7489",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ma-starttls",
+      "ja": "STARTTLS",
+      "attrs": {
+        "group": "auth",
+        "desc": "SMTP のやりとりの途中から、通信を TLS で暗号化する"
+      },
+      "source": "RFC 3207",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "spf-txt",
+      "ja": "SPF の宣言は、送信元のドメインの DNS に TXT レコードで置く",
+      "attrs": {
+        "true": true,
+        "why": "SPF の宣言は DNS の TXT レコードに書く。",
+        "topic": "spf"
+      },
+      "source": "RFC 7208 3",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "spf-mailfrom",
+      "ja": "SPF は、エンベロープの送信者(MAIL FROM)のドメインと、送ってきたサーバーの IP アドレスを使って確かめる",
+      "attrs": {
+        "true": true,
+        "why": "MAIL FROM のドメインの宣言を引き、送ってきたサーバーの IP が載っているかを見る。",
+        "topic": "spf"
+      },
+      "source": "RFC 7208 2.4",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "spf-forward",
+      "ja": "メールが途中のサーバーで転送されると、送ってきたサーバーの IP が変わるので、SPF は失敗しやすい",
+      "attrs": {
+        "true": true,
+        "why": "転送したサーバーは元のドメインの宣言に載っていないことが多い。",
+        "topic": "spf"
+      },
+      "source": "RFC 7208 付録 D",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "spf-all",
+      "ja": "SPF の宣言の最後の「-all」は、それより前に書いたもの以外のサーバーから送られたメールを、失敗(fail)とする意味である",
+      "attrs": {
+        "true": true,
+        "why": "「-」は失敗、「all」はすべてに合う。前の項目に合わなかったものが失敗になる。",
+        "topic": "spf"
+      },
+      "source": "RFC 7208 5.1",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "spf-signature",
+      "ja": "SPF は、メールに付けた電子署名を確かめる仕組みである",
+      "attrs": {
+        "true": false,
+        "why": "電子署名で確かめるのは DKIM。SPF は送ってきたサーバーの IP で確かめる。",
+        "topic": "spf"
+      },
+      "source": "RFC 7208",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "spf-encrypt",
+      "ja": "SPF は、メールの本文を暗号化して、途中で読まれないようにする仕組みである",
+      "attrs": {
+        "true": false,
+        "why": "SPF は送ってきたサーバーを確かめるだけで、暗号化はしない。",
+        "topic": "spf"
+      },
+      "source": "RFC 7208",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "spf-client",
+      "ja": "SPF の宣言は、受信者のメールソフトの設定に書く",
+      "attrs": {
+        "true": false,
+        "why": "SPF の宣言は、送信元のドメインの DNS に置く。",
+        "topic": "spf"
+      },
+      "source": "RFC 7208 3",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "spf-rcpt-ip",
+      "ja": "SPF は、送ってきたサーバーではなく、受信者の端末の IP アドレスを確かめる",
+      "attrs": {
+        "true": false,
+        "why": "SPF が確かめるのは、メールを送ってきたサーバーの IP アドレス。",
+        "topic": "spf"
+      },
+      "source": "RFC 7208",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dkim-header",
+      "ja": "DKIM の署名は、メールのヘッダ(DKIM-Signature)に入れて送る",
+      "attrs": {
+        "true": true,
+        "why": "署名はメールそのものに付けるので、ヘッダに入れて運ぶ。",
+        "topic": "dkim"
+      },
+      "source": "RFC 6376 3.5",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dkim-key-dns",
+      "ja": "DKIM の公開鍵は、署名したドメインの DNS に、セレクタ._domainkey の下の TXT レコードで置く",
+      "attrs": {
+        "true": true,
+        "why": "受信側は署名に書かれたドメインとセレクタから公開鍵を引く。",
+        "topic": "dkim"
+      },
+      "source": "RFC 6376 3.6.2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dkim-tamper",
+      "ja": "途中で本文が書き換えられると、DKIM の署名の確かめは失敗する",
+      "attrs": {
+        "true": true,
+        "why": "署名は本文とヘッダから計算するので、書き換わると合わなくなる。",
+        "topic": "dkim"
+      },
+      "source": "RFC 6376",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dkim-forward",
+      "ja": "メールが転送されても、署名したヘッダや本文が変わらなければ、DKIM の署名は確かめられる",
+      "attrs": {
+        "true": true,
+        "why": "DKIM は送ってきたサーバーの IP に頼らないので、転送に強い。",
+        "topic": "dkim"
+      },
+      "source": "RFC 6376",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dkim-ip",
+      "ja": "DKIM は、送ってきたサーバーの IP アドレスを、DNS に書いた一覧と照らす仕組みである",
+      "attrs": {
+        "true": false,
+        "why": "IP で照らすのは SPF。DKIM は電子署名で確かめる。",
+        "topic": "dkim"
+      },
+      "source": "RFC 6376",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dkim-private-dns",
+      "ja": "DKIM の秘密鍵は DNS に置き、受信側はそれで署名を確かめる",
+      "attrs": {
+        "true": false,
+        "why": "DNS に置くのは公開鍵。秘密鍵は送信側だけが持ち、署名に使う。",
+        "topic": "dkim"
+      },
+      "source": "RFC 6376 3.6",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dkim-encrypt",
+      "ja": "DKIM の署名があれば、本文は暗号化されていて途中で読まれない",
+      "attrs": {
+        "true": false,
+        "why": "DKIM は書き換えを見つける署名で、暗号化はしない。",
+        "topic": "dkim"
+      },
+      "source": "RFC 6376",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dkim-password",
+      "ja": "DKIM は、受信者のメールボックスのパスワードを確かめる仕組みである",
+      "attrs": {
+        "true": false,
+        "why": "DKIM は送信元のドメインと書き換えの有無を確かめる仕組み。",
+        "topic": "dkim"
+      },
+      "source": "RFC 6376",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    }
+  ]
+}

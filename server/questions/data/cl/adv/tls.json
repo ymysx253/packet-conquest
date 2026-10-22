@@ -1,0 +1,175 @@
+{
+  "note": "FactBank(上級 Lv278「TLS のやりとり」)。ハンドシェイクのメッセージ(group=msg)と文。checkedBy の無い行は使わない",
+  "rows": [
+    {
+      "id": "m-ch",
+      "ja": "ClientHello",
+      "attrs": {
+        "group": "msg",
+        "desc": "接続のはじめにクライアントが送る。使える暗号の方式や鍵交換の値を知らせる"
+      },
+      "source": "RFC 8446(TLS 1.3) 4.1.2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "m-sh",
+      "ja": "ServerHello",
+      "attrs": {
+        "group": "msg",
+        "desc": "ClientHello に答えてサーバーが送る。使う方式を 1 つ選んで知らせる"
+      },
+      "source": "RFC 8446(TLS 1.3) 4.1.3",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "m-cert",
+      "ja": "Certificate",
+      "attrs": {
+        "group": "msg",
+        "desc": "サーバーが自分の証明書(と中間の認証局の証明書)を送る"
+      },
+      "source": "RFC 8446(TLS 1.3) 4.4.2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "m-cv",
+      "ja": "CertificateVerify",
+      "attrs": {
+        "group": "msg",
+        "desc": "TLS 1.3 で、サーバーが証明書の秘密鍵を持っていることを、ここまでのやりとりへの署名で示す"
+      },
+      "source": "RFC 8446(TLS 1.3) 4.4.3",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "m-fin",
+      "ja": "Finished",
+      "attrs": {
+        "group": "msg",
+        "desc": "ハンドシェイクの終わりに送り、ここまでのやりとりが改ざんされていないことと、同じ鍵を持ったことを確かめる"
+      },
+      "source": "RFC 8446(TLS 1.3) 4.4.4",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "tls-ch-first",
+      "ja": "TLS の接続では、クライアントが最初に ClientHello を送る",
+      "attrs": {
+        "true": true,
+        "why": "TLS はクライアントの ClientHello から始まる。"
+      },
+      "source": "RFC 8446(TLS 1.3) 2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "tls13-enc",
+      "ja": "TLS 1.3 では、ServerHello のあとのハンドシェイクのメッセージは暗号化される",
+      "attrs": {
+        "true": true,
+        "why": "ServerHello までで鍵の材料がそろうので、そのあとは暗号化して送る。"
+      },
+      "source": "RFC 8446(TLS 1.3) 2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "tls13-cert-enc",
+      "ja": "TLS 1.3 では、サーバーの証明書は暗号化されて送られる",
+      "attrs": {
+        "true": true,
+        "why": "証明書は ServerHello のあとに送るので暗号化される。"
+      },
+      "source": "RFC 8446(TLS 1.3) 2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "tls-sni",
+      "ja": "接続先のサーバーの名前(SNI)は、ClientHello の拡張に入れて送る",
+      "attrs": {
+        "true": true,
+        "why": "1 つのアドレスに複数のサイトがあっても、サーバーが正しい証明書を選べるようにする。"
+      },
+      "source": "RFC 6066 3",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "tls13-1rtt",
+      "ja": "TLS 1.3 のふつうのハンドシェイクは 1 往復で、クライアントはサーバーの返事を受けたらすぐアプリのデータを送れる",
+      "attrs": {
+        "true": true,
+        "why": "TLS 1.3 は鍵交換の値を ClientHello に入れるので 1 往復で済む。"
+      },
+      "source": "RFC 8446(TLS 1.3) 2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "tls12-cert-plain",
+      "ja": "TLS 1.2 では、サーバーの証明書は暗号化されずに送られる",
+      "attrs": {
+        "true": true,
+        "why": "TLS 1.2 では鍵がそろう前に証明書を送るので、暗号化されない。"
+      },
+      "source": "RFC 5246 7.3",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "tls-sh-first",
+      "ja": "TLS の接続では、サーバーが最初に ServerHello を送る",
+      "attrs": {
+        "true": false,
+        "why": "最初に送るのはクライアントの ClientHello。ServerHello はその答え。"
+      },
+      "source": "RFC 8446(TLS 1.3) 2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "tls13-3rtt",
+      "ja": "TLS 1.3 のふつうのハンドシェイクは 3 往復かかる",
+      "attrs": {
+        "true": false,
+        "why": "TLS 1.3 のふつうのハンドシェイクは 1 往復。"
+      },
+      "source": "RFC 8446(TLS 1.3) 2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "tls-before-tcp",
+      "ja": "TCP の上で動く TLS では、TCP の 3 ウェイハンドシェイクより前に ClientHello を送る",
+      "attrs": {
+        "true": false,
+        "why": "TLS は TCP の接続ができてから始まる。ClientHello は 3 ウェイハンドシェイクのあと。"
+      },
+      "source": "RFC 8446(TLS 1.3) 1",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "tls-fin-close",
+      "ja": "Finished は、接続を終えるときに送るメッセージである",
+      "attrs": {
+        "true": false,
+        "why": "Finished はハンドシェイクの終わりの確かめ。接続を終える知らせは close_notify の警告。"
+      },
+      "source": "RFC 8446(TLS 1.3) 4.4.4・6.1",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "tls-sni-server",
+      "ja": "SNI は、サーバーが証明書と一緒に送る、サーバーの名前である",
+      "attrs": {
+        "true": false,
+        "why": "SNI はクライアントが ClientHello に入れて送る、つなぎたいサーバーの名前。"
+      },
+      "source": "RFC 6066 3",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "tls13-client-cert-first",
+      "ja": "TLS 1.3 では、ハンドシェイクのいちばん最初に、クライアントが証明書を送る",
+      "attrs": {
+        "true": false,
+        "why": "最初に送るのは ClientHello。サーバーの証明書は ServerHello のあとに送る。"
+      },
+      "source": "RFC 8446(TLS 1.3) 2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    }
+  ]
+}

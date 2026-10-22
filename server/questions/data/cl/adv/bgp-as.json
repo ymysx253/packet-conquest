@@ -1,0 +1,185 @@
+{
+  "note": "FactBank(上級 Lv267「AS」)。AS と BGP の用語(group=as)と文。checkedBy の無い行は使わない",
+  "rows": [
+    {
+      "id": "t-as",
+      "ja": "AS(自律システム)",
+      "attrs": {
+        "group": "as",
+        "desc": "1 つの組織が 1 つの方針で管理する、ネットワーク(経路)のまとまり"
+      },
+      "source": "RFC 1930",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "t-bgp",
+      "ja": "BGP",
+      "attrs": {
+        "group": "as",
+        "desc": "AS と AS の間で経路をやりとりする手順"
+      },
+      "source": "RFC 4271",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "t-igp",
+      "ja": "IGP",
+      "attrs": {
+        "group": "as",
+        "desc": "1 つの AS の中で経路をやりとりする手順のなかま(OSPF など)"
+      },
+      "source": "RFC 1930",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "t-ebgp",
+      "ja": "eBGP",
+      "attrs": {
+        "group": "as",
+        "desc": "違う AS のルーターどうしで結ぶ BGP"
+      },
+      "source": "RFC 4271",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "t-ibgp",
+      "ja": "iBGP",
+      "attrs": {
+        "group": "as",
+        "desc": "同じ AS の中のルーターどうしで結ぶ BGP"
+      },
+      "source": "RFC 4271",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "t-aspath",
+      "ja": "AS パス",
+      "attrs": {
+        "group": "as",
+        "desc": "経路が通ってきた AS の番号の並び"
+      },
+      "source": "RFC 4271(AS_PATH)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "t-private",
+      "ja": "プライベート AS 番号",
+      "attrs": {
+        "group": "as",
+        "desc": "インターネットへ知らせず、組織の中だけで使う AS 番号"
+      },
+      "source": "RFC 6996",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "as-ospf-igp",
+      "ja": "OSPF は IGP のなかまで、ふつう 1 つの AS の中で使う",
+      "attrs": {
+        "true": true,
+        "why": "OSPF は AS の中で経路をやりとりする手順(IGP)。AS どうしの間は BGP。"
+      },
+      "source": "RFC 2328・RFC 1930",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "as-loop",
+      "ja": "BGP のルーターは、受けた経路の AS パスに自分の AS 番号があると、その経路を使わない",
+      "attrs": {
+        "true": true,
+        "why": "自分の AS を通ってきた経路はループなので使わない。AS パスはループを防ぐ役もある。"
+      },
+      "source": "RFC 4271 9.1.2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "as-prepend",
+      "ja": "eBGP で隣の AS に経路を知らせるとき、AS パスの先頭に自分の AS 番号を足す",
+      "attrs": {
+        "true": true,
+        "why": "外へ知らせるたびに自分の番号を先頭に足すので、AS パスは通ってきた AS の並びになる。"
+      },
+      "source": "RFC 4271 5.1.2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "as-private-range",
+      "ja": "AS 番号 64512〜65534 はプライベート用で、インターネットへ知らせる経路には残さない",
+      "attrs": {
+        "true": true,
+        "why": "64512〜65534(2 バイトの範囲)は組織の中だけで使う番号。"
+      },
+      "source": "RFC 6996",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "as-tcp179",
+      "ja": "BGP は TCP の 179 番ポートで相手とつながる",
+      "attrs": {
+        "true": true,
+        "why": "BGP は TCP の上で動き、相手のポートは 179 番。"
+      },
+      "source": "RFC 4271",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "as-router-table",
+      "ja": "AS とは、1 台のルーターが持つ経路の表のことである",
+      "attrs": {
+        "true": false,
+        "why": "AS は 1 つの組織が管理するネットワークのまとまり。1 台のルーターの表ではない。"
+      },
+      "source": "RFC 1930",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "as-bgp-inside",
+      "ja": "BGP は同じ AS の中だけで使い、AS どうしの間では OSPF を使う",
+      "attrs": {
+        "true": false,
+        "why": "逆。AS どうしの間は BGP、AS の中は OSPF などの IGP。"
+      },
+      "source": "RFC 4271・RFC 1930",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "as-ibgp-diff",
+      "ja": "iBGP は、違う AS のルーターどうしで結ぶ BGP である",
+      "attrs": {
+        "true": false,
+        "why": "違う AS どうしは eBGP。iBGP は同じ AS の中のルーターどうし。"
+      },
+      "source": "RFC 4271",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "as-path-ip",
+      "ja": "AS パスは、経路が通ってきたルーターの IP アドレスの並びである",
+      "attrs": {
+        "true": false,
+        "why": "AS パスに並ぶのは AS の番号。ルーターのアドレスではない。"
+      },
+      "source": "RFC 4271(AS_PATH)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "as-udp",
+      "ja": "BGP は UDP で経路を送るので、届いたかを確かめない",
+      "attrs": {
+        "true": false,
+        "why": "BGP は TCP(179 番)の上で動き、届いたかの確かめは TCP が行う。"
+      },
+      "source": "RFC 4271",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "as-free-number",
+      "ja": "AS 番号は、組織の中で自由に決めた番号をそのままインターネットに知らせてよい",
+      "attrs": {
+        "true": false,
+        "why": "インターネットで使う AS 番号は割り当てを受けたもの。自由に決めてよいのはプライベート AS 番号で、外へは知らせない。"
+      },
+      "source": "RFC 1930・RFC 6996",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    }
+  ]
+}

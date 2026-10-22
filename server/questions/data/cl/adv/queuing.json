@@ -1,0 +1,165 @@
+{
+  "note": "FactBank(上級 Lv294「待ち行列」)。送る順の決め方(group=sched)、捨て方と速さの抑え方(group=rate)の説明と文。checkedBy の無い行は使わない",
+  "rows": [
+    {
+      "id": "q-pq",
+      "ja": "優先度キューイング",
+      "attrs": {
+        "group": "sched",
+        "desc": "優先度の高い列が空になるまで低い列を送らない。高い列に上限が無いので、低い列がずっと待たされることがある"
+      },
+      "source": "一般的な定義",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "q-wrr",
+      "ja": "重み付けラウンドロビン",
+      "attrs": {
+        "group": "sched",
+        "desc": "列を順に回り、重みの分だけ送る。どの列も重みに応じた割合で送れる"
+      },
+      "source": "一般的な定義",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "q-fifo",
+      "ja": "FIFO",
+      "attrs": {
+        "group": "sched",
+        "desc": "1 つの列で、来た順に送る"
+      },
+      "source": "一般的な定義",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "q-llq",
+      "ja": "低遅延キューイング(LLQ)",
+      "attrs": {
+        "group": "sched",
+        "desc": "優先の列を 1 つ持って先に送り(使える量に上限を付ける)、残りの列は重みで分けて送る"
+      },
+      "source": "一般的な定義",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "q-tail",
+      "ja": "テールドロップ",
+      "attrs": {
+        "group": "rate",
+        "desc": "列があふれたら、新しく来たパケットを捨てる"
+      },
+      "source": "RFC 7567",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "q-red",
+      "ja": "RED(早めの無作為な廃棄)",
+      "attrs": {
+        "group": "rate",
+        "desc": "列があふれる前から、混み具合に応じて確率でパケットを捨て始める"
+      },
+      "source": "RFC 2309・RFC 7567",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "q-shape",
+      "ja": "シェーピング",
+      "attrs": {
+        "group": "rate",
+        "desc": "決めた速さを超えた分を列に貯めて、遅らせて送る"
+      },
+      "source": "RFC 2475",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "q-police",
+      "ja": "ポリシング",
+      "attrs": {
+        "group": "rate",
+        "desc": "決めた速さを超えた分を捨てる(または印を付け直す)"
+      },
+      "source": "RFC 2475",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "qq-starve",
+      "ja": "優先度キューイングでは、優先度の高い通信が多いと、低い列がいつまでも送れなくなることがある",
+      "attrs": {
+        "true": true,
+        "why": "高い列が空にならない限り低い列は送らないので、低い列が待たされ続ける。"
+      },
+      "source": "一般的な定義",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "qq-wrr-share",
+      "ja": "重み付けラウンドロビンでは、どの列も重みに応じた割合で送れる",
+      "attrs": {
+        "true": true,
+        "why": "順に回って重みの分ずつ送るので、低い列も少しずつ送れる。"
+      },
+      "source": "一般的な定義",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "qq-shape-delay",
+      "ja": "シェーピングは超えた分を貯めて遅らせるので、遅れは増えるが、捨てる量は減る",
+      "attrs": {
+        "true": true,
+        "why": "貯めておける分は捨てずに後で送る。"
+      },
+      "source": "RFC 2475",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "qq-police-retx",
+      "ja": "ポリシングは超えた分を捨てるので、TCP では送り直しが起きやすい",
+      "attrs": {
+        "true": true,
+        "why": "捨てられた分は TCP が送り直す。"
+      },
+      "source": "RFC 2475",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "qq-pq-share",
+      "ja": "優先度キューイングでは、低い列も必ず決まった割合で送れる",
+      "attrs": {
+        "true": false,
+        "why": "決まった割合で送れるのは重み付けの方式。優先度キューイングでは低い列が待たされ続けることがある。"
+      },
+      "source": "一般的な定義",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "qq-fifo-voice",
+      "ja": "FIFO では、音声のパケットを自動で先に送る",
+      "attrs": {
+        "true": false,
+        "why": "FIFO は 1 つの列で来た順に送るだけで、種類で順番を変えない。"
+      },
+      "source": "一般的な定義",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "qq-shape-drop",
+      "ja": "シェーピングは、決めた速さを超えた分をすぐに捨てる",
+      "attrs": {
+        "true": false,
+        "why": "すぐ捨てるのはポリシング。シェーピングは貯めて遅らせる。"
+      },
+      "source": "RFC 2475",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "qq-tail-early",
+      "ja": "テールドロップは、列があふれる前から確率で捨て始める方式である",
+      "attrs": {
+        "true": false,
+        "why": "あふれる前から捨て始めるのは RED。テールドロップはあふれてから捨てる。"
+      },
+      "source": "RFC 7567",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    }
+  ]
+}

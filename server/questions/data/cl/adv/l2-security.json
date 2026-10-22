@@ -1,0 +1,338 @@
+{
+  "note": "FactBank(上級 Lv290「DHCP の監視」・Lv291「ARP の検査」・Lv292「802.1X」)。守りの機能(group=l2sec)、802.1X の役(group=role)、topic=snoop / dai / dot1x の文。checkedBy の無い行は使わない",
+  "rows": [
+    {
+      "id": "l2-snoop",
+      "ja": "DHCP スヌーピング",
+      "attrs": {
+        "group": "l2sec",
+        "desc": "信頼しないポートから来た DHCP サーバーの応答を捨て、配られたアドレスとポートの対応を記録する"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "l2-dai",
+      "ja": "ARP の検査(ダイナミック ARP インスペクション)",
+      "attrs": {
+        "group": "l2sec",
+        "desc": "信頼しないポートで受けた ARP の IP と MAC の組を、DHCP スヌーピングの記録と照らし、合わないものを捨てる"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "l2-ipsg",
+      "ja": "IP ソースガード",
+      "attrs": {
+        "group": "l2sec",
+        "desc": "ポートから入るパケットの送信元 IP アドレスを、DHCP スヌーピングの記録と照らし、合わないものを捨てる"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "l2-portsec",
+      "ja": "ポートセキュリティ",
+      "attrs": {
+        "group": "l2sec",
+        "desc": "ポートで使える MAC アドレスの数や値を決め、決まりに外れたら止める"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "l2-dot1x",
+      "ja": "802.1X",
+      "attrs": {
+        "group": "l2sec",
+        "desc": "ポートにつないだ端末を認証し、認められるまで端末の通信を通さない"
+      },
+      "source": "IEEE 802.1X・RFC 3580",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "r-supp",
+      "ja": "サプリカント",
+      "attrs": {
+        "group": "role",
+        "desc": "認証を受ける端末の側(端末で動く認証のソフト)"
+      },
+      "source": "IEEE 802.1X・RFC 3580",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "r-auth",
+      "ja": "オーセンティケーター",
+      "attrs": {
+        "group": "role",
+        "desc": "端末がつながるスイッチや無線 AP。端末と認証サーバーの間を取り次ぎ、結果に従ってポートを開ける"
+      },
+      "source": "IEEE 802.1X・RFC 3580",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "r-server",
+      "ja": "認証サーバー(RADIUS サーバー)",
+      "attrs": {
+        "group": "role",
+        "desc": "利用者や端末を認めるかどうかを判定する"
+      },
+      "source": "IEEE 802.1X・RFC 3580",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "sn-trust-up",
+      "ja": "DHCP スヌーピングでは、DHCP サーバーへつながる側のポートを「信頼する」にする",
+      "attrs": {
+        "true": true,
+        "why": "本物の DHCP サーバーの応答が来るポートだけを信頼する。",
+        "topic": "snoop"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "sn-drop-offer",
+      "ja": "信頼しないポートから DHCP の申し出(OFFER)や確認(ACK)が来たら、スイッチは捨てる",
+      "attrs": {
+        "true": true,
+        "why": "端末のポートからサーバーの応答が来るのは、偽の DHCP サーバーのしるし。",
+        "topic": "snoop"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "sn-pass-discover",
+      "ja": "信頼しないポートからでも、端末の DHCP の探索(DISCOVER)や要求(REQUEST)は通す",
+      "attrs": {
+        "true": true,
+        "why": "端末はアドレスをもらう側なので、端末からのメッセージは通す。",
+        "topic": "snoop"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "sn-binding",
+      "ja": "DHCP スヌーピングは、配られたアドレス・MAC・ポート・VLAN の組を記録し、ほかの守りの機能がその記録を使う",
+      "attrs": {
+        "true": true,
+        "why": "ARP の検査や IP ソースガードはこの記録と照らす。",
+        "topic": "snoop"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "sn-trust-all",
+      "ja": "DHCP スヌーピングでは、端末をつなぐポートをすべて「信頼する」にする",
+      "attrs": {
+        "true": false,
+        "why": "端末のポートは「信頼しない」にする。信頼するのはサーバー側の上りのポート。",
+        "topic": "snoop"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "sn-drop-all",
+      "ja": "DHCP スヌーピングは、信頼しないポートから来た DHCP のパケットを、端末からの要求も含めてすべて捨てる",
+      "attrs": {
+        "true": false,
+        "why": "捨てるのはサーバーからの応答だけ。端末からの探索や要求は通す。",
+        "topic": "snoop"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "sn-server",
+      "ja": "DHCP スヌーピングは、DHCP サーバーの代わりにスイッチがアドレスを配る機能である",
+      "attrs": {
+        "true": false,
+        "why": "スヌーピングは DHCP のやりとりを見張る機能で、アドレスは配らない。",
+        "topic": "snoop"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "sn-arp",
+      "ja": "DHCP スヌーピングは、ARP の応答を書き換えて正しい MAC を教える機能である",
+      "attrs": {
+        "true": false,
+        "why": "ARP を照らすのは ARP の検査で、それも書き換えずに捨てる。スヌーピングは DHCP を見張る。",
+        "topic": "snoop"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dai-binding",
+      "ja": "ARP の検査は、信頼しないポートで受けた ARP の中の IP と MAC の組を、DHCP スヌーピングの記録と照らす",
+      "attrs": {
+        "true": true,
+        "why": "記録にある組と同じなら通し、違えば捨てる。",
+        "topic": "dai"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dai-spoof",
+      "ja": "ARP の検査で記録と合わない ARP は捨てられるので、ほかの機器のふりをする ARP を防げる",
+      "attrs": {
+        "true": true,
+        "why": "ほかの機器のアドレスに自分の MAC を結びつける ARP は記録と合わない。",
+        "topic": "dai"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dai-static",
+      "ja": "アドレスを手で固定した機器は DHCP の記録に無いので、ARP の検査では別に許す設定が要る",
+      "attrs": {
+        "true": true,
+        "why": "記録に無い組は捨てられるので、固定の機器は個別に許す。",
+        "topic": "dai"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dai-ask-server",
+      "ja": "ARP の検査は、ARP を受けるたびに DHCP サーバーに問い合わせて確かめる",
+      "attrs": {
+        "true": false,
+        "why": "照らすのはスイッチが持つ DHCP スヌーピングの記録。サーバーには問い合わせない。",
+        "topic": "dai"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dai-rewrite",
+      "ja": "ARP の検査は、記録と合わない ARP を、正しい MAC に書き換えて通す",
+      "attrs": {
+        "true": false,
+        "why": "合わない ARP は書き換えずに捨てる。",
+        "topic": "dai"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dai-static-auto",
+      "ja": "ARP の検査では、DHCP スヌーピングの記録が無くても、固定アドレスの機器の ARP は自動で許される",
+      "attrs": {
+        "true": false,
+        "why": "記録に無い組は捨てられる。固定の機器は別に許す設定が要る。",
+        "topic": "dai"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dai-flush",
+      "ja": "ARP の検査は、ARP の表を消して、端末に毎回 DHCP をやり直させる機能である",
+      "attrs": {
+        "true": false,
+        "why": "ARP の検査は受けた ARP を照らして、合わないものを捨てるだけ。",
+        "topic": "dai"
+      },
+      "source": "各社のスイッチの機能(一般的な定義。CCNA 200-301 5.7 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dx-server-judge",
+      "ja": "802.1X で、つなぐ人や端末を認めるかを判定するのは、認証サーバー(RADIUS サーバーなど)である",
+      "attrs": {
+        "true": true,
+        "why": "スイッチは取り次ぐ役で、判定は認証サーバーが行う。",
+        "topic": "dot1x"
+      },
+      "source": "IEEE 802.1X・RFC 3580",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dx-eapol",
+      "ja": "802.1X で、端末とスイッチの間は EAPOL(LAN の上で運ぶ EAP)でやりとりする",
+      "attrs": {
+        "true": true,
+        "why": "端末はまだアドレスを持たないこともあるので、L2 のフレームで EAP を運ぶ。",
+        "topic": "dot1x"
+      },
+      "source": "IEEE 802.1X・RFC 3580",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dx-radius",
+      "ja": "802.1X で、スイッチと認証サーバーの間は、ふつう RADIUS でやりとりする",
+      "attrs": {
+        "true": true,
+        "why": "スイッチは端末から受けた EAP を RADIUS に入れて認証サーバーへ送る。",
+        "topic": "dot1x"
+      },
+      "source": "IEEE 802.1X・RFC 3580",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dx-blocked",
+      "ja": "認証が済むまで、そのポートは 802.1X の認証のやりとり以外の端末の通信を通さない",
+      "attrs": {
+        "true": true,
+        "why": "認められてからポートを開けるので、認められない端末は網を使えない。",
+        "topic": "dot1x"
+      },
+      "source": "IEEE 802.1X・RFC 3580",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dx-peer",
+      "ja": "802.1X では認証サーバーを使わず、端末どうしで認め合う",
+      "attrs": {
+        "true": false,
+        "why": "端末(サプリカント)はスイッチ(オーセンティケーター)を通して認証サーバーに認めてもらう。",
+        "topic": "dot1x"
+      },
+      "source": "IEEE 802.1X・RFC 3580",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dx-direct",
+      "ja": "802.1X で、端末と認証サーバーは、スイッチを通らず直接つながってやりとりする",
+      "attrs": {
+        "true": false,
+        "why": "スイッチが間に立って取り次ぐ。端末と認証サーバーは直接やりとりしない。",
+        "topic": "dot1x"
+      },
+      "source": "IEEE 802.1X・RFC 3580",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dx-open",
+      "ja": "802.1X では、認証が済む前から、ポートはふつうの通信をすべて通す",
+      "attrs": {
+        "true": false,
+        "why": "認証が済むまでは認証のやりとり以外を通さない。",
+        "topic": "dot1x"
+      },
+      "source": "IEEE 802.1X・RFC 3580",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dx-supp-server",
+      "ja": "サプリカントとは、端末を認めるかを判定するサーバーのことである",
+      "attrs": {
+        "true": false,
+        "why": "サプリカントは認証を受ける端末の側。判定するのは認証サーバー。",
+        "topic": "dot1x"
+      },
+      "source": "IEEE 802.1X・RFC 3580",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    }
+  ]
+}

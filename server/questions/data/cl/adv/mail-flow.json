@@ -1,0 +1,59 @@
+{
+  "note": "FactBank(上級 Lv280「メールの流れ」)。メールが届くまでの段(attrs.order が順番)。並べ替えを 4 択で出す。checkedBy の無い行は使わない",
+  "rows": [
+    {
+      "id": "mf-write",
+      "ja": "送信者がメールソフトでメールを書いて送る",
+      "attrs": {
+        "order": 1
+      },
+      "source": "RFC 5321・RFC 6409",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "mf-submit",
+      "ja": "送信者側の送信サーバーが、メールソフトから SMTP(587 番など)で受け取る",
+      "attrs": {
+        "order": 2
+      },
+      "source": "RFC 6409",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "mf-mx",
+      "ja": "送信サーバーが、宛先のドメインの MX レコードを DNS で引く",
+      "attrs": {
+        "order": 3
+      },
+      "source": "RFC 5321 5.1",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "mf-relay",
+      "ja": "送信サーバーが、MX が示す受信サーバーへ SMTP(25 番)で送る",
+      "attrs": {
+        "order": 4
+      },
+      "source": "RFC 5321",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "mf-store",
+      "ja": "受信サーバーが、受信者のメールボックスに入れる",
+      "attrs": {
+        "order": 5
+      },
+      "source": "RFC 5321",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "mf-fetch",
+      "ja": "受信者のメールソフトが、IMAP か POP3 でメールボックスから取り出す",
+      "attrs": {
+        "order": 6
+      },
+      "source": "RFC 9051・RFC 1939",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    }
+  ]
+}
