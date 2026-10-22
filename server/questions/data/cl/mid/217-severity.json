@@ -1,0 +1,13 @@
+{
+  "note": "Lv217 syslog の重大度 0〜7(RFC 5424)。num が小さいほど重い。問いは levels-mid.js が組み立てる",
+  "rows": [
+    {"id":"sev0","ja":"Emergency(緊急)","attrs":{"type":"v","num":0,"en":"Emergency","meaning":"システムが使えない","why":"0 はいちばん重い"},"source":"RFC 5424","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"sev1","ja":"Alert(警報)","attrs":{"type":"v","num":1,"en":"Alert","meaning":"すぐに対処が要る","why":""},"source":"RFC 5424","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"sev2","ja":"Critical(危険)","attrs":{"type":"v","num":2,"en":"Critical","meaning":"危険な状態","why":""},"source":"RFC 5424","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"sev3","ja":"Error(エラー)","attrs":{"type":"v","num":3,"en":"Error","meaning":"エラーが起きた","why":""},"source":"RFC 5424","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"sev4","ja":"Warning(警告)","attrs":{"type":"v","num":4,"en":"Warning","meaning":"注意が要る","why":""},"source":"RFC 5424","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"sev5","ja":"Notice(通知)","attrs":{"type":"v","num":5,"en":"Notice","meaning":"ふつうだが大事なできごと","why":""},"source":"RFC 5424","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"sev6","ja":"Informational(情報)","attrs":{"type":"v","num":6,"en":"Informational","meaning":"ただの知らせ","why":""},"source":"RFC 5424","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"sev7","ja":"Debug(デバッグ)","attrs":{"type":"v","num":7,"en":"Debug","meaning":"調べるための細かい記録","why":"7 はいちばん軽い"},"source":"RFC 5424","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "note": "Lv189 VLAN 間の通信。t = ○×。VLAN の番号とアドレスを変える問いは levels-mid.js が作る",
+  "rows": [
+    {"id":"t-need-l3","ja":"VLAN が違う PC どうしの通信は、ルーターか L3 スイッチを通る","attrs":{"type":"t","true":true,"why":"VLAN が違えば別の網なので、網と網をつなぐ機器が要る"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-switch-ok","ja":"VLAN が違う PC どうしでも、同じ L2 スイッチにつながっていれば、ルーターも L3 スイッチも無しで届く","attrs":{"type":"t","true":false,"why":"L2 スイッチは VLAN をまたいでフレームを運ばない"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-gw-mac","ja":"別の VLAN の PC へ送るとき、PC は相手ではなく、デフォルトゲートウェイの MAC アドレス宛にフレームを送る","attrs":{"type":"t","true":true,"why":"相手は別のサブネットなので、まずゲートウェイへ送る"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-subif","ja":"ルーターの 1 つのポートをトランクにし、VLAN ごとに論理的なインターフェース(サブインターフェース)を作って VLAN 間をつなぐ方法がある","attrs":{"type":"t","true":true,"why":"1 本の線で VLAN 間をつなぐやり方"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-svi","ja":"L3 スイッチでは、VLAN ごとに作った仮想のインターフェース(SVI)が、その VLAN のデフォルトゲートウェイになる","attrs":{"type":"t","true":true,"why":"SVI に VLAN のゲートウェイのアドレスを付ける"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-same-subnet","ja":"VLAN 10 と VLAN 20 には、同じサブネット(同じネットワークアドレス)を割り当てるのがふつうである","attrs":{"type":"t","true":false,"why":"VLAN ごとに別のサブネットを割り当てるのがふつう"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-gw-each","ja":"VLAN 間で通信するには、VLAN ごとに、その VLAN のサブネットのデフォルトゲートウェイが要る","attrs":{"type":"t","true":true,"why":"各 VLAN の PC は、自分のサブネットのゲートウェイへ送る"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ttl","ja":"別の VLAN へ届けるとき、IP パケットの TTL は、間のルーター(または L3 スイッチ)で 1 減る","attrs":{"type":"t","true":true,"why":"VLAN 間はルーティングなので、転送のたびに TTL が減る"},"source":"RFC 791・RFC 1812","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-hub","ja":"VLAN 間をつなぐには、リピーターハブを使えばよい","attrs":{"type":"t","true":false,"why":"ハブは信号を流すだけで、網と網をつなぐ働きは無い"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-bcast","ja":"VLAN 間をルーターでつないでも、ブロードキャストは別の VLAN へ転送されない","attrs":{"type":"t","true":true,"why":"ルーターはブロードキャストを別の網へ出さない"},"source":"RFC 1812","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-mac-change","ja":"ルーターを通って別の VLAN へ届いたフレームの送信元 MAC アドレスは、ルーター(または L3 スイッチ)のものになる","attrs":{"type":"t","true":true,"why":"ルーターは IP はそのままでフレームを作り直す"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

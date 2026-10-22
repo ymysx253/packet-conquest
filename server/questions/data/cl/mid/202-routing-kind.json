@@ -1,0 +1,28 @@
+{
+  "note": "Lv202 動的ルーティングの種類(リンクステート・ディスタンスベクター・パスベクター)。d = 説明やプロトコル → 種類、t = ○×。distractors は誤答だけに使う",
+  "distractors": ["スタティック(静的)"],
+  "rows": [
+    {"id":"p-ospf","ja":"OSPF","attrs":{"type":"d","term":"リンクステート型","ask":"OSPF は、どの種類の動的ルーティングのプロトコル?","why":"OSPF はつながりの情報を集めて地図を作り、最短の経路を計算する"},"source":"RFC 2328","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"p-ospfv3","ja":"OSPFv3(IPv6 で使う OSPF)","attrs":{"type":"d","term":"リンクステート型","ask":"OSPFv3(IPv6 で使う OSPF)は、どの種類の動的ルーティングのプロトコル?","why":"OSPFv3 も OSPF と同じリンクステート型"},"source":"RFC 5340","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"p-isis","ja":"IS-IS","attrs":{"type":"d","term":"リンクステート型","ask":"IS-IS は、どの種類の動的ルーティングのプロトコル?","why":"IS-IS も地図を作って計算するリンクステート型"},"source":"ISO/IEC 10589","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"p-rip","ja":"RIP(RIPv2)","attrs":{"type":"d","term":"ディスタンスベクター型","ask":"RIP(RIPv2)は、どの種類の動的ルーティングのプロトコル?","why":"RIP は隣から聞いたホップ数で経路を決める"},"source":"RFC 2453","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"p-ripng","ja":"RIPng(IPv6 で使う RIP)","attrs":{"type":"d","term":"ディスタンスベクター型","ask":"RIPng(IPv6 で使う RIP)は、どの種類の動的ルーティングのプロトコル?","why":"RIPng も RIP と同じディスタンスベクター型"},"source":"RFC 2080","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"p-bgp","ja":"BGP","attrs":{"type":"d","term":"パスベクター型","ask":"BGP は、どの種類の動的ルーティングのプロトコル?","why":"BGP は通る AS の並び(AS パス)を持つパスベクター型"},"source":"RFC 4271","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"b-map","ja":"各ルーターがつながり方の情報を集めて網全体の地図を作り、自分で最短の経路を計算する","attrs":{"type":"d","term":"リンクステート型","why":"地図を作って自分で計算するのがリンクステート型"},"source":"RFC 2328","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"b-spf","ja":"ダイクストラ法(SPF)で最短の経路を求める","attrs":{"type":"d","term":"リンクステート型","why":"SPF の計算を使うのはリンクステート型"},"source":"RFC 2328","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"b-area","ja":"エリアに分けて、計算や交換する情報の量を減らせる(OSPF など)","attrs":{"type":"d","term":"リンクステート型","why":"エリアに分けるのは OSPF・IS-IS のようなリンクステート型"},"source":"RFC 2328","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"b-neighbor","ja":"隣のルーターから聞いた、宛先までの距離(ホップ数など)と向きをもとに経路を決める","attrs":{"type":"d","term":"ディスタンスベクター型","why":"距離と向き(ベクター)を隣と交換するのがディスタンスベクター型"},"source":"RFC 2453","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"b-periodic","ja":"RIP のように、決まった時間ごとに自分の経路表を隣へ送る","attrs":{"type":"d","term":"ディスタンスベクター型","why":"RIP は 30 秒ごとに経路表を送る"},"source":"RFC 2453","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"b-aspath","ja":"宛先までに通る AS の並びを経路の情報に入れ、ループを防ぐ","attrs":{"type":"d","term":"パスベクター型","why":"AS パスを持つのがパスベクター型"},"source":"RFC 4271","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"b-inter-as","ja":"組織(AS)どうしの間で経路を交換するのに使われる BGP の種類","attrs":{"type":"d","term":"パスベクター型","why":"BGP はパスベクター型"},"source":"RFC 4271","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-rip16","ja":"RIP のメトリックはホップ数で、16 は「届かない」を表す","attrs":{"type":"t","true":true,"why":"RIP は 15 ホップまで。16 は無限大の扱い"},"source":"RFC 2453","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ospf-cost","ja":"OSPF のメトリックはコストで、帯域が広い線ほどコストは小さくなる","attrs":{"type":"t","true":true,"why":"コストは基準の帯域 ÷ 線の帯域で決めることが多い"},"source":"RFC 2328","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-bgp-inside","ja":"BGP は、主に 1 つの組織の中(AS の中)の経路を決めるために作られた","attrs":{"type":"t","true":false,"why":"BGP は主に AS どうしの間の経路の交換に使う"},"source":"RFC 4271","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ospf-ls","ja":"OSPF はリンクステート型である","attrs":{"type":"t","true":true,"why":"OSPF はリンクステート型の代表"},"source":"RFC 2328","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-rip-ls","ja":"RIP はリンクステート型である","attrs":{"type":"t","true":false,"why":"RIP はディスタンスベクター型"},"source":"RFC 2453","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-dv-map","ja":"ディスタンスベクター型では、各ルーターが網全体のつながりの地図を持つ","attrs":{"type":"t","true":false,"why":"地図を持つのはリンクステート型。ディスタンスベクター型は隣から聞いた距離だけを持つ"},"source":"RFC 2453","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ospf-change","ja":"OSPF は、つながりが変わったとき、その情報をすぐにほかのルーターへ知らせる","attrs":{"type":"t","true":true,"why":"リンクの変化は LSA ですぐに広がる"},"source":"RFC 2328","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-static","ja":"スタティックルーティングは、動的ルーティングの一種である","attrs":{"type":"t","true":false,"why":"スタティックは人が手で書く経路で、動的ではない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-rip15","ja":"RIP は、宛先までのホップ数が 15 までの網で使える","attrs":{"type":"t","true":true,"why":"16 は届かない扱いなので、15 ホップまで"},"source":"RFC 2453","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

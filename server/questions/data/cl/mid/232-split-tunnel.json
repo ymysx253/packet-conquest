@@ -1,0 +1,25 @@
+{
+  "note": "Lv232 リモートアクセス VPN の通り道。d = 説明 → 名前(スプリットトンネル・フルトンネル・拠点間 VPN・専用線)、t = ○×",
+  "rows": [
+    {"id":"split-def","ja":"リモートアクセス VPN で、社内宛の通信だけを VPN に通し、ほかの通信はその場からインターネットへ出す形","attrs":{"type":"d","term":"スプリットトンネル","why":"宛先で分けるのがスプリットトンネル"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"split-load","ja":"リモートアクセス VPN で、インターネット上の動画会議などの通信が会社の回線を通らないので、会社の回線が混みにくい形","attrs":{"type":"d","term":"スプリットトンネル","why":"社外宛は VPN を通らない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"split-route","ja":"リモートアクセス VPN で、PC に、社内の宛先だけを VPN へ向ける経路を入れる形","attrs":{"type":"d","term":"スプリットトンネル","why":"社内の宛先だけを VPN へ向ける"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"split-local","ja":"リモートアクセス VPN で、VPN につないだままでも、その場の網(家のプリンターなど)へ届きやすい形","attrs":{"type":"d","term":"スプリットトンネル","why":"VPN に通さない宛先は、その場の網で届く"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"full-def","ja":"リモートアクセス VPN で、インターネット宛も含めて、すべての通信を VPN に通して会社から出す形","attrs":{"type":"d","term":"フルトンネル","why":"全部を VPN に通すのがフルトンネル"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"full-fw","ja":"リモートアクセス VPN で、インターネットへの通信も、会社のファイアウォールで調べられる形","attrs":{"type":"d","term":"フルトンネル","why":"全部が会社を通るので、会社の対策が効く"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"full-default","ja":"リモートアクセス VPN で、PC のデフォルトルートを VPN の側に向ける形","attrs":{"type":"d","term":"フルトンネル","why":"デフォルトルートが VPN なら全部が VPN を通る"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"site","ja":"本社と支社の VPN の装置どうしを常時つなぐ形","attrs":{"type":"d","term":"拠点間 VPN","why":"装置どうしをつなぐのは拠点間 VPN"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"leased","ja":"通信事業者がその会社だけの回線で 2 か所を結ぶ形","attrs":{"type":"d","term":"専用線","why":"VPN ではなく専用の回線"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-split-only","ja":"スプリットトンネルでは、社内宛の通信だけが VPN を通る","attrs":{"type":"t","true":true,"why":"宛先で VPN に通すかを分ける"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-full-all","ja":"フルトンネルでは、インターネット宛の通信も VPN を通る","attrs":{"type":"t","true":true,"why":"全部を VPN に通す"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-split-fw","ja":"スプリットトンネルでは、インターネットへの通信は会社のファイアウォールを通らない","attrs":{"type":"t","true":true,"why":"社外宛はその場から直接出る"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-full-less","ja":"フルトンネルにすると、スプリットトンネルより会社の回線を通る量が減る","attrs":{"type":"t","true":false,"why":"全部が会社を通るので、量は増える"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-split-enc","ja":"スプリットトンネルでも、社内のサーバー宛の通信は VPN で暗号化されて届く","attrs":{"type":"t","true":true,"why":"社内宛は VPN を通る"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-diff","ja":"スプリットトンネルとフルトンネルの違いは、どの宛先の通信を VPN に通すかである","attrs":{"type":"t","true":true,"why":"社内宛だけか、全部か"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-split-none","ja":"スプリットトンネルでは、どの通信も VPN を通らない","attrs":{"type":"t","true":false,"why":"社内宛は VPN を通る"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-full-internal","ja":"フルトンネルでは、PC から社内のサーバーへの通信は VPN を通らない","attrs":{"type":"t","true":false,"why":"フルトンネルでは全部が VPN を通る"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-split-risk","ja":"スプリットトンネルでは、社外への通信の安全を、PC やその場の網の対策に頼る部分が大きくなる","attrs":{"type":"t","true":true,"why":"会社のファイアウォールを通らないぶん、PC の側の対策が大事"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-full-source","ja":"フルトンネルでは、社外のサイトから見た PC の送信元は、ふつう会社の出口のアドレスになる","attrs":{"type":"t","true":true,"why":"会社から外へ出るので、会社の出口のアドレスに見える"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-split-list","ja":"スプリットトンネルでは、どの宛先を VPN に通すかを、経路やその一覧で決める","attrs":{"type":"t","true":true,"why":"VPN に通す宛先の一覧を PC に配る"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

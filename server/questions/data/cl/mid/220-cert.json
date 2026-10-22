@@ -1,0 +1,25 @@
+{
+  "note": "Lv220 証明書。d = 説明 → 名前(認証局・証明書・CRL・OCSP・秘密鍵。ルート証明書・中間証明書は「証明書」と重なるので 4 択に並べず ○× で問う)、t = ○×",
+  "rows": [
+    {"id":"cert","ja":"公開鍵とその持ち主の情報を、認証局が署名してまとめたもの","attrs":{"type":"d","term":"証明書(公開鍵証明書)","why":"公開鍵が本人のものだと保証するのが証明書"},"source":"RFC 5280","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ca","ja":"証明書を発行し、それに署名する第三者の機関","attrs":{"type":"d","term":"認証局(CA)","why":"発行して署名するのは認証局"},"source":"RFC 5280","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"crl","ja":"有効期限の前に取り消された証明書を並べた一覧","attrs":{"type":"d","term":"失効リスト(CRL)","why":"取り消しの一覧は CRL"},"source":"RFC 5280","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-root","ja":"ルート証明書は、いちばん上の認証局が自分で自分に署名した証明書で、ブラウザや OS にあらかじめ入っている","attrs":{"type":"t","true":true,"why":"信頼の出発点がルート証明書"},"source":"RFC 5280","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-intermediate","ja":"中間証明書は、ルートの認証局とサーバーの証明書の間をつなぐ、認証局の証明書である","attrs":{"type":"t","true":true,"why":"ルートからサーバーの証明書までを鎖のようにつなぐ"},"source":"RFC 5280","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ocsp","ja":"証明書がいま有効か取り消されたかを、その場で問い合わせて確かめるしくみ","attrs":{"type":"d","term":"OCSP","why":"その場で問い合わせるのは OCSP"},"source":"RFC 6960","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"private","ja":"証明書には入れず、持ち主だけが保管する鍵","attrs":{"type":"d","term":"秘密鍵","why":"証明書に入るのは公開鍵。秘密鍵は持ち主だけが持つ"},"source":"RFC 5280","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-pubkey","ja":"証明書には、持ち主の公開鍵が入っている","attrs":{"type":"t","true":true,"why":"公開鍵と持ち主を結び付けるのが証明書"},"source":"RFC 5280","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-privkey","ja":"証明書には、持ち主の秘密鍵が入っている","attrs":{"type":"t","true":false,"why":"秘密鍵は証明書に入れない。入るのは公開鍵"},"source":"RFC 5280","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-expire","ja":"証明書には有効期限がある","attrs":{"type":"t","true":true,"why":"有効期間の始まりと終わりが書かれている"},"source":"RFC 5280","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-verify","ja":"証明書が正しいかは、発行した認証局の公開鍵で、証明書の署名を確かめて調べる","attrs":{"type":"t","true":true,"why":"認証局の署名を認証局の公開鍵で確かめる"},"source":"RFC 5280","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-selfsigned","ja":"自分で自分に署名した証明書(自己署名証明書)は誰でも作れるが、ブラウザはふつうそれを信頼しない","attrs":{"type":"t","true":true,"why":"信頼する認証局がつながらないので警告が出る"},"source":"RFC 5280","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-https","ja":"HTTPS では、サーバーが証明書を送り、ブラウザがそれを確かめる","attrs":{"type":"t","true":true,"why":"TLS の始まりでサーバーが証明書を送る"},"source":"RFC 8446","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-nokey","ja":"証明書があれば、通信の暗号化に鍵はいらない","attrs":{"type":"t","true":false,"why":"証明書は公開鍵を保証するもの。暗号化には鍵を使う"},"source":"RFC 8446","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-x509","ja":"証明書の形式として広く使われているのは X.509 である","attrs":{"type":"t","true":true,"why":"インターネットの証明書は X.509 の形式"},"source":"RFC 5280","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ca-sign","ja":"認証局は、証明書を受け取る人の秘密鍵で証明書に署名する","attrs":{"type":"t","true":false,"why":"認証局は自分(認証局)の秘密鍵で署名する"},"source":"RFC 5280","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-expired-ok","ja":"有効期限の切れた証明書でも、ブラウザはふつう警告なしに信頼する","attrs":{"type":"t","true":false,"why":"期限切れの証明書には警告が出る"},"source":"RFC 5280","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-name","ja":"サーバーの証明書には、そのサーバーの名前(ドメイン名)が書かれている","attrs":{"type":"t","true":true,"why":"証明書の名前と接続先の名前を比べる"},"source":"RFC 6125","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-name-mismatch","ja":"証明書のドメイン名と、つなぎに行った名前が違うと、ブラウザは警告を出す","attrs":{"type":"t","true":true,"why":"名前が合わないと、本当の相手か確かめられない"},"source":"RFC 6125","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-chain","ja":"サーバーが中間証明書を送らないと、ブラウザがルート証明書までたどれず、確かめに失敗することがある","attrs":{"type":"t","true":true,"why":"ルートまでの鎖がつながらないと確かめられない"},"source":"RFC 5280","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

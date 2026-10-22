@@ -1,0 +1,25 @@
+{
+  "note": "Lv194 MTU。d = 説明 → 名前(MTU・MSS・TTL・フラグメンテーション・ジャンボフレーム)、t = ○×",
+  "rows": [
+    {"id":"mtu-def","ja":"1 回で送れるいちばん大きなパケットの長さ(IP ヘッダーを含む)","attrs":{"type":"d","term":"MTU","why":"Maximum Transmission Unit。IP ヘッダーを含めた長さ"},"source":"RFC 791・RFC 894","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"mtu-1500","ja":"イーサネットでは、ふつう 1,500 バイトになっている値","attrs":{"type":"d","term":"MTU","why":"イーサネットの標準の MTU は 1,500 バイト"},"source":"RFC 894","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"mtu-pppoe","ja":"PPPoE を使うと PPPoE のヘッダーのぶん小さくなり、1,492 バイトになることが多い値","attrs":{"type":"d","term":"MTU","why":"PPPoE のヘッダー 8 バイトのぶん、1,500 から 1,492 になる"},"source":"RFC 2516","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"mss-def","ja":"TCP の 1 つのセグメントに入れられるデータのいちばん大きな長さ(TCP ヘッダーを除く)","attrs":{"type":"d","term":"MSS","why":"Maximum Segment Size。TCP のデータ部分だけの長さ"},"source":"RFC 9293","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"mss-1460","ja":"イーサネットで IPv4 と TCP のヘッダーがどちらも 20 バイトなら、1,460 バイトになる値","attrs":{"type":"d","term":"MSS","why":"1,500 − 20 − 20 = 1,460"},"source":"RFC 9293","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ttl-def","ja":"パケットが通れるルーターの数の上限で、ルーターを通るたびに 1 減る値","attrs":{"type":"d","term":"TTL","why":"TTL は 0 になるとパケットが捨てられる"},"source":"RFC 791","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"frag-def","ja":"MTU より長いパケットを、いくつかの断片に分けて送ること","attrs":{"type":"d","term":"フラグメンテーション(断片化)","why":"長すぎるパケットを分けるのがフラグメンテーション"},"source":"RFC 791","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"frag-v6","ja":"IPv6 では途中のルーターは行わず、送信元だけが行う処理","attrs":{"type":"d","term":"フラグメンテーション(断片化)","why":"IPv6 のルーターはパケットを分けない"},"source":"RFC 8200","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"jumbo","ja":"1,500 バイトより大きなデータを運べるようにした、9,000 バイト前後のフレーム","attrs":{"type":"d","term":"ジャンボフレーム","why":"規格の外だが、データセンターなどで使われる大きなフレーム"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-1500","ja":"イーサネットの標準の MTU は 1,500 バイトである","attrs":{"type":"t","true":true,"why":"イーサネットの IP の MTU は 1,500 バイト"},"source":"RFC 894","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-includes-ip","ja":"MTU には IP ヘッダーの長さも含まれる","attrs":{"type":"t","true":true,"why":"MTU は IP パケット全体の長さの上限"},"source":"RFC 791","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-df","ja":"IPv4 で DF ビットが 1 のパケットが MTU を超えると、ルーターは分けずに捨て、ICMP でそのことを知らせる","attrs":{"type":"t","true":true,"why":"「分けてはいけない」印なので分けずに捨て、ICMP の宛先到達不能(分割が必要)を返す"},"source":"RFC 791・RFC 1191","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-v6-router","ja":"IPv6 では、途中のルーターがパケットを断片に分ける","attrs":{"type":"t","true":false,"why":"IPv6 では送信元だけが分ける。ルーターは ICMPv6 の Packet Too Big を返す"},"source":"RFC 8200","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-v6-min","ja":"IPv6 の最小の MTU は 1,280 バイトである","attrs":{"type":"t","true":true,"why":"IPv6 の線は 1,280 バイト以上を通せなければならない"},"source":"RFC 8200","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-mss-headers","ja":"MSS は IP ヘッダーと TCP ヘッダーを含んだ長さである","attrs":{"type":"t","true":false,"why":"MSS は TCP のデータの部分だけ。ヘッダーを含むのは MTU"},"source":"RFC 9293","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-pmtud","ja":"経路の途中でいちばん小さい MTU を調べるしくみを、経路 MTU 探索(PMTUD)という","attrs":{"type":"t","true":true,"why":"DF ビットと ICMP を使って経路 MTU を見つける"},"source":"RFC 1191","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-sender-only","ja":"経路の途中に MTU の小さい区間があっても、送る側の線の MTU だけで送れる長さが決まる","attrs":{"type":"t","true":false,"why":"経路の中でいちばん小さい MTU(経路 MTU)で決まる"},"source":"RFC 1191","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-mss-syn","ja":"TCP の MSS は、接続を始めるときの SYN でお互いに知らせる","attrs":{"type":"t","true":true,"why":"MSS は SYN のオプションで知らせる"},"source":"RFC 9293","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-decrement","ja":"MTU はルーターを通るたびに 1 ずつ減る","attrs":{"type":"t","true":false,"why":"ルーターを通るたびに 1 減るのは TTL"},"source":"RFC 791","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-header20","ja":"IPv4 のヘッダー(オプションなし)は 20 バイトである","attrs":{"type":"t","true":true,"why":"オプションが無いときの IPv4 ヘッダーは 20 バイト"},"source":"RFC 791","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

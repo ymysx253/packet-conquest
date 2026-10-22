@@ -1,0 +1,25 @@
+{
+  "note": "Lv224 VPN の種類。d = 説明 → 名前(拠点間 VPN・リモートアクセス VPN・専用線・VLAN)、t = ○×",
+  "rows": [
+    {"id":"site-routers","ja":"本社と支社のルーター(VPN の装置)どうしを、インターネット越しに暗号化した通り道で常時つなぐ","attrs":{"type":"d","term":"拠点間 VPN","why":"拠点の装置どうしをつなぐのが拠点間 VPN"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"site-pc-nothing","ja":"支社の PC は何も設定せず、支社の VPN の装置が本社への通信をまとめて暗号化する","attrs":{"type":"d","term":"拠点間 VPN","why":"装置がまとめて暗号化するので、PC にソフトは要らない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"site-networks","ja":"工場の網と本社の網の全体どうしを、1 本の通り道でつなぐ VPN","attrs":{"type":"d","term":"拠点間 VPN","why":"網と網をつなぐのは拠点間 VPN"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ra-home","ja":"家や外出先の PC が、ソフトを使って会社の網に入る VPN","attrs":{"type":"d","term":"リモートアクセス VPN","why":"PC 1 台が会社へつなぐのはリモートアクセス VPN"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ra-auth","ja":"利用者ごとにユーザー名などで認証してから、その PC 1 台を会社の網につなぐ","attrs":{"type":"d","term":"リモートアクセス VPN","why":"利用者ごとにつなぐのはリモートアクセス VPN"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ra-trip","ja":"出張中の社員が、ホテルのネットから社内のサーバーを使うための VPN","attrs":{"type":"d","term":"リモートアクセス VPN","why":"外出先の 1 人がつなぐ形"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"leased","ja":"通信事業者が 2 か所の間を、その会社だけの回線で結ぶもの","attrs":{"type":"d","term":"専用線","why":"インターネットを通らず、その会社だけで使う回線"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"leased-cost","ja":"その会社だけで回線を使うのでほかの利用者の通信と混ざらないが、費用が高くなりやすいもの","attrs":{"type":"d","term":"専用線","why":"専用なので安心だが高い"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"vlan","ja":"1 台のスイッチの中で LAN を分けるしくみ","attrs":{"type":"d","term":"VLAN","why":"VLAN は VPN ではない。スイッチの中で LAN を分ける"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-site-nosoft","ja":"拠点間 VPN では、ふつう支社の PC ごとに VPN のソフトを入れる必要はない","attrs":{"type":"t","true":true,"why":"拠点の装置がまとめて VPN をつくる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ra-one","ja":"リモートアクセス VPN は、PC 1 台ずつが会社の網につながる形である","attrs":{"type":"t","true":true,"why":"利用者の機器ごとにつなぐ"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-site-ondemand","ja":"拠点間 VPN は、利用者がその都度つなぐ形が基本である","attrs":{"type":"t","true":false,"why":"拠点間 VPN は装置どうしで常時つなぐのが基本。その都度つなぐのはリモートアクセス VPN"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-encrypt","ja":"インターネット VPN では、インターネットを通るので、暗号化して中身を守る","attrs":{"type":"t","true":true,"why":"共用の網を通るので暗号化する"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-same-lan","ja":"VPN を使うと、離れた場所どうしでも、同じ社内の網にいるようにやりとりできる","attrs":{"type":"t","true":true,"why":"仮想の専用線で社内の網とつながる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ra-auth","ja":"リモートアクセス VPN の利用者は、つなぐときに認証を受ける","attrs":{"type":"t","true":true,"why":"誰がつなぐのかを確かめる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-leased-internet","ja":"専用線は、インターネットを通って 2 か所を結ぶ","attrs":{"type":"t","true":false,"why":"専用線はインターネットを通らない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-virtual","ja":"VPN の V は Virtual(仮想)の頭文字である","attrs":{"type":"t","true":true,"why":"Virtual Private Network の略"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-overlap","ja":"拠点間 VPN でつなぐ支社と本社の網に同じアドレスの範囲を使うと、そのままでは経路を決められず困る","attrs":{"type":"t","true":true,"why":"同じ宛先がどちらにもあると、どちらへ送るか決まらない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ra-client","ja":"リモートアクセス VPN を使うには、ふつう PC に VPN のソフト(クライアント)か、それに対応したブラウザが要る","attrs":{"type":"t","true":true,"why":"PC の側で VPN をつくる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-site-devices","ja":"拠点間 VPN の通り道は、両方の拠点の VPN の装置どうしの間にできる","attrs":{"type":"t","true":true,"why":"装置どうしが通り道の両端になる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

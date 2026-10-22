@@ -1,0 +1,25 @@
+{
+  "note": "Lv213 DHCP リレー。d = 説明 → 名前(DHCP リレー・DHCP サーバー・DHCP クライアント・NAT)、t = ○×",
+  "rows": [
+    {"id":"relay-unicast","ja":"DHCP サーバーが別の網にあるとき、端末の全員宛の DHCP メッセージを受けて、サーバーへユニキャストで送り直すしくみ","attrs":{"type":"d","term":"DHCP リレー","why":"ルーターはブロードキャストを越えさせないので、リレーが送り直す"},"source":"RFC 1542・RFC 2131","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"relay-giaddr","ja":"受け取った網のインターフェースのアドレスを giaddr に書き、サーバーがどの網のアドレスを配ればよいかわかるようにするしくみ","attrs":{"type":"d","term":"DHCP リレー","why":"giaddr を書くのはリレー"},"source":"RFC 2131","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"relay-between","ja":"端末と DHCP サーバーの間に入り、両者のメッセージを中継するルーターの上の機能","attrs":{"type":"d","term":"DHCP リレー","why":"中継するのはリレー(リレーエージェント)"},"source":"RFC 1542","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"relay-bcast","ja":"「ルーターは全員宛を越えさせない」ことを解くために、全員宛の要求を宛先のはっきりした通信に置き換える機能","attrs":{"type":"d","term":"DHCP リレー","why":"ブロードキャストをユニキャストにして別の網のサーバーへ届ける"},"source":"RFC 1542","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"server-pool","ja":"アドレスのプールを持ち、端末にアドレスを貸し出す役","attrs":{"type":"d","term":"DHCP サーバー","why":"貸し出すのはサーバー"},"source":"RFC 2131","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"server-offer","ja":"Offer で、貸し出すアドレスの案を端末に示す側","attrs":{"type":"d","term":"DHCP サーバー","why":"Offer を送るのはサーバー"},"source":"RFC 2131","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"client-discover","ja":"まだアドレスを持たず、Discover を全員宛に送る側","attrs":{"type":"d","term":"DHCP クライアント","why":"Discover を送るのはクライアント"},"source":"RFC 2131","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"client-request","ja":"Offer を受けて、そのアドレスを使いたいと Request で伝える側","attrs":{"type":"d","term":"DHCP クライアント","why":"Request を送るのはクライアント"},"source":"RFC 2131","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"nat","ja":"内側のアドレスを外側のアドレスに付け替えて送るしくみ","attrs":{"type":"d","term":"NAT","why":"アドレスを付け替えるのは NAT。DHCP とは別のしくみ"},"source":"RFC 3022","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-router-bcast","ja":"ルーターは、ふつうブロードキャストを別の網へ転送しない","attrs":{"type":"t","true":true,"why":"だから別の網の DHCP サーバーには Discover が届かない"},"source":"RFC 1812","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-nothing","ja":"DHCP サーバーが別の網にあっても、何も設定しなくても端末はアドレスをもらえる","attrs":{"type":"t","true":false,"why":"ルーターにリレーを設定しないと Discover がサーバーに届かない"},"source":"RFC 1542","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-where","ja":"DHCP リレーは、端末のいる網の側のルーター(または L3 スイッチ)のインターフェースに設定する","attrs":{"type":"t","true":true,"why":"端末の全員宛を受けるインターフェースにリレーを書く"},"source":"RFC 1542","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-unicast","ja":"DHCP リレーは、サーバーへメッセージを送り直すとき、ユニキャストで送る","attrs":{"type":"t","true":true,"why":"サーバーのアドレス宛に送る"},"source":"RFC 1542","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-scope","ja":"リレーされた要求を受けたサーバーは、giaddr の網に合うプールからアドレスを選ぶ","attrs":{"type":"t","true":true,"why":"giaddr で端末のいる網がわかる"},"source":"RFC 2131","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-central","ja":"DHCP リレーを使うと、網ごとに DHCP サーバーを置かず、1 台のサーバーで複数の網に配れる","attrs":{"type":"t","true":true,"why":"リレーがあれば離れた 1 台のサーバーで足りる"},"source":"RFC 1542","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-nat","ja":"DHCP リレーは、端末のアドレスを NAT で書き換えるしくみである","attrs":{"type":"t","true":false,"why":"リレーはメッセージを中継するだけで、NAT とは別"},"source":"RFC 1542","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ports","ja":"DHCP のサーバーは UDP の 67 番、クライアントは UDP の 68 番を使う","attrs":{"type":"t","true":true,"why":"サーバー 67、クライアント 68"},"source":"RFC 2131","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-discover-bcast","ja":"DHCP の Discover は、まだアドレスの無い端末が全員宛(ブロードキャスト)で送る","attrs":{"type":"t","true":true,"why":"送り先のサーバーを知らないので全員宛にする"},"source":"RFC 2131","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-server-side","ja":"DHCP リレーは、DHCP サーバーのすぐ隣のインターフェースに設定しなければならない","attrs":{"type":"t","true":false,"why":"設定するのは端末の側のインターフェース"},"source":"RFC 1542","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-multi","ja":"1 つのリレーに、複数の DHCP サーバーのアドレスを書いておくこともできる","attrs":{"type":"t","true":true,"why":"予備のサーバーにも送れるようにできる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

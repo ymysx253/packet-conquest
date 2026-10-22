@@ -1,0 +1,25 @@
+{
+  "note": "Lv186 VLAN とは。d = 説明 → 名前(VLAN と、似た言葉の VPN・NAT・リンクアグリゲーション・STP)、t = ○×",
+  "rows": [
+    {"id":"vlan-split","ja":"1 台のスイッチのポートをグループに分け、グループどうしを別の LAN として扱うしくみ","attrs":{"type":"d","term":"VLAN","why":"スイッチの中で LAN を分けるのが VLAN"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"vlan-move","ja":"ケーブルをつなぎ替えずに、スイッチの設定だけで機器を別の LAN に移せるしくみ","attrs":{"type":"d","term":"VLAN","why":"ポートの VLAN を変えれば、所属する LAN が変わる"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"vlan-bcast","ja":"ブロードキャストが届く範囲(ブロードキャストドメイン)を、スイッチの設定で小さく分けるしくみ","attrs":{"type":"d","term":"VLAN","why":"VLAN ごとにブロードキャストドメインが分かれる"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"vlan-floors","ja":"離れた階のスイッチのポートどうしでも、設定で同じ LAN に入れられるしくみ","attrs":{"type":"d","term":"VLAN","why":"トランクでつないだスイッチどうしなら、同じ VLAN を別の階にも広げられる"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"vpn","ja":"インターネットなど共用の網の上に、暗号化した専用の通り道を作るしくみ","attrs":{"type":"d","term":"VPN","why":"共用の網の上に仮想の専用線を作るのが VPN"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"nat","ja":"パケットのアドレスを書き換え、内側のプライベートアドレスを外側のアドレスに付け替えるしくみ","attrs":{"type":"d","term":"NAT","why":"アドレスを付け替えるのが NAT"},"source":"RFC 3022","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"lag","ja":"スイッチどうしの複数の線を束ねて、1 本の太い線として使うしくみ","attrs":{"type":"d","term":"リンクアグリゲーション","why":"線を束ねるのはリンクアグリゲーション"},"source":"IEEE 802.1AX","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"stp","ja":"スイッチの輪(ループ)ができたとき、一部のポートを止めてフレームが回り続けないようにするしくみ","attrs":{"type":"d","term":"スパニングツリー(STP)","why":"ループを防ぐのは STP"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-talk","ja":"VLAN が違う PC どうしは、同じスイッチにつながっていても、そのままではやりとりできない","attrs":{"type":"t","true":true,"why":"VLAN が違えば別の LAN。やりとりにはルーターか L3 スイッチが要る"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-bcast","ja":"VLAN を分けると、ブロードキャストは同じ VLAN の中にしか届かない","attrs":{"type":"t","true":true,"why":"VLAN ごとにブロードキャストドメインが分かれる"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-switch-each","ja":"VLAN を使うには、VLAN ごとに別のスイッチを用意しなければならない","attrs":{"type":"t","true":false,"why":"1 台のスイッチの中で分けられるのが VLAN のよいところ"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-id","ja":"VLAN は ID(番号)で区別する","attrs":{"type":"t","true":true,"why":"VLAN ID(12 ビット)で区別する"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-layer3","ja":"VLAN は OSI 参照モデルの第 3 層(ネットワーク層)のしくみである","attrs":{"type":"t","true":false,"why":"VLAN はスイッチが扱う第 2 層(データリンク層)のしくみ"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-range","ja":"VLAN の ID としてふつうに使えるのは 1〜4094 である","attrs":{"type":"t","true":true,"why":"12 ビットで 0〜4095 だが、0 と 4095 は予約されている"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-same","ja":"同じ VLAN に入れたポートどうしは、1 つの LAN と同じようにフレームをやりとりできる","attrs":{"type":"t","true":true,"why":"同じ VLAN は 1 つのブロードキャストドメイン"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-all-ports","ja":"VLAN を分けても、ブロードキャストはスイッチの全ポートに届く","attrs":{"type":"t","true":false,"why":"ブロードキャストは同じ VLAN のポートにだけ届く"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-wireless","ja":"VLAN は無線 LAN だけで使うしくみである","attrs":{"type":"t","true":false,"why":"VLAN は有線のスイッチで広く使う。無線でも使える"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-virtual","ja":"VLAN の V は Virtual(仮想)の頭文字である","attrs":{"type":"t","true":true,"why":"Virtual LAN の略"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-subnet","ja":"1 つの VLAN には、ふつう 1 つの IP サブネットを対応させて使う","attrs":{"type":"t","true":true,"why":"VLAN ごとに別のサブネットを割り当て、ルーターでつなぐのがふつう"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-pc","ja":"アクセスポートにつなぐ PC には、VLAN のための特別な設定は要らない","attrs":{"type":"t","true":true,"why":"アクセスポートではタグを付けずにやりとりするので、PC は VLAN を意識しない"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

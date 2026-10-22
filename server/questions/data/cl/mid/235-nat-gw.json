@@ -1,0 +1,25 @@
+{
+  "note": "Lv235 NAT ゲートウェイ。架空の「PC クラウド」。d = 説明 → 名前(NAT ゲートウェイ・インターネットゲートウェイ・VPN ゲートウェイ・ロードバランサー)、t = ○×",
+  "rows": [
+    {"id":"nat-out","ja":"非公開のサブネットの VM が外へ更新を取りに出られるが、外からは入ってこられないようにする出口","attrs":{"type":"d","term":"NAT ゲートウェイ","why":"出るだけを許すのが NAT ゲートウェイ"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"nat-rewrite","ja":"非公開のサブネットの VM の送信元アドレスを、公開のアドレスに付け替えて外へ出す","attrs":{"type":"d","term":"NAT ゲートウェイ","why":"送信元を付け替えるのは NAT"},"source":"RFC 3022","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"nat-return","ja":"内側から始めた通信の返りだけを通し、外から始まった通信は通さない出口","attrs":{"type":"d","term":"NAT ゲートウェイ","why":"変換の記録がある返りだけが戻れる"},"source":"RFC 3022","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"nat-update","ja":"非公開のサブネットの VM が、OS の更新ファイルを外から取ってくるのに使う出口","attrs":{"type":"d","term":"NAT ゲートウェイ","why":"公開アドレスの無い VM が外へ出るための出口"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"igw","ja":"公開のサブネットとインターネットをつなぎ、公開アドレスを持つ VM に外から届くようにする出入口","attrs":{"type":"d","term":"インターネットゲートウェイ","why":"外から入ることもできる出入口"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"vpngw","ja":"会社の網と仮想の網を、暗号化した通り道でつなぐ出入口","attrs":{"type":"d","term":"VPN ゲートウェイ","why":"会社とつなぐのは VPN ゲートウェイ"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"vpngw-ipsec","ja":"社内の網から仮想の網へ、インターネット越しに IPsec で入る入口","attrs":{"type":"d","term":"VPN ゲートウェイ","why":"IPsec でつなぐのは VPN ゲートウェイ"},"source":"RFC 4301","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"lb","ja":"外からの通信を受けて、後ろの複数の VM に振り分ける","attrs":{"type":"d","term":"ロードバランサー","why":"振り分けるのはロードバランサー"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"lb-health","ja":"1 つの公開のアドレスで受けた通信を、後ろの VM の調子を見ながら振り分ける","attrs":{"type":"d","term":"ロードバランサー","why":"調子の悪い VM には送らない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-inbound","ja":"NAT ゲートウェイを通せば、外のサーバーから非公開のサブネットの VM へ、新しく通信を始められる","attrs":{"type":"t","true":false,"why":"NAT ゲートウェイは内側から出る通信のためのもの。外からは始められない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-noip","ja":"NAT ゲートウェイを使う VM は、自分の公開アドレスを持たなくても外へ出られる","attrs":{"type":"t","true":true,"why":"NAT ゲートウェイの公開アドレスに付け替えて出る"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-return","ja":"非公開のサブネットの VM が外の更新サーバーから応答を受け取れるのは、NAT ゲートウェイが変換を覚えていて、返りを元のアドレスに戻すからである","attrs":{"type":"t","true":true,"why":"変換の表で返りを内側の VM に戻す"},"source":"RFC 3022","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-forward","ja":"NAT ゲートウェイは、外から内側の VM へ通信を通すポートフォワードのためのものである","attrs":{"type":"t","true":false,"why":"外から入れるためのものではない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-source","ja":"外から見ると、NAT ゲートウェイを通った VM の通信の送信元は、NAT ゲートウェイの公開アドレスになる","attrs":{"type":"t","true":true,"why":"送信元が付け替えられる"},"source":"RFC 3022","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-db-login","ja":"非公開のサブネットに置いたデータベースの VM は、NAT ゲートウェイがあれば外から直接ログインできるようになる","attrs":{"type":"t","true":false,"why":"NAT ゲートウェイでは外から入れない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-share","ja":"複数の VM が、1 つの NAT ゲートウェイを共有して外へ出られる","attrs":{"type":"t","true":true,"why":"ポート番号で区別してまとめて出せる"},"source":"RFC 3022","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-napt","ja":"NAT ゲートウェイは、家庭のルーターの NAPT と同じように、内側から出る通信のアドレスを付け替える","attrs":{"type":"t","true":true,"why":"考え方は家庭のルーターと同じ"},"source":"RFC 3022","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-private-subnet","ja":"非公開のサブネットとは、ふつう VM が公開アドレスを持たず、外から直接は届かないサブネットである","attrs":{"type":"t","true":true,"why":"外から直接は届かない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-allowlist","ja":"NAT ゲートウェイの公開アドレスを外の相手の許可リストに書いておくと、相手は内側の VM からの通信を見分けられる","attrs":{"type":"t","true":true,"why":"外から見える送信元はいつも NAT ゲートウェイのアドレス"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ports","ja":"NAT ゲートウェイは、内側の複数の VM の通信を、ポート番号で区別して 1 つの公開アドレスにまとめられる","attrs":{"type":"t","true":true,"why":"NAPT の考え方"},"source":"RFC 3022","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}
