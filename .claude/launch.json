@@ -32,7 +32,7 @@
       "runtimeExecutable": "cmd",
       "runtimeArgs": [
         "/c",
-        "set PORT=3003&& set STORE=memory&& set SIM_BOTS=tools/scenarios/tokyo-3teams.json&& node server/index.js"
+        "set PORT=3003&& set STORE=memory&& set SIM_BOTS=tools/scenarios/kanto-3teams.json&& node server/index.js"
       ],
       "port": 3003
     }

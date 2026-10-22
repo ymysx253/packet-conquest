@@ -869,7 +869,9 @@
     }
     $('scoreTitle').textContent = kind === 'weekPoints' && R.week ? `順位(${R.week} の週)` : '順位';
     $('scores').replaceChildren(...items);
-    $('log').replaceChildren(...S.log.map((l) => { const li = document.createElement('li'); li.textContent = l.text; return li; }));
+    // 時刻を付ける(2026-10-22 ユーザー指摘: 通信ログに時間がない)。見ている人の時計(日本なら日本時間)で 時:分:秒
+    const hms = (t) => { const d = new Date(t); return [d.getHours(), d.getMinutes(), d.getSeconds()].map((v) => String(v).padStart(2, '0')).join(':'); };
+    $('log').replaceChildren(...S.log.map((l) => { const li = document.createElement('li'); if (l.at) { const at = document.createElement('span'); at.className = 'at'; at.textContent = hms(l.at); li.append(at); } li.append(document.createTextNode(l.text)); return li; }));
     $('log').scrollTop = $('log').scrollHeight;
   }
   function renderSelected() {

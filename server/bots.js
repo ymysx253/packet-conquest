@@ -31,7 +31,9 @@ class Bots {
     for (const [ti, t] of sc.teams.entries()) {
       const members = [];
       for (let i = 0; i < t.members; i++) {
-        const p = await w.join(fakeWs(), `${t.name}-${i + 1}`.slice(0, 12), null, t.start);
+        const starts = t.starts || [t.start]; // 始める場所はシナリオの並びを順に使う(広げて置く)
+        const p = await w.join(fakeWs(), `${t.name}-${i + 1}`.slice(0, 12), null, starts[i % starts.length]);
+        p.sim = true; // テスト用の敵の印(初心者保護を効かせない。World.isNewbie)
         members.push(p);
       }
       const team = await w.createTeam(members[0], t.name, Math.max(t.members, 5));
@@ -39,9 +41,27 @@ class Bots {
       for (const p of members.slice(1)) await w.joinTeam(p, team.id);
       for (const p of members) this.bots.push({ p, team: team.id });
     }
-    console.log(`テスト用の敵: ${sc.teams.length} チーム・${this.bots.length} 人を動かします`);
+    // 始めに占領しておく(seedCaptures か所ずつ。実際より速く広げて見せるため。考える時間を待たずに正解する)
+    for (let k = 0; k < (sc.seedCaptures || 0); k++) for (const b of this.bots) await this.seed(b).catch(() => {});
+    console.log(`テスト用の敵: ${sc.teams.length} チーム・${this.bots.length} 人を動かします(始めの占領 ${this.stats.captures} か所)`);
     for (const b of this.bots) this.schedule(b, rand(1, sc.paceSec[1]));
     return this;
+  }
+  // 1 か所を正解だけで占領する(始めの準備用)
+  async seed(b) {
+    const w = this.world, p = b.p;
+    const ts = await this.targets(b);
+    if (!ts.length) return;
+    const t = pick(ts);
+    for (let i = 0; i < 40 && w.nodes.get(t.id).owner !== p.id; i++) {
+      p.cooldownUntil = 0;
+      const q = await w.ask(p, t.id);
+      p.pending.askedAt -= 60000; // 最短解答時間(1 秒)を待たない(準備のときだけ)
+      const pend = p.pending;
+      const ans = pend.answerKind === 'text' ? (pend.fields || []).map((f) => String((f.accept || [''])[0])) : pend.answerIndex;
+      await w.answer(p, q.qid, ans);
+    }
+    if (w.nodes.get(t.id).owner === p.id) this.stats.captures++;
   }
   stop() { this.stopped = true; for (const t of this.timers) clearTimeout(t); this.timers.clear(); }
   schedule(b, sec) {

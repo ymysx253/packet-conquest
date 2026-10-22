@@ -125,8 +125,11 @@ body {
 .ln.rail.shinkansen { border-color: #00897B; background: repeating-linear-gradient(90deg, #00897B 0 6px, #FFFFFF 6px 12px); }
 
 .side { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: 0; overflow: hidden; }
-.side-main { display: flex; flex-direction: column; gap: 12px; flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
-.side-main > .panel { flex: 0 0 auto; }
+.side-main { display: flex; flex-direction: column; gap: 12px; flex: 1 1 auto; min-height: 0; overflow: hidden; }
+/* 右の欄そのものはスクロールさせない(2026-10-22 ユーザー指摘: スクロールの中に通信ログのスクロールがあった)。拠点の情報と通信ログがそれぞれの中でスクロールする */
+.side-main > .panel { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.side-main > .log-panel { flex: 1 1 0; min-height: 110px; display: flex; flex-direction: column; overflow: hidden; }
+.log-panel .log { flex: 1 1 auto; min-height: 0; max-height: none; }
 /* チャット(2026-10-21): 右の欄の下(スマホは地図の下の欄の下)にいつも出す */
 .chat { flex: 0 0 42%; min-height: 200px; display: flex; flex-direction: column; gap: 6px; padding-bottom: 10px; }
 .chat-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -225,7 +228,8 @@ body {
 .cool { position: absolute; left: 16px; right: 16px; bottom: 10px; height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
 .cool-bar { height: 100%; background: var(--bad); width: 100%; transform-origin: left; }
 
-.log { list-style: none; margin: 0; padding: 0; font-size: 13px; display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow-y: auto; }
+.log { list-style: none; margin: 0; padding: 0; font-size: 13px; display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow-y: auto; overscroll-behavior: contain; }
+.log .at { color: var(--muted); font-family: var(--font-mono); font-size: 12px; margin-right: 6px; }
 .log li { color: var(--muted); }
 .log li:last-child { color: var(--ink); }
 

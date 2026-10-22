@@ -472,7 +472,7 @@ class World {
       teamStyle: p.team && this.teamLooks.get(p.team) ? this.teamLooks.get(p.team).style : null, teamIcon: p.team && this.teamLooks.get(p.team) ? this.teamLooks.get(p.team).icon : null };
   }
   // 初心者保護(3 拠点以下)の対象か: 作成から 7 日以内
-  isNewbie(p) { return now() - (p.createdAt || 0) < NEWBIE_MS; }
+  isNewbie(p) { if (p.sim) return false; return now() - (p.createdAt || 0) < NEWBIE_MS; } // テスト用の敵(server/bots.js。p.sim)には初心者保護を効かせない(2026-10-22 ユーザー決定)
 
   // プレイヤーの見ている範囲を更新し、新しく見えるタイルの拠点とリンクを送る
   async setView(p, tiles, z = 0) {
