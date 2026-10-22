@@ -28,7 +28,7 @@ for (const [lv, ent] of [...LEVELS.entries()].sort((a, b) => a[0] - b[0])) {
       assert.ok(Number.isInteger(q.answerIndex) && q.answerIndex >= 0 && q.answerIndex < q.options.length, `${where}: answerIndex が範囲外`);
     }
     if (ent.verify) ent.verify(q);
-    seen.add(JSON.stringify([q.text, q.options || null, q.table || null]));
+    seen.add(JSON.stringify([q.text, q.options || null, q.table || null, q.tables || null])); // tables(表が 2 つ以上の問題)も数える(2026-10-22)
   }
   const want = ent.minDistinct ?? (ent.kind === '生' ? 1000 : 30);
   assert.ok(seen.size >= Math.min(want, n), `Lv${lv}(${ent.title}): 違う問題が ${seen.size} 通りしか作れない(${want} 通り要る)`);
