@@ -77,6 +77,7 @@
 | `COSMOS_CONNECTION_STRING` | Cosmos DB の「キー」→ プライマリ接続文字列(手元の `.env` と同じ) | **ここにだけ置く。** リポジトリや zip には入れない(`.env` は zip に含めない)。サーバーの中だけで使い、画面には送らない |
 | `COSMOS_DATABASE` | `packet-conquest` | 本番データベース |
 | `LOG_SALT` | 長い乱数の文字列。手元で `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` を実行して出た 64 文字を貼る | 出来事の記録(`docs/LOGS.md` 3.4)で接続元を日替わりのハッシュにする塩。**一度入れたら変えない**(変える・消すと、前後の記録で同じ接続元か見比べられなくなる。ゲームは止まらない)。ここ以外に書かない(控えるならパスワード管理ソフトに 1 つだけ) |
+| `ADMIN_KEY` | **アイテムを配るときだけ作る**。長い乱数(24 文字以上。`LOG_SALT` と同じ作り方で別の値) | 管理者がアイテムを配る口 `POST /admin/grant` の鍵(2026-10-22)。無ければ口ごと無い扱い(404)。使い方は下の「アイテムを配る」 |
 | `SCM_DO_BUILD_DURING_DEPLOYMENT` | `true` | zip を置いたときに App Service 側で `npm install` を走らせる |
 | `ALLOWED_ORIGINS` | **作らない**(ドメインを付けたら `https://packet-conquest.com,https://www.packet-conquest.com`) | 同じホストからの接続は常に通るので、`*.azurewebsites.net` のうちは要らない |
 | `WEBSITE_RUN_FROM_PACKAGE` | **作らない**(変数そのものを一覧に入れない。自動で入っていたら削除) | あると zip が読み取り専用のまま動き、上のビルド(`npm install`)が走らないので起動しない |
@@ -217,6 +218,16 @@ DNS の反映には数分〜1 時間ほどかかることがある。「検証�
 - App Service のプランを別の系列(例: B → P)に変えると IP アドレスが変わることがある。そのときは A レコードを新しい IP に直す(カスタム ドメインの画面の IP アドレスで確かめる)
 - 確認 ID の TXT レコードは消さない(証明書の更新に使う)
 - マネージド証明書は英数字・ダッシュ・ピリオドのドメインだけ(日本語ドメインは使えない)
+
+## 6.9 アイテムを配る(支払いができるまでの、管理者だけの口。2026-10-22)
+
+`ADMIN_KEY` を入れたうえで、PowerShell から次のように送る(`<鍵>` と `<プレイヤー id>` を置き換える。プレイヤー id は Cosmos DB の players で見る)。kind は `home`(本拠地を増やす)か `guard`(守りを延ばす)、count は個数。本拠地を増やすアイテムは、渡す時点で毎月 10 個・合計 20 個の上限を守る。渡したことは出来事の記録(`item.grant`)に残る。
+
+```
+Invoke-RestMethod -Method Post -Uri https://packet-conquest.com/admin/grant -Headers @{ 'X-Admin-Key' = '<鍵>' } -ContentType 'application/json' -Body '{"playerId":"<プレイヤー id>","kind":"guard","count":5}'
+```
+
+使い終わったら `ADMIN_KEY` を消してもよい(消すと口が閉じる)。
 
 ## 7. 配置のやり直し(更新)
 

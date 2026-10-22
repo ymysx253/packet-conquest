@@ -59,6 +59,8 @@
 | `team.join` | チーム参加(`joinTeam`) | teamId、detail: { memberCount } | 5 | 50 | 500 | 365 日 |
 | `team.leave` | チーム脱退(`leaveTeam`) | teamId、detail: { memberCount, newOwnerId, deleted: 最後の 1 人で消えたか } | 3 | 30 | 300 | 365 日 |
 | `chat.report` | チャットの書き込みの通報(`server/chat.js` report。2026-10-21) | detail: { room, id, from, fromName, text, at }(書き込みの写し。チャットそのものは 7 日で消えるので、通報の分だけここに残る) | 1 | 10 | 100 | 365 日 |
+| `item.grant` | アイテムを渡した(いまは管理者。のちに支払い。2026-10-22) | detail: { kind: home | guard, count, source } | 1 | 5 | 50 | 3 年 |
+| `item.use` | アイテムを使った | nodeId(足した本拠地 / 守りを延ばした空港・港)、detail: { kind, start | until } | 1 | 10 | 100 | 365 日 |
 | `chat.block` | 個別のチャットのブロック・解除 | detail: { target, on } | 2 | 20 | 200 | 90 日 |
 | `team.style` | 見た目の変更(`styleTeam`) | teamId、detail: { style, icon } | 2 | 20 | 200 | 90 日 |
 | `control` | 地域の支配者が変わった(`saveControl` で before と違うとき) | regionId、detail: { tier, before, after(プレイヤー id かチーム id), total, count } | 10 | 100 | 1,000 | 365 日 |

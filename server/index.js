@@ -6,6 +6,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
+const crypto = require('crypto');
 const { WebSocketServer } = require('ws');
 const { loadEnv } = require('./env');
 loadEnv();
@@ -51,7 +52,7 @@ function originAllowed(req) {
 }
 // F3: 1 接続あたりのメッセージ数の上限(1 秒に 20 まで。超えたら切断)と、種別ごとの形の検査
 const MSG_PER_SEC = 20;
-const MSG_TYPES = new Set(['join', 'view', 'ask', 'answer', 'search', 'rekey', 'move', 'team', 'neighbors', 'chat']); // neighbors: 選んだ拠点のつながり先(2026-10-19)
+const MSG_TYPES = new Set(['join', 'view', 'ask', 'answer', 'search', 'rekey', 'move', 'team', 'neighbors', 'chat', 'item']); // neighbors: 選んだ拠点のつながり先(2026-10-19)
 // F5: セキュリティヘッダ。スクリプトは自サイトのファイルだけ(インラインは禁止)、スタイルとフォントは Google Fonts を許可
 const SECURITY_HEADERS = {
   'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' ws: wss:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
@@ -61,11 +62,34 @@ const SECURITY_HEADERS = {
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
 };
 
+// ---------- 管理者の口 ----------
+const ADMIN_KEY = process.env.ADMIN_KEY || '';
+const sameKey = (a, b) => { const x = Buffer.from(String(a)), y = Buffer.from(String(b)); return x.length === y.length && crypto.timingSafeEqual(x, y); };
+function adminGrant(req, res) {
+  const reply = (code, body) => { res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', ...SECURITY_HEADERS }); res.end(JSON.stringify(body)); };
+  if (!ADMIN_KEY || ADMIN_KEY.length < 24) return reply(404, { error: '見つかりません' }); // 鍵が無い(短すぎる)ときは口ごと無い扱い
+  if (req.method !== 'POST') return reply(405, { error: 'POST だけです' });
+  if (!sameKey(req.headers['x-admin-key'] || '', ADMIN_KEY)) { events.add('limit', { ip: clientIp(req), detail: { rule: 'admin' } }); return reply(403, { error: '鍵が違います' }); }
+  let body = '';
+  req.on('data', (c) => { body += c; if (body.length > 2000) req.destroy(); });
+  req.on('end', async () => {
+    try {
+      const msg = JSON.parse(body || '{}');
+      const p = typeof msg.playerId === 'string' && msg.playerId.length <= 40 ? await world.getPlayer(msg.playerId) : null;
+      if (!p) return reply(404, { error: 'プレイヤーが見つかりません' });
+      reply(200, await world.grantItem(p, msg.kind, msg.count || 1, 'admin'));
+    } catch (e) { reply(400, { error: (e && e.message) || 'エラー' }); }
+  });
+}
+
 // ---------- HTTP ----------
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, 'http://localhost');
   // HTTPS で来たとき(Azure の前段が X-Forwarded-Proto を付ける)は HSTS も返す
   if (req.headers['x-forwarded-proto'] === 'https') res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  // アイテムを配る(2026-10-22。支払いができるまでの、管理者だけの口)。環境変数 ADMIN_KEY が無ければ 404。
+  // POST /admin/grant ヘッダー X-Admin-Key、本文 JSON { playerId, kind: 'home' | 'guard', count }
+  if (url.pathname === '/admin/grant') return adminGrant(req, res);
   if (url.pathname === '/healthz') {
     res.writeHead(200, { 'Content-Type': 'text/plain', ...SECURITY_HEADERS });
     return res.end(`ok players=${world.players.size} tiles=${world.tiles.size} nodes=${world.nodes.size}`);
@@ -161,6 +185,7 @@ async function handle(ws, msg) {
     await world.regionIndex(); // 右上の都道府県名のため(メモリに無ければ 1 回だけ読む)
     send(ws, await world.welcome(player));
     send(ws, await world.myRoutes(player)); // 自分の空港・港の航路(2026-10-22: 航路は押さえた人にだけ渡す)
+    send(ws, world.itemsOf(player)); // 持っているアイテム(2026-10-22)
     await world.emitPlayers();
     return;
   }
@@ -175,6 +200,13 @@ async function handle(ws, msg) {
       else if (msg.action === 'style') { const t = await world.styleTeam(player, { frame: msg.frame, fill: msg.fill, text: msg.text, icon: msg.icon }); send(ws, { t: 'team', team: world.pubTeam(t) }); }
       else if (msg.action === 'members') send(ws, await world.teamMemberList(player)); // チーム内の順位(2026-10-21)
       else if (msg.action === 'info') { const t = player.team ? await world.teamInfo(player.team) : null; send(ws, { t: 'team', team: world.pubTeam(t) }); }
+      break;
+    }
+    case 'item': { // アイテムを使う(2026-10-22。判定はすべてサーバー)
+      const id = (v) => (typeof v === 'string' && v.length <= 40 ? v : null);
+      if (msg.action === 'useHome') { const home = await world.useHomeItem(player, id(msg.startNodeId)); send(ws, { t: 'itemUsed', kind: 'home', home: { id: home.id, lat: home.lat, lon: home.lon } }); }
+      else if (msg.action === 'useGuard') { const n = await world.useGuardItem(player, id(msg.nodeId)); send(ws, { t: 'itemUsed', kind: 'guard', nodeId: n.id, until: n.protectedUntil }); }
+      else if (msg.action === 'list') send(ws, world.itemsOf(player));
       break;
     }
     case 'move': {

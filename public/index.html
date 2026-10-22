@@ -88,6 +88,11 @@
         <ul class="np-lines np-routes" id="npRoutesList"></ul>
       </div>
       <p class="hint" id="npStatus"></p>
+      <!-- アイテム(2026-10-22): 自分の空港・港の守りを延ばす。守りの途中だけ出す -->
+      <div class="np-item" id="npGuard" hidden>
+        <button type="button" class="btn small" id="npGuardBtn">守りを延ばす(+10 分)</button>
+        <span class="hint" id="npGuardNote"></span>
+      </div>
     </section>
 
 
@@ -205,6 +210,16 @@
     <span class="hint">開始地点</span>
     <button type="button" class="btn small" id="moveBtn" title="自分の拠点を別の駅のそばに作り直します(1 日 1 回)">引っ越し</button>
   </div>
+  <!-- アイテム(2026-10-22 ユーザー決定。docs/BILLING.md 第 2.1・2.2 節)。売り始めるのは本登録と支払いができてから -->
+  <h3 class="label">アイテム</h3>
+  <div class="code-row">
+    <span class="hint" id="itemHomeText">本拠地を増やす: 0 個</span>
+    <button type="button" class="btn small" id="itemHomeBtn" disabled title="町・字か、ふつうの駅のそばに本拠地をもう 1 つ作ります(引っ越しはできません)">使う</button>
+  </div>
+  <div class="code-row">
+    <span class="hint" id="itemGuardText">空港・港の守りを延ばす: 0 個</span>
+  </div>
+  <p class="hint">守りを延ばすアイテムは、自分の空港・港を選んだときの情報パネルから使います(占領したあとの守りの時間だけ。+10 分ずつ、最長 60 分、1 日 5 個まで)。</p>
   <form method="dialog" class="dlg-actions"><button class="btn primary">閉じる</button></form>
 </dialog>
 

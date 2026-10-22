@@ -36,6 +36,14 @@ const MAX_LEVEL = 999;                  // 出題レベルの上限(強化はこ
 const PROTECT_MS = 24 * 60 * 60 * 1000; // 初心者保護: 生まれた拠点は 24 時間攻撃されない
 const PROTECT_MAX_NODES = 3;            // 初心者保護: 所持拠点がこの数以下の人は攻撃されない(作成から NEWBIE_MS の間だけ)
 const GATEWAY_GUARD_MS = 5 * 60 * 1000; // 空港・港は占領されてから 5 分間は奪えない(2026-10-19 ユーザー決定。すぐ奪い返す待ち伏せを防ぎ、航路の先が制圧される前に奪い返す余地を残す)
+// アイテム(2026-10-22 ユーザー決定。docs/BILLING.md 第 2.1・2.2 節)。売るのは本登録と支払いができてから。いまは管理者が配る(/admin/grant)
+const ITEM_KINDS = ['home', 'guard']; // home: 本拠地を増やす / guard: 空港・港の守りを延ばす
+const GUARD_EXT_MS = 10 * 60 * 1000;   // 守りの延長: 1 個で +10 分
+const GUARD_MAX_MS = 60 * 60 * 1000;   // 守りは占領から最長 60 分まで(重ねて使える)
+const GUARD_DAILY = 5;                 // 1 日(日本時間)に使えるのは 5 個まで
+const HOME_ITEM_MONTHLY = 10;          // 本拠地を増やすアイテム: 毎月 10 個まで(毎月 1 日に数え直す。日本時間)
+const HOME_ITEM_TOTAL = 20;            // 合計 20 個まで(本拠地は無料の 1 つと合わせて最大 21)
+const jstOf = (t) => new Date(t + 9 * 3600 * 1000).toISOString(); // 日本時間の日付・月(slice(0, 10) / slice(0, 7))
 const NEWBIE_MS = 7 * 24 * 60 * 60 * 1000;  // 初心者保護の期限: 作成から 7 日(2026-10-18 決定。別アカウントで要衝を永久に守る穴をふさぐ)
 const IDLE_MS = 7 * 24 * 60 * 60 * 1000;    // 休眠: 稼働時間で 7 日接続が無い無料アカウントは、拠点をすべて中立に戻して削除(サブスク会員は除外)
 const MOVE_INTERVAL_MS = 24 * 60 * 60 * 1000; // 引っ越し(開始地点の変更)は 1 日 1 回(2026-10-18 決定)
@@ -692,6 +700,79 @@ class World {
     await this.emitPlayers();
     return home;
   }
+  // ---------- アイテム(2026-10-22 ユーザー決定。docs/BILLING.md 第 2.1・2.2 節) ----------
+  // 持っている数と、今日・今月の使った数(画面の表示用)
+  itemsOf(p) {
+    const day = jstOf(now()).slice(0, 10), month = jstOf(now()).slice(0, 7);
+    const items = p.items || {};
+    return {
+      t: 'items', items: { home: items.home || 0, guard: items.guard || 0 },
+      extraHomes: p.extraHomes || [],
+      guard: { usedToday: p.guardUseDay === day ? p.guardUseCount || 0 : 0, daily: GUARD_DAILY, extMin: GUARD_EXT_MS / 60000, maxMin: GUARD_MAX_MS / 60000 },
+      home: { bought: p.homeItemBought || 0, boughtThisMonth: p.homeItemMonth === month ? p.homeItemMonthCount || 0 : 0, monthly: HOME_ITEM_MONTHLY, total: HOME_ITEM_TOTAL },
+    };
+  }
+  // アイテムを渡す(いまは管理者だけ。のちに支払いの確認から呼ぶ)。本拠地を増やすアイテムは買う数の上限(毎月 10・合計 20)をここで守る
+  async grantItem(p, kind, count = 1, source = 'admin') {
+    if (!ITEM_KINDS.includes(kind)) throw new Error('そのアイテムはありません');
+    const n = Math.floor(Number(count));
+    if (!(n >= 1 && n <= 100)) throw new Error('数が正しくありません');
+    if (kind === 'home') {
+      const month = jstOf(now()).slice(0, 7);
+      if (p.homeItemMonth !== month) { p.homeItemMonth = month; p.homeItemMonthCount = 0; }
+      if ((p.homeItemMonthCount || 0) + n > HOME_ITEM_MONTHLY) throw new Error(`本拠地を増やすアイテムは 1 か月に ${HOME_ITEM_MONTHLY} 個までです(今月はあと ${HOME_ITEM_MONTHLY - (p.homeItemMonthCount || 0)} 個)`);
+      if ((p.homeItemBought || 0) + n > HOME_ITEM_TOTAL) throw new Error(`本拠地を増やすアイテムは合計 ${HOME_ITEM_TOTAL} 個までです(あと ${HOME_ITEM_TOTAL - (p.homeItemBought || 0)} 個)`);
+      p.homeItemMonthCount = (p.homeItemMonthCount || 0) + n; p.homeItemBought = (p.homeItemBought || 0) + n;
+    }
+    p.items = { ...(p.items || {}), [kind]: ((p.items || {})[kind] || 0) + n };
+    await this.persistPlayer(p);
+    this.events.add('item.grant', { playerId: p.id, teamId: p.team || undefined, detail: { kind, count: n, source } });
+    if (p.online) this.send(p, this.itemsOf(p));
+    return this.itemsOf(p);
+  }
+  // 本拠地を増やす: 選んだ開始地点(町・字か Lv10 以下のふつうの駅。最初の本拠地と同じ決まり)のそばに本拠地をもう 1 つ生む。足した本拠地は引っ越しできない
+  async useHomeItem(p, startNodeId) {
+    if (!((p.items || {}).home > 0)) throw new Error('本拠地を増やすアイテムを持っていません');
+    let start = this.nodes.get(startNodeId);
+    if (!start) { const d = await this.store.loadNode(startNodeId); if (d) start = this.adopt(d); }
+    if (!start || start.isPlayerNode || start.hackable === false || start.status !== 'public' || start.country !== (p.country || this.country) || !startable(start)) {
+      throw new Error('本拠地を置けるのは、町・字か、ふつうの駅(Lv10 以下)のそばだけです');
+    }
+    const home = await this.spawnHome(p, start, true);
+    p.items = { ...p.items, home: p.items.home - 1 };
+    this.invalidateReach(p.id);
+    await this.persistPlayer(p);
+    this.events.add('item.use', { playerId: p.id, teamId: p.team || undefined, nodeId: home.id, regionId: home.region, detail: { kind: 'home', start: start.id } });
+    this.addLog(`${p.name} が ${home.area} に本拠地を増やしました`);
+    await this.emitPlayers();
+    this.send(p, this.itemsOf(p));
+    return home;
+  }
+  // 空港・港の守りを延ばす: 自分の空港・港の「奪えない時間」を +10 分(占領から最長 60 分まで)。守りの途中ならいつでも足せる。1 日 5 個まで。
+  // 延ばすのは奪えない時間だけ(突破に要る回数・問題のレベル・航路は変えない。BILLING.md 第 1 章)
+  async useGuardItem(p, nodeId) {
+    if (!((p.items || {}).guard > 0)) throw new Error('守りを延ばすアイテムを持っていません');
+    const n = this.nodes.get(nodeId);
+    if (!n || (n.genre !== 'airport' && n.genre !== 'port')) throw new Error('守りを延ばせるのは空港と港だけです');
+    if (n.owner !== p.id || n.ownerIsTeam) throw new Error('自分が持っている空港・港にだけ使えます');
+    if (!(n.protectedUntil > now())) throw new Error('守りの時間が終わっています(守りは占領したあとの時間だけ延ばせます)');
+    const day = jstOf(now()).slice(0, 10);
+    if (p.guardUseDay !== day) { p.guardUseDay = day; p.guardUseCount = 0; }
+    if (p.guardUseCount >= GUARD_DAILY) throw new Error(`守りを延ばすアイテムは 1 日に ${GUARD_DAILY} 個までです`);
+    const from = n.guardFrom || n.protectedUntil - GATEWAY_GUARD_MS;
+    const next = Math.min(from + GUARD_MAX_MS, n.protectedUntil + GUARD_EXT_MS);
+    if (next <= n.protectedUntil) throw new Error(`守りは占領から最長 ${GUARD_MAX_MS / 60000} 分までです`);
+    n.protectedUntil = next; n.guardFrom = from;
+    p.guardUseCount = (p.guardUseCount || 0) + 1;
+    p.items = { ...p.items, guard: p.items.guard - 1 };
+    await this.persistNode(n);
+    await this.persistPlayer(p);
+    this.emitNode(n);
+    this.events.add('item.use', { playerId: p.id, teamId: p.team || undefined, nodeId: n.id, regionId: n.region, detail: { kind: 'guard', until: next } });
+    this.send(p, this.itemsOf(p));
+    return n;
+  }
+
   // 休眠アカウントの回収(2026-10-18 決定): 稼働時計で 7 日接続が無い無料アカウントは、奪った拠点も自分の拠点も含めて全部中立に戻し、アカウントを削除する。
   // サブスク(plan あり)は対象外。いま接続中の人も対象外。古いドキュメント(lastSeenUp 無し)は次に接続したときから数え始める
   async reclaimIdle() {
@@ -773,8 +854,8 @@ class World {
 
   // 開始地点(選んだ駅・名所)のまわりの空いている場所に、プレイヤー専用の拠点を生み、開始地点と近い固定拠点につなぐ。
   // 人数の上限は置かず、間隔(MIN_GAP_KM)を守って半径を広げる。1 km まで空きが無ければ満員(第 3.1 節)
-  async spawnHome(p) {
-    const start = await this.startNode(p);
+  async spawnHome(p, startOverride = null, extra = false) {
+    const start = startOverride || await this.startNode(p);
     const c = { lat: start.lat, lon: start.lon, name: start.area, region: start.region };
     await this.ensureTiles(tilesAround(tileOf(c.lat, c.lon, 0), 1));
     let lat = null, lon = null;
@@ -795,7 +876,7 @@ class World {
     const a = 16 + ((k >> 8) % 16), b = k & 255;
     const id = `home-${newId()}`;
     const node = {
-      id, type: 'node', name: `${p.name}の拠点`, genre: null, kind: 'HOME', kindLabel: 'プレイヤーの拠点',
+      id, type: 'node', name: extra ? `${p.name}の拠点(${(p.extraHomes || []).length + 2})` : `${p.name}の拠点`, genre: null, kind: 'HOME', kindLabel: 'プレイヤーの拠点',
       area: c.name, country: this.country, region: c.region || 'tokyo-chiyoda', startNodeId: start.id,
       lat: Number(lat.toFixed(5)), lon: Number(lon.toFixed(5)), location: { type: 'Point', coordinates: [Number(lon.toFixed(5)), Number(lat.toFixed(5))] },
       ...tileFields(lat, lon),
@@ -811,7 +892,7 @@ class World {
       .filter((m) => m.status === 'public' && m.hackable !== false && !m.isPlayerNode && m.id !== start.id);
     const near = cands.map((m) => ({ m, d: distanceKm(n, m) })).sort((a, b) => a.d - b.d).slice(0, HOME_LINKS - 1);
     for (const { m } of near) this.addEdge(n.id, m.id, n.t0);
-    p.homeNodeId = n.id;
+    if (extra) p.extraHomes = [...(p.extraHomes || []), n.id]; else p.homeNodeId = n.id;
     p.nodesOwned = (p.nodesOwned || 0) + 1;
     p.score = (p.score || 0) + this.valueOf(n);
     await this.persistNode(n);
@@ -846,9 +927,9 @@ class World {
     for (const n of this.nodes.values()) if (n.owner === p.id) byId.set(n.id, n); // キャッシュの方が新しいことがある
     for (const [id, n] of byId) if (n.owner !== p.id) byId.delete(id);
     const set = new Set();
-    const home = p.homeNodeId && byId.get(p.homeNodeId);
-    if (home) {
-      const stack = [home.id]; set.add(home.id);
+    const homes = [p.homeNodeId, ...(p.extraHomes || [])].map((id) => id && byId.get(id)).filter(Boolean); // 本拠地を増やすアイテムで足した本拠地からもたどる(2026-10-22)
+    if (homes.length) {
+      const stack = homes.map((h) => h.id); for (const h of homes) set.add(h.id);
       while (stack.length) {
         const cur = byId.get(stack.pop());
         // 線(adj)と、航路(空路・海路)でつながった所有拠点をたどる
@@ -1051,7 +1132,7 @@ class World {
     if (prevTeam) { prevTeam.heldNodes = Math.max(0, (prevTeam.heldNodes || 0) - 1); prevTeam.heldScore = Math.max(0, (prevTeam.heldScore || 0) - gained); await this.store.saveTeam(prevTeam); }
     this.events.add('capture', { ...ev, level: level === null ? undefined : level, ip: p.ws && p.ws.ip, detail: { prevOwner: prev ? prev.id : null, prevTeam: prev ? prev.team || null : prevTeam ? prevTeam.id : null, gained, hits, held, base: n.hits || 1, defenseBefore } });
     n.owner = p.id; delete n.ownerIsTeam; n.capturedTeam = p.team || null; n.defense = 0; n.fortifiedAt = now(); n.progress = {}; // チームにいる間に取ったか(脱退したときにチームへ渡す。2026-10-20)
-    if (n.genre === 'airport' || n.genre === 'port') n.protectedUntil = now() + GATEWAY_GUARD_MS; // 空港・港は 5 分間奪えない
+    if (n.genre === 'airport' || n.genre === 'port') { n.protectedUntil = now() + GATEWAY_GUARD_MS; n.guardFrom = now(); } // 空港・港は 5 分間奪えない。guardFrom は守りの延長(アイテム)の上限の起点
     this.ownedCache.clear(); // 持ち拠点が変わった(縮小表示に足す分を作り直す)
     this.invalidateReach(p.id); if (prev) this.invalidateReach(prev.id);
     p.points = (p.points || 0) + gained;
@@ -1193,4 +1274,4 @@ class World {
   }
 }
 
-module.exports = { startable, DEFAULT_START_ID, World, PROTECT_MS, GATEWAY_GUARD_MS, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, TEAM_MAX_MEMBERS, TEAM_ICONS, weekKeyOf };
+module.exports = { startable, DEFAULT_START_ID, World, PROTECT_MS, GATEWAY_GUARD_MS, GUARD_EXT_MS, GUARD_MAX_MS, GUARD_DAILY, HOME_ITEM_MONTHLY, HOME_ITEM_TOTAL, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, TEAM_MAX_MEMBERS, TEAM_ICONS, weekKeyOf };

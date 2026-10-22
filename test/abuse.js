@@ -24,7 +24,7 @@ const last = (c, t) => [...c.inbox].reverse().find((m) => m.t === t);
 
 (async () => {
   const server = spawn(process.execPath, [path.join(__dirname, '..', 'server', 'index.js')], {
-    env: { ...process.env, PORT: String(PORT), STORE: 'memory', ALLOWED_ORIGINS: 'https://packet-conquest.com', COSMOS_CONNECTION_STRING: '' },
+    env: { ...process.env, PORT: String(PORT), STORE: 'memory', ALLOWED_ORIGINS: 'https://packet-conquest.com', COSMOS_CONNECTION_STRING: '', ADMIN_KEY: 'test-admin-key-0123456789abcdef' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   let out = '';
@@ -33,6 +33,13 @@ const last = (c, t) => [...c.inbox].reverse().find((m) => m.t === t);
     // メモリ版は全国の拠点マスター(約 11 万件)を読んで入れるので、起動に 15 秒ほどかかる(最大 60 秒待つ)
     for (let i = 0; i < 600 && !out.includes('http://localhost'); i++) await wait(100);
     assert.ok(out.includes('保存: メモリ'), 'メモリ版で起動する: ' + out);
+
+    // アイテムを配る口(2026-10-22): 鍵が違えば 403、GET は 405、正しい鍵で渡せる
+    const post = (p, body, key) => new Promise((res, rej) => { const r = http.request(`http://localhost:${PORT}${p}`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(key ? { 'X-Admin-Key': key } : {}) } }, (q) => { let b = ''; q.on('data', (c) => { b += c; }); q.on('end', () => res({ status: q.statusCode, body: b })); }); r.on('error', rej); r.end(JSON.stringify(body)); });
+    assert.strictEqual((await post('/admin/grant', { playerId: 'x', kind: 'guard' }, 'wrong-key-wrong-key-wrong-key')).status, 403, '鍵が違えば 403');
+    assert.strictEqual((await post('/admin/grant', { playerId: 'x', kind: 'guard' }, null)).status, 403, '鍵が無ければ 403');
+    assert.strictEqual((await get('/admin/grant')).status, 405, 'GET は受けない');
+    assert.strictEqual((await post('/admin/grant', { playerId: 'p-nobody', kind: 'guard' }, 'test-admin-key-0123456789abcdef')).status, 404, '知らないプレイヤーは 404');
 
     // F5 セキュリティヘッダ
     const page = await get('/');

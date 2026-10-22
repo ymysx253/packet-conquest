@@ -640,5 +640,48 @@ async function solve(world, p, nodeId) {
   assert.strictEqual(w.lastDay, today); assert.strictEqual((await store.loadMeta('clock')).day, today, '日付は稼働時計と一緒に保存される');
   assert.strictEqual((await store.eventsByDay(today, { kind: 'control.daily', limit: 5000 })).length, ctlCount, '日付が変わっていれば断面を書く(同じ id で上書き)');
 
+  // アイテム(2026-10-22 ユーザー決定。docs/BILLING.md 第 2.1・2.2 節)
+  {
+    const ip = await w.join(fakeWs(), 'あいてむ', null, tokyoSt.id);
+    await assert.rejects(() => w.useHomeItem(ip, tokyoSt.id), /持っていません/, '持っていなければ使えない');
+    await assert.rejects(() => w.grantItem(ip, 'nope', 1), /ありません/, '知らないアイテムは渡せない');
+    await w.grantItem(ip, 'home', 10);
+    await assert.rejects(() => w.grantItem(ip, 'home', 1), /1 か月に 10 個/, '本拠地を増やすアイテムは 1 か月 10 個まで');
+    ip.homeItemMonth = '2000-01'; await w.grantItem(ip, 'home', 10);
+    ip.homeItemMonth = '2000-02'; await assert.rejects(() => w.grantItem(ip, 'home', 1), /合計 20 個/, '合計 20 個まで');
+    assert.strictEqual(w.itemsOf(ip).items.home, 20);
+    // 置き場所は町・字か Lv10 以下のふつうの駅のそば(最初の本拠地と同じ決まり)
+    const big = NODES.find((n) => n.genre === 'station' && n.level > 10 && n.region && n.region.startsWith('tokyo-'));
+    await w.ensureTiles(tilesAround(big.t0, 1));
+    await assert.rejects(() => w.useHomeItem(ip, big.id), /町・字か、ふつうの駅/, 'Lv10 を超える駅のそばには置けない');
+    const town = NODES.find((n) => n.genre === 'town' && n.region === 'tokyo-chuo' && n.status === 'public');
+    await w.ensureTiles(tilesAround(town.t0, 1));
+    const h2 = await w.useHomeItem(ip, town.id);
+    assert.ok(h2.isPlayerNode && h2.owner === ip.id && ip.extraHomes.includes(h2.id) && ip.homeNodeId !== h2.id && w.itemsOf(ip).items.home === 19, '本拠地が 1 つ増え、アイテムが 1 個減る');
+    ip.reach = null; const rs = await w.reach(ip);
+    assert.ok(rs.has(ip.homeNodeId) && rs.has(h2.id), '増やした本拠地からもたどれる');
+    // 守りの延長: 自分の空港・港、守りの途中、+10 分、占領から最長 60 分、1 日 5 個
+    const port = NODES.find((n) => n.genre === 'port' && n.region && n.region.startsWith('tokyo-'));
+    await w.ensureTiles(tilesAround(port.t0, 1));
+    const P = w.nodes.get(port.id);
+    await w.grantItem(ip, 'guard', 8);
+    P.owner = 'someone-else'; P.protectedUntil = Date.now() + 60000; P.guardFrom = Date.now();
+    await assert.rejects(() => w.useGuardItem(ip, P.id), /自分が持っている/, '人の空港・港には使えない');
+    P.owner = ip.id; P.protectedUntil = Date.now() - 1;
+    await assert.rejects(() => w.useGuardItem(ip, P.id), /終わっています/, '守りが終わっていたら使えない');
+    const t0 = Date.now(); P.guardFrom = t0; P.protectedUntil = t0 + 5 * 60000;
+    await w.useGuardItem(ip, P.id);
+    assert.ok(Math.abs(P.protectedUntil - (t0 + 15 * 60000)) < 5, '+10 分');
+    for (let i = 0; i < 4; i++) await w.useGuardItem(ip, P.id);
+    assert.ok(Math.abs(P.protectedUntil - (t0 + 55 * 60000)) < 5, '5 個で 55 分');
+    await assert.rejects(() => w.useGuardItem(ip, P.id), /1 日に 5 個/, '1 日 5 個まで');
+    ip.guardUseDay = '2000-01-01'; await w.useGuardItem(ip, P.id);
+    assert.ok(Math.abs(P.protectedUntil - (t0 + 60 * 60000)) < 5, '占領から最長 60 分');
+    await assert.rejects(() => w.useGuardItem(ip, P.id), /最長 60 分/, '60 分を超えては延ばせない');
+    assert.strictEqual(w.itemsOf(ip).items.guard, 2, '使った分だけ減る(失敗した分は減らない)');
+    assert.ok(!(await w.canAttack(rp.id, P.id)), '守りの間は奪えない');
+    P.owner = null; P.protectedUntil = 0; delete P.guardFrom;
+  }
+
   console.log(`world ok: ${w.nodes.size} nodes loaded of ${await store.countNodes()}, ${w.players.size} players, ${w.tiles.size} tiles, ${allEvents.length} events`);
 })().catch((e) => { console.error(e); process.exit(1); });

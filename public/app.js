@@ -131,6 +131,11 @@
         S.token = m.token; store.set('pc-token', m.token); $('codeInput').value = m.token; $('meCode').textContent = m.token;
         toast('復帰コードを新しくしました。控え直してください');
         break;
+      case 'items': S.itemInfo = m; S.extraHomes = m.extraHomes || []; renderItems(); computeReach(); renderSelected(); break; // 持っているアイテム(2026-10-22)
+      case 'itemUsed':
+        if (m.kind === 'home') { S.placing = false; $('pickBar').hidden = true; centerOn(worldOf(m.home.lat, m.home.lon), 9); requestView(true); toast('本拠地を増やしました'); }
+        else toast('守りを延ばしました');
+        break;
       case 'myRoutes': S.mine = new Map((m.ports || []).map((o) => [o.id, o])); break; // 自分の空港・港の航路(2026-10-22: 航路は押さえた人にだけ届く)
       case 'nodes':
         for (const n of m.nodes) {
@@ -264,7 +269,23 @@
     requestView(true);
   };
   function endPick() { S.picking = false; $('pickBar').hidden = true; $('lobby').hidden = false; }
-  $('pickCancelBtn').onclick = () => { if (S.moving) { S.moving = false; $('pickBar').hidden = true; } else endPick(); };
+  $('pickCancelBtn').onclick = () => { if (S.moving || S.placing) { S.moving = false; S.placing = false; $('pickBar').hidden = true; } else endPick(); };
+  // アイテム(2026-10-22): 持っている数を「あなた」のダイアログに出す。本拠地を増やすときは地図で場所を選ぶ
+  function renderItems() {
+    const it = (S.itemInfo && S.itemInfo.items) || { home: 0, guard: 0 };
+    $('itemHomeText').textContent = `本拠地を増やす: ${it.home} 個`;
+    $('itemHomeBtn').disabled = !(it.home > 0);
+    const g = S.itemInfo && S.itemInfo.guard;
+    $('itemGuardText').textContent = `空港・港の守りを延ばす: ${it.guard} 個` + (g ? `(今日使った数 ${g.usedToday}/${g.daily})` : '');
+  }
+  $('itemHomeBtn').onclick = () => {
+    if (!S.joined || !(S.itemInfo && S.itemInfo.items.home > 0)) return;
+    if ($('meDialog').open) $('meDialog').close();
+    S.placing = true; S.moving = false;
+    $('pickBarText').textContent = '本拠地を増やす場所の町・字か、ふつうの駅をタップしてください(町・字は拡大すると出ます)';
+    $('pickBar').hidden = false;
+  };
+  $('npGuardBtn').onclick = () => { if (S.selected) send({ t: 'item', action: 'useGuard', nodeId: S.selected }); };
   // 引っ越し: 地図で新しい開始地点を選ぶ(1 日 1 回)
   // 「あなた」は上の帯。復帰コード・引っ越しはダイアログで(2026-10-19)
   $('meMenuBtn').onclick = () => { const d = $('meDialog'); if (d.showModal) d.showModal(); else d.setAttribute('open', ''); };
@@ -646,6 +667,13 @@
   // 拠点を選ぶ: どの拠点でも情報パネルに出す。攻撃・強化できる拠点なら出題も求める
   function tapAt(pt) {
     const n = nodeAt(pt);
+    if (S.placing) { // 本拠地を増やすアイテム(2026-10-22): 置く場所を選ぶ
+      if (!n) return;
+      if (!startableNode(n)) { toast(startRefusal(n).replace('始められません', '本拠地を置けません')); return; }
+      if (window.confirm(`${n.name} のそばに本拠地を増やしますか?
+アイテムを 1 個使います。増やした本拠地は引っ越しできません。`)) send({ t: 'item', action: 'useHome', startNodeId: n.id });
+      return;
+    }
     if (S.moving) {
       if (!n) return;
       if (!startableNode(n)) { toast(startRefusal(n)); return; }
@@ -686,8 +714,9 @@
   // 自分の拠点から、見えている所有拠点を線でたどって届く拠点(表示用。判定はサーバー)
   function computeReach() {
     const set = new Set();
-    if (!S.home || !S.nodes.has(S.home.id)) { S.reach = set; return; }
-    const stack = [S.home.id]; set.add(S.home.id);
+    const homes = [S.home && S.home.id, ...(S.extraHomes || [])].filter((id) => id && S.nodes.has(id)); // アイテムで足した本拠地からもたどる(2026-10-22)
+    if (!homes.length) { S.reach = set; return; }
+    const stack = [...homes]; for (const h of homes) set.add(h);
     while (stack.length) {
       const cur = stack.pop();
       for (const m of adjacent(cur)) if (!set.has(m) && ownerOf(m) === S.me) { set.add(m); stack.push(m); }
@@ -898,6 +927,15 @@
     else if (adjacent(n.id).some((a) => ownerOf(a) === S.me)) status = '隣の所有拠点は自分の拠点から線がつながっていないため、ここからは広げられません(つなぎ直すと攻撃できます)';
     else status = '自分の拠点とつながっていないため、まだ攻撃できません';
     $('npStatus').textContent = status;
+    { // 守りを延ばすアイテム(2026-10-22): 自分の空港・港で、守りの途中だけ
+      const it = S.itemInfo, guarding = n.owner === S.me && !n.ownerIsTeam && (n.genre === 'airport' || n.genre === 'port') && n.protectedUntil > now();
+      $('npGuard').hidden = !guarding;
+      if (guarding) {
+        const have = it ? it.items.guard : 0, used = it ? it.guard.usedToday : 0, daily = it ? it.guard.daily : 5;
+        $('npGuardBtn').disabled = !(have > 0) || used >= daily;
+        $('npGuardNote').textContent = `あと ${Math.ceil((n.protectedUntil - now()) / 60000)} 分守られています。アイテム ${have} 個(今日 ${used}/${daily})`;
+      }
+    }
   }
 
   // ---------- 描画: 問題 ----------
