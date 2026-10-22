@@ -33,7 +33,7 @@ function getClQuestion({ level, seed, node = null }) {
   return { answerKind: 'choice', ...q, level, seed: s, source: 'cl', clKind: ent.kind };
 }
 
-// 1〜100 のレベル(2026-10-23 ユーザー決定。level100.json。tools/build-level100.js が作る)。1 レベルに LEVEL-LIST の項目が 3〜5 つ入り、
+// 1〜100 のレベル(2026-10-23 ユーザー決定。level100.json。tools/build-level100.js が level100-map.json から作る)。1 レベルに LEVEL-LIST の項目が話題と難しさでまとめて入り(数はレベルによって違う)、
 // そのうち問題のできている項目から seed で 1 つ選んで出す(同じレベルの中で問題の種類が入れ替わる)。90〜100 は神レベル(まだ無い)
 const L100 = require('./level100.json');
 const readyOf = (lv) => { const e = L100.levels[lv]; return e ? e.items.filter((n) => LEVELS.has(n)) : []; };
