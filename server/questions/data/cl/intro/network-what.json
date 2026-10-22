@@ -1,0 +1,13 @@
+{
+  "note": "FactBank(新しい番号 Lv1「ネットワークとは」。docs/LEVEL-LIST.md)。ネットワークについての短い文と、それが正しいか(attrs.true)。○× で出す。checkedBy の無い行は使わない",
+  "rows": [
+    { "id": "two-pc", "ja": "2 台の PC をケーブルでつなぎ、ファイルを送れるようにしたものもネットワークである", "attrs": { "true": true }, "source": "一般的な定義", "checkedBy": "Claude Opus 5.5 2026-10-22" },
+    { "id": "share", "ja": "ネットワークにつなぐと、ほかの機器とデータをやりとりできる", "attrs": { "true": true }, "source": "一般的な定義", "checkedBy": "Claude Opus 5.5 2026-10-22" },
+    { "id": "printer", "ja": "プリンターを何台かの PC から使えるのは、ネットワークでつながっているからである", "attrs": { "true": true }, "source": "一般的な定義", "checkedBy": "Claude Opus 5.5 2026-10-22" },
+    { "id": "wireless", "ja": "無線でつながる機器どうしもネットワークをつくれる", "attrs": { "true": true }, "source": "一般的な定義", "checkedBy": "Claude Opus 5.5 2026-10-22" },
+    { "id": "only-internet", "ja": "インターネットにつながっていなければ、ネットワークとは呼ばない", "attrs": { "true": false }, "source": "一般的な定義(LAN だけでもネットワーク)", "checkedBy": "Claude Opus 5.5 2026-10-22" },
+    { "id": "only-wired", "ja": "ネットワークは、ケーブルでつないだものだけを指す", "attrs": { "true": false }, "source": "一般的な定義(無線もネットワーク)", "checkedBy": "Claude Opus 5.5 2026-10-22" },
+    { "id": "one-pc", "ja": "1 台の PC だけでも、それだけでネットワークである", "attrs": { "true": false }, "source": "一般的な定義(2 台以上の機器をつなぐ)", "checkedBy": "Claude Opus 5.5 2026-10-22" },
+    { "id": "many-only", "ja": "100 台以上の機器をつながないと、ネットワークとは呼ばない", "attrs": { "true": false }, "source": "一般的な定義(台数の決まりはない)", "checkedBy": "Claude Opus 5.5 2026-10-22" }
+  ]
+}
