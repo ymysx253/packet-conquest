@@ -4,20 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>地図の試し | パケット陣取り</title>
-<!-- 試し(2026-10-22): 地図を MapLibre で描いたときの軽さを見るためのページ。docs/MAP-ENGINE.md の案 A(背景は MapLibre、拠点は今の canvas を重ねる)。本番の画面ではない -->
+<!-- 試し(2026-10-22): 地図の背景の部品(map-base.js)を手で確かめるページ。docs/MAP-ENGINE.md の案 A(背景は MapLibre、拠点は canvas を重ねる)。本番の画面ではない -->
 <link rel="stylesheet" href="vendor/maplibre/maplibre-gl.css">
 <style>
   html, body { margin: 0; height: 100%; background: #D6ECFA; font-family: "BIZ UDPGothic", sans-serif; }
   #map { position: absolute; inset: 0; }
   #overlay { position: absolute; inset: 0; pointer-events: none; }
-  #info { position: absolute; left: 8px; top: 8px; z-index: 2; background: rgba(255,255,255,.92); border: 1px solid #94A3B8; border-radius: 8px; padding: 6px 10px; font-size: 13px; line-height: 1.5; color: #0E141B; }
+  #info { position: absolute; left: 8px; top: 8px; z-index: 2; background: rgba(255,255,255,.92); border: 1px solid #94A3B8; border-radius: 8px; padding: 6px 10px; font-size: 13px; line-height: 1.5; color: #0E141B; max-width: calc(100% - 40px); }
+  #info button { font: 600 12px "BIZ UDPGothic", sans-serif; margin: 4px 4px 0 0; padding: 4px 8px; min-height: 28px; cursor: pointer; }
 </style>
 </head>
 <body>
 <div id="map"></div>
 <canvas id="overlay"></canvas>
-<div id="info">MapLibre の試し(案 A)<br><span id="stat">読み込み中…</span></div>
+<div id="info">地図の背景の試し(map-base.js)<br><span id="stat">読み込み中…</span><br>
+  <button id="zin">+</button><button id="zout">−</button><button id="ov">縮小表示: 切</button><button id="dark">暗い色</button><button id="ctl">支配の色を試す</button><button id="clr">色を消す</button>
+</div>
 <script src="vendor/maplibre/maplibre-gl-csp.js"></script>
+<script src="map-base.js"></script>
 <script src="map-try.js"></script>
 </body>
 </html>
