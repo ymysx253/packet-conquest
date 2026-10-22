@@ -1,0 +1,20 @@
+{
+  "note": "Lv219 電子署名と鍵。q = 問いと答え({S} = 送り手、{R} = 受け手。levels-mid.js が架空の名前に置き換える)、t = ○×",
+  "rows": [
+    {"id":"op-sign","ja":"{S}が{R}へ送るデータに電子署名を付ける。署名を作るのに使う鍵は?","attrs":{"type":"q","answer":"{S}の秘密鍵","wrong":["{S}の公開鍵","{R}の公開鍵","{R}の秘密鍵"],"why":"署名は送り手だけが持つ秘密鍵で作る。だから送り手が本人だとわかる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"op-verify","ja":"{R}が、{S}から届いたデータの電子署名を確かめる。使う鍵は?","attrs":{"type":"q","answer":"{S}の公開鍵","wrong":["{S}の秘密鍵","{R}の公開鍵","{R}の秘密鍵"],"why":"送り手の秘密鍵で作った署名は、送り手の公開鍵で確かめる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"op-encrypt","ja":"{S}が、{R}だけが読めるようにデータを公開鍵暗号で暗号化する。使う鍵は?","attrs":{"type":"q","answer":"{R}の公開鍵","wrong":["{R}の秘密鍵","{S}の公開鍵","{S}の秘密鍵"],"why":"受け手の公開鍵で暗号化すれば、受け手の秘密鍵でしか戻せない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"op-decrypt","ja":"{S}が{R}の公開鍵で暗号化したデータを、{R}が元に戻す。使う鍵は?","attrs":{"type":"q","answer":"{R}の秘密鍵","wrong":["{R}の公開鍵","{S}の公開鍵","{S}の秘密鍵"],"why":"受け手の公開鍵で暗号化したものは、受け手の秘密鍵で復号する"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"op-third","ja":"{S}が署名を付けて公開したデータを、{R}とは別の第三者が確かめる。使う鍵は?","attrs":{"type":"q","answer":"{S}の公開鍵","wrong":["{S}の秘密鍵","{R}の公開鍵","{R}の秘密鍵"],"why":"署名は誰でも送り手の公開鍵で確かめられる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-what","ja":"電子署名を確かめると、送り手が本人であることと、途中で書き換えられていないことがわかる","attrs":{"type":"t","true":true,"why":"本人の確認と改ざんの検出が電子署名の役目"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-secret","ja":"電子署名を付けると、データの中身は第三者には読めなくなる","attrs":{"type":"t","true":false,"why":"署名は中身を隠さない。隠すには暗号化が別に要る"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-public-make","ja":"電子署名は、送り手の公開鍵で作る","attrs":{"type":"t","true":false,"why":"署名は送り手の秘密鍵で作る。公開鍵は確かめるのに使う"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-keep","ja":"秘密鍵は、持ち主以外に知られてはいけない","attrs":{"type":"t","true":true,"why":"漏れると、なりすましや復号ができてしまう"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-verifier-secret","ja":"電子署名を確かめる側は、送り手の秘密鍵を持っている必要がある","attrs":{"type":"t","true":false,"why":"確かめるのは送り手の公開鍵。秘密鍵は送り手しか持たない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-leak","ja":"署名に使った秘密鍵が漏れると、ほかの人がその人になりすまして署名できてしまう","attrs":{"type":"t","true":true,"why":"秘密鍵を持つ人なら誰でも同じ署名を作れる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-hash","ja":"電子署名では、データのハッシュ値を秘密鍵で処理したものを署名として付けることが多い","attrs":{"type":"t","true":true,"why":"長いデータでも、短いハッシュ値をもとに署名すればよい"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-cert","ja":"確かめに使う公開鍵が本当に送り手のものかは、認証局の証明書で確かめる","attrs":{"type":"t","true":true,"why":"証明書が公開鍵と持ち主を結び付ける"},"source":"RFC 5280","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-nonrep","ja":"電子署名があると、送り手は「そのデータを送っていない」と後から言いにくくなる","attrs":{"type":"t","true":true,"why":"秘密鍵は送り手しか持たないので、否認しにくい(否認防止)"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-symmetric","ja":"共通鍵暗号の鍵だけでも、第三者に向けて送り手を証明する電子署名が作れる","attrs":{"type":"t","true":false,"why":"共通鍵は両方が同じ鍵を持つので、どちらが作ったか第三者に示せない。電子署名は公開鍵暗号を使う"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

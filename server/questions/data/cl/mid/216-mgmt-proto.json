@@ -1,0 +1,25 @@
+{
+  "note": "Lv216 NTP・SNMP・syslog(と SSH・DNS)。d = 説明 → 名前、t = ○×",
+  "rows": [
+    {"id":"ntp-time","ja":"機器の時刻を、基準となるサーバーに合わせるプロトコル","attrs":{"type":"d","term":"NTP","why":"時刻をそろえるのは NTP"},"source":"RFC 5905","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ntp-stratum","ja":"基準の時刻源からの段数を stratum(階層)で表すプロトコル","attrs":{"type":"d","term":"NTP","why":"stratum は NTP の言葉"},"source":"RFC 5905","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ntp-123","ja":"ログの時刻を機器どうしでそろえるために使う、UDP 123 番のプロトコル","attrs":{"type":"d","term":"NTP","why":"NTP は UDP 123 番"},"source":"RFC 5905","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"snmp-get","ja":"監視する側が、機器から CPU の使用率や通信量などの値を取り出すプロトコル","attrs":{"type":"d","term":"SNMP","why":"値を取り出して監視するのは SNMP"},"source":"RFC 3416","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"snmp-mib","ja":"MIB という形で決められた項目を読み書きするプロトコル","attrs":{"type":"d","term":"SNMP","why":"MIB は SNMP で扱う項目の決まり"},"source":"RFC 3418","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"snmp-trap","ja":"機器が異常を見つけたとき、トラップで監視する側へ知らせるプロトコル","attrs":{"type":"d","term":"SNMP","why":"トラップは SNMP の通知"},"source":"RFC 3416","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"syslog-send","ja":"機器が出すログ(できごとの記録)を、ログを集めるサーバーへ送るプロトコル","attrs":{"type":"d","term":"syslog","why":"ログを送るのは syslog"},"source":"RFC 5424","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"syslog-sev","ja":"メッセージに 0〜7 の重大度(severity)が付くプロトコル","attrs":{"type":"d","term":"syslog","why":"0〜7 の重大度は syslog の決まり"},"source":"RFC 5424","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ssh","ja":"機器に遠くからログインし、暗号化された通信で設定を打ち込むプロトコル","attrs":{"type":"d","term":"SSH","why":"暗号化した遠隔ログインは SSH"},"source":"RFC 4253","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"dns","ja":"名前から IP アドレスを調べるプロトコル","attrs":{"type":"d","term":"DNS","why":"名前とアドレスを結ぶのは DNS"},"source":"RFC 1034","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ntp123","ja":"NTP は UDP の 123 番を使う","attrs":{"type":"t","true":true,"why":"NTP は UDP 123 番"},"source":"RFC 5905","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-trap-poll","ja":"SNMP のトラップは、監視する側から機器へ値を問い合わせるメッセージである","attrs":{"type":"t","true":false,"why":"トラップは機器のほうから知らせるメッセージ。問い合わせは Get など"},"source":"RFC 3416","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-syslog514","ja":"syslog は、ふつう UDP の 514 番で送る","attrs":{"type":"t","true":true,"why":"UDP で送るときの番号は 514"},"source":"RFC 5426","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-snmp161","ja":"SNMP の問い合わせは、ふつう機器の UDP 161 番に送る","attrs":{"type":"t","true":true,"why":"問い合わせは 161 番、トラップは 162 番"},"source":"RFC 3417","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-snmp162","ja":"SNMP のトラップは、ふつう監視する側の UDP 162 番に送られる","attrs":{"type":"t","true":true,"why":"トラップは 162 番"},"source":"RFC 3417","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-time-logs","ja":"機器の時刻がずれていると、複数の機器のログを時刻で並べて調べるのが難しくなる","attrs":{"type":"t","true":true,"why":"だから NTP で時刻をそろえておく"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-stratum","ja":"NTP の stratum は、数が小さいほど基準の時刻源に近い","attrs":{"type":"t","true":true,"why":"基準の時計が 0、そこにつながるサーバーが 1 …と増える"},"source":"RFC 5905","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-snmpv3","ja":"SNMPv3 では、認証と暗号化が使える","attrs":{"type":"t","true":true,"why":"SNMPv3 で安全のしくみが入った"},"source":"RFC 3414","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-syslog-time","ja":"syslog は、機器の時刻をそろえるためのプロトコルである","attrs":{"type":"t","true":false,"why":"時刻をそろえるのは NTP。syslog はログを送る"},"source":"RFC 5424","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ntp-logs","ja":"NTP は、機器のログをサーバーに集めるためのプロトコルである","attrs":{"type":"t","true":false,"why":"ログを集めるのは syslog。NTP は時刻"},"source":"RFC 5905","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

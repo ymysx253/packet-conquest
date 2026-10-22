@@ -1,0 +1,26 @@
+{
+  "note": "Lv218 ハッシュ関数。d = 説明 → 名前(ハッシュ関数・共通鍵暗号・公開鍵暗号・可逆圧縮。電子署名は誤答だけに使う)、t = ○×",
+  "distractors": ["電子署名"],
+  "rows": [
+    {"id":"hash-fixed","ja":"どんな長さのデータからも決まった長さの値を作り、その値から元のデータには戻せない","attrs":{"type":"d","term":"ハッシュ関数","why":"決まった長さで、戻せないのがハッシュ関数"},"source":"FIPS 180-4","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"hash-change","ja":"同じデータからは必ず同じ値が出て、1 ビット変わるだけで値が大きく変わる","attrs":{"type":"d","term":"ハッシュ関数","why":"わずかな違いで値が大きく変わるのがハッシュ関数の性質"},"source":"FIPS 180-4","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"hash-tamper","ja":"鍵を使わずにファイルから短い値を作り、その値を比べて書き換えが無いかを確かめるのに使う","attrs":{"type":"d","term":"ハッシュ関数","why":"鍵を使わずに短い値(ダイジェスト)で比べるのはハッシュ関数"},"source":"FIPS 180-4","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"hash-password","ja":"パスワードをそのまま保存せず、元に戻せない形に変えて保存するのに使う","attrs":{"type":"d","term":"ハッシュ関数","why":"戻せない形にするのはハッシュ関数(暗号化なら鍵で戻せてしまう)"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"symmetric","ja":"送る側と受ける側が、同じ鍵で暗号化と復号をする","attrs":{"type":"d","term":"共通鍵暗号","why":"同じ鍵を使うのが共通鍵暗号"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"public-key","ja":"誰にでも配る鍵で暗号化し、持ち主だけが持つ鍵で復号する","attrs":{"type":"d","term":"公開鍵暗号","why":"公開鍵と秘密鍵の組を使うのが公開鍵暗号"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-signature","ja":"電子署名は、送り手の秘密鍵で作り、送り手の公開鍵で確かめる","attrs":{"type":"t","true":true,"why":"秘密鍵は送り手しか持たないので、送り手が本人だとわかる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"compress","ja":"データを、元にそのまま戻せる形で小さくする","attrs":{"type":"d","term":"可逆圧縮","why":"元に戻せる形で小さくするのは可逆圧縮。ハッシュは戻せない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-irreversible","ja":"ハッシュ値から元のデータを計算で求めることは、事実上できない","attrs":{"type":"t","true":true,"why":"一方向にしか計算できないのがハッシュ関数"},"source":"FIPS 180-4","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-length","ja":"ハッシュ関数は、元のデータの長さによって、出てくる値の長さが変わる","attrs":{"type":"t","true":false,"why":"出てくる値の長さは決まっている(SHA-256 なら 256 ビット)"},"source":"FIPS 180-4","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-same","ja":"同じデータからは、いつ計算しても同じハッシュ値が出る","attrs":{"type":"t","true":true,"why":"同じ入力なら同じ値"},"source":"FIPS 180-4","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-collision","ja":"違う 2 つのデータから同じハッシュ値が出る組(衝突)を見つけにくいのが、よいハッシュ関数である","attrs":{"type":"t","true":true,"why":"衝突を見つけにくいことが安全の条件"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-key","ja":"ハッシュ関数には、暗号化と同じように、元に戻すための鍵がある","attrs":{"type":"t","true":false,"why":"ハッシュ関数は鍵を使わず、元にも戻せない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-sha256","ja":"SHA-256 のハッシュ値の長さは 256 ビットである","attrs":{"type":"t","true":true,"why":"名前の数字がビットの長さ"},"source":"FIPS 180-4","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-same-file","ja":"よいハッシュ関数でハッシュ値が同じなら、2 つのファイルは同じものだとみなしてよい","attrs":{"type":"t","true":true,"why":"衝突が事実上見つからないので、同じとみなせる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-md5","ja":"MD5 は、今では安全なハッシュ関数とはいえない","attrs":{"type":"t","true":true,"why":"衝突を作る方法が知られている"},"source":"RFC 6151","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-shrink","ja":"ハッシュ関数は、データを小さくして送り、受け手で元に戻すために使う","attrs":{"type":"t","true":false,"why":"ハッシュ値からは戻せない。小さくして戻すのは圧縮"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-small-change","ja":"データを 1 文字だけ変えても、ハッシュ値はほとんど変わらない","attrs":{"type":"t","true":false,"why":"1 文字でも変わると、ハッシュ値は大きく変わる"},"source":"FIPS 180-4","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-digest","ja":"ハッシュ値は、ダイジェストとも呼ばれる","attrs":{"type":"t","true":true,"why":"メッセージダイジェストともいう"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-sign-hash","ja":"電子署名では、データそのものではなく、そのハッシュ値をもとに署名を作ることが多い","attrs":{"type":"t","true":true,"why":"長いデータでも短いハッシュ値に署名すればよい"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

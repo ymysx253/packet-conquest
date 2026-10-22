@@ -1,0 +1,25 @@
+{
+  "note": "Lv240 NFV。d = 説明 → 名前(NFV・SDN・IaaS・SaaS)、t = ○×",
+  "rows": [
+    {"id":"nfv-def","ja":"ファイアウォールやルーターの機能を、専用の機器でなく、ふつうのサーバーの上の VM のソフトで動かすこと","attrs":{"type":"d","term":"NFV","why":"網の機能を仮想化するのが NFV"},"source":"ETSI GS NFV 002","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"nfv-carrier","ja":"通信会社が網の機能を、決まった専用の機器ごとではなく、汎用のサーバーの上のソフトとして並べること","attrs":{"type":"d","term":"NFV","why":"汎用のサーバーで網の機能を動かす"},"source":"ETSI GS NFV 002","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-nfv-lb","ja":"NFV では、ロードバランサーなどの網の機能を、必要なときに VM として増やせる","attrs":{"type":"t","true":true,"why":"網の機能がソフトなので、VM を足せば増やせる"},"source":"ETSI GS NFV 002","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"nfv-router","ja":"VM で動くルーター(仮想ルーター)のように、網の機能をソフトの部品にすること","attrs":{"type":"d","term":"NFV","why":"機能をソフトの部品にするのが NFV"},"source":"ETSI GS NFV 002","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"sdn-control","ja":"網の制御(どこへ流すかを決める部分)を機器から切り離し、ソフトでまとめて操作する考え方","attrs":{"type":"d","term":"SDN","why":"制御と転送を分けるのが SDN"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"sdn-controller","ja":"コントローラーから、多くのスイッチの転送の決まりを一度に書き換える考え方","attrs":{"type":"d","term":"SDN","why":"コントローラーでまとめて操作する"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"sdn-program","ja":"ネットワークをプログラムから設定・変更できるようにし、制御する部分と転送する部分を分ける考え方","attrs":{"type":"d","term":"SDN","why":"プログラムで網を操作するのが SDN"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"iaas","ja":"CPU・メモリ・ディスク・網などの土台を、使う分だけ借りるクラウドのサービスの形","attrs":{"type":"d","term":"IaaS","why":"土台を借りるのが IaaS"},"source":"NIST SP 800-145","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"saas","ja":"でき上がったアプリを、インターネット越しに使うクラウドのサービスの形","attrs":{"type":"d","term":"SaaS","why":"アプリを借りるのが SaaS"},"source":"NIST SP 800-145","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-soft","ja":"NFV では、ネットワークの機能を専用の機器ではなくソフトで動かす","attrs":{"type":"t","true":true,"why":"網の機能をソフトにする"},"source":"ETSI GS NFV 002","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-name","ja":"NFV の V は Virtualization(仮想化)の頭文字である","attrs":{"type":"t","true":true,"why":"Network Functions Virtualization の略"},"source":"ETSI GS NFV 002","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-no-box","ja":"NFV を使うと、機能を増やすときに新しい専用の機器を運び込まずに済むことがある","attrs":{"type":"t","true":true,"why":"VM を増やせばよい"},"source":"ETSI GS NFV 002","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-hw-only","ja":"NFV は、専用の機器の上でしか使えない","attrs":{"type":"t","true":false,"why":"ふつうのサーバーの上で動かすのが NFV"},"source":"ETSI GS NFV 002","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-sdn","ja":"SDN は、網の制御をソフトでまとめて行う考え方である","attrs":{"type":"t","true":true,"why":"コントローラーでまとめて制御する"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-same","ja":"NFV と SDN は、まったく同じものを指す言葉である","attrs":{"type":"t","true":false,"why":"NFV は機能の仮想化、SDN は制御の分離。一緒に使われることはあるが別の考え方"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-same-host","ja":"NFV で動かすファイアウォールも VM として動くので、ほかの VM と同じ機械に乗ることがある","attrs":{"type":"t","true":true,"why":"ふつうのサーバーの上の VM なので"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-flexible","ja":"NFV の仮想のファイアウォールは、専用の機器と比べて、置き場所や台数を変えやすい","attrs":{"type":"t","true":true,"why":"ソフトなので動かしやすい"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-fiber","ja":"NFV は、光ファイバーを無線に置き換える技術である","attrs":{"type":"t","true":false,"why":"NFV は網の機能をソフトにすること"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-openflow","ja":"SDN で使われるプロトコルの一つに、OpenFlow がある","attrs":{"type":"t","true":true,"why":"コントローラーがスイッチの転送の決まりを書き換えるのに使う"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-vnf","ja":"NFV で動かす網の機能は、VNF(仮想化されたネットワーク機能)と呼ばれる","attrs":{"type":"t","true":true,"why":"Virtualized Network Function の略"},"source":"ETSI GS NFV 003","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

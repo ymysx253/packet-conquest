@@ -1,0 +1,26 @@
+{
+  "note": "Lv181 SLAAC。IPv6 のアドレスの決め方(SLAAC・ステートフル DHCPv6・ステートレス DHCPv6・手動)。d = 説明 → 名前、t = ○×",
+  "rows": [
+    {"id":"slaac-ra","ja":"ルーターが広告するプレフィックスに、自分で作ったインターフェース ID をつなげて、端末が自分でアドレスを決める","attrs":{"type":"d","term":"SLAAC","why":"SLAAC はサーバーを使わず、RA のプレフィックスと自分の ID でアドレスを作る。ステートレス DHCPv6 はアドレス以外の情報を配るだけ"},"source":"RFC 4862","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"slaac-noserver","ja":"アドレスを配るサーバーを置かず、ルーター広告(RA)だけで端末がグローバルアドレスを作れる","attrs":{"type":"d","term":"SLAAC","why":"RA だけで済むのは SLAAC。DHCPv6 はどちらもサーバーが要る"},"source":"RFC 4862","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"slaac-64","ja":"/64 のプレフィックスを前提に、残りの 64 ビットを端末が自分で埋めてアドレスを作る","attrs":{"type":"d","term":"SLAAC","why":"インターフェース ID の 64 ビットを端末が作るのは SLAAC"},"source":"RFC 4862・RFC 4291","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"stateful-lease","ja":"サーバーが端末ごとにアドレスを貸し出し、どの端末にどのアドレスを渡したかを覚えておく","attrs":{"type":"d","term":"ステートフル DHCPv6","why":"貸し出しの状態(どれを誰に渡したか)を持つのでステートフル。IPv4 の DHCP に近い"},"source":"RFC 8415","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"stateful-m","ja":"ルーター広告の M フラグ(Managed)が 1 のとき、端末がアドレスをもらいに行く方法","attrs":{"type":"d","term":"ステートフル DHCPv6","why":"M フラグはアドレスを DHCPv6 で配ることを表す。O フラグはアドレス以外の情報"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"stateless-info","ja":"アドレスは端末が自分で作り、DNS サーバーのアドレスなどの情報だけをサーバーから受け取る","attrs":{"type":"d","term":"ステートレス DHCPv6","why":"アドレスを配らず情報だけを配るのがステートレス DHCPv6。SLAAC と組み合わせて使う"},"source":"RFC 8415","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"stateless-o","ja":"ルーター広告の O フラグ(Other)が 1 で M フラグが 0 のとき、アドレス以外の設定を取りに行く方法","attrs":{"type":"d","term":"ステートレス DHCPv6","why":"O フラグはアドレス以外の情報を DHCPv6 で取ることを表す"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"manual-type","ja":"管理者が機器ごとにアドレスを打ち込んで決める","attrs":{"type":"d","term":"手動(静的)設定","why":"サーバーも広告も使わず人が決めるのは手動の設定"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"manual-config","ja":"サーバーにもルーター広告にも頼らず、機器の設定に直接書いたアドレスを使う","attrs":{"type":"d","term":"手動(静的)設定","why":"機器の設定に書いたアドレスをそのまま使うのは手動の設定"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ra","ja":"SLAAC では、端末がグローバルアドレスを決めるのにルーターの広告(RA)が要る","attrs":{"type":"t","true":true,"why":"グローバルアドレスのプレフィックスは RA で知る。リンクローカルアドレスは RA なしでも作れる"},"source":"RFC 4862","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-need-server","ja":"SLAAC を使うには、DHCPv6 サーバーが必ず要る","attrs":{"type":"t","true":false,"why":"SLAAC はサーバーなしで動く。サーバーが要るのは DHCPv6"},"source":"RFC 4862","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-64","ja":"SLAAC でアドレスを作るとき、プレフィックスは /64 であることが前提である","attrs":{"type":"t","true":true,"why":"インターフェース ID が 64 ビットなので、プレフィックスは /64 になる"},"source":"RFC 4862・RFC 4291","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-record","ja":"SLAAC では、サーバーがどの端末にどのアドレスを渡したかを記録する","attrs":{"type":"t","true":false,"why":"SLAAC にはアドレスを配るサーバーがいない。記録を持つのはステートフル DHCPv6"},"source":"RFC 4862","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-stateless-addr","ja":"ステートレス DHCPv6 は、端末にアドレスそのものを貸し出す","attrs":{"type":"t","true":false,"why":"ステートレス DHCPv6 が配るのは DNS サーバーのアドレスなどの情報だけ"},"source":"RFC 8415","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-stateful","ja":"ステートフル DHCPv6 では、サーバーが端末ごとにアドレスを貸し出す","attrs":{"type":"t","true":true,"why":"アドレスを貸し出し、その状態を覚えるのでステートフル"},"source":"RFC 8415","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-dad","ja":"SLAAC で作ったアドレスも、使う前に同じアドレスの機器がいないかを確かめる(重複アドレス検出)","attrs":{"type":"t","true":true,"why":"作ったアドレスは重複アドレス検出(DAD)で確かめてから使う"},"source":"RFC 4862","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-discover","ja":"IPv4 の DHCP と同じように、SLAAC でも端末はアドレスをもらうために DHCP Discover を送る","attrs":{"type":"t","true":false,"why":"SLAAC は DHCP を使わない。端末は RS を送って RA を待つ"},"source":"RFC 4862","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-random-id","ja":"SLAAC のインターフェース ID は、MAC アドレスから作る方法(EUI-64)のほかに、乱数で作る方法もある","attrs":{"type":"t","true":true,"why":"一時アドレスや安定した乱数の ID の決め方がある"},"source":"RFC 4941・RFC 7217","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-name","ja":"SLAAC の S は Stateless(状態を持たない)の頭文字である","attrs":{"type":"t","true":true,"why":"Stateless Address Autoconfiguration の略"},"source":"RFC 4862","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-together","ja":"SLAAC とステートレス DHCPv6 は、一緒に使われることがある","attrs":{"type":"t","true":true,"why":"アドレスは SLAAC、DNS サーバーなどはステートレス DHCPv6 という組み合わせがある"},"source":"RFC 8415","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-rs","ja":"つながったばかりの端末は、ルーター広告を待たずにルーター要請(RS)を送って、早く広告をもらうことができる","attrs":{"type":"t","true":true,"why":"RS を受けたルーターは RA を返す"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

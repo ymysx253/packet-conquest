@@ -1,0 +1,20 @@
+{
+  "note": "Lv188 タグとネイティブ VLAN(802.1Q)。t = ○×。ネイティブ VLAN の番号とフレームの VLAN を変える問いは levels-mid.js が作る",
+  "rows": [
+    {"id":"t-native1","ja":"ネイティブ VLAN が 1 のトランクでは、VLAN 1 のフレームにタグは付かない(タグを付ける特別な設定はしていない)","attrs":{"type":"t","true":true,"why":"ネイティブ VLAN のフレームはタグなしでトランクを通る"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-other-tag","ja":"ネイティブ VLAN が 1 のトランクを通る VLAN 10 のフレームには、VLAN 10 を表すタグが付く","attrs":{"type":"t","true":true,"why":"ネイティブ以外の VLAN のフレームにはタグが付く"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-4byte","ja":"802.1Q のタグの長さは 4 バイトである","attrs":{"type":"t","true":true,"why":"TPID 2 バイトと、優先度・VLAN ID などの 2 バイトで 4 バイト"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-12bit","ja":"802.1Q のタグには、12 ビットの VLAN ID が入る","attrs":{"type":"t","true":true,"why":"VLAN ID は 12 ビット"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-access-tag","ja":"アクセスポートから PC へ出るフレームにも、VLAN のタグが付く","attrs":{"type":"t","true":false,"why":"アクセスポートではタグを外して送る。PC はタグなしのフレームを受け取る"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-mismatch","ja":"トランクの両端でネイティブ VLAN の番号が違うと、タグの無いフレームが別の VLAN に入ってしまうことがある","attrs":{"type":"t","true":true,"why":"タグなしのフレームは、受けた側のネイティブ VLAN として扱われる"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-untagged-in","ja":"タグの無いフレームがトランクに届くと、スイッチはそれをネイティブ VLAN のフレームとして扱う","attrs":{"type":"t","true":true,"why":"タグなしはネイティブ VLAN に入れる"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-bigger","ja":"ネイティブ VLAN のフレームには、ほかの VLAN より大きなタグが付く","attrs":{"type":"t","true":false,"why":"ネイティブ VLAN のフレームにはタグが付かない"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-position","ja":"802.1Q のタグは、イーサネットのフレームの送信元 MAC アドレスのすぐ後ろに入る","attrs":{"type":"t","true":true,"why":"宛先 MAC・送信元 MAC の後ろ、タイプの前に入る"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-trunk","ja":"トランクは、1 本の線で複数の VLAN のフレームを運ぶポートである","attrs":{"type":"t","true":true,"why":"タグで VLAN を見分けて、1 本の線に複数の VLAN を通す"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-many-native","ja":"ネイティブ VLAN は、トランク 1 本につき何個でも決められる","attrs":{"type":"t","true":false,"why":"タグなしのフレームをどの VLAN に入れるかは 1 つに決まらないと困るので、ネイティブ VLAN は 1 つ"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-router-only","ja":"タグを付けられるのはルーターだけで、スイッチはタグを付けられない","attrs":{"type":"t","true":false,"why":"トランクのポートでタグを付け外しするのはスイッチの役目"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-pcp","ja":"802.1Q のタグには、フレームの優先度を表す 3 ビットの欄もある","attrs":{"type":"t","true":true,"why":"優先度(PCP)が 3 ビット、VLAN ID が 12 ビット"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-change-native","ja":"ネイティブ VLAN を 1 から別の番号に変えることはできない","attrs":{"type":"t","true":false,"why":"ネイティブ VLAN の番号は設定で変えられる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-longer","ja":"フレームに 802.1Q のタグを付けると、そのぶんフレームは 4 バイト長くなる","attrs":{"type":"t","true":true,"why":"タグの 4 バイトがフレームに入る"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

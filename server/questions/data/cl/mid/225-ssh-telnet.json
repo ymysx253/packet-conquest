@@ -1,0 +1,25 @@
+{
+  "note": "Lv225 SSH と Telnet。d = 説明 → 名前(SSH・Telnet・HTTPS・HTTP)、t = ○×",
+  "rows": [
+    {"id":"ssh-enc","ja":"遠くから機器にログインし、やりとりを暗号化するプロトコル","attrs":{"type":"d","term":"SSH","why":"暗号化された遠隔ログインは SSH"},"source":"RFC 4253","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ssh-22","ja":"TCP の 22 番を使う、管理のためのログインのプロトコル","attrs":{"type":"d","term":"SSH","why":"SSH は TCP 22 番"},"source":"RFC 4253","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ssh-pubkey","ja":"公開鍵を使った認証でもログインできる、遠隔ログインのプロトコル","attrs":{"type":"d","term":"SSH","why":"公開鍵での認証は SSH の機能。Telnet には無い"},"source":"RFC 4252","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ssh-replace","ja":"Telnet の代わりに使われる、暗号化された遠隔ログイン","attrs":{"type":"d","term":"SSH","why":"Telnet を置き換えるのが SSH"},"source":"RFC 4253","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"telnet-plain","ja":"遠くから機器にログインできるが、パスワードも含めて暗号化せずに送るプロトコル","attrs":{"type":"d","term":"Telnet","why":"暗号化しない遠隔ログインは Telnet"},"source":"RFC 854","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"telnet-23","ja":"TCP の 23 番を使う、管理のためのログインのプロトコル","attrs":{"type":"d","term":"Telnet","why":"Telnet は TCP 23 番"},"source":"RFC 854","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"telnet-old","ja":"古くからある遠隔ログインのしくみで、盗み見られると打った文字がそのまま読まれてしまうもの","attrs":{"type":"d","term":"Telnet","why":"暗号化しないので打った文字が読める"},"source":"RFC 854","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"https","ja":"ブラウザで機器の管理画面を開くとき、TLS で暗号化して使うプロトコル","attrs":{"type":"d","term":"HTTPS","why":"ブラウザで暗号化して使うのは HTTPS"},"source":"RFC 9110","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"http","ja":"ブラウザで機器の管理画面を開くが、暗号化しないプロトコル(TCP 80 番)","attrs":{"type":"d","term":"HTTP","why":"暗号化しないブラウザの通信は HTTP"},"source":"RFC 9110","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-telnet-plain","ja":"Telnet は、パスワードを暗号化せずに送る","attrs":{"type":"t","true":true,"why":"Telnet には暗号化のしくみが無い"},"source":"RFC 854","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ssh-enc","ja":"SSH は、通信の中身を暗号化する","attrs":{"type":"t","true":true,"why":"ログインのパスワードも、打つコマンドも暗号化される"},"source":"RFC 4253","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-telnet23","ja":"Telnet は TCP の 23 番を使う","attrs":{"type":"t","true":true,"why":"Telnet は 23 番"},"source":"RFC 854","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ssh23","ja":"SSH は TCP の 23 番を使う","attrs":{"type":"t","true":false,"why":"SSH は 22 番。23 番は Telnet"},"source":"RFC 4253","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-safer","ja":"機器の管理には、Telnet より SSH を使うほうが安全である","attrs":{"type":"t","true":true,"why":"SSH は暗号化するので盗み見に強い"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-hostkey","ja":"SSH で初めてつなぐとき、相手のホスト鍵を確かめることで、なりすましの機器に気づける","attrs":{"type":"t","true":true,"why":"前と違うホスト鍵なら、別の機器かもしれない"},"source":"RFC 4251","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-sniff","ja":"Telnet の通信を盗み見られても、パスワードは読めない","attrs":{"type":"t","true":false,"why":"Telnet は暗号化しないので、パスワードもそのまま読める"},"source":"RFC 854","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-v2","ja":"SSH のバージョン 1 と 2 では、2 を使うべきである","attrs":{"type":"t","true":true,"why":"バージョン 1 には弱点が知られている"},"source":"RFC 4251","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-udp","ja":"Telnet も SSH も、UDP の上で動く","attrs":{"type":"t","true":false,"why":"どちらも TCP の上で動く"},"source":"RFC 854・RFC 4253","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-file","ja":"SSH は、ログインのほかに、ファイルを安全に送る(SCP・SFTP)のにも使われる","attrs":{"type":"t","true":true,"why":"SSH の暗号化した通り道でファイルも送れる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-keys-setup","ja":"機器で SSH を使うには、機器の側で SSH を有効にする設定(鍵の作成など)が要ることがある","attrs":{"type":"t","true":true,"why":"機器によっては鍵を作ってから SSH を受け付ける"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

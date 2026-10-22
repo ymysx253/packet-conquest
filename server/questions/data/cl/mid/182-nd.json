@@ -1,0 +1,25 @@
+{
+  "note": "Lv182 近隣探索(ICMPv6 の NS・NA・RS・RA・リダイレクト)。d = 説明 → 名前、t = ○×",
+  "rows": [
+    {"id":"ns-mac","ja":"IPv6 で、相手の IPv6 アドレスから MAC アドレスを知りたいときに送る問い合わせ","attrs":{"type":"d","term":"近隣要請(NS)","why":"IPv4 の ARP 要求に当たるのが近隣要請"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ns-dad","ja":"重複アドレス検出(DAD)で、これから使うアドレスをほかの機器が使っていないかを確かめるために送るメッセージ","attrs":{"type":"d","term":"近隣要請(NS)","why":"DAD は使いたいアドレスを対象にした近隣要請を送って確かめる"},"source":"RFC 4862","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ns-solicited","ja":"要請ノードマルチキャストアドレス宛に送られ、目的の相手だけが受け取りやすくなっている問い合わせ","attrs":{"type":"d","term":"近隣要請(NS)","why":"アドレス解決の近隣要請は、相手のアドレスから作る要請ノードマルチキャスト宛に送る"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"na-reply","ja":"近隣要請に答えて、自分の MAC アドレスを知らせる返事","attrs":{"type":"d","term":"近隣広告(NA)","why":"ARP 応答に当たるのが近隣広告"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"rs-ask","ja":"端末がつながってすぐ、ルーターに「広告をすぐ送ってほしい」と頼むメッセージ","attrs":{"type":"d","term":"ルーター要請(RS)","why":"端末からルーターへ広告を求めるのがルーター要請"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ra-prefix","ja":"ルーターが、リンクで使うプレフィックスや、自分がデフォルトゲートウェイになれることを知らせるメッセージ","attrs":{"type":"d","term":"ルーター広告(RA)","why":"プレフィックスとルーターの存在を知らせるのがルーター広告"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ra-periodic","ja":"決まった間隔で、また RS を受けたときに、ルーターがリンクへ送るメッセージ","attrs":{"type":"d","term":"ルーター広告(RA)","why":"RA は定期的にも、RS への答えとしても送られる"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"redirect","ja":"同じリンクの上に、もっとよい次の転送先があることを、ルーターが端末に知らせるメッセージ","attrs":{"type":"d","term":"リダイレクト","why":"よりよい次の転送先を教えるのはリダイレクト"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-noarp","ja":"IPv6 には ARP が無く、その役目は ICMPv6 の近隣探索が受け持つ","attrs":{"type":"t","true":true,"why":"IPv6 では近隣要請と近隣広告で MAC アドレスを調べる"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-icmpv6","ja":"近隣探索のメッセージは ICMPv6 で運ばれる","attrs":{"type":"t","true":true,"why":"NS・NA・RS・RA・リダイレクトはどれも ICMPv6 のメッセージ"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-broadcast","ja":"IPv6 で相手の MAC アドレスを調べるときは、ブロードキャストで問い合わせる","attrs":{"type":"t","true":false,"why":"IPv6 にはブロードキャストが無い。要請ノードマルチキャスト宛に送る"},"source":"RFC 4861・RFC 4291","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-nobcast","ja":"IPv6 にはブロードキャストアドレスが無い","attrs":{"type":"t","true":true,"why":"全員宛の役目はマルチキャスト(ff02::1 など)が受け持つ"},"source":"RFC 4291","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ns-ra","ja":"近隣要請(NS)への返事は、ルーター広告(RA)で返される","attrs":{"type":"t","true":false,"why":"NS への返事は近隣広告(NA)"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ra-prefix","ja":"ルーター広告(RA)には、リンクで使うプレフィックスの情報が入る","attrs":{"type":"t","true":true,"why":"RA のプレフィックス情報から、端末は SLAAC でアドレスを作れる"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-cache","ja":"近隣探索で調べた相手の MAC アドレスは、近隣キャッシュに覚えておく","attrs":{"type":"t","true":true,"why":"IPv4 の ARP の表に当たるのが近隣キャッシュ"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-before-addr","ja":"近隣探索は、端末の IPv6 アドレスが決まる前には一切使われない","attrs":{"type":"t","true":false,"why":"アドレスを決める前にも、RS を送ったり DAD の NS を送ったりする"},"source":"RFC 4861・RFC 4862","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-rs-router","ja":"ルーター要請(RS)を送るのはルーターである","attrs":{"type":"t","true":false,"why":"RS を送るのは端末。ルーターは RA を返す"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-dad-ns","ja":"重複アドレス検出(DAD)は、近隣要請(NS)を使って行う","attrs":{"type":"t","true":true,"why":"使いたいアドレスへの NS に誰も答えなければ、そのアドレスを使う"},"source":"RFC 4862","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-unsolicited-na","ja":"近隣広告(NA)は、問い合わせが無くても、自分の MAC アドレスが変わったことを知らせるために送られることがある","attrs":{"type":"t","true":true,"why":"頼まれずに送る近隣広告がある"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ra-gw","ja":"ルーター広告(RA)を受け取った端末は、送り主のルーターをデフォルトゲートウェイの候補にできる","attrs":{"type":"t","true":true,"why":"RA はルーターがいることを知らせ、端末はそれをデフォルトルーターの一覧に入れる"},"source":"RFC 4861","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

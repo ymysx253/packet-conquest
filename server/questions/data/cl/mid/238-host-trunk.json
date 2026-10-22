@@ -1,0 +1,11 @@
+{
+  "note": "Lv238 仮想化の機械とスイッチの間の線。t = ○×。VM の VLAN を変えてポートの種類を選ぶ問いは levels-mid.js が作る",
+  "rows": [
+    {"id":"t-trunk","ja":"VLAN が違う VM を乗せた機械と物理スイッチの間を 1 本の線でつなぐときは、そのポートをトランクにする","attrs":{"type":"t","true":true,"why":"1 本の線に複数の VLAN を通すのはトランク"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-vm-noconfig","ja":"仮想スイッチがポートごとに VLAN を割り当てて、タグの付け外しをする形では、VM の中で VLAN の設定をしなくてよい","attrs":{"type":"t","true":true,"why":"タグは仮想スイッチが付け外しするので、VM はタグなしでやりとりする"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-access-one","ja":"機械と物理スイッチの間のポートをアクセスポート(VLAN 10)にすると、機械の上の VLAN 20 の VM は、外の VLAN 20 の機器とやりとりできない","attrs":{"type":"t","true":true,"why":"アクセスポートは VLAN 10 しか運ばない"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-allowed","ja":"物理スイッチのトランクで通す VLAN に 20 が入っていないと、機械の上の VLAN 20 の VM は外とやりとりできない","attrs":{"type":"t","true":true,"why":"通さない VLAN のフレームはトランクを通れない"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-match","ja":"機械と物理スイッチの間をトランクにするときは、両端で通す VLAN をそろえる","attrs":{"type":"t","true":true,"why":"片方だけが通しても届かない"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-one-cable-access","ja":"VLAN 10 と VLAN 20 の VM を乗せた機械は、物理スイッチのアクセスポート 1 つにつなげば、両方の VLAN が外とやりとりできる","attrs":{"type":"t","true":false,"why":"アクセスポートは 1 つの VLAN しか運ばない。トランクにする"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

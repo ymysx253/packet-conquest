@@ -1,0 +1,25 @@
+{
+  "note": "Lv231 IPsec と SSL-VPN。d = 説明 → 名前(IPsec・SSL-VPN・GRE・NAT)、t = ○×",
+  "rows": [
+    {"id":"ssl-browser","ja":"ブラウザだけでも使え、TLS で通信を守るリモートアクセスの VPN","attrs":{"type":"d","term":"SSL-VPN","why":"TLS を使うのが SSL-VPN"},"source":"RFC 8446","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ssl-443","ja":"HTTPS と同じ TCP 443 番を使うことが多く、ファイアウォールを通りやすい VPN","attrs":{"type":"d","term":"SSL-VPN","why":"TLS なので 443 番を使える"},"source":"RFC 8446","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ssl-layer","ja":"IP より上の層の TLS で暗号化する VPN","attrs":{"type":"d","term":"SSL-VPN","why":"TLS はトランスポート層の上で働く"},"source":"RFC 8446","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ipsec-layer","ja":"IP の層で暗号化し、その上のどのアプリの通信もまとめて守る VPN","attrs":{"type":"d","term":"IPsec","why":"IP の層で守るのが IPsec"},"source":"RFC 4301","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ipsec-ike","ja":"IKE で鍵を取り決めてから、ESP でパケットを暗号化する VPN","attrs":{"type":"d","term":"IPsec","why":"IKE と ESP は IPsec の部品"},"source":"RFC 7296・RFC 4303","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ipsec-site","ja":"拠点間 VPN でルーターどうしをつなぐのによく使われる、IP の層の VPN","attrs":{"type":"d","term":"IPsec","why":"拠点間 VPN の多くは IPsec"},"source":"RFC 4301","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ipsec-modes","ja":"トンネルモードとトランスポートモードの 2 つの使い方がある VPN","attrs":{"type":"d","term":"IPsec","why":"2 つのモードは IPsec の決まり"},"source":"RFC 4301","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"gre","ja":"パケットを別のパケットに包んで運ぶが、それだけでは暗号化しないトンネル","attrs":{"type":"d","term":"GRE","why":"GRE は包むだけで暗号化しない"},"source":"RFC 2784","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"nat","ja":"内側のアドレスを外側のアドレスに付け替えて送るしくみ","attrs":{"type":"d","term":"NAT","why":"NAT は VPN ではない"},"source":"RFC 3022","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ipsec-l3","ja":"IPsec は、IP の層(ネットワーク層)で暗号化する","attrs":{"type":"t","true":true,"why":"IP パケットを暗号化する"},"source":"RFC 4301","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ssl-tls","ja":"SSL-VPN は、TLS を使って通信を守る","attrs":{"type":"t","true":true,"why":"名前は SSL だが、今は TLS を使う"},"source":"RFC 8446","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-esp","ja":"IPsec の ESP は、パケットの中身を暗号化できる","attrs":{"type":"t","true":true,"why":"ESP は暗号化と改ざんの検出ができる"},"source":"RFC 4303","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ah","ja":"IPsec の AH は、パケットの中身を暗号化する","attrs":{"type":"t","true":false,"why":"AH は改ざんの検出と送り手の確認だけで、暗号化はしない"},"source":"RFC 4302","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ssl-browser","ja":"SSL-VPN には、ブラウザだけで使える形のものがある","attrs":{"type":"t","true":true,"why":"専用のソフトを入れずに使える形がある"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ike","ja":"IPsec で使う鍵の取り決めには、IKE が使われる","attrs":{"type":"t","true":true,"why":"IKE で暗号の方式と鍵を決める"},"source":"RFC 7296","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ike500","ja":"IKE は UDP の 500 番を使う","attrs":{"type":"t","true":true,"why":"IKE は UDP 500 番"},"source":"RFC 7296","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-natt","ja":"NAT を越えるとき、IPsec は UDP の 4500 番に包んで送ることがある(NAT トラバーサル)","attrs":{"type":"t","true":true,"why":"ESP を UDP に包んで NAT を通す"},"source":"RFC 3948","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ssl443","ja":"SSL-VPN は、TCP の 443 番を使うことが多い","attrs":{"type":"t","true":true,"why":"HTTPS と同じ番号"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ipsec-agree","ja":"IPsec では、暗号化して送る前に、両端で暗号の方式や鍵を取り決める","attrs":{"type":"t","true":true,"why":"IKE で取り決めてから送る"},"source":"RFC 7296","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-gre-plain","ja":"GRE だけのトンネルでは、中身は暗号化されない","attrs":{"type":"t","true":true,"why":"守るには IPsec などと組み合わせる"},"source":"RFC 2784","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

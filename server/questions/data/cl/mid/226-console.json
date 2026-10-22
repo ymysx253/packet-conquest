@@ -1,0 +1,25 @@
+{
+  "note": "Lv226 コンソール。d = 説明 → 名前(コンソールポート・SSH・Telnet・Web の管理画面)、t = ○×",
+  "rows": [
+    {"id":"con-new","ja":"設定がまだ何も無い新しい機器に、初めてつないで設定するための口","attrs":{"type":"d","term":"コンソールポート","why":"アドレスの設定がまだ無くても使えるのがコンソール"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"con-noip","ja":"IP アドレスが無くても、PC と専用のケーブルで直接つないで操作できる口","attrs":{"type":"d","term":"コンソールポート","why":"網を使わずに直接つなぐのがコンソール"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"con-down","ja":"網が止まっていても、機器の前に行けば操作できる、網を使わない管理の口","attrs":{"type":"d","term":"コンソールポート","why":"網に頼らないのがコンソールのよいところ"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"con-recovery","ja":"パスワードを忘れたときの復旧などで使う、機器に直接つなぐ口","attrs":{"type":"d","term":"コンソールポート","why":"復旧の作業はふつうコンソールから行う"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"con-serial","ja":"シリアルの通信で、機器と PC を 1 対 1 でつなぐ管理の口","attrs":{"type":"d","term":"コンソールポート","why":"コンソールはシリアルの通信"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ssh","ja":"網を通して、遠くから暗号化してつなぐ管理の方法","attrs":{"type":"d","term":"SSH","why":"網を通して暗号化するのは SSH"},"source":"RFC 4253","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"telnet","ja":"網を通して遠くからつなぐが、暗号化しない管理の方法","attrs":{"type":"d","term":"Telnet","why":"暗号化しないのは Telnet"},"source":"RFC 854","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"web","ja":"ブラウザで機器の IP アドレスを開いて設定する方法","attrs":{"type":"d","term":"Web の管理画面","why":"ブラウザで開くのは Web の管理画面。機器に IP アドレスが要る"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-noip","ja":"コンソールポートで機器を操作するのに、機器の IP アドレスは要らない","attrs":{"type":"t","true":true,"why":"コンソールは網を使わない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ssh-first","ja":"新しい機器に初めて SSH でつなぐには、ふつう先に機器の IP アドレスなどの設定が要る","attrs":{"type":"t","true":true,"why":"SSH は網を通るので、機器にアドレスが要る"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-down","ja":"コンソールでの接続は、網の通信が止まっていても使える","attrs":{"type":"t","true":true,"why":"網に頼らない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-internet","ja":"コンソールポートには、インターネットの向こうから直接つなぐことができる","attrs":{"type":"t","true":false,"why":"コンソールはケーブルで直接つなぐ口。網からは届かない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-cable","ja":"コンソールに使うケーブルには、RJ-45 の形のものや USB のものがある","attrs":{"type":"t","true":true,"why":"機器によって口の形が違う"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-speed","ja":"コンソールでつなぐとき、PC のターミナルソフトで通信の速さ(例: 9600 bps)などを機器に合わせる","attrs":{"type":"t","true":true,"why":"シリアルなので、速さなどの条件をそろえる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-password","ja":"コンソールポートにも、パスワードをかけておくほうがよい","attrs":{"type":"t","true":true,"why":"機器の前に来た人が勝手に操作できないようにする"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-dhcp","ja":"コンソールでつなぐには、機器が DHCP でアドレスをもらっている必要がある","attrs":{"type":"t","true":false,"why":"コンソールにアドレスは要らない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-forward","ja":"コンソールポートは、ふつうの LAN のポートとしてパケットを中継できる","attrs":{"type":"t","true":false,"why":"コンソールは管理のための口で、通信を中継しない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-last","ja":"遠くから管理する方法(SSH など)が使えなくなったときの最後の手段として、コンソールが使われる","attrs":{"type":"t","true":true,"why":"網の設定を誤っても、コンソールなら直せる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-network","ja":"コンソールでつなぐときも、SSH と同じように、網を通して暗号化した通信でつなぐ","attrs":{"type":"t","true":false,"why":"コンソールは網を通らず、機器と PC をケーブルで直接つなぐシリアルの通信"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-server","ja":"機器の前に行けないときに備えて、コンソールを遠くから使えるようにする装置(コンソールサーバー)がある","attrs":{"type":"t","true":true,"why":"コンソールの線を集めて、別の網から使えるようにする"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

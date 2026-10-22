@@ -1,0 +1,25 @@
+{
+  "note": "Lv190 ループ。d = 説明 → 名前(ブロードキャストストーム・STP・フラッディング・コリジョン)、t = ○×",
+  "rows": [
+    {"id":"storm-loop","ja":"スイッチの輪の中を、ブロードキャストのフレームが回り続けて増え、帯域を埋め尽くすこと","attrs":{"type":"d","term":"ブロードキャストストーム","why":"ループで全員宛が増え続けるのがブロードキャストストーム"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"storm-down","ja":"ループがあると起き、ネットワーク全体がほとんど使えなくなるほどフレームがあふれること","attrs":{"type":"d","term":"ブロードキャストストーム","why":"ループが原因でフレームがあふれる現象"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"storm-arp","ja":"STP を止めたスイッチの輪で、1 個の ARP 要求が何度もコピーされてあふれること","attrs":{"type":"d","term":"ブロードキャストストーム","why":"ARP 要求は全員宛なので、ループでコピーが増え続ける"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"stp-block","ja":"ループになる線のうち、一部のポートを止めて輪をなくすしくみ","attrs":{"type":"d","term":"スパニングツリー(STP)","why":"ポートを止めて輪をなくすのが STP"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"stp-root","ja":"ルートブリッジを決め、そこから木の形に経路を選んで、余った線のポートを止めるしくみ","attrs":{"type":"d","term":"スパニングツリー(STP)","why":"ルートブリッジから木の形を作るのが STP"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"flood-unknown","ja":"宛先 MAC アドレスがまだ表に無いフレームを、受け取ったポート以外の全ポートに出すこと","attrs":{"type":"d","term":"フラッディング","why":"宛先を学んでいないときのふつうの動きがフラッディング"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"flood-vlan","ja":"スイッチが、宛先をまだ学んでいないため、同じ VLAN のポート(受けたポートを除く)すべてに送ること","attrs":{"type":"d","term":"フラッディング","why":"学習前のふつうの動き。ループが無ければ 1 回で終わる"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"col-half","ja":"半二重の線で、2 台が同時に送って信号がこわれること","attrs":{"type":"d","term":"コリジョン(衝突)","why":"同時に送って壊れるのはコリジョン"},"source":"IEEE 802.3","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"col-hub","ja":"リピーターハブにつながる機器どうしで、送信が重なって信号がこわれること","attrs":{"type":"d","term":"コリジョン(衝突)","why":"ハブは 1 つの衝突ドメインなので、送信が重なると壊れる"},"source":"IEEE 802.3","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-nottl","ja":"イーサネットのフレームには TTL が無いので、ループの中を回り続けても自然には消えない","attrs":{"type":"t","true":true,"why":"フレームには寿命の欄が無い。だからループは止まらない"},"source":"IEEE 802.3","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ipttl","ja":"IP パケットには TTL があるので、スイッチのループの中でも、ブロードキャストのフレームはやがて消える","attrs":{"type":"t","true":false,"why":"スイッチは TTL を減らさない。ARP のように IP でないフレームもある"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-two-cables","ja":"2 台のスイッチを 2 本の線でつなぐだけでも、ループになる(STP もリンクアグリゲーションも使わない場合)","attrs":{"type":"t","true":true,"why":"2 本の線で輪ができる"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-flap","ja":"ループがあると、スイッチの MAC アドレステーブルで、同じ MAC アドレスのポートがころころ変わることがある","attrs":{"type":"t","true":true,"why":"同じフレームが別のポートから何度も届き、学習のやり直しが起きる"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-unplug","ja":"STP は、ループになる線を物理的に抜き取って輪をなくす","attrs":{"type":"t","true":false,"why":"STP はポートを論理的に止める(ブロックする)だけで、線は残す"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-backup","ja":"STP で止めたポートは、使っている線が切れたときに代わりに使えるようになる","attrs":{"type":"t","true":true,"why":"つながりが変わると STP が計算し直し、止めたポートを開く"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-route","ja":"ブロードキャストストームは、ルーターの経路表の誤りだけで起きる","attrs":{"type":"t","true":false,"why":"ブロードキャストストームは L2 のループで起きる"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-bpdu","ja":"STP は、スイッチどうしが BPDU というフレームをやりとりして動く","attrs":{"type":"t","true":true,"why":"BPDU でブリッジ ID やコストを知らせ合う"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-vlan-wide","ja":"ブロードキャストストームは、ループのある線だけでなく、そのループにつながる同じ VLAN の全体に影響する","attrs":{"type":"t","true":true,"why":"全員宛は VLAN の全ポートへ広がる"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-unicast-fine","ja":"ループがあっても、ユニキャストのフレームは必ず 1 回で相手に届き、影響は出ない","attrs":{"type":"t","true":false,"why":"宛先を学ぶ前のユニキャストもフラッディングで回り、表も乱れる"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-fullduplex","ja":"全二重でつないだスイッチどうしの線では、コリジョン(衝突)は起きない","attrs":{"type":"t","true":true,"why":"全二重は送りと受けが別なので衝突しない"},"source":"IEEE 802.3","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

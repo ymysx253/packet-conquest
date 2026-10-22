@@ -1,0 +1,10 @@
+{
+  "note": "Lv229 切り分けの順番。OSI 参照モデルの層の番号(num)と、その層で確かめること。並べ替えの問いは levels-mid.js が作る",
+  "rows": [
+    {"id":"l1","ja":"物理層","attrs":{"type":"v","num":1,"check":"ケーブルがささっているか、ポートのランプがついているか","why":""},"source":"ISO/IEC 7498-1","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l2","ja":"データリンク層","attrs":{"type":"v","num":2,"check":"スイッチが MAC アドレスを学んでいるか、ポートの VLAN が合っているか","why":""},"source":"ISO/IEC 7498-1","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l3","ja":"ネットワーク層","attrs":{"type":"v","num":3,"check":"IP アドレスと経路が正しいか、ゲートウェイまで ping が通るか","why":""},"source":"ISO/IEC 7498-1","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l4","ja":"トランスポート層","attrs":{"type":"v","num":4,"check":"相手のポートが開いているか、ファイアウォールでポートが止められていないか","why":""},"source":"ISO/IEC 7498-1","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l7","ja":"アプリケーション層","attrs":{"type":"v","num":7,"check":"サービスが動いているか、アプリの設定が正しいか","why":""},"source":"ISO/IEC 7498-1","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

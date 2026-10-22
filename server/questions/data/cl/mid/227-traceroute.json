@@ -1,0 +1,25 @@
+{
+  "note": "Lv227 traceroute のしくみ。q = 問いと答え、t = ○×",
+  "rows": [
+    {"id":"q-change","ja":"traceroute が途中のルーターを順に知るために、送るたびに増やしていくものは?","attrs":{"type":"q","answer":"IP ヘッダーの TTL(1 ずつ)","wrong":["宛先の IP アドレス","パケットの長さ(MTU)","送信元の IP アドレス"],"why":"TTL を 1、2、3 …と増やすと、1 台目、2 台目 …のルーターで TTL が 0 になり、そのルーターが知らせを返す"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-reply","ja":"TTL が 0 になったパケットを捨てたルーターが、送り主へ返すものは?","attrs":{"type":"q","answer":"ICMP の時間超過(Time Exceeded)","wrong":["ICMP のエコー応答","ICMP の宛先到達不能","TCP の RST"],"why":"TTL 切れで捨てたルーターは ICMP の時間超過を返す。その送信元を見ればルーターがわかる"},"source":"RFC 792","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-first-ttl","ja":"traceroute が最初に送るパケットの TTL は?","attrs":{"type":"q","answer":"1","wrong":["0","64","255"],"why":"1 から始めると、1 台目のルーターで 0 になり、1 台目がわかる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-ttl1","ja":"TTL 1 のパケットに返事をするのは?","attrs":{"type":"q","answer":"1 台目のルーター(自分のデフォルトゲートウェイ)","wrong":["宛先の機器","2 台目のルーター","DNS サーバー"],"why":"1 台目のルーターで TTL が 1 から 0 になる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-ttl3","ja":"宛先までルーターが 5 台以上あるとき、TTL 3 のパケットに返事をするのは?(途中で経路は変わらないものとする)","attrs":{"type":"q","answer":"3 台目のルーター","wrong":["1 台目のルーター","2 台目のルーター","宛先の機器"],"why":"ルーターを通るたびに 1 減り、3 台目で 0 になる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-udp-end","ja":"UDP で使われていないポート宛に送る方式の traceroute で、パケットが宛先まで届いたとき、宛先が返すものは?","attrs":{"type":"q","answer":"ICMP のポート到達不能","wrong":["ICMP の時間超過","ICMP のエコー応答","TCP の SYN+ACK"],"why":"宛先ではそのポートが使われていないので、ポート到達不能が返り、着いたとわかる"},"source":"RFC 792","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-icmp-end","ja":"ICMP のエコー要求を使う方式の traceroute で、パケットが宛先まで届いたとき、宛先が返すものは?","attrs":{"type":"q","answer":"ICMP のエコー応答","wrong":["ICMP の時間超過","ICMP のポート到達不能","ICMP のリダイレクト"],"why":"エコー要求には、宛先がエコー応答で答える"},"source":"RFC 792","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-star","ja":"traceroute の結果に * が出た行が表すのは?","attrs":{"type":"q","answer":"決まった時間の中に返事が来なかった","wrong":["そのルーターがとても速かった","宛先に届いた","そのルーターの名前が長すぎた"],"why":"* は待っても返事が来なかったことを表す"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-three","ja":"traceroute の 1 つの行に時間が 3 つ並ぶのは、ふつう何をしているから?","attrs":{"type":"q","answer":"同じ TTL で 3 回送っているから","wrong":["3 台のルーターを通ったから","3 つの経路を同時に使ったから","3 回目でやっと届いたから"],"why":"多くの traceroute は、1 つの TTL につき 3 回送って、それぞれの往復時間を出す"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-who","ja":"パケットの TTL を 1 減らすのは?","attrs":{"type":"q","answer":"パケットを転送するルーター","wrong":["L2 スイッチ","宛先の機器","リピーターハブ"],"why":"TTL は IP ヘッダーの値で、転送するルーターが減らす。L2 スイッチは IP ヘッダーを書き換えない"},"source":"RFC 791・RFC 1812","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ttl","ja":"traceroute は、IP ヘッダーの TTL を使って途中のルーターを調べる","attrs":{"type":"t","true":true,"why":"TTL を少しずつ増やして、どこで 0 になるかを見る"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-dec","ja":"ルーターはパケットを転送するたびに TTL を 1 減らす","attrs":{"type":"t","true":true,"why":"0 になったら捨てる"},"source":"RFC 791","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-ttl0","ja":"TTL が 0 になったパケットも、宛先まで届けられる","attrs":{"type":"t","true":false,"why":"TTL が 0 になったパケットは捨てられる"},"source":"RFC 791","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-star-beyond","ja":"traceroute で * が出ても、その先のルーターや宛先には届いていることがある","attrs":{"type":"t","true":true,"why":"ICMP を返さない設定のルーターがあると * になるが、先へは転送している"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-forward-path","ja":"traceroute の結果は行きの経路を表し、帰りの経路は違うことがある","attrs":{"type":"t","true":true,"why":"返事は別の経路で戻ることがある"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-decrease","ja":"traceroute は、宛先が見つかるまで、TTL を 1 ずつ減らしていく","attrs":{"type":"t","true":false,"why":"TTL は 1 から 1 ずつ増やす"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-rtt","ja":"traceroute に出る時間は、そのルーターまでの往復の時間である","attrs":{"type":"t","true":true,"why":"送ってから返事が来るまでの時間"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-hoplimit","ja":"IPv6 では、TTL の代わりにホップリミットが同じ役目をする","attrs":{"type":"t","true":true,"why":"IPv6 ヘッダーではホップリミットという名前"},"source":"RFC 8200","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-noicmp","ja":"ICMP を返さないように設定したルーターがあると、その行は * になる","attrs":{"type":"t","true":true,"why":"返事が来ないので * になる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-first-pc","ja":"traceroute の 1 行目には、ふつう自分の PC のアドレスが出る","attrs":{"type":"t","true":false,"why":"1 行目は 1 台目のルーター(ふつうはデフォルトゲートウェイ)"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

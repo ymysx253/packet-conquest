@@ -1,0 +1,25 @@
+{
+  "note": "Lv237 仮想スイッチ。d = 説明 → 名前(仮想スイッチ・仮想 NIC・ハイパーバイザー・物理 NIC)、t = ○×",
+  "rows": [
+    {"id":"vs-connect","ja":"同じ物理の機械の中で、VM どうしをつなぐソフトのスイッチ","attrs":{"type":"d","term":"仮想スイッチ","why":"VM どうしをつなぐのは仮想スイッチ"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"vs-uplink","ja":"VM の仮想 NIC と機械の物理 NIC の間をつなぎ、VM の通信を外のスイッチへ出すソフトの部品","attrs":{"type":"d","term":"仮想スイッチ","why":"仮想 NIC と物理 NIC の間にあるのが仮想スイッチ"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"vs-vlan","ja":"VM ごとのポートに VLAN の番号を付けて、VM を別々の VLAN に分けられるソフトの部品","attrs":{"type":"d","term":"仮想スイッチ","why":"仮想スイッチのポートにも VLAN を付けられる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"vs-relay","ja":"物理のスイッチの代わりに、機械の中で VM のフレームを MAC アドレスで中継するソフト","attrs":{"type":"d","term":"仮想スイッチ","why":"機械の中でフレームを中継する"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"vnic","ja":"VM の中から見える、ソフトで作ったネットワークのカード","attrs":{"type":"d","term":"仮想 NIC","why":"VM の NIC もソフト"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"vnic-mac","ja":"VM ごとに MAC アドレスを持ち、仮想スイッチのポートにつながる部品","attrs":{"type":"d","term":"仮想 NIC","why":"VM の側の口が仮想 NIC"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"hv","ja":"1 台の物理の機械の上で複数の VM を動かし、CPU やメモリを分け与える土台のソフト","attrs":{"type":"d","term":"ハイパーバイザー","why":"VM を動かす土台がハイパーバイザー"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"hv-manage","ja":"VM を作ったり止めたり、別の機械へ移したりする土台のソフト","attrs":{"type":"d","term":"ハイパーバイザー","why":"VM の面倒を見る土台"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"pnic","ja":"機械と外の物理スイッチをケーブルでつなぐ、本物のネットワークのカード","attrs":{"type":"d","term":"物理 NIC","why":"外とつなぐ本物のカード"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-internal","ja":"同じ機械の中の VM どうしの通信は、外の物理スイッチまで出ずに、仮想スイッチの中で届くことがある","attrs":{"type":"t","true":true,"why":"同じ仮想スイッチ・同じ VLAN なら機械の中で届く"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-mac","ja":"VM の仮想 NIC にも MAC アドレスがある","attrs":{"type":"t","true":true,"why":"VM の NIC ごとに MAC アドレスが付く"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-l2","ja":"仮想スイッチは、ふつう MAC アドレスを見てフレームを届ける","attrs":{"type":"t","true":true,"why":"ふつうのスイッチと同じ L2 の働き"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-real","ja":"仮想スイッチは、ケーブルでつながった本物の箱の機器である","attrs":{"type":"t","true":false,"why":"仮想スイッチは機械の中のソフト"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-outside","ja":"仮想スイッチにつながる VM は、機械の物理 NIC を通して外の網とやりとりできる","attrs":{"type":"t","true":true,"why":"外とつながる仮想スイッチなら物理 NIC から出られる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-multi","ja":"1 台の機械の中に、仮想スイッチを複数作ることもできる","attrs":{"type":"t","true":true,"why":"用途ごとに分けて作れる"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-where","ja":"仮想スイッチは、VM の動く機械ではなく、外の物理スイッチの中で動く","attrs":{"type":"t","true":false,"why":"仮想スイッチは VM の動く機械の中で動く"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-private","ja":"外とつながない(機械の中だけの)仮想スイッチにつないだ VM は、同じ機械の VM とだけやりとりできる","attrs":{"type":"t","true":true,"why":"物理 NIC につながっていないので外へは出ない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-cable","ja":"仮想スイッチのポートは、VM を作るたびに物理のケーブルを足して増やす","attrs":{"type":"t","true":false,"why":"ポートもソフトなので、ケーブルは要らない"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-migrate","ja":"VM を別の機械へ移すと、その VM の仮想 NIC は、移った先の機械の仮想スイッチにつながる","attrs":{"type":"t","true":true,"why":"移った先の仮想スイッチにつなぎ直される"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-vlan","ja":"仮想スイッチでも、VLAN でネットワークを分けられる","attrs":{"type":"t","true":true,"why":"ポートごとに VLAN を割り当てられる"},"source":"IEEE 802.1Q","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}
