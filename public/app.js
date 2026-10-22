@@ -1370,7 +1370,7 @@
       const tst = owner ? ownerStyleOf(n) : null;
       const lineCol = tst ? tst.frame : col, bgCol = tst ? (tst.fill || C.surface) : C.surface;
       ctx.fillStyle = filled ? lineCol : bgCol; ctx.strokeStyle = lineCol;
-      ctx.lineWidth = tst ? 5 : owner ? (n.isPlayerNode ? 5 : 7) : (n.isPlayerNode ? 3 : 4); // チームは中の背景色が見えるよう少し細く
+      ctx.lineWidth = tst ? (n.isPlayerNode ? 2.5 : 3) : owner ? (n.isPlayerNode ? 3 : 3.5) : (n.isPlayerNode ? 2 : 2.5); // 2026-10-22 ユーザー指摘で細く(前は 5 / 7 / 4)。チームは中の背景色が見えるよう少し細く
       shape(n, p, r); ctx.fill(); ctx.stroke();
       // 外輪・外枠・札は、日本全体が見える倍率(段 3・4)では描かない(輪の間隔は縮まないので、細い陸地を覆い隠していた。2026-10-19)
       const farView = S.overview && S.viewZ >= 3;
