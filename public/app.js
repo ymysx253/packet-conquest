@@ -175,6 +175,8 @@
       case 'chatReport': toast('通報しました。管理者が確認します'); break;
       case 'error':
         if (!S.joined) { $('lobbyError').textContent = m.message; S.wantJoin = false; setJoining(false); } else toast(m.message);
+        // 答えを送ったあとに断られた(「解答が速すぎます」など。問題はまだ続いている)ときは、もう一度答えられるように戻す
+        if (S.question && S.chosen != null && !(S.result && S.result.qid === S.question.qid)) { S.chosen = null; renderQuestion(); }
         break;
     }
   }
@@ -953,22 +955,14 @@
 
   // ---------- 描画: 問題 ----------
   // ---------- 問題のダイアログ(2026-10-20 ユーザー指摘) ----------
-  // 入れ物は 1 つ。見出し・問題文・表・結果・解説は共通で、答えの欄だけを答え方(answerKind)ごとに描き分ける。
-  // 新しい答え方(フェーズ 3 のコマンド入力 command / 設定 config など)は ANSWER_VIEWS に描き方を足し、QUESTION_SIZE で大きさを決める
-  const ANSWER_VIEWS = {
-    choice: { size: () => 'normal' },
-    text: { size: (q) => (q.fields || []).some((f) => f.format === 'prefixplan') || (q.fields || []).length > 4 ? 'wide' : 'normal' },
-  };
-  const QUESTION_SIZE = (q) => {
-    const v = ANSWER_VIEWS[q.answerKind || 'choice'];
-    const tables = Array.isArray(q.tables) && q.tables.length ? q.tables : (q.table ? [q.table] : []);
-    const wideTable = tables.length > 1 || tables.some((t) => (t.headers || []).length > 4);
-    return v ? (wideTable && v.size(q) === 'normal' ? 'wide' : v.size(q)) : 'full';
-  };
+  // 入れ物は 1 つ。中身(説明カード・問題文・表・答えの欄・ヒント・結果)は qdialog.js(PCQuestion)が描く。見本のページ(cl-preview.html)と同じもの。
+  // ここは見出し(攻撃・強化と拠点の名前、難易度)、開け閉め、「続けて解く」、解答の送信だけを受け持つ。
+  // 新しい答え方(フェーズ 3 のコマンド入力 command / 設定 config など)は qdialog.js の ANSWER_VIEWS に描き方を足す
+  const PCQ = window.PCQuestion;
   let qClosing = false;
   function openQuestionDialog(q) {
     const d = $('qDialog');
-    d.dataset.size = QUESTION_SIZE(q);
+    d.dataset.size = PCQ.size(q);
     if (!d.open) { if (d.showModal) d.showModal(); else d.setAttribute('open', ''); }
   }
   function closeQuestionDialog() { const d = $('qDialog'); if (d.open) { qClosing = true; d.close(); qClosing = false; } }
@@ -993,101 +987,28 @@
     tag.textContent = q.mode === 'attack' ? '攻撃' : '強化';
     $('qMode').replaceChildren(tag, document.createTextNode(node ? node.name : ''));
     $('qDiff').textContent = `難易度 Lv${q.level}` + (q.provisional ? '(暫定: この難易度の問題は準備中。いまは Lv10 相当)' : '');
-    const textNodes = [];
-    q.text.split('\n').forEach((line, i) => { if (i) textNodes.push(document.createElement('br')); textNodes.push(...highlightIps(line)); });
-    $('qText').replaceChildren(...textNodes);
-    // 表: 1 つ(table)でも複数(tables)でも描く
-    const wrap = $('qTables');
-    const makeTable = (t) => {
-      const tbl = document.createElement('table'); tbl.className = 'qtable';
-      if (t.title) { const cap = document.createElement('caption'); cap.textContent = t.title; tbl.append(cap); }
-      const thead = document.createElement('thead'); const hr = document.createElement('tr');
-      (t.headers || []).forEach((h) => { const th = document.createElement('th'); th.textContent = h; hr.append(th); });
-      thead.append(hr);
-      const tbody = document.createElement('tbody');
-      (t.rows || []).forEach((row) => { const tr = document.createElement('tr'); row.forEach((c) => { const td = document.createElement('td'); td.textContent = c; tr.append(td); }); tbody.append(tr); });
-      tbl.append(thead, tbody); return tbl;
-    };
-    const tables = Array.isArray(q.tables) && q.tables.length ? q.tables : (q.table ? [q.table] : []);
-    wrap.replaceChildren(...tables.map(makeTable));
     const r = S.result && S.result.qid === q.qid ? S.result : null;
-    const isText = q.answerKind === 'text' && Array.isArray(q.fields);
-    const known = !q.answerKind || !!ANSWER_VIEWS[q.answerKind];
-    $('qOptions').hidden = isText || !known; $('qFields').hidden = !isText;
-    if (!known) { const p = document.createElement('p'); p.className = 'unsupported'; p.textContent = 'この形の問題は、まだ画面が対応していません'; $('qTables').append(p); }
-    if (isText) renderFields(q, r);
-    $('qOptions').replaceChildren(...(isText ? [] : (q.options || [])).map((o, i) => {
-      const b = document.createElement('button');
-      b.type = 'button'; b.className = 'opt'; b.id = `opt${i}`;
-      const k = document.createElement('span'); k.className = 'k'; k.textContent = i + 1;
-      b.append(k, document.createTextNode(o));
-      if (r) { b.disabled = true; if (i === r.answerIndex) b.classList.add('correct'); else if (i === S.chosen) b.classList.add('wrong'); }
-      b.onclick = () => choose(i);
-      return b;
-    }));
-    $('qResult').hidden = !r;
+    PCQ.render(q, r, { chosen: S.chosen, onChoose: choose, onSubmit: submitInputs, onIncomplete: () => toast('すべての欄を入れてください') });
     $('qNext').hidden = !r; // 答えたあと、同じ拠点の次の問題へ
-    if (r) {
-      $('qVerdict').textContent = r.correct ? '正解' : '不正解';
-      $('qVerdict').className = `verdict ${r.correct ? 'ok' : 'ng'}`;
-      $('qExplain').textContent = r.explanation; $('qOutcome').textContent = r.outcome;
-      const showAnswers = isText && Array.isArray(r.answers) && !r.correct;
-      $('qAnswers').hidden = !showAnswers;
-      if (showAnswers) $('qAnswers').textContent = '正解: ' + q.fields.map((f, i) => `${f.label}: ${r.answers[i]}`).join(' / ');
-      $('qDefense').hidden = !r.defenseNote;
-      if (r.defenseNote) $('qDefense').textContent = `守る側なら: ${r.defenseNote}`;
-    }
   }
-  // 入力式の欄(COMMON.md 第 2 章): 欄ごとにラベルと例示。Enter か「答える」で送る。送信後は無効化
-  function renderFields(q, r) {
-    const list = $('qFieldList');
-    const sent = !!r || (Array.isArray(S.chosen) && S.chosen.qid === q.qid);
-    if (list.dataset.qid !== q.qid) {
-      list.dataset.qid = q.qid;
-      list.replaceChildren(...q.fields.map((f, i) => {
-        const box = document.createElement('div'); box.className = 'field';
-        const lab = document.createElement('label'); lab.textContent = f.label || f.name; lab.htmlFor = `fld${i}`;
-        const inp = document.createElement(f.format === 'prefixplan' ? 'textarea' : 'input');
-        inp.id = `fld${i}`; inp.name = f.name; inp.placeholder = f.hint || ''; inp.maxLength = f.format === 'prefixplan' ? 1000 : 200;
-        if (inp.tagName === 'INPUT') { inp.type = 'text'; inp.inputMode = ['number', 'prefixlen'].includes(f.format) ? 'numeric' : 'text'; inp.autocapitalize = 'off'; inp.spellcheck = false; }
-        else inp.rows = 4;
-        inp.addEventListener('input', updateSubmit);
-        box.append(lab, inp); return box;
-      }));
-      setTimeout(() => { const first = list.querySelector('input,textarea'); if (first) first.focus(); }, 0);
-    }
-    for (const el of list.querySelectorAll('input,textarea')) el.disabled = sent;
-    $('qSubmit').disabled = sent || !allFilled();
-    if (r && Array.isArray(r.answers)) {
-      list.querySelectorAll('.field').forEach((box, i) => { box.classList.remove('ok', 'ng'); box.classList.add(r.correct ? 'ok' : 'ng'); });
-    }
-  }
-  function allFilled() { return [...$('qFieldList').querySelectorAll('input,textarea')].every((el) => el.value.trim()); }
-  function updateSubmit() { $('qSubmit').disabled = !allFilled(); }
-  $('qFields').addEventListener('submit', (e) => {
-    e.preventDefault();
+  // 入力式: 欄の部品(4 つに分けたアドレス、0/1 のボタンなど)が今までと同じ文字列にしたものを送る。判定はサーバー
+  function submitInputs(inputs) {
     const q = S.question;
     if (!q || q.answerKind !== 'text' || (S.result && S.result.qid === q.qid) || (S.chosen && S.chosen.qid === q.qid)) return;
-    if (!allFilled()) { toast('すべての欄を入れてください'); return; }
-    const inputs = [...$('qFieldList').querySelectorAll('input,textarea')].map((el) => el.value);
     S.chosen = { qid: q.qid, inputs };
     send({ t: 'answer', qid: q.qid, inputs });
     renderQuestion();
-  });
+  }
   function choose(i) {
     const q = S.question;
     if (!q || q.answerKind === 'text' || (S.result && S.result.qid === q.qid) || S.chosen != null) return;
+    if (!Number.isInteger(i) || i < 0 || i >= (q.options || []).length) return; // ○×・3 択で 3・4 を押しても送らない
     S.chosen = i; send({ t: 'answer', qid: q.qid, choice: i });
-  }
-  function highlightIps(text) {
-    return text.split(/(\d+\.\d+\.\d+\.\d+(?:\/\d+)?|\/\d+)/).filter(Boolean).map((part) => {
-      if (/^(\d+\.\d+\.\d+\.\d+(\/\d+)?|\/\d+)$/.test(part)) { const s = document.createElement('span'); s.className = 'ip'; s.textContent = part; return s; }
-      return document.createTextNode(part);
-    });
+    renderQuestion();
   }
   document.addEventListener('keydown', (e) => {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    const n = Number(e.key); if (n >= 1 && n <= 4) choose(n - 1);
+    if (!$('qDialog').open) return;
+    const i = PCQ.keyIndex(e, S.question); if (i !== null) choose(i);
   });
 
   // ---------- 拠点の形(shapes.js と共有) ----------

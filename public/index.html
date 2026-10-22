@@ -270,11 +270,23 @@
       <span class="mode" id="qMode"></span>
       <span class="diff" id="qDiff"></span>
     </div>
+    <!-- 説明カード(入門。2026-10-22): 問題文の前に出す。たためる -->
+    <details class="qcard" id="qCard" hidden open>
+      <summary>説明(読んでから解く)</summary>
+      <p id="qCardText"></p>
+    </details>
     <p class="qtext" id="qText"></p>
     <div class="qtable-wrap" id="qTables"><table class="qtable" id="qTable" hidden></table></div>
+    <!-- ヒント(初級・中級。2026-10-22): 押すと見せる。ほかの人の拠点を攻めるときはサーバーが送らない -->
+    <div class="qhint" id="qHintBox" hidden>
+      <button type="button" class="btn small" id="qHintBtn" aria-controls="qHintText" aria-expanded="false">ヒント</button>
+      <span class="hint" id="qHintLock" hidden>ほかの人の拠点を攻めるときはヒントを使えません</span>
+      <div class="qhint-text" id="qHintText" hidden></div>
+    </div>
     <div class="options" id="qOptions"></div>
     <form class="fields" id="qFields" hidden autocomplete="off">
       <div id="qFieldList"></div>
+      <p class="hint" id="qFieldNote"></p>
       <div class="fields-foot">
         <button type="submit" class="btn primary" id="qSubmit">答える</button>
         <span class="hint">半角で入力。IPv6 の省略形、先頭の 0、大文字小文字は自動でそろえます。Enter でも送れます</span>
@@ -302,6 +314,7 @@
 <script src="vendor/maplibre/maplibre-gl-csp.js"></script>
 <script src="map-base.js"></script>
 <script src="shapes.js"></script>
+<script src="qdialog.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

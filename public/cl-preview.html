@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>問題の見本 | パケット陣取り</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Dela+Gothic+One&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+<style>
+  body.cl-preview { background: var(--bg); color: var(--ink); max-width: 760px; margin: 0 auto; padding: 16px; line-height: 1.6; font-family: var(--font-body); }
+  .cl-preview h1 { font: 22px/1.3 var(--font-display); margin: 8px 0 4px; }
+  .cl-preview .bar { display: flex; flex-wrap: wrap; align-items: end; gap: 10px 14px; margin: 12px 0; padding: 12px; background: var(--surface); border-radius: 12px; }
+  .cl-preview label { display: grid; gap: 2px; font-size: 13px; font-weight: 700; }
+  .cl-preview label.check { display: flex; align-items: center; gap: 6px; font-weight: 400; }
+  .cl-preview select, .cl-preview input[type="text"] { font: 15px var(--font-body); padding: 6px 8px; border-radius: 8px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); min-width: 0; }
+  .cl-preview select { max-width: 100%; }
+  .cl-preview #seed { width: 9em; font-family: var(--font-mono); }
+  .cl-preview .err { color: var(--bad); font-weight: 700; }
+</style>
+</head>
+<body class="cl-preview">
+<h1>問題の見本</h1>
+<p class="hint">新しい番号(docs/LEVEL-LIST.md)の問題を、ゲームと同じダイアログで出して確かめるページです。手元のサーバー(環境変数 CL_PREVIEW=1)だけで開きます。判定はサーバーで行い、拠点には反映しません。</p>
+<div class="bar">
+  <label>レベル<select id="pvLevel"></select></label>
+  <label>seed(空なら毎回ちがう問題)<input type="text" id="seed" inputmode="numeric" autocomplete="off" placeholder="例: 12345"></label>
+  <label class="check"><input type="checkbox" id="pvOthers">ほかの人の拠点を攻めるとき(ヒントを出さない)</label>
+  <button type="button" class="btn primary" id="pvAsk">出題</button>
+</div>
+<p class="err" id="pvError" role="alert"></p>
+
+<!-- 問題のダイアログ(index.html の qDialog と同じ部品。中身は qdialog.js が描く) -->
+<dialog class="dlg qdlg" id="qDialog" aria-labelledby="qMode" data-size="normal">
+  <div id="qBox">
+    <div class="qhead">
+      <span class="mode" id="qMode"></span>
+      <span class="diff" id="qDiff"></span>
+    </div>
+    <details class="qcard" id="qCard" hidden open>
+      <summary>説明(読んでから解く)</summary>
+      <p id="qCardText"></p>
+    </details>
+    <p class="qtext" id="qText"></p>
+    <div class="qtable-wrap" id="qTables"></div>
+    <div class="qhint" id="qHintBox" hidden>
+      <button type="button" class="btn small" id="qHintBtn" aria-controls="qHintText" aria-expanded="false">ヒント</button>
+      <span class="hint" id="qHintLock" hidden>ほかの人の拠点を攻めるときはヒントを使えません</span>
+      <div class="qhint-text" id="qHintText" hidden></div>
+    </div>
+    <div class="options" id="qOptions"></div>
+    <form class="fields" id="qFields" hidden autocomplete="off">
+      <div id="qFieldList"></div>
+      <p class="hint" id="qFieldNote"></p>
+      <div class="fields-foot">
+        <button type="submit" class="btn primary" id="qSubmit">答える</button>
+        <span class="hint">半角で入力。IPv6 の省略形、先頭の 0、大文字小文字は自動でそろえます。Enter でも送れます</span>
+      </div>
+    </form>
+    <div class="result" id="qResult" hidden>
+      <p class="verdict" id="qVerdict"></p>
+      <p class="answers" id="qAnswers" hidden></p>
+      <p class="explain" id="qExplain"></p>
+      <p class="defense" id="qDefense" hidden></p>
+      <p class="outcome" id="qOutcome"></p>
+    </div>
+    <p class="err" id="pvDlgError" role="alert"></p>
+  </div>
+  <div class="dlg-actions qactions">
+    <button type="button" class="btn" id="qNext" hidden>次の問題</button>
+    <button type="button" class="btn primary" id="qClose">閉じる</button>
+  </div>
+</dialog>
+<script src="qdialog.js"></script>
+<script src="cl-preview.js"></script>
+</body>
+</html>
