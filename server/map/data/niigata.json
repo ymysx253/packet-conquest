@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "niigata",
   "name": "新潟県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "新潟県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -5372,6 +5372,6 @@
 
     { "id": "isl-q49511", "name": "粟島", "genre": "nature", "kind": "GW", "area": "粟島浦村", "region": "niigata-15586", "lat": 38.46098, "lon": 139.24055, "level": 30, "value": 30, "adj": ["tw-15586-001000"], "codes": {"wikidata": "Q49511"}, "src": "src-wikidata" },
     { "id": "tw-15586-001000", "name": "釜谷", "genre": "town", "kind": "TOWN", "area": "粟島浦村", "region": "niigata-15586", "lat": 38.46257, "lon": 139.24031, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "15586001000"}]}, "src": "src-estat-boundary-2020", "contains": ["isl-q49511"], "adj": ["isl-q49511", "pp-tw-15586-001000"] },
-    { "id": "pp-tw-15586-001000", "name": "釜谷港(仮)", "genre": "port", "kind": "GW", "area": "粟島浦村", "region": "niigata-15586", "lat": 38.44602, "lon": 139.23724, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-15586-001000"] }
+    { "id": "pp-tw-15586-001000", "name": "釜谷港(仮)", "genre": "port", "kind": "GW", "area": "粟島浦村", "region": "niigata-15586", "lat": 38.44627, "lon": 139.23702, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-15586-001000"] }
   ]
 }

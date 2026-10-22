@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "shimane",
   "name": "島根県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "島根県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -1342,6 +1342,6 @@
     { "id": "tw-32528-048001", "name": "津戸", "genre": "town", "kind": "TOWN", "area": "隠岐の島町", "region": "shimane-32528", "lat": 36.18283, "lon": 133.25079, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "32528048001"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-32528-047000", "tw-32528-049000"], "adj": ["tw-32528-047000", "tw-32528-049000"] },
     { "id": "tw-32528-049000", "name": "蛸木", "genre": "town", "kind": "TOWN", "area": "隠岐の島町", "region": "shimane-32528", "lat": 36.17934, "lon": 133.26205, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "32528049000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-32528-021000", "tw-32528-047000", "tw-32528-048001"], "adj": ["tw-32528-021000", "tw-32528-047000", "tw-32528-048001"] },
 
-    { "id": "pp-tw-32202-070000", "name": "無人港(仮)", "genre": "port", "kind": "GW", "area": "浜田市", "region": "shimane-32202", "lat": 34.90274, "lon": 132.0491, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-32202-070000"] }
+    { "id": "pp-tw-32202-070000", "name": "無人港(仮)", "genre": "port", "kind": "GW", "area": "浜田市", "region": "shimane-32202", "lat": 34.90285, "lon": 132.04934, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-32202-070000"] }
   ]
 }

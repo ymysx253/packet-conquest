@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "chiba",
   "name": "千葉県",
-  "version": 91,
+  "version": 92,
   "updatedAt": "2026-10-19",
   "note": "千葉県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -3890,6 +3890,6 @@
     { "id": "st-005558", "name": "保田駅", "genre": "station", "kind": "HUB", "area": "鋸南町", "region": "chiba-12463", "lat": 35.14207, "lon": 139.83773, "level": 10, "value": 10, "lines": ["東日本旅客鉄道 内房線"], "adj": ["lm-q5120896", "st-005471", "st-005656", "tw-12463-001000", "tw-12463-002000", "tw-12463-003000"] },
     { "id": "st-005656", "name": "安房勝山駅", "genre": "station", "kind": "HUB", "area": "鋸南町", "region": "chiba-12463", "lat": 35.11491, "lon": 139.83308, "level": 10, "value": 10, "lines": ["東日本旅客鉄道 内房線"], "adj": ["st-005558", "st-005717", "tw-12463-006000", "tw-12463-011000", "tw-12463-012000", "tw-12463-013000"] },
 
-    { "id": "pp-tw-12206-125000", "name": "内港港(仮)", "genre": "port", "kind": "GW", "area": "木更津市", "region": "chiba-12206", "lat": 35.38682, "lon": 139.91652, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-12206-125000"] }
+    { "id": "pp-tw-12206-125000", "name": "内港港(仮)", "genre": "port", "kind": "GW", "area": "木更津市", "region": "chiba-12206", "lat": 35.38706, "lon": 139.91609, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-12206-125000"] }
   ]
 }

@@ -177,6 +177,10 @@ const PHANTOM_SRC = 'src-phantom';
 // 開く 20 分は航路ごとにずらす(2026-10-20 ユーザー決定)。航路の id から 20 分刻みの 72 通りのどれかに決める(同じ航路は毎日同じ時間。サーバーの時計の UTC)
 const PHANTOM_MIN = 20;
 const phantomHours = (id) => { const slot = parseInt(id.slice(3, 11), 16) % (1440 / PHANTOM_MIN); const hm = (m) => `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; return [{ from: hm(slot * PHANTOM_MIN), to: hm(slot * PHANTOM_MIN + PHANTOM_MIN) }]; };
+// 前回の幻の航路(下で同じ島には同じ町・相手を使う)。新しく選んだものは phantomNew に数える
+const PHANTOM_FILE = path.join(DATA, 'routes', `${PHANTOM_SRC}.json`);
+const prevPhantom = fs.existsSync(PHANTOM_FILE) ? JSON.parse(fs.readFileSync(PHANTOM_FILE, 'utf8')).routes.map((r) => ({ from: r.from, to: r.to })) : [];
+const phantomNew = [];
 const hackable = nodes.filter((n) => n.hackable !== false && n.status !== 'hidden'); // 非公開の拠点(自衛隊・米軍の飛行場など)は線の対象外
 const parent = new Map(hackable.map((n) => [n.id, n.id]));
 const find = (x) => (parent.get(x) === x ? x : (parent.set(x, find(parent.get(x))), parent.get(x)));
@@ -192,7 +196,58 @@ let routeJoins = 0;
 }
 // いちばん小さいまとまりから、外側でいちばん近い拠点へ橋を 1 本かける、を 1 つになるまで繰り返す。
 // 小さいまとまり × 全拠点で済むので、全国(約 9,000 駅)でも速い(以前は全拠点 × 全拠点を毎回)
-const { seaCross, firstCoast, onLand } = require('./sea').makeSea(ROOT);
+const { seaCross } = require('./sea').makeSea(ROOT);
+// 仮の港の位置(2026-10-22 ユーザー指摘: まだ島の真ん中にあるものがある)。画面は拡大すると細かい境界(public/data/bounds-hi。約 10 m)で陸を塗るので、
+// 粗い境界(約 60 m)の海岸で置くと、画面では陸の内側や海の上に見える。細かい境界の海岸の、陸側に 20〜50 m 入った所に置く。
+//   町の代表点から、結ぶ先の港の向きを中心に左右へ 10 度ずつ向きを広げて進み、最初に海岸に出た点から、海岸の辺に直角に陸側へ 35 m(入れなければ浅く)戻す。
+//   町から海を渡らずに行けて、ほかの拠点(町の代表点など)から 30 m 以上離れ(同じ場所に 2 つの拠点を置かない。test/map.js)、海岸から 20〜50 m の所のうち、
+//   港の向きにいちばん近いもの。無ければ(幅 40 m に満たない小さな島など)、陸の上でほかの拠点から 30 m 以上離れ、海岸からなるべく離れた所。
+//   町の代表点が細かい境界の陸の外(岩礁の町など)なら、300 m 以内のいちばん近い陸から始める。それも無ければ、前のとおり港の向きに 150 m ずらす(phantomOff に数える)
+const seaHi = require('./sea').makeSea(ROOT, { hi: true });
+const PHANTOM_IN = [35, 30, 25, 20, 15, 10, 5, 2].map((m) => m / 1000); // 海岸から陸側へ戻す長さ(km)
+const phantomOff = [];
+function phantomPortAt(t, q) {
+  const kx = Math.cos((t.lat * Math.PI) / 180), KM = 111.32;
+  const fix = (p) => ({ lat: Number(p.lat.toFixed(5)), lon: Number(p.lon.toFixed(5)) });
+  // 海岸の点 c(辺 e の上)から、辺に直角に陸側へ m km 入った点。c が辺の端(角)だと直角の向きが陸に入らないことがあるので、辺の中点からも試す
+  const inland = (c, e, m) => {
+    const ex = (e[2] - e[0]) * kx, ey = e[3] - e[1], l = Math.hypot(ex, ey) || 1;
+    for (const o of [c, { lat: (e[1] + e[3]) / 2, lon: (e[0] + e[2]) / 2 }]) for (const s of [1, -1]) {
+      const p = fix({ lat: o.lat + ((s * ex) / l) * (m / KM), lon: o.lon + ((-s * ey) / l / kx) * (m / KM) });
+      if (seaHi.onLand(p)) return p;
+    }
+    return null;
+  };
+  const around = nodes.filter((n) => Math.abs(n.lat - t.lat) < 0.03 && Math.abs(n.lon - t.lon) < 0.03); // 近くの拠点(約 3 km 四方)
+  const apart = (p) => around.every((n) => distKm(n, p) >= 0.03);
+  let from = t;
+  if (!seaHi.onLand(t)) {
+    const c = seaHi.nearestCoast(t, 0.3);
+    from = c && PHANTOM_IN.map((m) => inland(c, c.edge, m)).find(Boolean);
+    if (!from) { const d = distKm(t, q), k = Math.min(1, 0.15 / Math.max(d, 0.001)); phantomOff.push(t.name); return fix({ lat: t.lat + (q.lat - t.lat) * k, lon: t.lon + (q.lon - t.lon) * k }); }
+  }
+  const dq = distKm(from, q), len = Math.min(30, Math.max(5, dq)); // 向きを変えた線の長さ(km)。島の端まで届けばよい
+  const th = Math.atan2(q.lat - from.lat, (q.lon - from.lon) * kx);
+  let best = null;
+  for (let k = 0; k <= 36; k++) {
+    const a = th + ((k % 2 ? 1 : -1) * Math.ceil(k / 2) * Math.PI) / 18; // 0, +10, -10, +20, … 度
+    const end = k ? { lat: from.lat + (Math.sin(a) * len) / KM, lon: from.lon + (Math.cos(a) * len) / KM / kx } : q;
+    const c = seaHi.firstCoast(from, end);
+    if (!c) continue;
+    for (const m of PHANTOM_IN) {
+      const p = inland(c, c.edge, m);
+      if (!p || seaHi.seaCross(from, p)) continue; // 町から海を渡らずに行ける所だけ
+      if (!apart(p)) continue;
+      const d = seaHi.nearestCoast(p, 1)?.d ?? 1;
+      if (d >= 0.02 && d <= 0.05) return p;
+      if (!best || d > best.d) best = { p, d };
+    }
+  }
+  if (best) return best.p;
+  phantomOff.push(t.name); // 海岸が見つからない(島が境界に無い)
+  const k = Math.min(1, 0.15 / Math.max(dq, 0.001));
+  return fix({ lat: t.lat + (q.lat - t.lat) * k, lon: t.lon + (q.lon - t.lon) * k });
+}
 const { routeId } = require('../server/map/routes');
 const isPort = (n) => n.genre === 'port' && n.gateway && n.hackable !== false && n.status !== 'hidden';
 const allPorts = hackable.filter(isPort);
@@ -262,24 +317,22 @@ for (;;) {
     // 島の港(あれば)か、町。そこからいちばん近い、島の外の港
     const own = small.find(isPort);
     let pick = null;
-    for (const s of own ? [own] : towns.length ? towns : small) for (const q of allPorts) {
+    // 前回と同じ島の幻の航路があれば、同じ町(仮の港)と相手をそのまま使う(2026-10-22: 仮の港の位置を直すと、相手を選ぶ距離が変わって
+    // 仮の港の id が変わることがある。id が変わると本番 DB の持ち主が失われる)。前回の相手がまだ無い・同じ島の中になったときだけ選び直す
+    const inSmall = new Set(small.map((n) => n.id));
+    const prev = prevPhantom.find((r) => !r.used && inSmall.has(r.from.startsWith('pp-') ? r.from.slice(3) : r.from) && (own ? r.from === own.id : r.from.startsWith('pp-')) && byId.has(r.to) && allPorts.includes(byId.get(r.to)) && find(r.to) !== key);
+    if (prev) { prev.used = true; const s = own || byId.get(prev.from.slice(3)), q = byId.get(prev.to); pick = { s, q, d: distKm(s, q) }; }
+    else for (const s of own ? [own] : towns.length ? towns : small) for (const q of allPorts) {
       if (find(q.id) === key) continue;
       const d = distKm(s, q);
       if (!pick || d < pick.d) pick = { s, q, d };
     }
+    if (!prev) phantomNew.push(pick ? `${pick.s.name}–${pick.q.name}` : small[0].name);
     if (pick) {
       let port = own;
-      if (!port) { // 仮の港: 町の代表点から結ぶ先の港へ進み、最初に海岸に出る点の 40 m 手前(陸側)に置く(2026-10-20 ユーザー指摘: 島の真ん中にあった)。
-        // 町の代表点からは 30 m 以上離す(同じ場所に 2 つの拠点を置かない)。海岸が見つからなければ 150 m ずらす
+      if (!port) { // 仮の港: 島の海岸のすぐ内側に置く(phantomPortAt。2026-10-20 / 2026-10-22 ユーザー指摘: 島の真ん中にあった)
         const t = pick.s;
-        const coast = onLand(t) ? firstCoast(t, pick.q) : null; // 町の代表点が陸の外なら、海岸は探さない(遠くの別の陸地の海岸を拾う)
-        let k = Math.min(1, 0.15 / Math.max(pick.d, 0.001));
-        if (coast) {
-          const kc = Math.max(0.03 / Math.max(pick.d, 0.001), coast.t - 0.04 / Math.max(pick.d, 0.001));
-          const c = { lat: t.lat + (pick.q.lat - t.lat) * kc, lon: t.lon + (pick.q.lon - t.lon) * kc };
-          if (onLand(c) && !seaCross(t, c)) k = kc; // 島の陸の上で、町から海を渡らずに行ける所だけ
-        }
-        const at = { lat: Number((t.lat + (pick.q.lat - t.lat) * k).toFixed(5)), lon: Number((t.lon + (pick.q.lon - t.lon) * k).toFixed(5)) };
+        const at = phantomPortAt(t, pick.q);
         port = { id: `pp-${t.id}`, name: `${t.name}港(仮)`, genre: 'port', kind: 'GW', area: t.area, region: t.region, lat: at.lat, lon: at.lon,
           level: L.PORT_MIN, value: L.PORT_MIN, src: PHANTOM_SRC, gateway: { type: 'port', scope: 'domestic' } };
         fileOf.get(t.id).nodes.push(port); nodes.push(port); byId.set(port.id, port); hackable.push(port); allPorts.push(port);
@@ -301,8 +354,8 @@ for (;;) {
   bridges.push(text);
   if (overSea) seaBridges.push(text);
 }
-{ // 幻の航路の記録(毎回作り直す)
-  const file = path.join(DATA, 'routes', `${PHANTOM_SRC}.json`);
+{ // 幻の航路の記録(毎回書き直す。同じ島は前回と同じ町・相手)
+  const file = PHANTOM_FILE;
   const head = { schema: 'pc.routes/1', source: PHANTOM_SRC, generatedAt: `${TODAY}T00:00:00.000Z`, note: '幻の航路(tools/import-links.js が作る。陸からも航路からも行けない島の港・仮の港と、いちばん近い港を結ぶ。1 日 20 分だけ使える)' };
   fs.writeFileSync(file, JSON.stringify(head, null, 2).replace(/\n}$/, ',\n  "routes": [\n') + phantomRoutes.map((x) => '    ' + JSON.stringify(x)).join(',\n') + '\n  ]\n}\n');
 }
@@ -374,3 +427,5 @@ console.log('つながりの本数 → 拠点数', JSON.stringify(deg));
 console.log('多い順', top.map((t) => `${t.name} ${t.d}`).join(' / '));
 if (bridges.length) console.log('橋:', bridges.join(' / '));
 console.log(`離島: 幻の航路 ${phantomRoutes.length} 本(仮の港 ${phantomPorts.length} か所: ${phantomPorts.join('、')})。海をまたぐ橋(町の無い島など) ${seaBridges.length} 本: ${seaBridges.join(' / ')}`);
+if (phantomNew.length) console.log(`前回と違う(新しく選んだ)幻の航路 ${phantomNew.length} 本: ${phantomNew.join(' / ')}`);
+if (phantomOff.length) console.log(`細かい境界の海岸に置けなかった仮の港 ${phantomOff.length} か所(町の 300 m 以内に陸が無い。港の向きに 150 m): ${phantomOff.join('、')}`);

@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "aomori",
   "name": "青森県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "青森県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -2035,6 +2035,6 @@
     { "id": "tw-02450-001000", "name": "戸来", "genre": "town", "kind": "TOWN", "area": "新郷村", "region": "aomori-02450", "lat": 40.4517, "lon": 141.08734, "level": 5, "value": 5, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "02450001000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-02206-045000", "tw-02442-010000", "tw-02450-002000"], "adj": ["tw-02206-045000", "tw-02442-010000", "tw-02450-002000"] },
     { "id": "tw-02450-002000", "name": "西越", "genre": "town", "kind": "TOWN", "area": "新郷村", "region": "aomori-02450", "lat": 40.43209, "lon": 141.17735, "level": 4, "value": 4, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "02450002000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-02441-009000", "tw-02442-005001", "tw-02442-010000", "tw-02445-012000", "tw-02450-001000"], "adj": ["tw-02441-009000", "tw-02442-005001", "tw-02442-010000", "tw-02445-012000", "tw-02450-001000"] },
 
-    { "id": "pp-tw-02323-001000", "name": "久六港(仮)", "genre": "port", "kind": "GW", "area": "深浦町", "region": "aomori-02323", "lat": 40.53293, "lon": 139.49838, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-02323-001000"] }
+    { "id": "pp-tw-02323-001000", "name": "久六港(仮)", "genre": "port", "kind": "GW", "area": "深浦町", "region": "aomori-02323", "lat": 40.53412, "lon": 139.49797, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-02323-001000"] }
   ]
 }

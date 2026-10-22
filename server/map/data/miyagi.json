@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "miyagi",
   "name": "宮城県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "宮城県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -2126,9 +2126,9 @@
     { "id": "tw-04606-003001", "name": "入谷", "genre": "town", "kind": "TOWN", "area": "南三陸町", "region": "miyagi-04606", "lat": 38.67539, "lon": 141.39201, "level": 5, "value": 5, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "04606003001"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-04205-020007", "tw-04606-001001", "tw-04606-002001", "tw-04606-004001"], "adj": ["tw-04205-020007", "tw-04606-001001", "tw-04606-002001", "tw-04606-004001"] },
     { "id": "tw-04606-004001", "name": "歌津", "genre": "town", "kind": "TOWN", "area": "南三陸町", "region": "miyagi-04606", "lat": 38.73453, "lon": 141.4515, "level": 6, "value": 6, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "04606004001"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-04205-020007", "tw-04606-002001", "tw-04606-003001"], "adj": ["tw-04205-020007", "tw-04606-002001", "tw-04606-003001"] },
 
-    { "id": "pp-tw-04203-065000", "name": "浦戸朴島港(仮)", "genre": "port", "kind": "GW", "area": "塩竈市", "region": "miyagi-04203", "lat": 38.35109, "lon": 141.12336, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-04203-065000"] },
+    { "id": "pp-tw-04203-065000", "name": "浦戸朴島港(仮)", "genre": "port", "kind": "GW", "area": "塩竈市", "region": "miyagi-04203", "lat": 38.35103, "lon": 141.1233, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-04203-065000"] },
 
-    { "id": "pp-tw-04581-017001", "name": "出島港(仮)", "genre": "port", "kind": "GW", "area": "女川町", "region": "miyagi-04581", "lat": 38.44224, "lon": 141.52093, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-04581-017001"] },
-    { "id": "pp-tw-04581-025001", "name": "江島字江島港(仮)", "genre": "port", "kind": "GW", "area": "女川町", "region": "miyagi-04581", "lat": 38.40055, "lon": 141.59225, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-04581-025001"] }
+    { "id": "pp-tw-04581-017001", "name": "出島港(仮)", "genre": "port", "kind": "GW", "area": "女川町", "region": "miyagi-04581", "lat": 38.44255, "lon": 141.52104, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-04581-017001"] },
+    { "id": "pp-tw-04581-025001", "name": "江島字江島港(仮)", "genre": "port", "kind": "GW", "area": "女川町", "region": "miyagi-04581", "lat": 38.39946, "lon": 141.59375, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-04581-025001"] }
   ]
 }

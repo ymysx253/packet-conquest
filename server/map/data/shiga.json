@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "shiga",
   "name": "滋賀県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "滋賀県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {

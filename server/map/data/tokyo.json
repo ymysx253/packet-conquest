@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "tokyo",
   "name": "東京",
-  "version": 99,
+  "version": 100,
   "updatedAt": "2026-10-19",
   "note": "東京の拠点マスター。名前は地名ではなく正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。genre は名所のジャンル、kind はゲーム内の役割。hackable: false は存在するがハック不可(寺社など)。位置は緯度・経度(おおよそ)。ゲーム内のネットワークと機器はすべて架空。level は 1〜999(東京は 1〜5)。Cosmos DB の nodes コンテナーと同じ項目(設計書 8.7)。",
   "kinds": {
@@ -2628,22 +2628,22 @@
     { "id": "tw-13421-005000", "name": "沖ノ鳥島", "genre": "town", "kind": "TOWN", "area": "小笠原村", "region": "tokyo-13421", "lat": 20.42515, "lon": 136.06996, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "13421005000"}]}, "src": "src-estat-boundary-2020", "status": "hidden", "hiddenReason": "restricted" },
     { "id": "tw-13421-006000", "name": "南鳥島", "genre": "town", "kind": "TOWN", "area": "小笠原村", "region": "tokyo-13421", "lat": 24.29237, "lon": 153.97661, "level": 2, "value": 2, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "13421006000"}]}, "src": "src-estat-boundary-2020", "status": "hidden", "hiddenReason": "restricted" },
 
-    { "id": "pp-isl-q475743", "name": "鳥島港(仮)", "genre": "port", "kind": "GW", "area": "所属未定地", "region": "tokyo-13000", "lat": 30.49559, "lon": 140.30324, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["isl-q475743"] },
+    { "id": "pp-isl-q475743", "name": "鳥島港(仮)", "genre": "port", "kind": "GW", "area": "所属未定地", "region": "tokyo-13000", "lat": 30.49547, "lon": 140.30317, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["isl-q475743"] },
 
-    { "id": "pp-tw-13363-004000", "name": "鵜渡根島港(仮)", "genre": "port", "kind": "GW", "area": "新島村", "region": "tokyo-13363", "lat": 34.47456, "lon": 139.29367, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13363-004000"] },
-    { "id": "pp-tw-13363-005000", "name": "地内島港(仮)", "genre": "port", "kind": "GW", "area": "新島村", "region": "tokyo-13363", "lat": 34.37142, "lon": 139.22869, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13363-005000"] },
-    { "id": "pp-tw-13363-006000", "name": "早島港(仮)", "genre": "port", "kind": "GW", "area": "新島村", "region": "tokyo-13363", "lat": 34.32572, "lon": 139.27643, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13363-006000"] },
+    { "id": "pp-tw-13363-004000", "name": "鵜渡根島港(仮)", "genre": "port", "kind": "GW", "area": "新島村", "region": "tokyo-13363", "lat": 34.47449, "lon": 139.29345, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13363-004000"] },
+    { "id": "pp-tw-13363-005000", "name": "地内島港(仮)", "genre": "port", "kind": "GW", "area": "新島村", "region": "tokyo-13363", "lat": 34.3717, "lon": 139.22901, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13363-005000"] },
+    { "id": "pp-tw-13363-006000", "name": "早島港(仮)", "genre": "port", "kind": "GW", "area": "新島村", "region": "tokyo-13363", "lat": 34.32583, "lon": 139.276, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13363-006000"] },
 
-    { "id": "pp-tw-13364-001017", "name": "恩馳島港(仮)", "genre": "port", "kind": "GW", "area": "神津島村", "region": "tokyo-13364", "lat": 34.18496, "lon": 139.07462, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13364-001017"] },
-    { "id": "pp-tw-13364-001018", "name": "祇苗島港(仮)", "genre": "port", "kind": "GW", "area": "神津島村", "region": "tokyo-13364", "lat": 34.20781, "lon": 139.19021, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13364-001018"] },
+    { "id": "pp-tw-13364-001017", "name": "恩馳島港(仮)", "genre": "port", "kind": "GW", "area": "神津島村", "region": "tokyo-13364", "lat": 34.18505, "lon": 139.07483, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13364-001017"] },
+    { "id": "pp-tw-13364-001018", "name": "祇苗島港(仮)", "genre": "port", "kind": "GW", "area": "神津島村", "region": "tokyo-13364", "lat": 34.20794, "lon": 139.19003, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13364-001018"] },
 
-    { "id": "pp-isl-q1151821", "name": "北硫黄島港(仮)", "genre": "port", "kind": "GW", "area": "小笠原村", "region": "tokyo-13421", "lat": 25.44579, "lon": 141.28868, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["isl-q1151821"] },
+    { "id": "pp-isl-q1151821", "name": "北硫黄島港(仮)", "genre": "port", "kind": "GW", "area": "小笠原村", "region": "tokyo-13421", "lat": 25.44579, "lon": 141.28851, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["isl-q1151821"] },
 
-    { "id": "pp-tw-13401-006000", "name": "八丈小島港(仮)", "genre": "port", "kind": "GW", "area": "八丈町", "region": "tokyo-13401", "lat": 33.12581, "lon": 139.69789, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13401-006000"] },
+    { "id": "pp-tw-13401-006000", "name": "八丈小島港(仮)", "genre": "port", "kind": "GW", "area": "八丈町", "region": "tokyo-13401", "lat": 33.12575, "lon": 139.69781, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13401-006000"] },
 
-    { "id": "pp-tw-13402-001000", "name": "青ケ島村港(仮)", "genre": "port", "kind": "GW", "area": "青ヶ島村", "region": "tokyo-13402", "lat": 32.46957, "lon": 139.76736, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13402-001000"] },
+    { "id": "pp-tw-13402-001000", "name": "青ケ島村港(仮)", "genre": "port", "kind": "GW", "area": "青ヶ島村", "region": "tokyo-13402", "lat": 32.47005, "lon": 139.76718, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13402-001000"] },
 
-    { "id": "pp-tw-13421-003000", "name": "聟島港(仮)", "genre": "port", "kind": "GW", "area": "小笠原村", "region": "tokyo-13421", "lat": 27.67652, "lon": 142.13944, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13421-003000"] },
-    { "id": "pp-tw-13421-002001", "name": "母島港(仮)", "genre": "port", "kind": "GW", "area": "小笠原村", "region": "tokyo-13421", "lat": 26.70605, "lon": 142.15089, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13421-002001"] }
+    { "id": "pp-tw-13421-003000", "name": "聟島港(仮)", "genre": "port", "kind": "GW", "area": "小笠原村", "region": "tokyo-13421", "lat": 27.67644, "lon": 142.13946, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13421-003000"] },
+    { "id": "pp-tw-13421-002001", "name": "母島港(仮)", "genre": "port", "kind": "GW", "area": "小笠原村", "region": "tokyo-13421", "lat": 26.70568, "lon": 142.15109, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-13421-002001"] }
   ]
 }

@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "hyogo",
   "name": "兵庫県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "兵庫県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -5546,9 +5546,9 @@
     { "id": "st-004138", "name": "諸寄駅", "genre": "station", "kind": "HUB", "area": "新温泉町", "region": "hyogo-28586", "lat": 35.61932, "lon": 134.43399, "level": 10, "value": 10, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004132", "st-004204", "tw-28586-002000", "tw-28586-026000", "tw-28586-027000"] },
     { "id": "st-004204", "name": "居組駅", "genre": "station", "kind": "HUB", "area": "新温泉町", "region": "hyogo-28586", "lat": 35.60649, "lon": 134.39317, "level": 10, "value": 10, "lines": ["西日本旅客鉄道 山陰線"], "adj": ["st-004138", "st-004240", "tw-28586-027000", "tw-28586-028000"] },
 
-    { "id": "pp-tw-28201-694000", "name": "家島町真浦港(仮)", "genre": "port", "kind": "GW", "area": "姫路市", "region": "hyogo-28201", "lat": 34.65902, "lon": 134.48978, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-28201-694000"] },
-    { "id": "pp-tw-28201-693000", "name": "家島町宮港(仮)", "genre": "port", "kind": "GW", "area": "姫路市", "region": "hyogo-28201", "lat": 34.6688, "lon": 134.56211, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-28201-693000"] },
+    { "id": "pp-tw-28201-694000", "name": "家島町真浦港(仮)", "genre": "port", "kind": "GW", "area": "姫路市", "region": "hyogo-28201", "lat": 34.65942, "lon": 134.49006, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-28201-694000"] },
+    { "id": "pp-tw-28201-693000", "name": "家島町宮港(仮)", "genre": "port", "kind": "GW", "area": "姫路市", "region": "hyogo-28201", "lat": 34.66874, "lon": 134.56203, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-28201-693000"] },
 
-    { "id": "pp-tw-28224-029001", "name": "沼島港(仮)", "genre": "port", "kind": "GW", "area": "南あわじ市", "region": "hyogo-28224", "lat": 34.1596, "lon": 134.81166, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-28224-029001"] }
+    { "id": "pp-tw-28224-029001", "name": "沼島港(仮)", "genre": "port", "kind": "GW", "area": "南あわじ市", "region": "hyogo-28224", "lat": 34.15943, "lon": 134.81172, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-28224-029001"] }
   ]
 }

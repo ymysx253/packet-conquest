@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "kagawa",
   "name": "香川県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "香川県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -900,14 +900,14 @@
     { "id": "st-008440", "name": "塩入駅", "genre": "station", "kind": "HUB", "area": "まんのう町", "region": "kagawa-37406", "lat": 34.1564, "lon": 133.85048, "level": 10, "value": 10, "lines": ["四国旅客鉄道 土讃線"], "adj": ["st-008408", "st-008456", "tw-37406-019000", "tw-37406-021000", "tw-37406-022000", "tw-37406-028000"] },
     { "id": "st-008456", "name": "黒川駅", "genre": "station", "kind": "HUB", "area": "まんのう町", "region": "kagawa-37406", "lat": 34.13341, "lon": 133.82, "level": 10, "value": 10, "lines": ["四国旅客鉄道 土讃線"], "adj": ["st-008440", "st-008463", "tw-37406-023000", "tw-37406-025000", "tw-37406-026000"] },
 
-    { "id": "pp-tw-37202-053000", "name": "牛島港(仮)", "genre": "port", "kind": "GW", "area": "丸亀市", "region": "kagawa-37202", "lat": 34.36059, "lon": 133.77571, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-37202-053000"] },
-    { "id": "pp-tw-37202-061000", "name": "広島町小手島港(仮)", "genre": "port", "kind": "GW", "area": "丸亀市", "region": "kagawa-37202", "lat": 34.37974, "lon": 133.65085, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-37202-061000"] },
+    { "id": "pp-tw-37202-053000", "name": "牛島港(仮)", "genre": "port", "kind": "GW", "area": "丸亀市", "region": "kagawa-37202", "lat": 34.36072, "lon": 133.77559, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-37202-053000"] },
+    { "id": "pp-tw-37202-061000", "name": "広島町小手島港(仮)", "genre": "port", "kind": "GW", "area": "丸亀市", "region": "kagawa-37202", "lat": 34.37966, "lon": 133.6508, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-37202-061000"] },
 
-    { "id": "pp-tw-37205-023000", "name": "伊吹町港(仮)", "genre": "port", "kind": "GW", "area": "観音寺市", "region": "kagawa-37205", "lat": 34.12556, "lon": 133.53442, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-37205-023000"] },
+    { "id": "pp-tw-37205-023000", "name": "伊吹町港(仮)", "genre": "port", "kind": "GW", "area": "観音寺市", "region": "kagawa-37205", "lat": 34.12598, "lon": 133.53437, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-37205-023000"] },
 
-    { "id": "pp-tw-37208-034000", "name": "詫間町粟島港(仮)", "genre": "port", "kind": "GW", "area": "三豊市", "region": "kagawa-37208", "lat": 34.27285, "lon": 133.63443, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-37208-034000"] },
-    { "id": "pp-tw-37208-035000", "name": "詫間町志々島港(仮)", "genre": "port", "kind": "GW", "area": "三豊市", "region": "kagawa-37208", "lat": 34.27139, "lon": 133.6705, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-37208-035000"] },
+    { "id": "pp-tw-37208-034000", "name": "詫間町粟島港(仮)", "genre": "port", "kind": "GW", "area": "三豊市", "region": "kagawa-37208", "lat": 34.27294, "lon": 133.63477, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-37208-034000"] },
+    { "id": "pp-tw-37208-035000", "name": "詫間町志々島港(仮)", "genre": "port", "kind": "GW", "area": "三豊市", "region": "kagawa-37208", "lat": 34.27136, "lon": 133.6704, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-37208-035000"] },
 
-    { "id": "pp-tw-37202-048000", "name": "本島町小阪港(仮)", "genre": "port", "kind": "GW", "area": "丸亀市", "region": "kagawa-37202", "lat": 34.37186, "lon": 133.76862, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-37202-048000"] }
+    { "id": "pp-tw-37202-048000", "name": "本島町小阪港(仮)", "genre": "port", "kind": "GW", "area": "丸亀市", "region": "kagawa-37202", "lat": 34.37159, "lon": 133.76866, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-37202-048000"] }
   ]
 }

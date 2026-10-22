@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "saga",
   "name": "佐賀県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "佐賀県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -998,12 +998,12 @@
     { "id": "st-009611", "name": "多良駅", "genre": "station", "kind": "HUB", "area": "太良町", "region": "saga-41441", "lat": 33.02554, "lon": 130.17597, "level": 10, "value": 10, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009599", "st-009627", "tw-41441-002001"] },
     { "id": "st-009627", "name": "肥前大浦駅", "genre": "station", "kind": "HUB", "area": "太良町", "region": "saga-41441", "lat": 32.97542, "lon": 130.20757, "level": 10, "value": 10, "lines": ["九州旅客鉄道 長崎線"], "adj": ["st-009611", "st-009655", "tw-41441-004001"] },
 
-    { "id": "pp-tw-41202-021000", "name": "高島港(仮)", "genre": "port", "kind": "GW", "area": "唐津市", "region": "saga-41202", "lat": 33.47548, "lon": 129.98579, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-41202-021000"] },
-    { "id": "pp-tw-41202-109000", "name": "神集島港(仮)", "genre": "port", "kind": "GW", "area": "唐津市", "region": "saga-41202", "lat": 33.52889, "lon": 129.97347, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-41202-109000"] },
-    { "id": "pp-tw-41202-195000", "name": "肥前町向島港(仮)", "genre": "port", "kind": "GW", "area": "唐津市", "region": "saga-41202", "lat": 33.48855, "lon": 129.77463, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-41202-195000"] },
-    { "id": "pp-tw-41202-201000", "name": "鎮西町松島港(仮)", "genre": "port", "kind": "GW", "area": "唐津市", "region": "saga-41202", "lat": 33.58431, "lon": 129.8394, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-41202-201000"] },
-    { "id": "pp-tw-41202-217000", "name": "呼子町小川島港(仮)", "genre": "port", "kind": "GW", "area": "唐津市", "region": "saga-41202", "lat": 33.59737, "lon": 129.89407, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-41202-217000"] },
-    { "id": "pp-tw-41202-200000", "name": "鎮西町馬渡島港(仮)", "genre": "port", "kind": "GW", "area": "唐津市", "region": "saga-41202", "lat": 33.5758, "lon": 129.77279, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-41202-200000"] },
-    { "id": "pp-tw-41202-202000", "name": "鎮西町加唐島港(仮)", "genre": "port", "kind": "GW", "area": "唐津市", "region": "saga-41202", "lat": 33.59576, "lon": 129.85226, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-41202-202000"] }
+    { "id": "pp-tw-41202-021000", "name": "高島港(仮)", "genre": "port", "kind": "GW", "area": "唐津市", "region": "saga-41202", "lat": 33.47539, "lon": 129.98562, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-41202-021000"] },
+    { "id": "pp-tw-41202-109000", "name": "神集島港(仮)", "genre": "port", "kind": "GW", "area": "唐津市", "region": "saga-41202", "lat": 33.52898, "lon": 129.97344, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-41202-109000"] },
+    { "id": "pp-tw-41202-195000", "name": "肥前町向島港(仮)", "genre": "port", "kind": "GW", "area": "唐津市", "region": "saga-41202", "lat": 33.4884, "lon": 129.77466, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-41202-195000"] },
+    { "id": "pp-tw-41202-201000", "name": "鎮西町松島港(仮)", "genre": "port", "kind": "GW", "area": "唐津市", "region": "saga-41202", "lat": 33.5843, "lon": 129.83915, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-41202-201000"] },
+    { "id": "pp-tw-41202-217000", "name": "呼子町小川島港(仮)", "genre": "port", "kind": "GW", "area": "唐津市", "region": "saga-41202", "lat": 33.59703, "lon": 129.89452, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-41202-217000"] },
+    { "id": "pp-tw-41202-200000", "name": "鎮西町馬渡島港(仮)", "genre": "port", "kind": "GW", "area": "唐津市", "region": "saga-41202", "lat": 33.57575, "lon": 129.77293, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-41202-200000"] },
+    { "id": "pp-tw-41202-202000", "name": "鎮西町加唐島港(仮)", "genre": "port", "kind": "GW", "area": "唐津市", "region": "saga-41202", "lat": 33.59545, "lon": 129.85222, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-41202-202000"] }
   ]
 }

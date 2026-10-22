@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "kanagawa",
   "name": "神奈川県",
-  "version": 90,
+  "version": 91,
   "updatedAt": "2026-10-19",
   "note": "神奈川県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -2630,7 +2630,7 @@
     { "id": "tw-14402-001000", "name": "煤ケ谷", "genre": "town", "kind": "TOWN", "area": "清川村", "region": "kanagawa-14402", "lat": 35.47777, "lon": 139.2445, "level": 6, "value": 6, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "14402001000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-14211-042000", "tw-14212-063000", "tw-14212-064000", "tw-14212-080000", "tw-14401-001000", "tw-14401-002000", "tw-14402-002000"], "adj": ["tw-14211-042000", "tw-14212-063000", "tw-14212-064000", "tw-14212-080000", "tw-14401-001000", "tw-14401-002000", "tw-14402-002000"] },
     { "id": "tw-14402-002000", "name": "宮ケ瀬", "genre": "town", "kind": "TOWN", "area": "清川村", "region": "kanagawa-14402", "lat": 35.49855, "lon": 139.21046, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "14402002000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-14151-035000", "tw-14401-001000", "tw-14402-001000"], "adj": ["tw-14151-035000", "tw-14401-001000", "tw-14402-001000"] },
 
-    { "id": "pp-tw-14201-007000", "name": "猿島港(仮)", "genre": "port", "kind": "GW", "area": "横須賀市", "region": "kanagawa-14201", "lat": 35.28614, "lon": 139.69389, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-14201-007000"] },
-    { "id": "pp-tw-14201-043000", "name": "箱崎町港(仮)", "genre": "port", "kind": "GW", "area": "横須賀市", "region": "kanagawa-14201", "lat": 35.30004, "lon": 139.65271, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-14201-043000"] }
+    { "id": "pp-tw-14201-007000", "name": "猿島港(仮)", "genre": "port", "kind": "GW", "area": "横須賀市", "region": "kanagawa-14201", "lat": 35.28606, "lon": 139.6938, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-14201-007000"] },
+    { "id": "pp-tw-14201-043000", "name": "箱崎町港(仮)", "genre": "port", "kind": "GW", "area": "横須賀市", "region": "kanagawa-14201", "lat": 35.3002, "lon": 139.65267, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-14201-043000"] }
   ]
 }

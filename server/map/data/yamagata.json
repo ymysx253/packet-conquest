@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "yamagata",
   "name": "山形県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "山形県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -2131,6 +2131,6 @@
     { "id": "st-000953", "name": "吹浦駅", "genre": "station", "kind": "HUB", "area": "遊佐町", "region": "yamagata-06461", "lat": 39.07012, "lon": 139.87855, "level": 10, "value": 10, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-000948", "st-000959", "tw-06461-024000"] },
     { "id": "st-000959", "name": "遊佐駅", "genre": "station", "kind": "HUB", "area": "遊佐町", "region": "yamagata-06461", "lat": 39.01524, "lon": 139.90498, "level": 10, "value": 10, "lines": ["東日本旅客鉄道 羽越線"], "adj": ["st-000953", "st-000965", "tw-06461-005009", "tw-06461-011020", "tw-06461-012001", "tw-06461-013003", "tw-06461-014007", "tw-06461-016011"] },
 
-    { "id": "pp-tw-06204-078001", "name": "飛島港(仮)", "genre": "port", "kind": "GW", "area": "酒田市", "region": "yamagata-06204", "lat": 39.20533, "lon": 139.55522, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-06204-078001"] }
+    { "id": "pp-tw-06204-078001", "name": "飛島港(仮)", "genre": "port", "kind": "GW", "area": "酒田市", "region": "yamagata-06204", "lat": 39.20535, "lon": 139.55514, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-06204-078001"] }
   ]
 }

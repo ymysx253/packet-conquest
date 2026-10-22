@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "miyazaki",
   "name": "宮崎県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "宮崎県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -1096,6 +1096,6 @@
     { "id": "tw-45443-002001", "name": "鞍岡", "genre": "town", "kind": "TOWN", "area": "五ヶ瀬町", "region": "miyazaki-45443", "lat": 32.58325, "lon": 131.15109, "level": 4, "value": 4, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "45443002001"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-45430-001001", "tw-45443-001001"], "adj": ["tw-45430-001001", "tw-45443-001001"] },
     { "id": "tw-45443-003001", "name": "桑野内", "genre": "town", "kind": "TOWN", "area": "五ヶ瀬町", "region": "miyazaki-45443", "lat": 32.72167, "lon": 131.2392, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "45443003001"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-45441-002000"], "adj": ["tw-45441-002000"] },
 
-    { "id": "pp-tw-45204-076000", "name": "目井津港(仮)", "genre": "port", "kind": "GW", "area": "日南市", "region": "miyazaki-45204", "lat": 31.54121, "lon": 131.40949, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-45204-076000"] }
+    { "id": "pp-tw-45204-076000", "name": "目井津港(仮)", "genre": "port", "kind": "GW", "area": "日南市", "region": "miyazaki-45204", "lat": 31.54164, "lon": 131.40965, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-45204-076000"] }
   ]
 }

@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "okayama",
   "name": "岡山県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "岡山県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -2600,18 +2600,18 @@
     { "id": "tw-33681-258003", "name": "上野北部住区", "genre": "town", "kind": "TOWN", "area": "吉備中央町", "region": "okayama-33681", "lat": 34.84087, "lon": 133.76755, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "33681258003"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-33681-258001", "tw-33681-258005"], "adj": ["tw-33681-258001", "tw-33681-258005"] },
     { "id": "tw-33681-258005", "name": "竹部北部住区第一次", "genre": "town", "kind": "TOWN", "area": "吉備中央町", "region": "okayama-33681", "lat": 34.83666, "lon": 133.76382, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "33681258005"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-33681-067001", "tw-33681-258003"], "adj": ["tw-33681-067001", "tw-33681-258003"] },
 
-    { "id": "pp-tw-33103-071000", "name": "犬島港(仮)", "genre": "port", "kind": "GW", "area": "岡山市東区", "region": "okayama-33103", "lat": 34.5654, "lon": 134.10406, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-33103-071000"] },
+    { "id": "pp-tw-33103-071000", "name": "犬島港(仮)", "genre": "port", "kind": "GW", "area": "岡山市東区", "region": "okayama-33103", "lat": 34.56616, "lon": 134.10356, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-33103-071000"] },
 
-    { "id": "pp-tw-33202-159000", "name": "下津井港(仮)", "genre": "port", "kind": "GW", "area": "倉敷市", "region": "okayama-33202", "lat": 34.44175, "lon": 133.76022, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-33202-159000"] },
+    { "id": "pp-tw-33202-159000", "name": "下津井港(仮)", "genre": "port", "kind": "GW", "area": "倉敷市", "region": "okayama-33202", "lat": 34.44387, "lon": 133.75687, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-33202-159000"] },
 
-    { "id": "pp-tw-33204-937013", "name": "石島港(仮)", "genre": "port", "kind": "GW", "area": "玉野市", "region": "okayama-33204", "lat": 34.49482, "lon": 134.01069, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-33204-937013"] },
+    { "id": "pp-tw-33204-937013", "name": "石島港(仮)", "genre": "port", "kind": "GW", "area": "玉野市", "region": "okayama-33204", "lat": 34.49458, "lon": 134.01087, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-33204-937013"] },
 
-    { "id": "pp-tw-33205-077001", "name": "飛島港(仮)", "genre": "port", "kind": "GW", "area": "笠岡市", "region": "okayama-33205", "lat": 34.34446, "lon": 133.50441, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-33205-077001"] },
-    { "id": "pp-tw-33205-083001", "name": "真鍋島港(仮)", "genre": "port", "kind": "GW", "area": "笠岡市", "region": "okayama-33205", "lat": 34.35131, "lon": 133.58041, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-33205-083001"] },
-    { "id": "pp-tw-33205-084000", "name": "六島港(仮)", "genre": "port", "kind": "GW", "area": "笠岡市", "region": "okayama-33205", "lat": 34.30715, "lon": 133.53055, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-33205-084000"] },
+    { "id": "pp-tw-33205-077001", "name": "飛島港(仮)", "genre": "port", "kind": "GW", "area": "笠岡市", "region": "okayama-33205", "lat": 34.34452, "lon": 133.50461, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-33205-077001"] },
+    { "id": "pp-tw-33205-083001", "name": "真鍋島港(仮)", "genre": "port", "kind": "GW", "area": "笠岡市", "region": "okayama-33205", "lat": 34.35116, "lon": 133.58041, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-33205-083001"] },
+    { "id": "pp-tw-33205-084000", "name": "六島港(仮)", "genre": "port", "kind": "GW", "area": "笠岡市", "region": "okayama-33205", "lat": 34.30707, "lon": 133.53034, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-33205-084000"] },
 
-    { "id": "pp-tw-33211-076021", "name": "日生町大多府港(仮)", "genre": "port", "kind": "GW", "area": "備前市", "region": "okayama-33211", "lat": 34.68409, "lon": 134.29641, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-33211-076021"] },
+    { "id": "pp-tw-33211-076021", "name": "日生町大多府港(仮)", "genre": "port", "kind": "GW", "area": "備前市", "region": "okayama-33211", "lat": 34.68394, "lon": 134.29628, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-33211-076021"] },
 
-    { "id": "pp-tw-33205-076000", "name": "高島(笠岡市)港(仮)", "genre": "port", "kind": "GW", "area": "笠岡市", "region": "okayama-33205", "lat": 34.42617, "lon": 133.50977, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-33205-076000"] }
+    { "id": "pp-tw-33205-076000", "name": "高島(笠岡市)港(仮)", "genre": "port", "kind": "GW", "area": "笠岡市", "region": "okayama-33205", "lat": 34.42633, "lon": 133.50975, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-33205-076000"] }
   ]
 }

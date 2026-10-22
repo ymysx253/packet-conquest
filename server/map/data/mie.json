@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "mie",
   "name": "三重県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "三重県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -2792,15 +2792,15 @@
     { "id": "st-008852", "name": "紀伊井田駅", "genre": "station", "kind": "HUB", "area": "紀宝町", "region": "mie-24562", "lat": 33.7603, "lon": 136.02408, "level": 10, "value": 10, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["st-008810", "st-008865", "tw-24562-003000", "tw-24562-004000"] },
     { "id": "st-008865", "name": "鵜殿駅", "genre": "station", "kind": "HUB", "area": "紀宝町", "region": "mie-24562", "lat": 33.73707, "lon": 136.01593, "level": 10, "value": 10, "lines": ["東海旅客鉄道 紀勢線"], "adj": ["st-008852", "st-008874", "tw-24562-003000", "tw-24562-004000", "tw-30207-003000", "tw-30207-004001", "tw-30207-019001"] },
 
-    { "id": "pp-tw-24209-039000", "name": "行野浦浦港(仮)", "genre": "port", "kind": "GW", "area": "尾鷲市", "region": "mie-24209", "lat": 34.06071, "lon": 136.26159, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-24209-039000"] },
+    { "id": "pp-tw-24209-039000", "name": "行野浦浦港(仮)", "genre": "port", "kind": "GW", "area": "尾鷲市", "region": "mie-24209", "lat": 34.0606, "lon": 136.26186, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-24209-039000"] },
 
-    { "id": "pp-tw-24211-030000", "name": "菅島町港(仮)", "genre": "port", "kind": "GW", "area": "鳥羽市", "region": "mie-24211", "lat": 34.48749, "lon": 136.87314, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-24211-030000"] },
-    { "id": "pp-tw-24211-031000", "name": "神島町港(仮)", "genre": "port", "kind": "GW", "area": "鳥羽市", "region": "mie-24211", "lat": 34.54996, "lon": 136.98497, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-24211-031000"] },
+    { "id": "pp-tw-24211-030000", "name": "菅島町港(仮)", "genre": "port", "kind": "GW", "area": "鳥羽市", "region": "mie-24211", "lat": 34.48726, "lon": 136.87307, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-24211-030000"] },
+    { "id": "pp-tw-24211-031000", "name": "神島町港(仮)", "genre": "port", "kind": "GW", "area": "鳥羽市", "region": "mie-24211", "lat": 34.5503, "lon": 136.98567, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-24211-031000"] },
 
-    { "id": "pp-tw-24215-040000", "name": "磯部町渡鹿野港(仮)", "genre": "port", "kind": "GW", "area": "志摩市", "region": "mie-24215", "lat": 34.3653, "lon": 136.87319, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-24215-040000"] },
+    { "id": "pp-tw-24215-040000", "name": "磯部町渡鹿野港(仮)", "genre": "port", "kind": "GW", "area": "志摩市", "region": "mie-24215", "lat": 34.36547, "lon": 136.87284, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-24215-040000"] },
 
     { "id": "pp-tw-24543-003000", "name": "海野港(仮)", "genre": "port", "kind": "GW", "area": "紀北町", "region": "mie-24543", "lat": 34.16202, "lon": 136.3354, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-24543-003000"] },
 
-    { "id": "pp-tw-24211-028000", "name": "桃取町港(仮)", "genre": "port", "kind": "GW", "area": "鳥羽市", "region": "mie-24211", "lat": 34.51117, "lon": 136.86769, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-24211-028000"] }
+    { "id": "pp-tw-24211-028000", "name": "桃取町港(仮)", "genre": "port", "kind": "GW", "area": "鳥羽市", "region": "mie-24211", "lat": 34.51116, "lon": 136.86767, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-24211-028000"] }
   ]
 }

@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "fukuoka",
   "name": "福岡県",
-  "version": 88,
+  "version": 89,
   "updatedAt": "2026-10-19",
   "note": "福岡県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -3746,21 +3746,21 @@
     { "id": "st-008917", "name": "築城駅", "genre": "station", "kind": "HUB", "area": "築上町", "region": "fukuoka-40647", "lat": 33.67253, "lon": 131.03923, "level": 10, "value": 10, "lines": ["九州旅客鉄道 日豊線"], "adj": ["st-008898", "st-008938", "tw-40647-015000", "tw-40647-037000"] },
     { "id": "st-008938", "name": "椎田駅", "genre": "station", "kind": "HUB", "area": "築上町", "region": "fukuoka-40647", "lat": 33.65433, "lon": 131.05702, "level": 10, "value": 10, "lines": ["九州旅客鉄道 日豊線"], "adj": ["st-008917", "st-008977", "tw-40647-001000", "tw-40647-002000", "tw-40647-003000", "tw-40647-011000", "tw-40647-017000"] },
 
-    { "id": "pp-tw-40106-001000", "name": "藍島港(仮)", "genre": "port", "kind": "GW", "area": "北九州市小倉北区", "region": "fukuoka-40106", "lat": 33.99296, "lon": 130.82016, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40106-001000"] },
-    { "id": "pp-tw-40106-019000", "name": "馬島港(仮)", "genre": "port", "kind": "GW", "area": "北九州市小倉北区", "region": "fukuoka-40106", "lat": 33.96832, "lon": 130.85567, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40106-019000"] },
+    { "id": "pp-tw-40106-001000", "name": "藍島港(仮)", "genre": "port", "kind": "GW", "area": "北九州市小倉北区", "region": "fukuoka-40106", "lat": 33.9931, "lon": 130.81987, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40106-001000"] },
+    { "id": "pp-tw-40106-019000", "name": "馬島港(仮)", "genre": "port", "kind": "GW", "area": "北九州市小倉北区", "region": "fukuoka-40106", "lat": 33.9685, "lon": 130.85624, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40106-019000"] },
 
-    { "id": "pp-tw-40135-062000", "name": "玄界島港(仮)", "genre": "port", "kind": "GW", "area": "福岡市西区", "region": "fukuoka-40135", "lat": 33.68359, "lon": 130.23713, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40135-062000"] },
-    { "id": "pp-tw-40135-063000", "name": "小呂島港(仮)", "genre": "port", "kind": "GW", "area": "福岡市西区", "region": "fukuoka-40135", "lat": 33.86726, "lon": 130.03403, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40135-063000"] },
+    { "id": "pp-tw-40135-062000", "name": "玄界島港(仮)", "genre": "port", "kind": "GW", "area": "福岡市西区", "region": "fukuoka-40135", "lat": 33.68355, "lon": 130.23675, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40135-062000"] },
+    { "id": "pp-tw-40135-063000", "name": "小呂島港(仮)", "genre": "port", "kind": "GW", "area": "福岡市西区", "region": "fukuoka-40135", "lat": 33.86692, "lon": 130.03342, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40135-063000"] },
 
-    { "id": "pp-tw-40202-163000", "name": "初島港(仮)", "genre": "port", "kind": "GW", "area": "大牟田市", "region": "fukuoka-40202", "lat": 33.05295, "lon": 130.40482, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40202-163000"] },
-    { "id": "pp-tw-40202-164000", "name": "三池島港(仮)", "genre": "port", "kind": "GW", "area": "大牟田市", "region": "fukuoka-40202", "lat": 33.03973, "lon": 130.35557, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40202-164000"] },
+    { "id": "pp-tw-40202-163000", "name": "初島港(仮)", "genre": "port", "kind": "GW", "area": "大牟田市", "region": "fukuoka-40202", "lat": 33.05294, "lon": 130.40474, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40202-163000"] },
+    { "id": "pp-tw-40202-164000", "name": "三池島港(仮)", "genre": "port", "kind": "GW", "area": "大牟田市", "region": "fukuoka-40202", "lat": 33.03931, "lon": 130.35437, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40202-164000"] },
 
-    { "id": "pp-tw-40230-096001", "name": "志摩姫島港(仮)", "genre": "port", "kind": "GW", "area": "糸島市", "region": "fukuoka-40230", "lat": 33.5685, "lon": 130.04682, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40230-096001"] },
+    { "id": "pp-tw-40230-096001", "name": "志摩姫島港(仮)", "genre": "port", "kind": "GW", "area": "糸島市", "region": "fukuoka-40230", "lat": 33.56801, "lon": 130.04646, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40230-096001"] },
 
-    { "id": "pp-tw-40345-009001", "name": "相島港(仮)", "genre": "port", "kind": "GW", "area": "新宮町", "region": "fukuoka-40345", "lat": 33.76463, "lon": 130.37096, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40345-009001"] },
+    { "id": "pp-tw-40345-009001", "name": "相島港(仮)", "genre": "port", "kind": "GW", "area": "新宮町", "region": "fukuoka-40345", "lat": 33.76481, "lon": 130.37133, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40345-009001"] },
 
-    { "id": "pp-tw-40621-013000", "name": "神ノ島港(仮)", "genre": "port", "kind": "GW", "area": "苅田町", "region": "fukuoka-40621", "lat": 33.79262, "lon": 131.0083, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40621-013000"] },
+    { "id": "pp-tw-40621-013000", "name": "神ノ島港(仮)", "genre": "port", "kind": "GW", "area": "苅田町", "region": "fukuoka-40621", "lat": 33.79201, "lon": 131.00932, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40621-013000"] },
 
-    { "id": "pp-tw-40220-060001", "name": "地島港(仮)", "genre": "port", "kind": "GW", "area": "宗像市", "region": "fukuoka-40220", "lat": 33.9075, "lon": 130.49155, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40220-060001"] }
+    { "id": "pp-tw-40220-060001", "name": "地島港(仮)", "genre": "port", "kind": "GW", "area": "宗像市", "region": "fukuoka-40220", "lat": 33.90726, "lon": 130.49133, "level": 30, "value": 30, "src": "src-phantom", "gateway": {"type": "port", "scope": "domestic"}, "adj": ["tw-40220-060001"] }
   ]
 }
