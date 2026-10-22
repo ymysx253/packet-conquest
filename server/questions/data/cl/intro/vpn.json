@@ -1,0 +1,12 @@
+{
+  "note": "FactBank(新しい番号 Lv64「社外から社内のネットワークへ」)。行 = 問いの文(ja)・正解(attrs.answer)・誤答の候補(attrs.wrong。どれも正解にならないもの)・理由(attrs.why)。誤答の候補から選んで n 択にする",
+  "rows": [
+    {"id":"term","ja":"家から社内のネットワークに安全に入るのに使うのはどれ?","attrs":{"answer":"VPN","wrong":["SSID","DHCP","DNS","HTTP","SMTP"],"why":"VPN はインターネットの上に暗号で守った道を作り、社内に安全に入る。"},"source":"一般的な定義(VPN)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"hotel","ja":"出張先のホテルの無線 LAN から社内のシステムを使うとき、安全のために使うのはどれ?","attrs":{"answer":"VPN","wrong":["SSID","DHCP","POP","DNS"],"why":"VPN で暗号の道を作れば、途中で盗み見られにくい。"},"source":"一般的な定義(VPN)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"makes","ja":"VPN が作るのはどれ?","attrs":{"answer":"インターネットの上の、暗号で守った専用の道","wrong":["新しい光ファイバーの線","無線 LAN の名前","名前と IP アドレスの対応表","メールの送り先の一覧"],"why":"新しい線を引くのではなく、インターネットの上に暗号の道(トンネル)を作る。"},"source":"一般的な定義(VPN)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"desc","ja":"VPN の説明として正しいのはどれ?","attrs":{"answer":"離れた所から社内のネットワークに安全につなぐしくみ","wrong":["IP アドレスを自動で配るしくみ","名前から IP アドレスを調べるしくみ","Web ページを送る決まり","光の信号を変換する機器"],"why":"VPN は離れた所と社内を安全につなぐ。"},"source":"一般的な定義(VPN)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"p","ja":"VPN の「P」は何?","attrs":{"answer":"Private(専用の)","wrong":["Public(公開の)","Printer","Packet","Password"],"why":"Virtual Private Network。P は Private(専用の・自分たちだけの)。"},"source":"一般的な定義(VPN)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"v","ja":"VPN の「V」は何?","attrs":{"answer":"Virtual(仮想の)","wrong":["Video","Voice","Very","Visible"],"why":"Virtual Private Network。実際の専用線ではなく、インターネットの上に仮想の専用の道を作る。"},"source":"一般的な定義(VPN)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"content","ja":"VPN を通る通信の中身は、途中でどうなる?","attrs":{"answer":"暗号で守られ、盗み見られにくい","wrong":["だれでも読めるようにそのまま流れる","必ず消えてしまう","手紙に印刷されて運ばれる","速さが必ず 2 倍になる"],"why":"VPN の道の中は暗号で守られる。"},"source":"一般的な定義(VPN)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

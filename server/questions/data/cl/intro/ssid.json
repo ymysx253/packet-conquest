@@ -1,0 +1,10 @@
+{
+  "note": "FactBank(新しい番号 Lv34「SSID」)。行 = 問いの文(ja)・正解(attrs.answer)・誤答の候補(attrs.wrong。どれも正解にならないもの)・理由(attrs.why)。誤答の候補から選んで n 択にする",
+  "rows": [
+    {"id":"name","ja":"無線 LAN のネットワークの名前はどれ?","attrs":{"answer":"SSID","wrong":["パスワード","IP アドレス","MAC アドレス","URL","ドメイン名"],"why":"SSID は無線 LAN のネットワークの名前。パスワードはつなぐための合言葉で、別のもの。"},"source":"IEEE 802.11(SSID)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"choose","ja":"スマホでつなぐ無線のネットワークを選ぶとき、一覧に出る名前はどれ?","attrs":{"answer":"SSID","wrong":["パスワード","IP アドレス","MAC アドレス","URL","ドメイン名"],"why":"まわりの SSID の一覧から、つなぎたいネットワークを選ぶ。"},"source":"IEEE 802.11(SSID)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"desc","ja":"SSID の説明として正しいのはどれ?","attrs":{"answer":"無線 LAN のネットワークの名前","wrong":["無線 LAN につなぐときの合言葉","機器の部品ごとに付く番号","Web ページの場所を表す文字","回線の速さの単位","電波の強さの単位"],"why":"SSID は名前。合言葉はパスワード、部品ごとの番号は MAC アドレス、Web ページの場所は URL。"},"source":"IEEE 802.11(SSID)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"vs-pass","ja":"SSID とパスワードの関係で正しいのはどれ?","attrs":{"answer":"SSID は名前、パスワードはつなぐための合言葉で、別のもの","wrong":["SSID とパスワードは同じもの","SSID がわかればパスワードは要らない","パスワードは SSID の別の呼び方","SSID は必ずパスワードと同じ文字にする"],"why":"SSID はネットワークの名前で、ふつう一覧で見える。パスワードは別に決めた合言葉。"},"source":"IEEE 802.11(SSID)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"two","ja":"近くに無線 LAN が 2 つあるとき、どちらにつなぐか見分けるのに使うのはどれ?","attrs":{"answer":"SSID","wrong":["bps","ONU","RJ-45","HDMI"],"why":"SSID(ネットワークの名前)で見分けて選ぶ。"},"source":"IEEE 802.11(SSID)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "FactBank(新しい番号 Lv36「IPv4 は何ビット」)。行 = 問いの文(ja)・正解(attrs.answer)・誤答の候補(attrs.wrong。どれも正解にならないもの)・理由(attrs.why)。誤答の候補から選んで n 択にする",
+  "rows": [
+    {"id":"bits","ja":"IPv4 アドレスは何ビット?","attrs":{"answer":"32 ビット","wrong":["8 ビット","16 ビット","48 ビット","64 ビット","128 ビット"],"why":"IPv4 アドレスは 32 ビット(8 ビット × 4)。48 ビットは MAC アドレス、128 ビットは IPv6。"},"source":"RFC 791(IPv4 のアドレスは 32 ビット)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"bytes","ja":"IPv4 アドレスは何バイト?","attrs":{"answer":"4 バイト","wrong":["1 バイト","2 バイト","6 バイト","8 バイト","16 バイト"],"why":"32 ビット ÷ 8 = 4 バイト。"},"source":"RFC 791(IPv4 のアドレスは 32 ビット)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"parts","ja":"IPv4 アドレスは、点(.)で区切った数がいくつ並ぶ?","attrs":{"answer":"4 つ","wrong":["2 つ","3 つ","6 つ","8 つ"],"why":"192.0.2.10 のように 4 つ並ぶ。"},"source":"RFC 791(IPv4 のアドレスは 32 ビット)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"part-bits","ja":"IPv4 アドレスの 1 区切りは何ビット?","attrs":{"answer":"8 ビット","wrong":["2 ビット","4 ビット","16 ビット","32 ビット"],"why":"32 ビットを 4 つに分けるので、1 区切りは 8 ビット。"},"source":"RFC 791(IPv4 のアドレスは 32 ビット)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"times","ja":"IPv4 アドレス全体のビット数は、8 ビットのいくつ分?","attrs":{"answer":"4 つ分","wrong":["2 つ分","3 つ分","6 つ分","8 つ分"],"why":"8 ビット × 4 = 32 ビット。"},"source":"RFC 791(IPv4 のアドレスは 32 ビット)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

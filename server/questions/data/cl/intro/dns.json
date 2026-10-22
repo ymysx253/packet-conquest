@@ -1,0 +1,12 @@
+{
+  "note": "FactBank(新しい番号 Lv50「DNS」)。行 = 問いの文(ja)・正解(attrs.answer)・誤答の候補(attrs.wrong。どれも正解にならないもの)・理由(attrs.why)。誤答の候補から選んで n 択にする",
+  "rows": [
+    {"id":"term","ja":"名前(ドメイン名)から IP アドレスを調べるしくみはどれ?","attrs":{"answer":"DNS","wrong":["DHCP","HTTP","SSID","ONU","SMTP"],"why":"DNS は名前から番号(IP アドレス)を引く。DHCP はアドレスを配る、HTTP は Web の決まり。"},"source":"RFC 1034・RFC 1035(DNS)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"like","ja":"DNS は何にたとえられる?","attrs":{"answer":"名前から番号を引く電話帳","wrong":["荷物を運ぶトラック","家の玄関の鍵","道路の信号機","雨をよける傘"],"why":"名前を引くと番号が返ってくる電話帳のようなもの。"},"source":"RFC 1034・RFC 1035(DNS)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"first","ja":"ブラウザに www.shop.example と打ったとき、ふつう最初に行うことはどれ?","attrs":{"answer":"DNS で www.shop.example の IP アドレスを調べる","wrong":["SSID を変える","ケーブルを抜き差しする","MAC アドレスを書きかえる","パスワードを変える"],"why":"相手の IP アドレスがわからないと送れないので、まず DNS で調べる。"},"source":"RFC 1034・RFC 1035(DNS)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"returns","ja":"DNS に名前を問い合わせると、返ってくるのはどれ?","attrs":{"answer":"その名前の IP アドレス","wrong":["その名前の持ち主の家の住所","無線 LAN のパスワード","回線の速さ","Web ページの色"],"why":"名前に対応する IP アドレスが返ってくる。"},"source":"RFC 1034・RFC 1035(DNS)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"down","ja":"DNS が使えないとき、起こりやすいことはどれ?","attrs":{"answer":"名前で Web ページを開けない","wrong":["ケーブルが切れる","電源が落ちる","画面が暗くなる","無線の電波が消える"],"why":"名前から IP アドレスを調べられないので、名前で開けなくなる。"},"source":"RFC 1034・RFC 1035(DNS)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"desc","ja":"DNS の説明として正しいのはどれ?","attrs":{"answer":"ドメイン名と IP アドレスを結び付けて調べるしくみ","wrong":["IP アドレスを自動で配るしくみ","Web ページを送る決まり","メールを送る決まり","無線 LAN の名前"],"why":"DNS は名前と番号を結び付ける。アドレスを配るのは DHCP。"},"source":"RFC 1034・RFC 1035(DNS)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"server","ja":"名前から IP アドレスを調べるとき、問い合わせる先のサーバーはどれ?","attrs":{"answer":"DNS サーバー","wrong":["DHCP サーバー","Web サーバー","メールサーバー","ファイルサーバー"],"why":"名前の問い合わせには DNS サーバーが答える。"},"source":"RFC 1034・RFC 1035(DNS)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

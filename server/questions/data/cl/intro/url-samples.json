@@ -1,0 +1,21 @@
+{
+  "note": "FactBank(新しい番号 Lv54「URL のホスト名」・Lv55「URL のスキームとパス」)。行 = URL(ja)とその部分(attrs.scheme・host・path)。ドメインは .example だけ。テストで ja = scheme://host + path を確かめる",
+  "rows": [
+    {"id":"shop-news","ja":"https://www.shop.example/news","attrs":{"scheme":"https","host":"www.shop.example","path":"/news"},"source":"RFC 3986(URI の書き方)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"city-bus","ja":"http://www.city.example/guide/bus","attrs":{"scheme":"http","host":"www.city.example","path":"/guide/bus"},"source":"RFC 3986(URI の書き方)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"school-inbox","ja":"https://mail.school.example/inbox","attrs":{"scheme":"https","host":"mail.school.example","path":"/inbox"},"source":"RFC 3986(URI の書き方)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"news-sports","ja":"https://news.example/sports/today","attrs":{"scheme":"https","host":"news.example","path":"/sports/today"},"source":"RFC 3986(URI の書き方)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"office-report","ja":"http://intra.office.example/report","attrs":{"scheme":"http","host":"intra.office.example","path":"/report"},"source":"RFC 3986(URI の書き方)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"museum-event","ja":"https://www.museum.example/event/2026","attrs":{"scheme":"https","host":"www.museum.example","path":"/event/2026"},"source":"RFC 3986(URI の書き方)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"shop-cart","ja":"https://shop.example/cart","attrs":{"scheme":"https","host":"shop.example","path":"/cart"},"source":"RFC 3986(URI の書き方)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"lab-manual","ja":"https://docs.lab.example/manual/start","attrs":{"scheme":"https","host":"docs.lab.example","path":"/manual/start"},"source":"RFC 3986(URI の書き方)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"library","ja":"http://www.library.example/search","attrs":{"scheme":"http","host":"www.library.example","path":"/search"},"source":"RFC 3986(URI の書き方)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"club-album","ja":"https://photo.club.example/album/summer","attrs":{"scheme":"https","host":"photo.club.example","path":"/album/summer"},"source":"RFC 3986(URI の書き方)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"station-map","ja":"https://www.station.example/map","attrs":{"scheme":"https","host":"www.station.example","path":"/map"},"source":"RFC 3986(URI の書き方)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"game-rank","ja":"http://game.example/rank","attrs":{"scheme":"http","host":"game.example","path":"/rank"},"source":"RFC 3986(URI の書き方)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"zoo-animals","ja":"https://www.zoo.example/animals/panda","attrs":{"scheme":"https","host":"www.zoo.example","path":"/animals/panda"},"source":"RFC 3986(URI の書き方)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"town-info","ja":"http://info.town.example/notice","attrs":{"scheme":"http","host":"info.town.example","path":"/notice"},"source":"RFC 3986(URI の書き方)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"bakery-menu","ja":"https://www.bakery.example/menu/bread","attrs":{"scheme":"https","host":"www.bakery.example","path":"/menu/bread"},"source":"RFC 3986(URI の書き方)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"team-schedule","ja":"https://team.sports.example/schedule","attrs":{"scheme":"https","host":"team.sports.example","path":"/schedule"},"source":"RFC 3986(URI の書き方)・RFC 2606(.example)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

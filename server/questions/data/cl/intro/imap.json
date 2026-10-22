@@ -1,0 +1,11 @@
+{
+  "note": "FactBank(新しい番号 Lv57「メールを受け取る」)。行 = 問いの文(ja)・正解(attrs.answer)・誤答の候補(attrs.wrong。どれも正解にならないもの)・理由(attrs.why)。誤答の候補から選んで n 択にする",
+  "rows": [
+    {"id":"imap","ja":"メールをサーバーに置いたまま読む決まりはどれ?","attrs":{"answer":"IMAP","wrong":["POP","SMTP","DHCP","DNS"],"why":"IMAP はサーバーに置いたまま読む。POP は自分の機器に持ち帰る。SMTP は送る決まり。"},"source":"RFC 1939(POP3)・RFC 9051(IMAP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"pop","ja":"メールを自分の機器に持ち帰って読む決まりはどれ?","attrs":{"answer":"POP","wrong":["IMAP","SMTP","DHCP","DNS"],"why":"POP は持ち帰って読む。IMAP はサーバーに置いたまま。"},"source":"RFC 1939(POP3)・RFC 9051(IMAP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"multi","ja":"スマホと PC の両方で、同じメールを見たいときに向く決まりはどれ?","attrs":{"answer":"IMAP","wrong":["POP","SMTP","DHCP","DNS"],"why":"IMAP はサーバーに置いたままなので、どの機器からも同じメールを見られる。"},"source":"RFC 1939(POP3)・RFC 9051(IMAP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"imap-desc","ja":"IMAP の説明として正しいのはどれ?","attrs":{"answer":"メールをサーバーに置いたまま読む","wrong":["メールを自分の機器に持ち帰って読む","メールを送る","アドレスを自動で配る","名前から IP アドレスを調べる"],"why":"IMAP は置いたまま読む。持ち帰るのは POP、送るのは SMTP。"},"source":"RFC 1939(POP3)・RFC 9051(IMAP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"pop-desc","ja":"POP の説明として正しいのはどれ?","attrs":{"answer":"メールを自分の機器に持ち帰って読む","wrong":["メールをサーバーに置いたまま読む","メールを送る","Web ページを送る","アドレスを自動で配る"],"why":"POP は持ち帰って読む。置いたままは IMAP。"},"source":"RFC 1939(POP3)・RFC 9051(IMAP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"after","ja":"IMAP でメールを読んだあと、そのメールはどこにある?","attrs":{"answer":"サーバーに残っている","wrong":["サーバーから消える","送った人に送り返される","DNS サーバーに移る","プリンターに送られる"],"why":"IMAP はサーバーに置いたまま読むので、メールはサーバーに残る。"},"source":"RFC 1939(POP3)・RFC 9051(IMAP)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

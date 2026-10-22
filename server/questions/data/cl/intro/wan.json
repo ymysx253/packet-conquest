@@ -1,0 +1,12 @@
+{
+  "note": "FactBank(新しい番号 Lv4「WAN とは」)。行 = 問いの文(ja)・正解(attrs.answer)・誤答の候補(attrs.wrong。どれも正解にならないもの)・理由(attrs.why)。誤答の候補から選んで n 択にする",
+  "rows": [
+    {"id":"def","ja":"WAN の説明として正しいのはどれ?","attrs":{"answer":"離れた場所どうしをつなぐ広い範囲のネットワーク","wrong":["1 つの建物の中の狭い範囲のネットワーク","1 台の PC の中の部品をつなぐ線","無線 LAN のネットワークの名前","家の中の機器だけをつなぐネットワーク","PC とプリンターをつなぐ USB の線"],"why":"WAN は東京と大阪のように離れた場所どうしをつなぐ。建物の中など狭い範囲は LAN。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"tokyo-osaka","ja":"WAN でつなぐのが向いているのはどれ?","attrs":{"answer":"東京の本社と大阪の支社","wrong":["同じ部屋の PC とプリンター","家のリビングのスマホとテレビ","1 つの教室の中の PC どうし","同じ机の上の PC と記憶装置"],"why":"離れた場所どうしなので WAN。ほかは狭い範囲なので LAN。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"sapporo-fukuoka","ja":"WAN でつなぐのが向いているのはどれ?","attrs":{"answer":"札幌の工場と福岡の営業所","wrong":["同じ部屋の PC とプリンター","家のリビングのスマホとテレビ","1 つの教室の中の PC どうし","同じ机の上の PC と記憶装置"],"why":"離れた場所どうしなので WAN。ほかは狭い範囲なので LAN。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"overseas","ja":"WAN でつなぐのが向いているのはどれ?","attrs":{"answer":"日本の本社と海外の工場","wrong":["同じ部屋の PC とプリンター","家のリビングのスマホとテレビ","1 つの教室の中の PC どうし","同じ机の上の PC と記憶装置"],"why":"離れた場所どうしなので WAN。ほかは狭い範囲なので LAN。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"branches","ja":"WAN でつなぐのが向いているのはどれ?","attrs":{"answer":"県内に散らばった 10 の支店と本部","wrong":["同じ部屋の PC とプリンター","家のリビングのスマホとテレビ","1 つの教室の中の PC どうし","同じ机の上の PC と記憶装置"],"why":"離れた場所どうしなので WAN。ほかは狭い範囲なので LAN。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"carrier","ja":"WAN で離れた場所をつなぐとき、ふつう使うものはどれ?","attrs":{"answer":"通信会社が用意した回線","wrong":["建物の中の LAN ケーブルだけ","USB ケーブル","HDMI ケーブル","電源の延長コード"],"why":"離れた場所まで自分で線を引くのは難しいので、通信会社の回線を使う。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"w","ja":"WAN の「W」は何の頭文字?","attrs":{"answer":"Wide(広い)","wrong":["Wireless(無線)","Web","Window(窓)","World(世界)"],"why":"WAN は Wide Area Network(広い範囲のネットワーク)の略。"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

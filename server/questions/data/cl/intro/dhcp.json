@@ -1,0 +1,12 @@
+{
+  "note": "FactBank(新しい番号 Lv51「DHCP」)。行 = 問いの文(ja)・正解(attrs.answer)・誤答の候補(attrs.wrong。どれも正解にならないもの)・理由(attrs.why)。誤答の候補から選んで n 択にする",
+  "rows": [
+    {"id":"term","ja":"IP アドレスを自動で配るしくみはどれ?","attrs":{"answer":"DHCP","wrong":["DNS","HTTP","SSID","SMTP","HTTPS"],"why":"DHCP はつないだ機器にアドレスを配る。DNS は名前から IP アドレスを調べる。"},"source":"RFC 2131(DHCP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"phone","ja":"スマホを無線 LAN につなぐと、すぐ IPv4 アドレスが付くのは何のおかげ?","attrs":{"answer":"DHCP","wrong":["DNS","HTTP","SSID","SMTP"],"why":"DHCP サーバーがアドレスを配ってくれる。"},"source":"RFC 2131(DHCP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"merit","ja":"DHCP のよさはどれ?","attrs":{"answer":"1 台ずつ手でアドレスを設定しなくてよい","wrong":["通信が必ず暗号になる","名前から IP アドレスを調べられる","ケーブルが要らなくなる","Web ページが速く開く"],"why":"自動で配るので、手で 1 台ずつ設定しなくてよい。名前を調べるのは DNS。"},"source":"RFC 2131(DHCP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"home","ja":"家の LAN で DHCP サーバーの役をすることが多い機器はどれ?","attrs":{"answer":"ルーター","wrong":["プリンター","LAN ケーブル","テレビ","ゲーム機"],"why":"家ではルーターが DHCP サーバーを兼ねることが多い。"},"source":"RFC 2131(DHCP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"gives","ja":"DHCP で配られる代表的なものはどれ?","attrs":{"answer":"IP アドレス","wrong":["MAC アドレス","SSID","電源","ケーブル"],"why":"DHCP は IP アドレスなどを配る。MAC アドレスは部品に初めから付いている。"},"source":"RFC 2131(DHCP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"desc","ja":"DHCP の説明として正しいのはどれ?","attrs":{"answer":"機器に IP アドレスなどを自動で配るしくみ","wrong":["名前から IP アドレスを調べるしくみ","Web ページを送る決まり","無線 LAN の名前","光の信号を変換する機器"],"why":"DHCP は自動で配るしくみ。名前を調べるのは DNS。"},"source":"RFC 2131(DHCP)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"server","ja":"DHCP で、アドレスを配る役をするのはどれ?","attrs":{"answer":"DHCP サーバー","wrong":["DNS サーバー","Web サーバー","メールサーバー","ファイルサーバー"],"why":"配る役は DHCP サーバー。"},"source":"RFC 2131(DHCP)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}
