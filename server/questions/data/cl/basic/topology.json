@@ -1,0 +1,15 @@
+{
+  "note": "つなぎ方の形(Lv80)。attrs.topo = 形の名前。1 行 1 つの説明。ほかの形にも当てはまる説明(「1 本切れても別の道で届く」など)は入れない",
+  "rows": [
+    {"id":"star-center","ja":"すべての機器が、中心の 1 台(スイッチなど)にそれぞれつながる形","attrs":{"topo":"スター型"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"star-fail","ja":"中心の機器が止まると、ほかの機器どうしも通信できなくなる形","attrs":{"topo":"スター型"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"star-lan","ja":"今の会社や家の有線 LAN で多い、スイッチを中心にした形","attrs":{"topo":"スター型"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"bus-trunk","ja":"1 本の幹線に、すべての機器がぶら下がるようにつながる形","attrs":{"topo":"バス型"},"source":"一般的な定義(10BASE5 など)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"bus-term","ja":"幹線の両端に終端抵抗を付けて、信号のはね返りを防ぐ形","attrs":{"topo":"バス型"},"source":"一般的な定義(10BASE5・10BASE2)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ring-loop","ja":"機器を輪のようにつなぎ、データが輪を回って届く形","attrs":{"topo":"リング型"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ring-next","ja":"隣どうしを順につなぎ、最後の機器を最初の機器に戻してつなぐ形","attrs":{"topo":"リング型"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"mesh-full","ja":"どの 2 台の間にも、直接の線があるようにつなぐ形","attrs":{"topo":"メッシュ型"},"source":"一般的な定義(フルメッシュ)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"mesh-net","ja":"機器どうしを網の目のように、いくつもの線で互いにつなぐ形","attrs":{"topo":"メッシュ型"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"tree-layer","ja":"スイッチを何段にも重ねて、木の枝のように広げる形","attrs":{"topo":"ツリー型"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

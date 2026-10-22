@@ -1,0 +1,15 @@
+{
+  "note": "ARP の役割と動き(Lv107)。type role: 調べる・配るしくみの役割(ja = 名前、attrs.role = 役割)。type qa: 問いと答え(attrs.answer、wrongs = 誤答。どれも正しくない)",
+  "rows": [
+    {"id":"r-arp","ja":"ARP","attrs":{"type":"role","role":"IP アドレスから、同じ LAN の機器の MAC アドレスを調べる"},"source":"RFC 826","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"r-dns","ja":"DNS","attrs":{"type":"role","role":"名前(www.shop.example など)から IP アドレスを調べる"},"source":"RFC 1034","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"r-dhcp","ja":"DHCP","attrs":{"type":"role","role":"機器に IP アドレスなどの設定を自動で配る"},"source":"RFC 2131","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"r-icmp","ja":"ICMP","attrs":{"type":"role","role":"届かなかったことを知らせたり、届くかを確かめたり(ping)する"},"source":"RFC 792","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-req","ja":"ARP の問い合わせ(要求)は、だれ宛に送られる?","attrs":{"type":"qa","answer":"同じ LAN の全員(ブロードキャスト)","wrongs":["ルーターだけ","DNS サーバーだけ","インターネットの全員","DHCP サーバーだけ"],"why":"相手の MAC がまだわからないので、宛先 MAC を ff:ff:ff:ff:ff:ff にして全員に聞く。"},"source":"RFC 826","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-rep","ja":"ARP の答え(応答)は、だれ宛に送られる?","attrs":{"type":"qa","answer":"問い合わせてきた機器だけ","wrongs":["同じ LAN の全員","ルーターだけ","インターネットの全員","DNS サーバーだけ"],"why":"問い合わせた機器の MAC はわかっているので、その 1 台にだけ返す。"},"source":"RFC 826","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-cache","ja":"ARP で調べた結果を、しばらく覚えておく表は?","attrs":{"type":"qa","answer":"ARP テーブル","wrongs":["経路表","MAC アドレステーブル","NAT の変換表","DNS のゾーン"],"why":"調べた IP と MAC の組を ARP テーブル(ARP キャッシュ)に覚え、毎回聞かずに済ませる。"},"source":"RFC 826","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-gw","ja":"別の網の宛先に送るとき、PC が ARP で MAC アドレスを調べる相手は?","attrs":{"type":"qa","answer":"デフォルトゲートウェイ(ルーター)","wrongs":["宛先の機器そのもの","DNS サーバー","DHCP サーバー","同じ LAN の全員の MAC"],"why":"別の網へはルーターに渡すので、調べるのはルーターの MAC。宛先の機器は別の網にいて ARP は届かない。"},"source":"RFC 826・RFC 1122","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-ask","ja":"ARP の問い合わせで伝える内容に近いのは?","attrs":{"type":"qa","answer":"「この IP アドレスの機器は、MAC アドレスを教えて」","wrongs":["「この名前の IP アドレスを教えて」","「IP アドレスを 1 つ貸して」","「このパケットを宛先まで届けて」","「この MAC アドレスの IP アドレスを配って」"],"why":"ARP は IP アドレスを手がかりに MAC アドレスを聞く。名前から IP は DNS、アドレスを借りるのは DHCP。"},"source":"RFC 826","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-layer","ja":"ARP が調べて手に入れるのは?","attrs":{"type":"qa","answer":"MAC アドレス","wrongs":["IP アドレス","ポート番号","ドメイン名","サブネットマスク"],"why":"ARP は IP アドレスから MAC アドレスを調べる。"},"source":"RFC 826","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "HTTP のステータスコードの種類(百の位。Lv122)。attrs.digit = 百の位",
+  "rows": [
+    {"id":"1xx","ja":"情報(処理を続けている)","attrs":{"digit":1},"source":"RFC 9110 第 15 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"2xx","ja":"成功","attrs":{"digit":2},"source":"RFC 9110 第 15 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"3xx","ja":"転送(リダイレクト。別の場所を見る)","attrs":{"digit":3},"source":"RFC 9110 第 15 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"4xx","ja":"頼む側(クライアント)の誤り","attrs":{"digit":4},"source":"RFC 9110 第 15 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"5xx","ja":"サーバー側の誤り","attrs":{"digit":5},"source":"RFC 9110 第 15 節","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

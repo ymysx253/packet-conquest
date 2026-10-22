@@ -1,0 +1,13 @@
+{
+  "note": "仮想マシンとコンテナの違い(Lv146)。attrs.kind = vm / container。両方に当てはまる説明は入れない",
+  "rows": [
+    {"id":"v-os","ja":"中に OS を丸ごと持っている","attrs":{"kind":"vm"},"source":"NIST SP 800-190 第 2.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"v-otheros","ja":"土台と違う種類の OS を、その中で動かせる","attrs":{"kind":"vm"},"source":"NIST SP 800-190 第 2.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"v-hv","ja":"ハイパーバイザーの上で動く","attrs":{"kind":"vm"},"source":"NIST SP 800-190 第 2.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"v-boot","ja":"起動のときに OS の起動から始まるので、時間がかかりやすい","attrs":{"kind":"vm"},"source":"NIST SP 800-190 第 2.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"c-share","ja":"土台の OS(カーネル)をほかと共有して動く","attrs":{"kind":"container"},"source":"NIST SP 800-190 第 2.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"c-light","ja":"OS を丸ごと持たないので、軽く、すぐに起動できる","attrs":{"kind":"container"},"source":"NIST SP 800-190 第 2.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"c-image","ja":"アプリと必要な部品をまとめた「イメージ」から作って動かす","attrs":{"kind":"container"},"source":"NIST SP 800-190 第 2.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"c-many","ja":"同じ台数の機械で、仮想マシンより多くの数を動かしやすい","attrs":{"kind":"container"},"source":"NIST SP 800-190 第 2.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

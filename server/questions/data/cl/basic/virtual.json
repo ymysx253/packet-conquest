@@ -1,0 +1,12 @@
+{
+  "note": "仮想マシンとハイパーバイザー(Lv145)。attrs.desc = 説明",
+  "rows": [
+    {"id":"hv","ja":"ハイパーバイザー","attrs":{"desc":"物理の機械の上で、いくつもの仮想マシンを分けて動かす土台のソフト"},"source":"一般的な定義(NIST SP 800-125)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"vm","ja":"仮想マシン","attrs":{"desc":"ソフトで作った、1 台のコンピューターのように動くもの"},"source":"一般的な定義(NIST SP 800-125)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"guest","ja":"ゲスト OS","attrs":{"desc":"仮想マシンの中で動く OS"},"source":"一般的な定義(NIST SP 800-125)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"host","ja":"ホスト OS","attrs":{"desc":"物理の機械に直接入っていて、その上で仮想化のソフトを動かす OS"},"source":"一般的な定義(NIST SP 800-125)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"migrate","ja":"ライブマイグレーション","attrs":{"desc":"動いている仮想マシンを、止めずに別の物理サーバーへ移す"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"snapshot","ja":"スナップショット","attrs":{"desc":"仮想マシンの、ある時点の状態を保存しておき、あとでその状態に戻せるようにする"},"source":"一般的な定義","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"container","ja":"コンテナ","attrs":{"desc":"土台の OS を共有し、アプリと必要な部品だけを分けて軽く動かすしくみ"},"source":"一般的な定義(NIST SP 800-190)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

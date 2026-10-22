@@ -1,0 +1,18 @@
+{
+  "note": "情報セキュリティの 3 つの要素(Lv125)。type def: 定義(ja = 名前、attrs.desc)。type ex: 場面(attrs.answer = 主に関わる要素)。3 つのどれか 1 つに決まる場面だけ入れる",
+  "rows": [
+    {"id":"d-c","ja":"機密性","attrs":{"type":"def","desc":"見てよい人だけが見られること"},"source":"JIS Q 27000","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"d-i","ja":"完全性","attrs":{"type":"def","desc":"正しく、勝手に書き換えられていないこと"},"source":"JIS Q 27000","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"d-a","ja":"可用性","attrs":{"type":"def","desc":"使いたいときに使えること"},"source":"JIS Q 27000","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-leak","ja":"お客さまの名簿が、外の人に見られてしまった","attrs":{"type":"ex","answer":"機密性"},"source":"JIS Q 27000","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-peek","ja":"画面に出したパスワードを、後ろからのぞき見られた","attrs":{"type":"ex","answer":"機密性"},"source":"JIS Q 27000","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-encrypt","ja":"通信を暗号化して、途中で中身を読まれないようにする","attrs":{"type":"ex","answer":"機密性"},"source":"JIS Q 27000","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-tamper","ja":"Web ページの中身が、勝手に書き換えられた","attrs":{"type":"ex","answer":"完全性"},"source":"JIS Q 27000","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-hash","ja":"受け取ったファイルのハッシュ値を比べて、途中で変わっていないか確かめる","attrs":{"type":"ex","answer":"完全性"},"source":"JIS Q 27000","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-price","ja":"通販の注文の金額が、途中で別の値に変えられていた","attrs":{"type":"ex","answer":"完全性"},"source":"JIS Q 27000","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-down","ja":"サーバーが故障して、何時間もサービスが使えなかった","attrs":{"type":"ex","answer":"可用性"},"source":"JIS Q 27000","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-ups","ja":"停電に備えて、サーバーに無停電電源装置(UPS)を付ける","attrs":{"type":"ex","answer":"可用性"},"source":"JIS Q 27000","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-dual","ja":"機器を 2 台用意し、1 台が止まってももう 1 台で動き続けるようにする","attrs":{"type":"ex","answer":"可用性"},"source":"JIS Q 27000","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"e-flood","ja":"大量の通信を送りつけられて、サイトが重くて開けなくなった","attrs":{"type":"ex","answer":"可用性"},"source":"JIS Q 27000","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

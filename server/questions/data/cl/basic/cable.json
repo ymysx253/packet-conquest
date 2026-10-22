@@ -1,0 +1,10 @@
+{
+  "note": "LAN ケーブル(より対線)のカテゴリと使える規格(Lv135)。attrs.std = 規格、cat = その長さで使える、いちばん下のカテゴリ、len = 長さ(m)。1000BASE-T はカテゴリ 5 と 5e で意見が分かれるので「いちばん下」の問いには使わない",
+  "rows": [
+    {"id":"10t","ja":"10BASE-T","attrs":{"cat":"3","len":100,"mbps":10},"source":"IEEE 802.3 Clause 14","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"100tx","ja":"100BASE-TX","attrs":{"cat":"5","len":100,"mbps":100},"source":"IEEE 802.3 Clause 25","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"1000t","ja":"1000BASE-T","attrs":{"cat":null,"len":100,"mbps":1000},"source":"IEEE 802.3 Clause 40・ANSI/TIA-568","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"10gt","ja":"10GBASE-T","attrs":{"cat":"6A","len":100,"mbps":10000},"source":"IEEE 802.3 Clause 55・ANSI/TIA-568.2-D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"40gt","ja":"40GBASE-T","attrs":{"cat":"8","len":30,"mbps":40000},"source":"IEEE 802.3bq・ANSI/TIA-568.2-D","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

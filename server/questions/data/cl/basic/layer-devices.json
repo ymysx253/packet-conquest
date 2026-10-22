@@ -1,0 +1,13 @@
+{
+  "note": "層と機器(Lv73・75)。attrs.layer = 主に働く層(いちばん上の層)、also = ほかに働く層、looks = 転送先を決めるときに見るもの(none / mac / ip)。働く層の意見が分かれる機器(ファイアウォール・負荷分散装置など)は入れない",
+  "rows": [
+    {"id":"repeater","ja":"リピーター","attrs":{"layer":1,"looks":"none"},"source":"一般的な定義(信号を増幅して中継する)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"hub","ja":"リピーターハブ","attrs":{"layer":1,"looks":"none"},"source":"一般的な定義(受けた信号をほかの全ポートへ流す)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"mediaconv","ja":"メディアコンバーター","attrs":{"layer":1,"looks":"none"},"source":"一般的な定義(光と電気など信号の種類を変える)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"bridge","ja":"ブリッジ","attrs":{"layer":2,"looks":"mac"},"source":"IEEE 802.1D","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l2sw","ja":"L2 スイッチ","attrs":{"layer":2,"looks":"mac"},"source":"IEEE 802.1Q(MAC アドレスで転送するブリッジ)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ap","ja":"無線 LAN アクセスポイント","attrs":{"layer":2,"looks":"mac"},"source":"IEEE 802.11(無線と有線をつなぐブリッジとして動く)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"router","ja":"ルーター","attrs":{"layer":3,"looks":"ip"},"source":"RFC 1812","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l3sw","ja":"L3 スイッチ","attrs":{"layer":3,"also":[2],"looks":"ip","alsoLooks":["mac"]},"source":"一般的な定義(スイッチにルーターの働きを足したもの)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

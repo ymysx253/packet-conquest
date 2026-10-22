@@ -1,0 +1,9 @@
+{
+  "note": "無線 LAN の規格名と呼び名(Lv133)。Wi-Fi Alliance が 2018 年に決めた世代の呼び名。attrs.gen = 世代の番号、bands = 使う周波数帯",
+  "rows": [
+    {"id":"n","ja":"IEEE 802.11n","attrs":{"gen":4,"name":"Wi-Fi 4","bands":"2.4 GHz と 5 GHz"},"source":"Wi-Fi Alliance(世代の呼び名)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ac","ja":"IEEE 802.11ac","attrs":{"gen":5,"name":"Wi-Fi 5","bands":"5 GHz"},"source":"Wi-Fi Alliance(世代の呼び名)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ax","ja":"IEEE 802.11ax","attrs":{"gen":6,"name":"Wi-Fi 6","bands":"2.4 GHz と 5 GHz(Wi-Fi 6E は 6 GHz も)"},"source":"Wi-Fi Alliance(世代の呼び名)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"be","ja":"IEEE 802.11be","attrs":{"gen":7,"name":"Wi-Fi 7","bands":"2.4 GHz・5 GHz・6 GHz"},"source":"Wi-Fi Alliance(世代の呼び名)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

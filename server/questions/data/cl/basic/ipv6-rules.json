@@ -1,0 +1,14 @@
+{
+  "note": "IPv6 アドレスの省略の決まりについての文(Lv101)。attrs.true = 正しい文か、why = 解説",
+  "rows": [
+    {"id":"once","ja":":: は 1 つのアドレスの中で 1 回だけ使える","attrs":{"true":true,"why":"2 回使うと、それぞれ何グループ分の 0 なのか決まらなくなる。"},"source":"RFC 4291 第 2.2 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"twice","ja":":: は 1 つのアドレスの中で 2 回使ってよい","attrs":{"true":false,"why":":: は 1 回だけ。2 回あると、どちらに何グループの 0 が入るか決まらない。"},"source":"RFC 4291 第 2.2 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"zeros","ja":":: は、0 だけのグループ(16 ビットずつの区切り)が続く所をまとめて表す","attrs":{"true":true,"why":":: が表すのは 0 のグループの並びだけ。"},"source":"RFC 4291 第 2.2 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"nonzero","ja":":: を使うと、0 でない値も一緒に省ける","attrs":{"true":false,"why":":: で省けるのは 0 のグループだけ。"},"source":"RFC 4291 第 2.2 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"lead0","ja":"各グループの先頭の 0 は省いてよい(0db8 → db8)","attrs":{"true":true,"why":"グループの先頭の 0 は省ける。"},"source":"RFC 4291 第 2.2 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"trail0","ja":"各グループの末尾の 0 は省いてよい(2010 → 201)","attrs":{"true":false,"why":"省けるのは先頭の 0 だけ。末尾の 0 を省くと別の値になる(2010 と 201 は違う)。"},"source":"RFC 4291 第 2.2 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"loop","ja":"::1 は 0:0:0:0:0:0:0:1 を省いた書き方である","attrs":{"true":true,"why":"先頭から 7 グループの 0 を :: でまとめた形。"},"source":"RFC 4291 第 2.2・2.5.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"all0","ja":":: だけで、128 ビットすべてが 0 のアドレスを表す","attrs":{"true":true,"why":"8 グループすべての 0 を :: でまとめた形(未指定アドレス)。"},"source":"RFC 4291 第 2.5.2 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"longest","ja":"0 の並びが 2 か所あるときは、長い方を :: にするのが勧められる書き方である","attrs":{"true":true,"why":"RFC 5952 は、いちばん長い 0 の並びを :: にするよう勧めている。"},"source":"RFC 5952 第 4.2.3 節","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

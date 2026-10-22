@@ -1,0 +1,12 @@
+{
+  "note": "OSI 参照モデルの 7 層(Lv68〜70・75〜77)。attrs.no = 層の番号、role = 役割(自分の言葉で短く)、pdu = その層のデータのまとまりの呼び名(第 1〜4 層。第 4 層は TCP の場合)",
+  "rows": [
+    {"id":"l1","ja":"物理層","attrs":{"no":1,"en":"Physical","role":"電気・光・電波の信号で 0 と 1 を送る","pdu":"ビット"},"source":"ISO/IEC 7498-1","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l2","ja":"データリンク層","attrs":{"no":2,"en":"Data Link","role":"同じ LAN の中で、隣の機器までデータを届ける(MAC アドレスを使う)","pdu":"フレーム"},"source":"ISO/IEC 7498-1","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l3","ja":"ネットワーク層","attrs":{"no":3,"en":"Network","role":"いくつもの網をまたいで、宛先の機器まで道を選んで届ける(IP アドレスを使う)","pdu":"パケット"},"source":"ISO/IEC 7498-1","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l4","ja":"トランスポート層","attrs":{"no":4,"en":"Transport","role":"送る機器と受ける機器の間で、届いたかの確認や順番の並べ直しをする(ポート番号を使う)","pdu":"セグメント"},"source":"ISO/IEC 7498-1、RFC 9293(TCP のセグメント)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l5","ja":"セッション層","attrs":{"no":5,"en":"Session","role":"通信の始まりから終わりまでの一続きのやりとり(対話)を管理する"},"source":"ISO/IEC 7498-1","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l6","ja":"プレゼンテーション層","attrs":{"no":6,"en":"Presentation","role":"文字の符号や圧縮・暗号化の形式など、データの表し方をそろえる"},"source":"ISO/IEC 7498-1","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"l7","ja":"アプリケーション層","attrs":{"no":7,"en":"Application","role":"Web やメールなど、アプリが使う通信のきまりを用意する"},"source":"ISO/IEC 7498-1","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

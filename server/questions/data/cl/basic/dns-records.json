@@ -1,0 +1,11 @@
+{
+  "note": "DNS のレコードの種類(Lv118・119)。attrs.desc = 何を表すか、value = 値の形の説明",
+  "rows": [
+    {"id":"a","ja":"A","attrs":{"desc":"名前に対応する IPv4 アドレス","value":"IPv4 アドレス"},"source":"RFC 1035 第 3.4.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"aaaa","ja":"AAAA","attrs":{"desc":"名前に対応する IPv6 アドレス","value":"IPv6 アドレス"},"source":"RFC 3596","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"cname","ja":"CNAME","attrs":{"desc":"その名前が別名で、本当の名前(正式名)はどれか","value":"別の名前(正式名)"},"source":"RFC 1035 第 3.3.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"mx","ja":"MX","attrs":{"desc":"その名前(ドメイン)宛のメールを受け取るサーバー","value":"メールサーバーの名前と優先度"},"source":"RFC 1035 第 3.3.9 節・RFC 5321 第 5 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ns","ja":"NS","attrs":{"desc":"そのドメインの情報を持つ DNS サーバー","value":"DNS サーバーの名前"},"source":"RFC 1035 第 3.3.11 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"ptr","ja":"PTR","attrs":{"desc":"IP アドレスに対応する名前(逆引き)","value":"名前"},"source":"RFC 1035 第 3.3.12 節","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

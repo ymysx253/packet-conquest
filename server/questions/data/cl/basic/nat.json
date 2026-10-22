@@ -1,0 +1,15 @@
+{
+  "note": "NAT の役割(Lv123)。type qa: attrs.answer・wrongs(どれも正しくない)・why。type tf: attrs.true・why",
+  "rows": [
+    {"id":"q-role","ja":"プライベートアドレスを、外へ出るときにグローバルアドレスに付け替えるしくみは?","attrs":{"type":"qa","answer":"NAT","wrongs":["DHCP","DNS","ARP","ICMP"],"why":"NAT はアドレスを付け替える。DHCP はアドレスを配る、DNS は名前を調べる、ARP は MAC を調べる。"},"source":"RFC 3022","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-napt","ja":"1 つのグローバルアドレスを、何台もの機器で同時に使えるようにするしくみは?","attrs":{"type":"qa","answer":"NAPT(IP マスカレード)","wrongs":["DHCP","ARP","DNS","VLAN"],"why":"NAPT はアドレスと一緒にポート番号も付け替えるので、1 つのグローバルアドレスを分け合える。"},"source":"RFC 3022 第 2.2 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-port","ja":"NAPT が IP アドレスと一緒に付け替えるのは?","attrs":{"type":"qa","answer":"ポート番号","wrongs":["MAC アドレス","TTL","サブネットマスク","ドメイン名"],"why":"ポート番号の違いで、どの内側の機器の通信かを見分ける。"},"source":"RFC 3022 第 2.2 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-out","ja":"内側から外へ出るパケットで、NAT が書き換えるアドレスは?","attrs":{"type":"qa","answer":"送信元の IP アドレス","wrongs":["宛先の IP アドレス","宛先の MAC アドレスだけ","どこも書き換えない","DNS サーバーのアドレス"],"why":"外へ出るときは、送信元のプライベートアドレスをグローバルアドレスに付け替える。"},"source":"RFC 3022 第 2.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-back","ja":"外から戻ってきた返事のパケットで、NAT が書き換えるアドレスは?","attrs":{"type":"qa","answer":"宛先の IP アドレス","wrongs":["送信元の IP アドレス","宛先の MAC アドレスだけ","どこも書き換えない","DNS サーバーのアドレス"],"why":"戻りは宛先のグローバルアドレスを、内側の機器のプライベートアドレスに戻す。"},"source":"RFC 3022 第 2.1 節","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-where","ja":"NAT が働くのは、ふつうどこ?","attrs":{"type":"qa","answer":"内側の網と外側の網の境目のルーター","wrongs":["PC の中の Web ブラウザ","DNS サーバーの中","スイッチの各ポート","LAN ケーブルの中"],"why":"内と外の境目で、出入りするパケットのアドレスを付け替える。"},"source":"RFC 3022","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"q-table","ja":"NAT が、だれの通信をどう付け替えたかを覚えておく表は?","attrs":{"type":"qa","answer":"NAT の変換表","wrongs":["ARP テーブル","MAC アドレステーブル","DNS のゾーン","DHCP のリース"],"why":"変換表を見て、戻りの通信をどの内側の機器へ返すか決める。"},"source":"RFC 3022","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-save","ja":"NAT を使うと、グローバルアドレスの数が少なくても多くの機器がインターネットを使える","attrs":{"type":"tf","true":true,"why":"内側はプライベートアドレスにして、外へ出るときだけ付け替えるので、グローバルアドレスが少なくて済む。"},"source":"RFC 3022","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-dns","ja":"NAT は、名前から IP アドレスを調べるしくみである","attrs":{"type":"tf","true":false,"why":"それは DNS。NAT はアドレスを付け替えるしくみ。"},"source":"RFC 3022・RFC 1034","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"t-private","ja":"NAT がないと、プライベートアドレスのままではインターネットの相手と通信できない","attrs":{"type":"tf","true":true,"why":"プライベートアドレスはインターネットでは通用しないので、外へ出るときにグローバルアドレスに付け替える。"},"source":"RFC 1918 第 4 節","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}

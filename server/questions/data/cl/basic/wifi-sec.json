@@ -1,0 +1,9 @@
+{
+  "note": "無線 LAN の暗号化の方式(Lv134)。attrs.order = 古い順の番号、cipher = 主な暗号の方式、weak = 今は使うべきでないか",
+  "rows": [
+    {"id":"wep","ja":"WEP","attrs":{"order":1,"cipher":"RC4","weak":true},"source":"IEEE 802.11(1997)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"wpa","ja":"WPA","attrs":{"order":2,"cipher":"TKIP","weak":true},"source":"Wi-Fi Alliance(WPA)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"wpa2","ja":"WPA2","attrs":{"order":3,"cipher":"AES(CCMP)","weak":false},"source":"IEEE 802.11i・Wi-Fi Alliance(WPA2)","checkedBy":"Claude Opus 5.5 2026-10-22"},
+    {"id":"wpa3","ja":"WPA3","attrs":{"order":4,"cipher":"AES(CCMP・GCMP)","weak":false,"sae":true},"source":"Wi-Fi Alliance(WPA3)","checkedBy":"Claude Opus 5.5 2026-10-22"}
+  ]
+}
