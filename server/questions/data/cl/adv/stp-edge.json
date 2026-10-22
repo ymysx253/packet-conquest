@@ -1,0 +1,155 @@
+{
+  "note": "FactBank(上級 Lv258「端のポート」)。エッジポートと、STP を守る機能。stmt は文と正しいか、group=guard は説明と名前。checkedBy の無い行は使わない",
+  "rows": [
+    {
+      "id": "edge-fast",
+      "ja": "エッジポートは PC などの端末をつなぐポートに使い、つないだらすぐ転送の状態になる",
+      "attrs": {
+        "true": true,
+        "why": "エッジポートは待ちの段階を飛ばしてすぐ転送する。端末の先にループはできないから。"
+      },
+      "source": "IEEE 802.1D-2004 第 17 章(RSTP のエッジポート)・IEEE 802.1Q",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "edge-bpdu-lose",
+      "ja": "エッジポートで BPDU を受けると、RSTP はそのポートをエッジポートとして扱わなくなる",
+      "attrs": {
+        "true": true,
+        "why": "先にスイッチがいるしるしなので、RSTP はふつうのポートとして扱い直す。"
+      },
+      "source": "IEEE 802.1D-2004 第 17 章(RSTP のエッジポート)・IEEE 802.1Q",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "edge-no-tc",
+      "ja": "エッジポートがつながったり切れたりしても、RSTP はトポロジ変更の知らせ(TC)を出さない",
+      "attrs": {
+        "true": true,
+        "why": "端末の抜き差しで MAC の表を消し回らないよう、エッジポートの変化は TC にしない。"
+      },
+      "source": "IEEE 802.1D-2004 第 17 章(RSTP のエッジポート)・IEEE 802.1Q",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "edge-guard-stop",
+      "ja": "BPDU ガードを付けたポートで BPDU を受けると、そのポートは止められる",
+      "attrs": {
+        "true": true,
+        "why": "BPDU ガードは、端末用のポートに勝手にスイッチがつながれたときにポートを止める。"
+      },
+      "source": "各社のスイッチの機能(IEEE の規格ではない。名前は一般的な呼び方)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "edge-only-hosts",
+      "ja": "エッジポートにするのは、その先にスイッチがつながらない(ループができない)ポートだけにする",
+      "attrs": {
+        "true": true,
+        "why": "すぐ転送するので、先にスイッチがあるとループのもとになる。"
+      },
+      "source": "IEEE 802.1D-2004 第 17 章(RSTP のエッジポート)・IEEE 802.1Q",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "edge-uplink",
+      "ja": "エッジポートは、スイッチどうしをつなぐポートに使うのが基本である",
+      "attrs": {
+        "true": false,
+        "why": "エッジポートは端末をつなぐポートに使う。スイッチどうしの線はふつうの STP のポートにする。"
+      },
+      "source": "IEEE 802.1D-2004 第 17 章(RSTP のエッジポート)・IEEE 802.1Q",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "edge-root",
+      "ja": "エッジポートにすると、そのポートは STP の計算で必ずルートポートになる",
+      "attrs": {
+        "true": false,
+        "why": "ルートポートはルートブリッジにいちばん近いポートで、エッジポートの設定とは関係がない。"
+      },
+      "source": "IEEE 802.1D-2004 第 17 章(RSTP のエッジポート)・IEEE 802.1Q",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "edge-ignore",
+      "ja": "エッジポートにしたポートは、BPDU を受けても無視して、エッジポートのまま転送を続ける",
+      "attrs": {
+        "true": false,
+        "why": "RSTP では BPDU を受けたエッジポートはエッジとして扱われなくなる。無視はしない。"
+      },
+      "source": "IEEE 802.1D-2004 第 17 章(RSTP のエッジポート)・IEEE 802.1Q",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "edge-guard-forward",
+      "ja": "BPDU ガードは、BPDU を受けたポートをすぐ転送の状態にする機能である",
+      "attrs": {
+        "true": false,
+        "why": "BPDU ガードは BPDU を受けたポートを止める機能。すぐ転送にするのはエッジポート。"
+      },
+      "source": "各社のスイッチの機能(IEEE の規格ではない。名前は一般的な呼び方)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "edge-trunk",
+      "ja": "エッジポートにすると、そのポートのつなぎ方が自動でトランクに変わる",
+      "attrs": {
+        "true": false,
+        "why": "エッジポートは STP の扱いを決めるだけで、アクセスかトランクかは変えない。"
+      },
+      "source": "IEEE 802.1D-2004 第 17 章(RSTP のエッジポート)・IEEE 802.1Q",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "edge-wait",
+      "ja": "エッジポートでも、つないでから転送までに、リスニングとラーニングの待ち(合わせて約 30 秒)を必ず通る",
+      "attrs": {
+        "true": false,
+        "why": "エッジポートは待ちを飛ばしてすぐ転送する。それがエッジポートにする理由。"
+      },
+      "source": "IEEE 802.1D-2004 第 17 章(RSTP のエッジポート)・IEEE 802.1Q",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "t-edge",
+      "ja": "エッジポート",
+      "attrs": {
+        "group": "guard",
+        "desc": "端末をつなぐポートで、待ちの段階を飛ばしてすぐ転送の状態になる"
+      },
+      "source": "IEEE 802.1D-2004 第 17 章(RSTP のエッジポート)・IEEE 802.1Q",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "t-bpduguard",
+      "ja": "BPDU ガード",
+      "attrs": {
+        "group": "guard",
+        "desc": "BPDU を受けたら、そのポートを止める"
+      },
+      "source": "各社のスイッチの機能(IEEE の規格ではない。名前は一般的な呼び方)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "t-rootguard",
+      "ja": "ルートガード",
+      "attrs": {
+        "group": "guard",
+        "desc": "そのポートの先から、今のルートより強い(ルートブリッジになろうとする)BPDU が来たら、そのポートを止めてルートが替わらないようにする"
+      },
+      "source": "各社のスイッチの機能(IEEE の規格ではない。名前は一般的な呼び方)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "t-loopguard",
+      "ja": "ループガード",
+      "attrs": {
+        "group": "guard",
+        "desc": "BPDU が届かなくなったポートを、転送の状態に変えずに止めたままにする"
+      },
+      "source": "各社のスイッチの機能(IEEE の規格ではない。名前は一般的な呼び方)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    }
+  ]
+}

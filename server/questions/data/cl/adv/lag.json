@@ -1,0 +1,252 @@
+{
+  "note": "FactBank(上級 Lv253「線を束ねる」・Lv254「束ねる交渉」)。kind=stmt は Lv253 の文と正しいか、kind=mode は Lv254 の LACP の両端の設定と束になるか。checkedBy の無い行は使わない",
+  "rows": [
+    {
+      "id": "lag-one-logical",
+      "ja": "束ねた線は 1 本の論理的な線として扱われるので、STP はどれか 1 本を止めずに、全部の線を使える",
+      "attrs": {
+        "true": true,
+        "why": "STP から見ると束は 1 つのポートなので、束の中の線はループとして止められない。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lag-survive",
+      "ja": "束の中の 1 本が切れても、残りの線で通信が続く",
+      "attrs": {
+        "true": true,
+        "why": "束は切れた線を外し、残りの線に載せ替えて使い続ける。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lag-capacity",
+      "ja": "束全体で運べる量の上限は、束ねた線の帯域の合計になる",
+      "attrs": {
+        "true": true,
+        "why": "通信を線に振り分けるので、束全体の上限は線の帯域を足した値になる。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lag-flow",
+      "ja": "1 つの通信(同じ送信元と宛先の流れ)は、順番が入れ替わらないよう、ふつう束の中の 1 本の線に載る",
+      "attrs": {
+        "true": true,
+        "why": "順番を守るため、同じ流れは同じ線に載せる。どの線にするかはアドレスなどから決める。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lag-both-ends",
+      "ja": "LACP で束ねるときは、両端のスイッチの両方で束の設定をする",
+      "attrs": {
+        "true": true,
+        "why": "束は両端で組むもので、LACP は両端の設定を確かめ合ってから束に入れる。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lag-lacp-std",
+      "ja": "LACP は、束に入れる線を両端で確かめ合うための手順で、IEEE 802.1AX(以前は 802.3ad)で決められている",
+      "attrs": {
+        "true": true,
+        "why": "LACP(Link Aggregation Control Protocol)は IEEE の規格の手順。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lag-flow-double",
+      "ja": "2 本を束ねれば、1 本の TCP 接続でも必ず 2 倍の速さで送れる",
+      "attrs": {
+        "true": false,
+        "why": "1 つの流れはふつう 1 本の線に載るので、1 本の TCP 接続の速さは 1 本ぶんのまま。増えるのは束全体の上限。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lag-all-down",
+      "ja": "束の中の 1 本が切れると、束全体が止まる",
+      "attrs": {
+        "true": false,
+        "why": "切れた線だけが外れ、残りの線で続く。それが束ねる利点の 1 つ。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lag-stp-block",
+      "ja": "束ねても STP からは別々の線に見えるので、1 本以外は止められる",
+      "attrs": {
+        "true": false,
+        "why": "束は STP から 1 つのポートに見える。だから全部の線を使える。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lag-subnet",
+      "ja": "束ねる線には、1 本ずつ違うサブネットの IP アドレスを付ける必要がある",
+      "attrs": {
+        "true": false,
+        "why": "束は 1 本の論理的な線なので、アドレスを付けるなら束に 1 つ付ける。線ごとに付けるものではない。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lag-routing",
+      "ja": "LACP は、ルーターどうしが経路の表を交換するための手順である",
+      "attrs": {
+        "true": false,
+        "why": "LACP は線を束ねるための手順。経路の表を交換するのは OSPF や BGP などの経路の手順。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lag-distance",
+      "ja": "線を束ねると、1 本の線で届く距離の上限が延びる",
+      "attrs": {
+        "true": false,
+        "why": "束ねても 1 本ずつの線の性質(届く距離)は変わらない。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lag-random",
+      "ja": "どの線に載せるかは毎回でたらめに決めるので、同じ通信のパケットの順番はよく入れ替わる",
+      "attrs": {
+        "true": false,
+        "why": "どの線に載せるかはアドレスなどから決まった計算(ハッシュ)で選ぶので、同じ流れは同じ線に載り、順番は入れ替わらない。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "mode-aa",
+      "ja": "active と active",
+      "attrs": {
+        "kind": "mode",
+        "a": "active",
+        "b": "active",
+        "bundle": true,
+        "why": "両端とも自分から LACP の知らせを送るので束になる。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "mode-ap",
+      "ja": "active と passive",
+      "attrs": {
+        "kind": "mode",
+        "a": "active",
+        "b": "passive",
+        "bundle": true,
+        "why": "active の側が知らせを送り、passive の側が答えるので束になる。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "mode-pa",
+      "ja": "passive と active",
+      "attrs": {
+        "kind": "mode",
+        "a": "passive",
+        "b": "active",
+        "bundle": true,
+        "why": "active の側が知らせを送り、passive の側が答えるので束になる。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "mode-pp",
+      "ja": "passive と passive",
+      "attrs": {
+        "kind": "mode",
+        "a": "passive",
+        "b": "passive",
+        "bundle": false,
+        "why": "passive は相手の知らせに答えるだけで自分からは送らない。両端とも待つだけなので束にならない。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "mode-an",
+      "ja": "active となし",
+      "attrs": {
+        "kind": "mode",
+        "a": "active",
+        "b": "off",
+        "bundle": false,
+        "why": "片方が束の設定をしていない(LACP を話さない)ので束にならない。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "mode-pn",
+      "ja": "passive となし",
+      "attrs": {
+        "kind": "mode",
+        "a": "passive",
+        "b": "off",
+        "bundle": false,
+        "why": "片方が束の設定をしていない(LACP を話さない)ので束にならない。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "mode-na",
+      "ja": "なしと active",
+      "attrs": {
+        "kind": "mode",
+        "a": "off",
+        "b": "active",
+        "bundle": false,
+        "why": "片方が束の設定をしていない(LACP を話さない)ので束にならない。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "mode-np",
+      "ja": "なしと passive",
+      "attrs": {
+        "kind": "mode",
+        "a": "off",
+        "b": "passive",
+        "bundle": false,
+        "why": "片方が束の設定をしていない(LACP を話さない)ので束にならない。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "mode-nn",
+      "ja": "なしとなし",
+      "attrs": {
+        "kind": "mode",
+        "a": "off",
+        "b": "off",
+        "bundle": false,
+        "why": "両端とも束の設定をしていないので束にならない。"
+      },
+      "source": "IEEE 802.1AX(リンク集約。以前は IEEE 802.3ad)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    }
+  ]
+}

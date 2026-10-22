@@ -1,0 +1,145 @@
+{
+  "note": "FactBank(上級 Lv284「拡張 ACL の置き場所」)。ACL の置き場所と照らし方の文。kind=place は置き場所の 4 択。checkedBy の無い行は使わない",
+  "rows": [
+    {
+      "id": "ap-ext-src",
+      "ja": "拡張 ACL は送信元・宛先・ポートまで指定できるので、送信元の近くに置き、要らない通信を早く捨てる",
+      "attrs": {
+        "true": true,
+        "why": "細かく選べるので、送信元の近くで止めてもほかの通信を巻き込まない。"
+      },
+      "source": "一般的な設計の指針(CCNA 200-301 5.6 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ap-std-dst",
+      "ja": "標準 ACL は送信元のアドレスしか見ないので、宛先の近くに置く",
+      "attrs": {
+        "true": true,
+        "why": "送信元の近くに置くと、その送信元からほかの宛先への通信まで止めてしまう。"
+      },
+      "source": "一般的な設計の指針(CCNA 200-301 5.6 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ap-first-match",
+      "ja": "ACL は上の行から順に照らし、最初に合った行で決まる",
+      "attrs": {
+        "true": true,
+        "why": "あとの行は見ないので、行の順番が大事。"
+      },
+      "source": "一般的な設計の指針(CCNA 200-301 5.6 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ap-implicit",
+      "ja": "ACL のどの行にも合わなければ、最後の暗黙の拒否で捨てられる",
+      "attrs": {
+        "true": true,
+        "why": "書いていない最後の行に「すべて拒否」がある。"
+      },
+      "source": "一般的な設計の指針(CCNA 200-301 5.6 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ap-save-link",
+      "ja": "拡張 ACL を送信元の近くに置くと、捨てる通信が途中の線や機器を使わずに済む",
+      "attrs": {
+        "true": true,
+        "why": "捨てる通信を遠くまで運ばないので、途中の帯域を無駄にしない。"
+      },
+      "source": "一般的な設計の指針(CCNA 200-301 5.6 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ap-ext-dst",
+      "ja": "拡張 ACL は、宛先の近くに置くのが基本である",
+      "attrs": {
+        "true": false,
+        "why": "拡張 ACL は送信元の近く。宛先の近くに置くのは標準 ACL。"
+      },
+      "source": "一般的な設計の指針(CCNA 200-301 5.6 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ap-std-src",
+      "ja": "標準 ACL は、送信元の近くに置くのが基本である",
+      "attrs": {
+        "true": false,
+        "why": "標準 ACL は宛先を見ないので、送信元の近くではほかの宛先への通信まで止める。宛先の近くに置く。"
+      },
+      "source": "一般的な設計の指針(CCNA 200-301 5.6 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ap-best-match",
+      "ja": "ACL は全部の行を照らし、いちばん細かく書いた行で決まる",
+      "attrs": {
+        "true": false,
+        "why": "ACL は上から順に照らし、最初に合った行で決まる。細かさでは選ばない。"
+      },
+      "source": "一般的な設計の指針(CCNA 200-301 5.6 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ap-ext-srconly",
+      "ja": "拡張 ACL は、送信元のアドレスしか見ない",
+      "attrs": {
+        "true": false,
+        "why": "送信元しか見ないのは標準 ACL。拡張 ACL は宛先・手順・ポートも見る。"
+      },
+      "source": "一般的な設計の指針(CCNA 200-301 5.6 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ap-implicit-permit",
+      "ja": "ACL の最後には暗黙の許可があり、どの行にも合わなければ通る",
+      "attrs": {
+        "true": false,
+        "why": "最後にあるのは暗黙の拒否。どの行にも合わなければ捨てる。"
+      },
+      "source": "一般的な設計の指針(CCNA 200-301 5.6 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "pl-src",
+      "ja": "送信元の近く",
+      "attrs": {
+        "kind": "place",
+        "ext": true
+      },
+      "source": "一般的な設計の指針(CCNA 200-301 5.6 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "pl-dst",
+      "ja": "宛先の近く",
+      "attrs": {
+        "kind": "place",
+        "ext": false
+      },
+      "source": "一般的な設計の指針(CCNA 200-301 5.6 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "pl-mid",
+      "ja": "送信元と宛先のちょうど真ん中のルーター",
+      "attrs": {
+        "kind": "place",
+        "ext": false
+      },
+      "source": "一般的な設計の指針(CCNA 200-301 5.6 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "pl-core",
+      "ja": "いちばん多くの線が集まるルーター",
+      "attrs": {
+        "kind": "place",
+        "ext": false
+      },
+      "source": "一般的な設計の指針(CCNA 200-301 5.6 の範囲)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    }
+  ]
+}

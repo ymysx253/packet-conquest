@@ -1,0 +1,105 @@
+{
+  "note": "FactBank(上級 Lv308「ゼロトラストの考え方」)。ゼロトラストについての文。checkedBy の無い行は使わない",
+  "rows": [
+    {
+      "id": "zt-every-time",
+      "ja": "社内の網の中からのアクセスでも、毎回、人(利用者)と端末を確かめてから使わせる",
+      "attrs": {
+        "true": true,
+        "why": "網の中にいることを信用の理由にしない。"
+      },
+      "source": "NIST SP 800-207(ゼロトラストの考え方)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "zt-no-location",
+      "ja": "網のどこにいるか(社内か社外か)だけで信用しない",
+      "attrs": {
+        "true": true,
+        "why": "つないでいる場所では信用を決めない。"
+      },
+      "source": "NIST SP 800-207(ゼロトラストの考え方)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "zt-least",
+      "ja": "使わせる権限は、仕事に要る分だけにする(最小の権限)",
+      "attrs": {
+        "true": true,
+        "why": "要らない資源には触れさせないので、被害が広がりにくい。"
+      },
+      "source": "NIST SP 800-207(ゼロトラストの考え方)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "zt-continuous",
+      "ja": "1 回確かめて終わりにせず、端末の状態などを見て、そのつど判断する",
+      "attrs": {
+        "true": true,
+        "why": "状態が変われば判断も変わる。"
+      },
+      "source": "NIST SP 800-207(ゼロトラストの考え方)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "zt-per-resource",
+      "ja": "資源(アプリやデータ)ごとに、使わせてよいかを判断する",
+      "attrs": {
+        "true": true,
+        "why": "網に入れるかではなく、資源ごとに判断する。"
+      },
+      "source": "NIST SP 800-207(ゼロトラストの考え方)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "zt-inside-trust",
+      "ja": "社内の網につながっていれば信用して、確かめを省く",
+      "attrs": {
+        "true": false,
+        "why": "それは境界で守る考え方。ゼロトラストでは社内からでも毎回確かめる。"
+      },
+      "source": "NIST SP 800-207(ゼロトラストの考え方)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "zt-perimeter",
+      "ja": "外との境目の FW を強くすれば、内側の通信は確かめなくてよい",
+      "attrs": {
+        "true": false,
+        "why": "境目だけを守ると、中に入られたときに広がる。ゼロトラストは内側の通信も確かめる。"
+      },
+      "source": "NIST SP 800-207(ゼロトラストの考え方)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "zt-vpn-all",
+      "ja": "一度 VPN で社内につないだら、あとは社内の資源をすべて使ってよい",
+      "attrs": {
+        "true": false,
+        "why": "つないだ場所で信用せず、資源ごとに要る分だけ使わせる。"
+      },
+      "source": "NIST SP 800-207(ゼロトラストの考え方)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "zt-trust-forever",
+      "ja": "一度ログインして認められた端末は、その後どんな状態になっても信用し続ける",
+      "attrs": {
+        "true": false,
+        "why": "端末の状態などを見て、そのつど判断し直す。"
+      },
+      "source": "NIST SP 800-207(ゼロトラストの考え方)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "zt-no-access",
+      "ja": "ゼロトラストとは、社員をまったく信用せず、誰にも資源を使わせないことである",
+      "attrs": {
+        "true": false,
+        "why": "確かめたうえで、要る分だけ使わせる考え方。使わせないことではない。"
+      },
+      "source": "NIST SP 800-207(ゼロトラストの考え方)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    }
+  ]
+}

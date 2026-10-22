@@ -1,0 +1,155 @@
+{
+  "note": "FactBank(上級 Lv279「証明書を確かめる」)。kind=item はブラウザが HTTPS の証明書で確かめるか(check)、stmt は文。checkedBy の無い行は使わない",
+  "rows": [
+    {
+      "id": "ck-validity",
+      "ja": "証明書の有効期間の中か",
+      "attrs": {
+        "kind": "item",
+        "check": true,
+        "why": "期間の外の証明書は使えない。"
+      },
+      "source": "RFC 5280 第 6 章(証明書の経路の検証)・RFC 6125(名前の照合)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ck-name",
+      "ja": "証明書に書かれた名前(SAN)が、開いたホスト名と合うか",
+      "attrs": {
+        "kind": "item",
+        "check": true,
+        "why": "名前が合わなければ、別のサーバーの証明書かもしれない。"
+      },
+      "source": "RFC 5280 第 6 章(証明書の経路の検証)・RFC 6125(名前の照合)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ck-chain",
+      "ja": "信頼している認証局(ルート)まで、証明書の署名をたどれるか",
+      "attrs": {
+        "kind": "item",
+        "check": true,
+        "why": "信頼する認証局につながらない証明書は信用できない。"
+      },
+      "source": "RFC 5280 第 6 章(証明書の経路の検証)・RFC 6125(名前の照合)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ck-sig",
+      "ja": "証明書の署名が正しいか(書き換えられていないか)",
+      "attrs": {
+        "kind": "item",
+        "check": true,
+        "why": "署名が合わなければ、途中で書き換えられている。"
+      },
+      "source": "RFC 5280 第 6 章(証明書の経路の検証)・RFC 6125(名前の照合)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "nk-cpu",
+      "ja": "サーバーの CPU の数",
+      "attrs": {
+        "kind": "item",
+        "check": false,
+        "why": "証明書はサーバーの身元を示すもので、機械の性能は書かれていないし確かめない。"
+      },
+      "source": "RFC 5280 第 6 章(証明書の経路の検証)・RFC 6125(名前の照合)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "nk-mem",
+      "ja": "サーバーのメモリの量",
+      "attrs": {
+        "kind": "item",
+        "check": false,
+        "why": "機械の性能は証明書と関係がない。"
+      },
+      "source": "RFC 5280 第 6 章(証明書の経路の検証)・RFC 6125(名前の照合)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "nk-country",
+      "ja": "サーバーが実際に置かれている国",
+      "attrs": {
+        "kind": "item",
+        "check": false,
+        "why": "ブラウザはサーバーの置き場所を確かめない。"
+      },
+      "source": "RFC 5280 第 6 章(証明書の経路の検証)・RFC 6125(名前の照合)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "nk-software",
+      "ja": "サーバーで動いている Web サーバーのソフトの名前",
+      "attrs": {
+        "kind": "item",
+        "check": false,
+        "why": "どのソフトで動いているかは証明書の検証と関係がない。"
+      },
+      "source": "RFC 5280 第 6 章(証明書の経路の検証)・RFC 6125(名前の照合)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "nk-os",
+      "ja": "サーバーの OS の種類",
+      "attrs": {
+        "kind": "item",
+        "check": false,
+        "why": "OS の種類は証明書の検証と関係がない。"
+      },
+      "source": "RFC 5280 第 6 章(証明書の経路の検証)・RFC 6125(名前の照合)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "nk-hops",
+      "ja": "サーバーまでの経路のホップ数",
+      "attrs": {
+        "kind": "item",
+        "check": false,
+        "why": "経路の長さは証明書の検証と関係がない。"
+      },
+      "source": "RFC 5280 第 6 章(証明書の経路の検証)・RFC 6125(名前の照合)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "cs-self",
+      "ja": "自己署名の証明書は、信頼する認証局の一覧に入れていなければ、ブラウザが警告を出す",
+      "attrs": {
+        "true": true,
+        "why": "信頼する認証局までたどれないので、確かめに失敗する。"
+      },
+      "source": "RFC 5280 第 6 章(証明書の経路の検証)・RFC 6125(名前の照合)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "cs-intermediate",
+      "ja": "サーバーは、自分の証明書と一緒に、中間の認証局の証明書も送るのがふつう",
+      "attrs": {
+        "true": true,
+        "why": "ブラウザが信頼するルートまでたどれるよう、途中の証明書もサーバーが送る。"
+      },
+      "source": "RFC 8446 4.4.2・RFC 5246 7.4.2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "cs-honest",
+      "ja": "証明書が正しく確かめられれば、そのサイトの運営者が正直であることまで保証される",
+      "attrs": {
+        "true": false,
+        "why": "証明書が示すのは、その名前のサーバーにつながったこと。運営者が正直かまでは示さない。"
+      },
+      "source": "RFC 5280 第 6 章(証明書の経路の検証)・RFC 6125(名前の照合)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "cs-name-ok",
+      "ja": "証明書の名前が合わなくても、有効期間の中なら警告は出ない",
+      "attrs": {
+        "true": false,
+        "why": "名前・期間・署名のどれか 1 つでも合わなければ警告が出る。"
+      },
+      "source": "RFC 5280 第 6 章(証明書の経路の検証)・RFC 6125(名前の照合)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    }
+  ]
+}

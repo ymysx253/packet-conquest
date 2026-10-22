@@ -1,0 +1,135 @@
+{
+  "note": "FactBank(上級 Lv306「負荷分散の層」)。負荷分散の方式と機能(group=lb)と文。checkedBy の無い行は使わない",
+  "rows": [
+    {
+      "id": "lb-l7",
+      "ja": "L7 の負荷分散",
+      "attrs": {
+        "group": "lb",
+        "desc": "HTTP の中身(URL のパス・ホスト名・Cookie など)を見て、振り分け先を決める"
+      },
+      "source": "一般的な定義(負荷分散)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lb-l4",
+      "ja": "L4 の負荷分散",
+      "attrs": {
+        "group": "lb",
+        "desc": "IP アドレスとポート番号(TCP・UDP)だけを見て、振り分け先を決める"
+      },
+      "source": "一般的な定義(負荷分散)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lb-dnsrr",
+      "ja": "DNS ラウンドロビン",
+      "attrs": {
+        "group": "lb",
+        "desc": "名前を引くたびに違うアドレスを返して、利用者を分ける"
+      },
+      "source": "一般的な定義(負荷分散)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lb-health",
+      "ja": "ヘルスチェック",
+      "attrs": {
+        "group": "lb",
+        "desc": "振り分け先が動いているかを決まった間隔で確かめ、止まった先には振らない"
+      },
+      "source": "一般的な定義(負荷分散)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lb-sticky",
+      "ja": "セッション維持",
+      "attrs": {
+        "group": "lb",
+        "desc": "同じ利用者を、続けて同じ振り分け先に送る"
+      },
+      "source": "一般的な定義(負荷分散)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lb-path-l7",
+      "ja": "URL のパスで振り分け先を変えるには、L7 の負荷分散が要る",
+      "attrs": {
+        "true": true,
+        "why": "URL のパスは HTTP の中身なので、L7 で見る。"
+      },
+      "source": "一般的な定義(負荷分散)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lb-tls-term",
+      "ja": "HTTPS の URL のパスを見て振り分けるには、負荷分散の装置で TLS を終える(復号する)必要がある",
+      "attrs": {
+        "true": true,
+        "why": "HTTPS では URL のパスは暗号化されているので、復号しないと読めない。"
+      },
+      "source": "一般的な定義(負荷分散)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lb-l4-nopath",
+      "ja": "L4 の負荷分散は HTTP の中身を見ないので、URL のパスでは振り分けられない",
+      "attrs": {
+        "true": true,
+        "why": "L4 で見るのはアドレスとポートだけ。"
+      },
+      "source": "一般的な定義(負荷分散)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lb-dns-dead",
+      "ja": "DNS ラウンドロビンだけでは、止まったサーバーのアドレスも返し続けることがある",
+      "attrs": {
+        "true": true,
+        "why": "DNS はサーバーが動いているかを確かめないので、止まったサーバーのアドレスも返す。"
+      },
+      "source": "一般的な定義(負荷分散)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lb-l4-cookie",
+      "ja": "L4 の負荷分散は、Cookie の値を見て振り分け先を決める",
+      "attrs": {
+        "true": false,
+        "why": "Cookie は HTTP の中身なので、見るのは L7 の負荷分散。"
+      },
+      "source": "一般的な定義(負荷分散)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lb-l7-iponly",
+      "ja": "L7 の負荷分散は、IP アドレスしか見ない",
+      "attrs": {
+        "true": false,
+        "why": "L7 は HTTP の中身まで見る。アドレスとポートだけを見るのは L4。"
+      },
+      "source": "一般的な定義(負荷分散)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lb-dns-auto",
+      "ja": "DNS ラウンドロビンは、振り分け先が止まると、自動でそのアドレスを返さなくなる",
+      "attrs": {
+        "true": false,
+        "why": "DNS ラウンドロビンだけでは止まったことに気づかない。それを確かめるのはヘルスチェック。"
+      },
+      "source": "一般的な定義(負荷分散)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "lb-https-plain",
+      "ja": "負荷分散の装置で TLS を終えなくても、HTTPS の URL のパスを読める",
+      "attrs": {
+        "true": false,
+        "why": "URL のパスは暗号化されているので、TLS を終えないと読めない。"
+      },
+      "source": "一般的な定義(負荷分散)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    }
+  ]
+}

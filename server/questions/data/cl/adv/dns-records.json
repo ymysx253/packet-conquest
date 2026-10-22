@@ -1,0 +1,175 @@
+{
+  "note": "FactBank(上級 Lv271「DNS の委任」)。レコードの種類(group=rr)と、委任についての文。checkedBy の無い行は使わない",
+  "rows": [
+    {
+      "id": "rr-ns",
+      "ja": "NS",
+      "attrs": {
+        "group": "rr",
+        "desc": "そのゾーンを受け持つ権威 DNS サーバーの名前を示す。下の名前を別のサーバーに任せる(委任する)ときにも使う"
+      },
+      "source": "RFC 1034・RFC 1035",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "rr-a",
+      "ja": "A",
+      "attrs": {
+        "group": "rr",
+        "desc": "名前に対する IPv4 アドレス"
+      },
+      "source": "RFC 1035",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "rr-aaaa",
+      "ja": "AAAA",
+      "attrs": {
+        "group": "rr",
+        "desc": "名前に対する IPv6 アドレス"
+      },
+      "source": "RFC 3596",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "rr-cname",
+      "ja": "CNAME",
+      "attrs": {
+        "group": "rr",
+        "desc": "ある名前を、別の名前(正式な名前)の別名にする"
+      },
+      "source": "RFC 1034",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "rr-mx",
+      "ja": "MX",
+      "attrs": {
+        "group": "rr",
+        "desc": "そのドメイン宛のメールを受け取るサーバーと、その優先度"
+      },
+      "source": "RFC 1035・RFC 5321",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "rr-ptr",
+      "ja": "PTR",
+      "attrs": {
+        "group": "rr",
+        "desc": "IP アドレスに対する名前(逆引きに使う)"
+      },
+      "source": "RFC 1035",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "rr-soa",
+      "ja": "SOA",
+      "attrs": {
+        "group": "rr",
+        "desc": "ゾーンの管理の情報(代表のサーバー、シリアル番号、時間の決まりなど)"
+      },
+      "source": "RFC 1035",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "rr-txt",
+      "ja": "TXT",
+      "attrs": {
+        "group": "rr",
+        "desc": "自由な文字列。SPF の宣言などに使う"
+      },
+      "source": "RFC 1035・RFC 7208",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dl-ns-parent",
+      "ja": "親のゾーンに子のゾーンの NS レコードを置くと、子のゾーンの名前の問い合わせは、子の権威サーバーへ案内される",
+      "attrs": {
+        "true": true,
+        "why": "これが委任。親は子の中身を答えず、子を受け持つサーバーを教える。"
+      },
+      "source": "RFC 1034 4.2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dl-glue",
+      "ja": "委任先の DNS サーバーの名前が子のゾーンの中にあるときは、親のゾーンにそのサーバーのアドレス(グルー)も置く",
+      "attrs": {
+        "true": true,
+        "why": "子のサーバーの名前を引くのに子のサーバーが要るという堂々めぐりを、親に置いたアドレスで断つ。"
+      },
+      "source": "RFC 1034 4.2.1",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dl-apex-cname",
+      "ja": "ゾーンの頂点(ゾーンの名前そのもの)には SOA と NS があるので、CNAME は置けない",
+      "attrs": {
+        "true": true,
+        "why": "CNAME はほかのレコードと同じ名前に置けない決まりで、頂点には必ず SOA と NS がある。"
+      },
+      "source": "RFC 1034 3.6.2・RFC 2181 10.1",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dl-child-ns",
+      "ja": "子のゾーンにも、自分を受け持つサーバーを示す NS レコードを置く",
+      "attrs": {
+        "true": true,
+        "why": "ゾーンの頂点には、そのゾーンの権威サーバーを示す NS を置く。親の NS と同じものにそろえる。"
+      },
+      "source": "RFC 1034 4.2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dl-cname",
+      "ja": "下の名前を別のサーバーに任せる(委任する)には、CNAME レコードを使う",
+      "attrs": {
+        "true": false,
+        "why": "委任に使うのは NS レコード。CNAME は名前の別名。"
+      },
+      "source": "RFC 1034",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dl-parent-answers",
+      "ja": "委任すると、親のゾーンの権威サーバーが、子のゾーンの A レコードを全部答えるようになる",
+      "attrs": {
+        "true": false,
+        "why": "委任すると、子の名前は子の権威サーバーが答える。親は子を受け持つサーバーを教えるだけ。"
+      },
+      "source": "RFC 1034 4.2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dl-mx",
+      "ja": "MX レコードは、下の名前を別の DNS サーバーに任せるために使う",
+      "attrs": {
+        "true": false,
+        "why": "MX はメールの受け取り先。委任は NS。"
+      },
+      "source": "RFC 1035",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dl-ns-ip",
+      "ja": "NS レコードには、DNS サーバーの名前ではなく IP アドレスをそのまま書く",
+      "attrs": {
+        "true": false,
+        "why": "NS に書くのはサーバーの名前。アドレスは A・AAAA(必要ならグルー)で示す。"
+      },
+      "source": "RFC 1035 3.3.11",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "dl-ptr",
+      "ja": "PTR レコードは、名前から IPv6 アドレスを引くためのレコードである",
+      "attrs": {
+        "true": false,
+        "why": "名前から IPv6 アドレスは AAAA。PTR はアドレスから名前(逆引き)。"
+      },
+      "source": "RFC 1035・RFC 3596",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    }
+  ]
+}

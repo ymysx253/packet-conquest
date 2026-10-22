@@ -1,0 +1,336 @@
+{
+  "note": "FactBank(上級 Lv293「QoS の印」)。DSCP の印(kind=phb。value が値、AF は cls と drop)と文。AF の値は 8 × x + 2 × y、CS の値は 8 × n(RFC 2597・RFC 2474)。checkedBy の無い行は使わない",
+  "rows": [
+    {
+      "id": "d-ef",
+      "ja": "EF",
+      "attrs": {
+        "kind": "phb",
+        "value": 46,
+        "use": "voice"
+      },
+      "source": "RFC 3246・RFC 4594",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-af11",
+      "ja": "AF11",
+      "attrs": {
+        "kind": "phb",
+        "value": 10,
+        "cls": 1,
+        "drop": 1
+      },
+      "source": "RFC 2597",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-af12",
+      "ja": "AF12",
+      "attrs": {
+        "kind": "phb",
+        "value": 12,
+        "cls": 1,
+        "drop": 2
+      },
+      "source": "RFC 2597",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-af13",
+      "ja": "AF13",
+      "attrs": {
+        "kind": "phb",
+        "value": 14,
+        "cls": 1,
+        "drop": 3
+      },
+      "source": "RFC 2597",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-af21",
+      "ja": "AF21",
+      "attrs": {
+        "kind": "phb",
+        "value": 18,
+        "cls": 2,
+        "drop": 1
+      },
+      "source": "RFC 2597",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-af22",
+      "ja": "AF22",
+      "attrs": {
+        "kind": "phb",
+        "value": 20,
+        "cls": 2,
+        "drop": 2
+      },
+      "source": "RFC 2597",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-af23",
+      "ja": "AF23",
+      "attrs": {
+        "kind": "phb",
+        "value": 22,
+        "cls": 2,
+        "drop": 3
+      },
+      "source": "RFC 2597",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-af31",
+      "ja": "AF31",
+      "attrs": {
+        "kind": "phb",
+        "value": 26,
+        "cls": 3,
+        "drop": 1
+      },
+      "source": "RFC 2597",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-af32",
+      "ja": "AF32",
+      "attrs": {
+        "kind": "phb",
+        "value": 28,
+        "cls": 3,
+        "drop": 2
+      },
+      "source": "RFC 2597",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-af33",
+      "ja": "AF33",
+      "attrs": {
+        "kind": "phb",
+        "value": 30,
+        "cls": 3,
+        "drop": 3
+      },
+      "source": "RFC 2597",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-af41",
+      "ja": "AF41",
+      "attrs": {
+        "kind": "phb",
+        "value": 34,
+        "cls": 4,
+        "drop": 1
+      },
+      "source": "RFC 2597",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-af42",
+      "ja": "AF42",
+      "attrs": {
+        "kind": "phb",
+        "value": 36,
+        "cls": 4,
+        "drop": 2
+      },
+      "source": "RFC 2597",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-af43",
+      "ja": "AF43",
+      "attrs": {
+        "kind": "phb",
+        "value": 38,
+        "cls": 4,
+        "drop": 3
+      },
+      "source": "RFC 2597",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-cs0",
+      "ja": "CS0",
+      "attrs": {
+        "kind": "phb",
+        "value": 0,
+        "cs": 0,
+        "use": null
+      },
+      "source": "RFC 2474・RFC 4594",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-cs1",
+      "ja": "CS1",
+      "attrs": {
+        "kind": "phb",
+        "value": 8,
+        "cs": 1,
+        "use": null
+      },
+      "source": "RFC 2474・RFC 4594",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-cs2",
+      "ja": "CS2",
+      "attrs": {
+        "kind": "phb",
+        "value": 16,
+        "cs": 2,
+        "use": null
+      },
+      "source": "RFC 2474・RFC 4594",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-cs3",
+      "ja": "CS3",
+      "attrs": {
+        "kind": "phb",
+        "value": 24,
+        "cs": 3,
+        "use": null
+      },
+      "source": "RFC 2474・RFC 4594",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-cs4",
+      "ja": "CS4",
+      "attrs": {
+        "kind": "phb",
+        "value": 32,
+        "cs": 4,
+        "use": null
+      },
+      "source": "RFC 2474・RFC 4594",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-cs5",
+      "ja": "CS5",
+      "attrs": {
+        "kind": "phb",
+        "value": 40,
+        "cs": 5,
+        "use": "signal"
+      },
+      "source": "RFC 2474・RFC 4594",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-cs6",
+      "ja": "CS6",
+      "attrs": {
+        "kind": "phb",
+        "value": 48,
+        "cs": 6,
+        "use": "netctl"
+      },
+      "source": "RFC 2474・RFC 4594",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "d-cs7",
+      "ja": "CS7",
+      "attrs": {
+        "kind": "phb",
+        "value": 56,
+        "cs": 7,
+        "use": null
+      },
+      "source": "RFC 2474・RFC 4594",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "qs-6bit",
+      "ja": "DSCP は IP ヘッダの 6 ビットで、0〜63 の値をとる",
+      "attrs": {
+        "true": true,
+        "why": "元の ToS の 8 ビットのうち上の 6 ビットが DSCP、残りの 2 ビットは ECN。"
+      },
+      "source": "RFC 2474・RFC 3168",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "qs-ef-low-delay",
+      "ja": "EF は、遅れと揺らぎを小さくしたい通信(音声など)のための印である",
+      "attrs": {
+        "true": true,
+        "why": "EF は待たせずに送る扱いのための印で、音声によく使う。"
+      },
+      "source": "RFC 3246",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "qs-af-drop",
+      "ja": "AF の印では、AFxy の y が大きいほど、混んだときに先に捨てられやすい",
+      "attrs": {
+        "true": true,
+        "why": "y は捨てやすさ(1 が捨てにくく 3 が捨てやすい)。x は列(クラス)。"
+      },
+      "source": "RFC 2597",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "qs-cs-compat",
+      "ja": "CS の印の値は 8 の倍数で、昔の IP 優先度(3 ビット)と同じ順に並ぶ",
+      "attrs": {
+        "true": true,
+        "why": "CSn の値は n × 8。上の 3 ビットが昔の IP 優先度にあたる。"
+      },
+      "source": "RFC 2474 4.2.2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "qs-vlan",
+      "ja": "DSCP は、VLAN タグの中の 3 ビットである",
+      "attrs": {
+        "true": false,
+        "why": "VLAN タグの 3 ビットは PCP(CoS)。DSCP は IP ヘッダの 6 ビット。"
+      },
+      "source": "RFC 2474・IEEE 802.1Q",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "qs-bigger-first",
+      "ja": "DSCP の値が大きいほど、途中のどの機器でも必ず先に送られる",
+      "attrs": {
+        "true": false,
+        "why": "印をどう扱うかは各機器の設定(方針)で決まる。値の大きさだけで決まるわけではない。"
+      },
+      "source": "RFC 2474",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "qs-af-y-safe",
+      "ja": "AF の印では、AFxy の y が大きいほど、混んだときに捨てられにくい",
+      "attrs": {
+        "true": false,
+        "why": "逆。y が大きいほど先に捨てられやすい。"
+      },
+      "source": "RFC 2597",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "qs-8bit",
+      "ja": "DSCP は 8 ビットで、0〜255 の値をとる",
+      "attrs": {
+        "true": false,
+        "why": "DSCP は 6 ビットで 0〜63。"
+      },
+      "source": "RFC 2474",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    }
+  ]
+}

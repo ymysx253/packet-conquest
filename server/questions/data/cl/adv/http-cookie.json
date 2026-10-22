@@ -1,0 +1,205 @@
+{
+  "note": "FactBank(上級 Lv276「Cookie」)。Cookie についての文、ヘッダ(group=header)と属性(group=attr)の説明。checkedBy の無い行は使わない",
+  "rows": [
+    {
+      "id": "ck-send",
+      "ja": "Set-Cookie を受けたブラウザは、条件に合う次のリクエストに Cookie ヘッダを付けて送る",
+      "attrs": {
+        "true": true,
+        "why": "サーバーが Set-Cookie で覚えさせ、ブラウザが Cookie ヘッダで送り返す。"
+      },
+      "source": "RFC 6265",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ck-httponly",
+      "ja": "HttpOnly を付けた Cookie は、ページのスクリプト(JavaScript)から読めない",
+      "attrs": {
+        "true": true,
+        "why": "HttpOnly はスクリプトから読ませない属性。HTTP のリクエストには付けて送る。"
+      },
+      "source": "RFC 6265 4.1.2.6",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ck-secure",
+      "ja": "Secure を付けた Cookie は、HTTPS のような安全な通信のときだけ送られる",
+      "attrs": {
+        "true": true,
+        "why": "Secure は送る通信を安全なものに限る属性。"
+      },
+      "source": "RFC 6265 4.1.2.5",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ck-hostonly",
+      "ja": "Domain 属性を付けない Cookie は、それを設定したホストだけに送られる",
+      "attrs": {
+        "true": true,
+        "why": "Domain が無いと、その Cookie はそのホストだけのもの(下のホストにも送らない)になる。"
+      },
+      "source": "RFC 6265 5.3",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ck-maxage-wins",
+      "ja": "Max-Age と Expires の両方があると、Max-Age が優先される",
+      "attrs": {
+        "true": true,
+        "why": "決まりでは Max-Age があればそちらで期限を決める。"
+      },
+      "source": "RFC 6265 5.3",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ck-path",
+      "ja": "Path=/shop を付けた Cookie は、/shop とその下のパスへのリクエストに付く",
+      "attrs": {
+        "true": true,
+        "why": "Path は送る先のパスの範囲。/shop/cart にも付くが /shopping には付かない。"
+      },
+      "source": "RFC 6265 5.1.4",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ck-back-setcookie",
+      "ja": "ブラウザは、受けた Cookie を次のリクエストで Set-Cookie ヘッダに入れて送り返す",
+      "attrs": {
+        "true": false,
+        "why": "送り返すときは Cookie ヘッダ。Set-Cookie はサーバーからの応答に使う。"
+      },
+      "source": "RFC 6265",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ck-httponly-https",
+      "ja": "HttpOnly を付けた Cookie は、HTTPS のときだけ送られる",
+      "attrs": {
+        "true": false,
+        "why": "安全な通信のときだけ送るのは Secure。HttpOnly はスクリプトから読ませない属性。"
+      },
+      "source": "RFC 6265",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ck-secure-encrypt",
+      "ja": "Secure を付けると、Cookie の中身がブラウザの中で暗号化されて保存される",
+      "attrs": {
+        "true": false,
+        "why": "Secure は送る通信を HTTPS などに限るだけ。保存のしかたは変わらない。"
+      },
+      "source": "RFC 6265",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ck-server-only",
+      "ja": "Cookie はサーバーだけが覚えるもので、ブラウザには何も残らない",
+      "attrs": {
+        "true": false,
+        "why": "Cookie はブラウザが覚えて、次のリクエストで送る小さなデータ。"
+      },
+      "source": "RFC 6265",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ck-all-sites",
+      "ja": "Domain 属性を付けない Cookie は、どのサイトへのリクエストにも付けられる",
+      "attrs": {
+        "true": false,
+        "why": "Domain が無いと、設定したホストだけに送る。ほかのサイトには送らない。"
+      },
+      "source": "RFC 6265 5.3",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "ck-maxage0",
+      "ja": "Max-Age=0 を付けた Cookie は、期限なしでずっと残る",
+      "attrs": {
+        "true": false,
+        "why": "Max-Age が 0 以下なら、すぐに期限切れになって消える。Cookie を消すのに使う。"
+      },
+      "source": "RFC 6265 5.2.2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "h-cookie",
+      "ja": "Cookie",
+      "attrs": {
+        "group": "header",
+        "desc": "ブラウザが、覚えている Cookie をサーバーへ送るときのリクエストのヘッダ"
+      },
+      "source": "RFC 6265",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "h-setcookie",
+      "ja": "Set-Cookie",
+      "attrs": {
+        "group": "header",
+        "desc": "サーバーが、ブラウザに Cookie を覚えさせるときの応答のヘッダ"
+      },
+      "source": "RFC 6265",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "h-authorization",
+      "ja": "Authorization",
+      "attrs": {
+        "group": "header",
+        "desc": "利用者の認証の情報をサーバーへ送るリクエストのヘッダ"
+      },
+      "source": "RFC 9110 11.6.2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "h-location",
+      "ja": "Location",
+      "attrs": {
+        "group": "header",
+        "desc": "転送先の URL を示す応答のヘッダ"
+      },
+      "source": "RFC 9110 10.2.2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "a-httponly",
+      "ja": "HttpOnly",
+      "attrs": {
+        "group": "attr",
+        "desc": "ページのスクリプトから Cookie を読めないようにする属性"
+      },
+      "source": "RFC 6265 4.1.2.6",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "a-secure",
+      "ja": "Secure",
+      "attrs": {
+        "group": "attr",
+        "desc": "HTTPS のような安全な通信のときだけ Cookie を送るようにする属性"
+      },
+      "source": "RFC 6265 4.1.2.5",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "a-maxage",
+      "ja": "Max-Age",
+      "attrs": {
+        "group": "attr",
+        "desc": "Cookie があと何秒で期限切れになるかを決める属性"
+      },
+      "source": "RFC 6265 4.1.2.2",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "a-path",
+      "ja": "Path",
+      "attrs": {
+        "group": "attr",
+        "desc": "Cookie を付けて送る先のパスの範囲を決める属性"
+      },
+      "source": "RFC 6265 4.1.2.4",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    }
+  ]
+}

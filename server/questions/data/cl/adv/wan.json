@@ -1,0 +1,125 @@
+{
+  "note": "FactBank(上級 Lv299「WAN の種類」)。拠点をつなぐサービス(group=wan)と文。checkedBy の無い行は使わない",
+  "rows": [
+    {
+      "id": "w-wether",
+      "ja": "広域イーサネット",
+      "attrs": {
+        "group": "wan",
+        "desc": "事業者の閉じた網で、拠点どうしを L2(イーサネット)でつなぐ"
+      },
+      "source": "一般的な定義(IPA 応用情報技術者の出題範囲 10.5)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "w-ipvpn",
+      "ja": "IP-VPN",
+      "attrs": {
+        "group": "wan",
+        "desc": "事業者の閉じた網(MPLS など)で、拠点どうしを L3(IP)でつなぐ"
+      },
+      "source": "一般的な定義(IPA 応用情報技術者の出題範囲 10.5)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "w-ivpn",
+      "ja": "インターネット VPN",
+      "attrs": {
+        "group": "wan",
+        "desc": "インターネットの上に暗号化したトンネル(IPsec など)を張って、拠点どうしをつなぐ"
+      },
+      "source": "一般的な定義(IPA 応用情報技術者の出題範囲 10.5)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "w-leased",
+      "ja": "専用線",
+      "attrs": {
+        "group": "wan",
+        "desc": "2 つの拠点の間を、帯域を占有する回線でつなぐ"
+      },
+      "source": "一般的な定義(IPA 応用情報技術者の出題範囲 10.5)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "wn-ether-routing",
+      "ja": "広域イーサネットは L2 でつなぐので、拠点の間で使う経路の手順(OSPF など)を利用者が選びやすい",
+      "attrs": {
+        "true": true,
+        "why": "事業者の網は L2 のフレームを運ぶだけなので、L3 の手順は利用者が決める。"
+      },
+      "source": "一般的な定義(IPA 応用情報技術者の出題範囲 10.5)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "wn-ipvpn-closed",
+      "ja": "IP-VPN は、インターネットを通らない事業者の閉じた網を使う",
+      "attrs": {
+        "true": true,
+        "why": "IP-VPN は事業者の網の中で拠点の通信を分けて運ぶ。"
+      },
+      "source": "一般的な定義(IPA 応用情報技術者の出題範囲 10.5)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "wn-ivpn-vary",
+      "ja": "インターネット VPN はインターネットを通るので、帯域や遅れは混み具合で変わる",
+      "attrs": {
+        "true": true,
+        "why": "暗号化しても、通り道はほかの人と分け合うインターネット。"
+      },
+      "source": "一般的な定義(IPA 応用情報技術者の出題範囲 10.5)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "wn-leased-own",
+      "ja": "専用線は、2 拠点の間の帯域を占有して使える",
+      "attrs": {
+        "true": true,
+        "why": "ほかの利用者と分け合わないので、帯域が安定する。"
+      },
+      "source": "一般的な定義(IPA 応用情報技術者の出題範囲 10.5)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "wn-ivpn-guarantee",
+      "ja": "インターネット VPN は暗号化するので、帯域や遅れが保証される",
+      "attrs": {
+        "true": false,
+        "why": "暗号化は盗み見を防ぐだけ。インターネットを通るので帯域や遅れは保証されない。"
+      },
+      "source": "一般的な定義(IPA 応用情報技術者の出題範囲 10.5)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "wn-ether-l3",
+      "ja": "広域イーサネットは、拠点どうしを L3(IP)でつなぐサービスで、L2 のフレームは運べない",
+      "attrs": {
+        "true": false,
+        "why": "広域イーサネットは L2 でつなぐ。L3 でつなぐのは IP-VPN。"
+      },
+      "source": "一般的な定義(IPA 応用情報技術者の出題範囲 10.5)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "wn-ipvpn-internet",
+      "ja": "IP-VPN は、インターネットの上に利用者が自分で暗号化したトンネルを張る方式である",
+      "attrs": {
+        "true": false,
+        "why": "それはインターネット VPN。IP-VPN は事業者の閉じた網を使う。"
+      },
+      "source": "一般的な定義(IPA 応用情報技術者の出題範囲 10.5)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    },
+    {
+      "id": "wn-leased-share",
+      "ja": "専用線は、ほかの利用者と帯域を分け合うので、混む時間は遅くなる",
+      "attrs": {
+        "true": false,
+        "why": "専用線は帯域を占有する。分け合うのはインターネットなど。"
+      },
+      "source": "一般的な定義(IPA 応用情報技術者の出題範囲 10.5)",
+      "checkedBy": "Claude Opus 5.5 2026-10-22"
+    }
+  ]
+}
