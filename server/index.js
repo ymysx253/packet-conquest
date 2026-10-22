@@ -35,6 +35,7 @@ const world = new World({ store, events });
 const { Chat } = require('./chat');
 const chat = new Chat(world, store, events); // チャット(2026-10-21)
 const limiter = new RateLimiter(); // 接続元ごとの新規作成・復帰の回数制限(SECURITY.md F2)
+const clPreview = require('./cl-preview').createClPreview(); // 見本のページ(CL_PREVIEW=1 のときだけ開く)
 // 想定外の例外だけ error として記録する。world.js の規則による拒否は素の Error(message だけ)なので、
 // それ以外(TypeError などの別のクラス、code を持つ SDK やネットワークの例外、expected: false と明示したもの)を「想定外」とみなす
 const isUnexpected = (e) => !e || e.expected === false || (e.expected !== true && (e.constructor !== Error || e.code !== undefined));
@@ -90,6 +91,8 @@ const server = http.createServer((req, res) => {
   // アイテムを配る(2026-10-22。支払いができるまでの、管理者だけの口)。環境変数 ADMIN_KEY が無ければ 404。
   // POST /admin/grant ヘッダー X-Admin-Key、本文 JSON { playerId, kind: 'home' | 'guard', count }
   if (url.pathname === '/admin/grant') return adminGrant(req, res);
+  // 新しい番号の問題の見本のページ(server/cl-preview.js)。環境変数 CL_PREVIEW=1 のときだけ。無ければ /cl-preview で始まる道は 404
+  if (clPreview.handle(req, res, url, SECURITY_HEADERS)) return;
   if (url.pathname === '/healthz') {
     res.writeHead(200, { 'Content-Type': 'text/plain', ...SECURITY_HEADERS });
     return res.end(`ok players=${world.players.size} tiles=${world.tiles.size} nodes=${world.nodes.size}`);

@@ -72,6 +72,24 @@ const COLORS = [
 ];
 
 const newId = () => crypto.randomBytes(6).toString('hex');
+
+// 画面に送る問題の中身(答え answerIndex・accept・解説は入れない)。ゲームの ask と見本のページ(server/cl-preview.js)で同じ形にする。
+// 入力式(COMMON.md 第 1 章): fields は name / label / format / hint(入力の例示)/ digits / vocab だけ配信し、accept は送らない。
+// card(入門の説明カード)はいつも送る。hint(初級のヒント)・firstStep(中級の最初の 1 手)は hints が真のときだけ送る(docs/questions/CL.md 第 3 章)。
+// hints が偽で問題にヒントがあるときは hintLocked を付ける(画面が「ここではヒントを使えません」と出すため。ヒントの中身は送らない)
+function questionPayload(q, { hints = true } = {}) {
+  const fields = Array.isArray(q.fields) ? q.fields.map((f) => ({ name: f.name, label: f.label, format: f.format, hint: f.hint || null, digits: f.digits || null, vocab: f.vocab || null })) : null;
+  return {
+    provisional: !!q.provisional, text: q.text, answerKind: q.answerKind || 'choice',
+    options: q.options || null, table: q.table || null, tables: q.tables || null, fields, compare: q.compare || null,
+    card: q.card || null,
+    hint: hints && q.hint ? q.hint : null, firstStep: hints && q.firstStep ? q.firstStep : null, hintLocked: !hints && !!(q.hint || q.firstStep),
+  };
+}
+// ヒントを使えるか(CURRICULUM.md 第 7.5 節。2026-10-22 ユーザー決定): 中立の拠点を攻めるときと、自分の拠点を強化するときだけ。
+// ほかの人の拠点(チームの持ち物・同じチームの仲間の拠点を含む。持ち主がいて自分でない拠点すべて)を攻めるときは使えない(取り合いは実力勝負)。
+// ヒントを使った正解も 1 回に数える(判定と回数は変えない)
+const hintsAllowed = (n, mode) => mode === 'fortify' || !n.owner;
 // 週の鍵: 日本時間の月曜 0 時で区切る(例 "2026-10-12")。週間ランキングの集計単位
 function weekKeyOf(t = Date.now()) {
   const jst = new Date(t + 9 * 3600 * 1000);
@@ -1029,17 +1047,14 @@ class World {
     if (!hasGenerator(level)) throw new Error(mode === 'fortify' ? `この拠点の出題 Lv${level} の問題はまだありません。強化できません` : `Lv${level} の問題はまだありません。この拠点はまだ占領できません`);
     // 強化は、上げた先のレベルに問題があるときだけ(問題の無いレベルまで上げて、誰にも攻められなくするのを防ぐ)
     if (mode === 'fortify') { const next = Math.max(4, Math.min(MAX_LEVEL, level + 1)); if (!hasGenerator(next)) throw new Error(`これ以上強化できません(Lv${next} の問題がまだありません)`); }
-    if (p.pending && p.pending.nodeId === nodeId && p.pending.mode === mode && p.pending.level === level) return p.pending.payload;
+    // ヒントの有無。持ち主が変わると(中立 → ほかの人)同じ拠点・同じレベルでも変わるので、出し直しの条件に入れる
+    const hints = hintsAllowed(n, mode);
+    if (p.pending && p.pending.nodeId === nodeId && p.pending.mode === mode && p.pending.level === level && p.pending.hints === hints) return p.pending.payload;
     const q = getQuestion({ level, node: n });
     const qid = newId();
-    // 入力式(COMMON.md 第 1 章): fields は name / label / format / hint / digits / vocab だけ配信し、accept は送らない
-    const fields = Array.isArray(q.fields) ? q.fields.map((f) => ({ name: f.name, label: f.label, format: f.format, hint: f.hint || null, digits: f.digits || null, vocab: f.vocab || null })) : null;
-    const payload = {
-      t: 'question', qid, nodeId, mode, level, provisional: !!q.provisional, text: q.text, answerKind: q.answerKind || 'choice',
-      options: q.options || null, table: q.table || null, tables: q.tables || null, fields, compare: q.compare || null,
-    };
+    const payload = { t: 'question', qid, nodeId, mode, level, ...questionPayload(q, { hints }) };
     p.pending = {
-      qid, nodeId, mode, level, askedAt: now(), payload, regionId: n.region, qkind: q.kind, // regionId / qkind は出来事の記録(answer)用
+      qid, nodeId, mode, level, hints, askedAt: now(), payload, regionId: n.region, qkind: q.kind, // regionId / qkind は出来事の記録(answer)用
       answerKind: q.answerKind || 'choice', answerIndex: q.answerIndex, fields: q.fields || null, compare: q.compare || null, verifier: q.verifier || null,
       explanation: q.explanation, defenseNote: q.defenseNote || null,
     };
@@ -1277,4 +1292,4 @@ class World {
   }
 }
 
-module.exports = { startable, DEFAULT_START_ID, World, PROTECT_MS, GATEWAY_GUARD_MS, GUARD_EXT_MS, GUARD_MAX_MS, GUARD_DAILY, HOME_ITEM_MONTHLY, HOME_ITEM_TOTAL, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, TEAM_MAX_MEMBERS, TEAM_ICONS, weekKeyOf };
+module.exports = { startable, DEFAULT_START_ID, World, questionPayload, hintsAllowed, PROTECT_MS, GATEWAY_GUARD_MS, GUARD_EXT_MS, GUARD_MAX_MS, GUARD_DAILY, HOME_ITEM_MONTHLY, HOME_ITEM_TOTAL, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, TEAM_MAX_MEMBERS, TEAM_ICONS, weekKeyOf };

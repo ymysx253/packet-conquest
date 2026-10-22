@@ -323,6 +323,41 @@ body {
 .qcool-text { flex: 0 0 auto; font-size: 13px; font-weight: 700; color: var(--bad); }
 .qcool-track { flex: 1 1 auto; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
 .qdlg .unsupported { color: var(--bad); font-weight: 700; }
+/* 説明カード(入門)とヒント(初級・中級)。2026-10-22 */
+.qcard { margin: 10px 0 0; padding: 8px 12px; border-radius: 8px; border: 2px solid var(--line); border-left: 6px solid var(--accent); background: var(--bg); }
+.qcard[hidden] { display: none; }
+.qcard summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--muted); }
+.qcard p { margin: 6px 0 2px; font-size: 15px; line-height: 1.7; white-space: pre-line; }
+.qhint { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 12px; }
+.qhint[hidden], .qhint [hidden] { display: none; }
+.qhint .hint { margin: 0; }
+.qhint-text { flex: 1 1 100%; padding: 8px 12px; border-radius: 8px; background: color-mix(in srgb, var(--accent) 16%, var(--surface)); border: 1px solid color-mix(in srgb, var(--accent) 50%, var(--line)); }
+.qhint-text p { margin: 0; font-size: 14px; white-space: pre-line; }
+.qhint-text p + p { margin-top: 4px; }
+/* 選ぶ問題の並べ方: ○× は大きな 2 つのボタン(スマホでも横に 2 つ)。2 択は横に 2 つ、3 択・4 択は縦に */
+.options.n2 { grid-template-columns: 1fr 1fr; }
+.options.tf .opt { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 96px; text-align: center; }
+.options.tf .opt .v { font: 700 44px/1 var(--font-body); }
+.options.tf .opt .k { margin: 0; }
+.opt.picked { border-color: var(--ink); }
+/* 入力の部品(スマホ向け): IPv4 は 4 つの欄、2 進数は 0/1 の切り替えボタン */
+.field .flabel { font-size: 13px; font-weight: 700; }
+.field .fhint { font-size: 12px; color: var(--muted); }
+.ip4 { display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; }
+.ip4 .sep { font: 700 18px var(--font-mono); color: var(--muted); }
+.field .ip4 input { width: 4.2em; min-width: 0; flex: 0 1 4.2em; text-align: center; padding: 8px 4px; }
+.field .ip4 input.len { width: 3.2em; flex-basis: 3.2em; }
+.bits { display: flex; flex-wrap: wrap; gap: 4px; }
+.bit { font: 700 20px var(--font-mono); width: 40px; height: 48px; border-radius: 8px; border: 2px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; padding: 0; }
+.bit[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.bit.gap { margin-left: 8px; }
+.bit:disabled { cursor: default; opacity: 0.8; }
+.bit:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.field.ok .bit { border-color: var(--good); }
+.field.ng .bit { border-color: var(--bad); }
+#qFieldNote { margin: 0; }
+#qFieldNote:empty { display: none; }
+@media (max-width: 400px) { .bit { width: 32px; height: 44px; } .bit.gap { margin-left: 4px; } }
 .team-btn { max-width: 14em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .me-row { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; align-items: center; gap: 10px; }
 .me-stats { margin: 4px 0 10px; }
