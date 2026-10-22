@@ -1076,6 +1076,7 @@ class World {
         if (typeof answer[i] !== 'string' || answer[i].length > max) throw new Error('入力が長すぎます');
       }
     } else if (!Number.isInteger(answer)) throw new Error('選択肢を選んでください');
+    else { const nOpt = ((pend.payload && pend.payload.options) || []).length; if (nOpt && (answer < 0 || answer >= nOpt)) throw new Error('選択肢を選んでください'); } // 選択肢の数を超える番号は受けない(○× で 3 など。2026-10-22)
     p.pending = null; this.touch(p);
     const correct = judge({ answerKind: pend.answerKind, answerIndex: pend.answerIndex, fields: pend.fields, compare: pend.compare, verifier: pend.verifier }, answer);
     const answeredAt = now(), sec = Math.round((answeredAt - (pend.askedAt || answeredAt)) / 100) / 10; // 出題から解答までの秒(小数 1 桁)
