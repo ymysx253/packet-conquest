@@ -997,7 +997,7 @@ class World {
   async ask(p, nodeId) {
     const n = this.nodes.get(nodeId);
     if (!n || n.status !== 'public') throw new Error('その拠点は表示されていません。地図を動かして選び直してください');
-    if (n.hackable === false) throw new Error('この場所はネットワークにつながっていません(ハックできません)');
+    if (n.hackable === false) throw new Error('この場所はネットワークにつながっていません(占領できません)');
     if (now() < p.cooldownUntil) throw new Error('通信が回復するまで少し待ってください');
     if (n.owner !== p.id && !openAt(n.hours)) throw new Error('この拠点はいま閉じています(開いている時間の外です)');
     let mode;

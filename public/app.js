@@ -899,7 +899,7 @@
     $('npValue').textContent = `${n.value}点`;
     if (n.hours) $('npValue').textContent += `(開いている時間: 毎日 ${n.hours.map(jstRange).join('・')} 日本時間)`; // 1 日中ではない拠点だけ
     $('npCompany').hidden = $('npCompanyLabel').hidden = !n.company;
-    if (n.company) $('npCompany').textContent = `${n.company}(命名権など。ハック不可)`;
+    if (n.company) $('npCompany').textContent = `${n.company}(命名権など。占領できません)`;
     $('npOwner').textContent = n.ownerIsTeam ? `チーム「${n.ownerTeamName || '?'}」の持ち物${S.team && S.team.id === n.owner ? '(あなたのチーム)' : ''}` // チームを抜けた人が取った拠点はチームの持ち物(2026-10-20)
       : owner ? `${owner.name}${owner.id === S.me ? '(あなた)' : ''}` : (n.owner ? '他のプレイヤー' : '中立');
     // 突破に必要な回数 = つながりの本数。自分(チーム)の進捗と、他の攻め手の最大進捗
@@ -910,7 +910,7 @@
     const mine = prog[myKey] || 0;
     const others = Object.entries(prog).filter(([k]) => k !== myKey).map(([, v]) => v);
     const parts = [`正解 ${hits} 回(つながり ${base} 本${hits < base ? `、囲み ${sg.held} 本で −${base - hits}` : ''})`];
-    if (n.hackable === false) parts.length = 0, parts.push('ハック不可');
+    if (n.hackable === false) parts.length = 0, parts.push('占領できない場所');
     else if (n.owner === S.me) { if (others.length) parts.push(`侵入されています: 最大 ${Math.max(...others)}/${hits}`); }
     else { if (mine) parts.push(`${S.team ? 'チーム' : 'あなた'} ${mine}/${hits}`); if (others.length) parts.push(`他の攻め手 最大 ${Math.max(...others)} 回正解`); } // ほかの攻め手の必要な回数は囲みで人ごとに違う
     $('npHits').textContent = parts.join(' ・ ');
@@ -929,7 +929,7 @@
     }));
     let status;
     if (S.overview) status = '拡大すると攻撃や強化ができます';
-    else if (n.hackable === false) status = 'ネットワークにつながっていない場所です(ハック不可)';
+    else if (n.hackable === false) status = 'ネットワークにつながっていない場所です(占領できません)';
     else if (n.owner === S.me) status = 'タップすると強化の問題が出ます';
     else if (n.isPlayerNode) status = 'プレイヤー自身の拠点は占領できません';
     else if (n.hours && !openNow(n.hours) && n.owner !== S.me) status = `いまは閉じています(開いている時間: 毎日 ${n.hours.map(jstRange).join('・')} 日本時間)`;
