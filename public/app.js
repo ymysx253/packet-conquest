@@ -9,6 +9,7 @@
     ws: null, me: null, token: null, joined: false, wantJoin: false, retry: 0,
     home: null, spawn: null,
     nodes: new Map(),   // id → 拠点(サーバーから受け取った範囲だけ)
+    defSeen: new Map(), defAnim: new Map(), // 強化の上がり下がりのアニメーション(2026-10-22): 拠点 id → 前に描いた強化の値 / 動いている最中のもの
     edges: new Map(),   // key → {a, b}
     far: new Map(),     // 読み込んでいない隣の駅(id → 位置・路線)。路線の線を画面の外へ伸ばすのに使う(2026-10-20)
     tiles: new Set(),   // 受け取っているタイル(z0)
@@ -245,6 +246,11 @@
   const startableNode = (n) => !!n && !n.isPlayerNode && n.hackable !== false && (n.genre === 'town' || (n.genre === 'station' && n.level <= 10));
   // 問題のあるレベル(サーバーが welcome で送る範囲)。問題の無いレベルの拠点は、線がつながっていても占領・強化できない(2026-10-19)
   const hasQuestion = (lv) => (S.questionRanges || [[1, 999]]).some(([a, b]) => lv >= a && lv <= b);
+  // 今の強化の値(2026-10-22): 強化は 24 時間ごとに 1 下がる(サーバーの settle と同じ)。届いた値と強化した時刻から画面でも数え、下がった瞬間にアニメーションを出す
+  const DECAY_MS = 24 * 3600 * 1000;
+  const liveDefense = (n) => { const d = n.defense || 0; if (!d || !n.fortifiedAt) return d; return Math.max(0, d - Math.max(0, Math.floor((now() - n.fortifiedAt) / DECAY_MS))); };
+  // 印の形のレベル(2026-10-22 ユーザー決定: 強化したら形も変わる): 元のレベル + 強化。プレイヤーの拠点は変えない
+  const shapeLevel = (n) => (n.isPlayerNode ? n.level : Math.min(999, Math.max(1, n.level) + liveDefense(n)));
   const attackLevelOf = (n) => { const base = Math.max(1, n.level) + (n.defense || 0); return n.owner ? Math.max(4, base) : base; };
   // 濃さ(2026-10-19 ユーザー案): 縮小して重なっているときは低いレベルほど薄く、拡大して重なりが無くなると元の濃さ。
   // レベルの帯ごとに「この拡大率で元の濃さ」を決める(町・字 30、駅・名所 24、乗り換え駅など 14、空港など 6、Lv200 以上はいつも濃い)。いちばん薄くて 12%。
@@ -563,7 +569,7 @@
   // 縮小するほど印を小さく。日本全体が見える倍率(段 3・4)では 0.2 倍まで(大きな印が細い陸地を覆い隠していた。2026-10-19)
   const shrink = () => { const r = zoomRatio(); return Math.min(1, Math.max(r < 0.18 ? 0.2 : 0.35, r / 6)); };
   const radiusOf = (n) => shrink() * (n.isPlayerNode ? 8
-    : (11 + Math.min(10, n.level) * 0.6 + Math.min(9, Math.floor((n.level - 1) / 10)) * 0.4 + Math.min(9, Math.floor((n.level - 1) / 100)) * 0.8) * (n.genre === 'town' ? 0.7 : 1)); // 町・字は小さめ
+    : ((L) => (11 + Math.min(10, L) * 0.6 + Math.min(9, Math.floor((L - 1) / 10)) * 0.4 + Math.min(9, Math.floor((L - 1) / 100)) * 0.8))(shapeLevel(n)) * (n.genre === 'town' ? 0.7 : 1)); // 大きさも強化を含めたレベルで(2026-10-22) // 町・字は小さめ
   // 町・字(2026-10-18)は数が多いので、ある程度拡大したときだけ描く。自分の拠点・選択中・攻撃できるものは縮小していても描く
   const TOWN_MIN_RATIO = 10, TOWN_LABEL_RATIO = 14; // 町・字の印は拡大率 10 から、名前は 14 から(参加直後の 9 では駅と名所が主役)
   const visibleNode = (n) => n.genre !== 'town' || zoomRatio() >= TOWN_MIN_RATIO || n.id === S.selected || (n.owner && n.owner === S.me) || (relOf(n) === 'team' && ownShown('team')) || canAttack(n.id);
@@ -884,7 +890,8 @@
     // 観光地は細分(温泉・滝 …)を添える(tags の先頭。続けて指定・百選)
     const genreLabel = (GENRE_LABELS[n.genre] || '') + (n.genre === 'tourism' && n.tags && n.tags[0] ? `(${n.tags[0]})` : '');
     $('npMeta').textContent = [n.isPlayerNode ? 'プレイヤーの拠点' : genreLabel, n.tags && n.tags.length > 1 ? n.tags.slice(1).join('・') : '', n.area || ''].filter(Boolean).join(' ・ ');
-    $('npLevel').textContent = `Lv${n.level}${n.defense ? `(+${n.defense} 強化 → 出題 Lv${n.level + n.defense})` : ''}` + (!n.isPlayerNode && n.hackable !== false && !hasQuestion(attackLevelOf(n)) ? '(このレベルの問題は準備中。まだ占領できません)' : '');
+    const ldef = liveDefense(n);
+    $('npLevel').textContent = `Lv${n.level}${ldef ? `(+${ldef} 強化 → 出題 Lv${n.level + ldef}。形は Lv${shapeLevel(n)})` : ''}` + (!n.isPlayerNode && n.hackable !== false && !hasQuestion(attackLevelOf(n)) ? '(このレベルの問題は準備中。まだ占領できません)' : '');
     $('npValue').textContent = `${n.value}点`;
     if (n.hours) $('npValue').textContent += `(開いている時間: 毎日 ${n.hours.map(jstRange).join('・')} 日本時間)`; // 1 日中ではない拠点だけ
     $('npCompany').hidden = $('npCompanyLabel').hidden = !n.company;
@@ -1083,7 +1090,7 @@
   const SH = window.PCShapes;
   function shape(n, p, r) {
     if (n.isPlayerNode) { ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); return; }
-    SH.path(ctx, n.level, p, r);
+    SH.path(ctx, shapeLevel(n), p, r);
   }
   function buildLegend() {
     const css = getComputedStyle(document.documentElement);
@@ -1323,10 +1330,16 @@
     for (const n of drawList) {
       const p = toScreen(posOf(n));
       if (p.x < -60 || p.y < -60 || p.x > V.w + 60 || p.y > V.h + 60) continue;
-      const r = radiusOf(n) * grow;
+      // 強化の上がり下がり(2026-10-22 ユーザー決定): 上がったら膨らんで光る輪と「+1」、下がったら縮んで「−1」。持ち主が変わったとき(占領で強化が 0 に戻る)は出さない
+      const dNow = liveDefense(n), seen = S.defSeen.get(n.id);
+      if (seen && seen.owner === n.owner && seen.d !== dNow && !S.overview) S.defAnim.set(n.id, { at: performance.now(), dir: Math.sign(dNow - seen.d), diff: dNow - seen.d });
+      S.defSeen.set(n.id, { d: dNow, owner: n.owner });
+      let an = S.defAnim.get(n.id), ak = 0, pop = 1;
+      if (an) { ak = (performance.now() - an.at) / 1400; if (ak >= 1) { S.defAnim.delete(n.id); an = null; } else pop = an.dir > 0 ? 1 + 0.35 * Math.sin(Math.PI * Math.min(1, ak * 1.6)) : 1 - 0.22 * Math.sin(Math.PI * Math.min(1, ak * 1.6)); }
+      const r = radiusOf(n) * grow * pop;
       const rel = relOf(n), shownOwn = ownShown(rel);
       const owner = n.owner && shownOwn ? ownerColorOf(n) || C.strong : null; // 切り替えで出さない持ち主は、持ち主なしと同じ見た目
-      const ring = n.isPlayerNode || (S.overview && S.viewZ >= 3) ? r : SH.outerRadius(n.level, r);
+      const ring = n.isPlayerNode || (S.overview && S.viewZ >= 3) ? r : SH.outerRadius(shapeLevel(n), r);
       if (!S.overview && canAttack(n.id) && hasQuestion(attackLevelOf(n))) {
         ctx.strokeStyle = C.accent; ctx.globalAlpha = 0.45 + 0.55 * pulse; ctx.lineWidth = 5;
         ctx.beginPath(); ctx.arc(p.x, p.y, ring + 6, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1;
@@ -1342,7 +1355,7 @@
         ctx.strokeStyle = C.muted; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
         ctx.beginPath(); ctx.arc(p.x, p.y, ring + 4, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
       }
-      const filled = !n.isPlayerNode && SH.isFilled(n.level);
+      const filled = !n.isPlayerNode && SH.isFilled(shapeLevel(n));
       // 持ち主のいない拠点は、塗りつぶしの形でも元の色(灰色)。黒(文字の色)は濃すぎる(2026-10-19 ユーザー指摘)
       const col = owner || C.strong;
       const fa = fadeOf(n); // 縮小時は低いレベルほど薄く
@@ -1357,7 +1370,17 @@
       shape(n, p, r); ctx.fill(); ctx.stroke();
       // 外輪・外枠・札は、日本全体が見える倍率(段 3・4)では描かない(輪の間隔は縮まないので、細い陸地を覆い隠していた。2026-10-19)
       const farView = S.overview && S.viewZ >= 3;
-      if (!n.isPlayerNode && !farView) SH.extras(ctx, n.level, p, r, lineCol, bgCol);
+      if (!n.isPlayerNode && !farView) SH.extras(ctx, shapeLevel(n), p, r, lineCol, bgCol);
+      if (an) { // 上がり下がりの輪と数字
+        ctx.save(); ctx.globalAlpha = Math.max(0, 1 - ak);
+        const up = an.dir > 0, colA = up ? (C.accent || '#FFC20E') : C.muted;
+        ctx.strokeStyle = colA; ctx.lineWidth = up ? 4 : 3;
+        ctx.beginPath(); ctx.arc(p.x, p.y, up ? ring + 6 + 26 * ak : ring + 30 - 24 * ak, 0, Math.PI * 2); ctx.stroke();
+        ctx.font = `800 ${snapPx(15 + LABEL_PLUS)}px "BIZ UDPGothic", sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        const ty = up ? p.y - ring - 18 - 22 * ak : p.y - ring - 30 + 18 * ak, txt = `${up ? '+' : '−'}${Math.abs(an.diff)}`;
+        ctx.lineWidth = 4; ctx.strokeStyle = haloFor(up ? C.ink : C.muted); ctx.strokeText(txt, p.x, ty); ctx.fillStyle = up ? C.ink : C.muted; ctx.fillText(txt, p.x, ty);
+        ctx.restore();
+      }
       if (owner && n.owner === S.me) { ctx.fillStyle = filled ? bgCol : lineCol; ctx.beginPath(); ctx.arc(p.x, p.y, n.isPlayerNode ? 3 : 4, 0, Math.PI * 2); ctx.fill(); }
       // 侵入の進捗: 攻め手ごとの正解回数を弧で示す(自分は自分の色、ほかは灰色)
       const hits = n.hits || 1, prog = n.progress || {};
@@ -1371,7 +1394,7 @@
         }
       }
       const top = ring;
-      for (let i = 0; i < Math.min(n.defense, 12); i++) { ctx.fillStyle = C.ink; ctx.fillRect(p.x - (Math.min(n.defense, 12) * 8 - 3) / 2 + i * 8, p.y - top - 9, 5, 5); }
+      { const dd = Math.min(dNow, 12); for (let i = 0; i < dd; i++) { ctx.fillStyle = C.ink; ctx.fillRect(p.x - (dd * 8 - 3) / 2 + i * 8, p.y - top - 9, 5, 5); } }
       // 名前: 寄ったときだけ全部。縮小時はレベルの高いものと自分の拠点
       const showLabel = S.overview ? true : n.isPlayerNode
         ? (ratio >= 7 || n.owner === S.me)

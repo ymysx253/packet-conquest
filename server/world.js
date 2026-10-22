@@ -395,7 +395,7 @@ class World {
   pub(n) {
     return {
       id: n.id, name: n.name, kana: n.kana || undefined, kind: n.kind, genre: n.genre || null, area: n.area || null, region: n.region || null, lat: n.lat, lon: n.lon, t0: n.t0, // region: 画面が都道府県の細かい境界を読むのに使う(2026-10-21: 送っていなかったので東京以外は粗い全国版のままだった)
-      level: n.level, value: this.valueOf(n), baseValue: n.value, subnet: n.subnet, owner: n.owner, defense: this.settle(n).defense,
+      level: n.level, value: this.valueOf(n), baseValue: n.value, subnet: n.subnet, owner: n.owner, defense: this.settle(n).defense, fortifiedAt: n.defense ? n.fortifiedAt || null : null, // fortifiedAt: 画面が 24 時間ごとの減りをその時刻に出す(2026-10-22)
       isPlayerNode: !!n.isPlayerNode, protectedUntil: n.protectedUntil || 0, hackable: n.hackable !== false, lines: n.lines || [],
       hits: n.hits || 1, progress: n.progress || {}, // 突破に必要な回数と、攻め手ごとの正解回数(第 14 章)
       company: n.company || null, // 命名権など企業名の施設の企業名

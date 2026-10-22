@@ -78,6 +78,7 @@ class Bots {
         if (out.has(m)) continue;
         const t = w.nodes.get(m);
         if (!t || t.owner === p.id || t.isPlayerNode || t.hackable === false || !hasGenerator(w.levelFor(t, 'attack'))) continue;
+        if (t.owner && (t.owner === b.team || this.bots.some((x) => x.team === b.team && x.p.id === t.owner))) continue; // チームの仲間の拠点は狙わない(10 分の試しで仲間どうしで奪い合っていた)
         if (await w.canAttack(p.id, m)) out.set(m, t);
       }
     }
