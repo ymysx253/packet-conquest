@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>拠点の形一覧(1〜100) | パケット陣取り</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body { background: var(--bg); color: var(--ink); font-family: var(--font-body); margin: 0; }
+  .page { max-width: 1100px; margin: 0 auto; padding: 16px 16px 32px; }
+  h1 { font: 22px/1.3 var(--font-display); margin: 8px 0 4px; }
+  h2 { font: 18px/1.3 var(--font-display); margin: 22px 0 6px; }
+  .desc { color: var(--muted); font-size: 14px; margin: 0 0 10px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+  .cell { background: var(--surface); border-radius: 10px; padding: 6px 4px 6px; text-align: center; }
+  .cell canvas { display: block; margin: 0 auto; }
+  .cell .lv { font: 600 13px var(--font-mono); }
+  .cell .nm { color: var(--muted); font-size: 12px; line-height: 1.3; }
+  .legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; font-size: 13px; }
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>拠点の形一覧(1〜100)</h1>
+  <p class="desc">新しい形の案(2026-10-23)。本体の形 10 種(1 の位)× 飾り 10 種(10 の位)で、100 のレベルがすべて違う模様になる。大きさはほとんど変えず(レベル 100 でも 1.2 倍)、外に付く飾りは 1 つまで。各マスの左は持ち主なし(灰)、右は持ち主の色の例。</p>
+  <div id="legend" class="legend"></div>
+  <div id="list"></div>
+</main>
+<script src="shapes100.js"></script>
+<script src="shapes100-page.js"></script>
+</body>
+</html>
