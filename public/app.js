@@ -496,7 +496,7 @@
   const ZOOM_STEP = Math.log2(1.4); // + / − ボタン 1 回で 1.4 倍(今までと同じ)
   const baseColors = () => {
     const css = getComputedStyle(document.documentElement), tok = (n) => css.getPropertyValue(n).trim();
-    return { water: tok('--water') || '#D6ECFA', land: tok('--land') || '#F7F9FA', line: tok('--line') || '#CBD3DC', lineStrong: tok('--line-strong') || '#8A97A6' };
+    return { water: tok('--water') || '#D6ECFA', land: tok('--land') || '#F7F9FA', line: tok('--line') || '#CBD3DC', lineStrong: tok('--line-strong') || '#8A97A6', river: tok('--river') || '#9FCDEE' };
   };
   let mb = null, mbReady = false;
   try {

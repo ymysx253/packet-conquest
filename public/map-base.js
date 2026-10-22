@@ -5,7 +5,8 @@
 (() => {
   const HI_ZOOM = 8; // この zoom 以上で、見えている都道府県の細かい境界を読み足す(読んだ県は粗い全国版で塗らない)
   const NONE = 'rgba(0,0,0,0)';
-  const DEFAULT_COLORS = { water: '#D6ECFA', land: '#F7F9FA', line: '#CBD3DC', lineStrong: '#8A97A6' };
+  const DEFAULT_COLORS = { water: '#D6ECFA', land: '#F7F9FA', line: '#CBD3DC', lineStrong: '#8A97A6', river: '#9FCDEE' };
+  const RIVER_ZOOM = 9; // 川(2026-10-22): この zoom から線を出す(元データは地理院の z11 のタイル。それより縮小すると細かすぎる)
   // 今の画面の段の境目(拡大率 ratio 0.7 / 0.18 / 0.05)を MapLibre の zoom に直したもの。縮小表示の輪郭の細さ・薄さを切り替える
   const Z_TIER2 = 8.8, Z_TIER3 = 6.8, Z_TIER4 = 5.0;
 
@@ -112,15 +113,23 @@
           : ['case', has, 0.9, 0.5],
       },
       water: { 'fill-color': colors.water },
+      // 川(2026-10-22): 幅の広い川・湖の水面は水の色で塗り、細い川は少し濃い水色の線。二条河川の中心線は水面と同じ色(水面の上では見えず、水面の無い所だけ細く出る)
+      rvArea: { 'fill-color': colors.water },
+      rvLine: {
+        'line-color': ['case', ['==', ['get', 'c'], 2], colors.water, colors.river],
+        'line-width': ['interpolate', ['linear'], ['zoom'], RIVER_ZOOM, 0.6, 12, 1.2, 15, 2.2, 18, 4],
+      },
     });
     const kindsOf = (src) => [['land', `${src}-land`], ['ctl', `${src}-ctl`], ['border', `${src}-border`]];
     const allSources = () => ['pc-coarse', ...[...hiPrefs].map((p) => `pc-hi-${p}`)];
+    const rvPrefs = new Set(); // 川の層を足した都道府県
     function applyPaint() {
       if (!loaded) return;
       const P = paintOf();
       map.setPaintProperty('pc-bg', 'background-color', colors.water);
       map.setPaintProperty('pc-water', 'fill-color', colors.water);
       for (const src of allSources()) for (const [k, id] of kindsOf(src)) for (const [name, v] of Object.entries(P[k])) map.setPaintProperty(id, name, v);
+      for (const p of rvPrefs) { for (const [name, v] of Object.entries(P.rvArea)) map.setPaintProperty(`pc-rv-${p}-area`, name, v); for (const [name, v] of Object.entries(P.rvLine)) map.setPaintProperty(`pc-rv-${p}-line`, name, v); }
     }
     // 細かい版を読んだ県は粗い全国版で塗らない(海岸が約 1 km ずれるため)
     function applyCoarseFilter() {
@@ -164,6 +173,8 @@
       const out = {};
       for (const [p, v] of Object.entries((lo && lo.prefs) || {})) out[p] = { file: `data/bounds/${v.file}`, bbox: v.bbox, low: `data/bounds/${v.file}` };
       for (const [p, v] of Object.entries((hi && hi.prefs) || {})) out[p] = { ...(out[p] || {}), file: `data/bounds-hi/${v.file}`, bbox: v.bbox || (out[p] && out[p].bbox) };
+      const rv = await getJson('data/rivers/index.json'); // 川(2026-10-22)。無くても動く
+      for (const [p, v] of Object.entries((rv && rv.prefs) || {})) if (out[p]) out[p].rivers = `data/rivers/${v.file}`;
       prefIndex = out;
       loadDetail();
     }
@@ -180,6 +191,21 @@
       hiPrefs.add(p);
       applyCoarseFilter();
       for (const f of feats) { const c = ctl.get(f.properties.id); if (c) map.setFeatureState({ source: src, id: f.properties.id }, c); }
+      if (ent.rivers) loadRivers(p, ent.rivers).catch(() => { /* 川が無くても遊べる */ });
+    }
+    // 川(2026-10-22 ユーザー決定。見た目だけで、拠点のつながりには使わない): 都道府県ごとの public/data/rivers/<県>.json(tools/import-rivers.js)。
+    // 水面は支配の色の上・区市の輪郭の下に、線はその上に重ねる
+    async function loadRivers(p, file) {
+      const d = await getJson(file);
+      if (!d) return;
+      const feats = [];
+      for (const a of d.areas || []) feats.push({ type: 'Feature', properties: {}, geometry: { type: 'MultiPolygon', coordinates: a } });
+      for (const [c, pts] of d.lines || []) feats.push({ type: 'Feature', properties: { c }, geometry: { type: 'LineString', coordinates: pts } });
+      const src = `pc-rv-${p}`, P = paintOf();
+      map.addSource(src, { type: 'geojson', data: fc(feats), tolerance: 0.3 });
+      map.addLayer({ id: `${src}-area`, type: 'fill', source: src, minzoom: RIVER_ZOOM - 1, filter: ['!', ['has', 'c']], paint: P.rvArea }, 'pc-coarse-border');
+      map.addLayer({ id: `${src}-line`, type: 'line', source: src, minzoom: RIVER_ZOOM, filter: ['has', 'c'], layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: P.rvLine }, 'pc-coarse-border');
+      rvPrefs.add(p);
     }
     function loadDetail() {
       if (!loaded || !prefIndex || map.getZoom() < HI_ZOOM) return;
