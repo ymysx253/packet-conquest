@@ -1,0 +1,23 @@
+{
+  "note": "FactBank(専門 Lv350「障害の初動」)。影響の範囲を先に見る、早く知らせる、記録を取ってから直す、一度に多くを変えない、時刻を記録、エスカレーション、暫定と恒久を分ける。stmt は文と正しいか、group=inc は用語と説明。一般的な運用の定石。checkedBy の無い行は使わない",
+  "rows": [
+    { "id": "in-scope", "ja": "障害に気づいたら、まず影響の範囲(どこで・だれが・何ができないか)と広がり方を確かめる", "attrs": { "true": true, "why": "範囲が分かれば、どこを疑うか・だれに知らせるか・どれだけ急ぐかが決まる。" }, "source": "一般的な運用の定石(障害対応)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "in-notify", "ja": "原因が分かる前でも、起きていることと見込みを関係者に早く知らせる", "attrs": { "true": true, "why": "知らされない利用者は問い合わせを重ね、対応の手が取られる。分かっている範囲で早く伝える。" }, "source": "一般的な運用の定石(障害対応)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "in-collect-first", "ja": "直す操作の前に、ログや状態(経路表・ARP・接続の状態)を取っておく", "attrs": { "true": true, "why": "再起動や設定の変更で消える情報がある。消える前に取らないと、原因が二度と分からない。" }, "source": "一般的な運用の定石(障害対応)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "in-one-change", "ja": "一度に多くの設定を変えず、1 つ変えたら結果を確かめる", "attrs": { "true": true, "why": "まとめて変えると、直ったとしても何が効いたか分からず、別の問題を作ることもある。" }, "source": "一般的な運用の定石(障害対応)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "in-timestamp", "ja": "気づいた時刻・行った操作・結果を、時刻つきで記録する", "attrs": { "true": true, "why": "あとでログと突き合わせるとき、操作の時刻が無いと因果が追えない。報告書の土台にもなる。" }, "source": "一般的な運用の定石(障害対応)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "in-escalate", "ja": "自分で直せないと判断したら、決めてある連絡先へ早めにエスカレーション(引き継ぎ)する", "attrs": { "true": true, "why": "抱え込むと復旧が遅れる。判断の目安(時間や影響の大きさ)を決めておき、迷わず上げる。" }, "source": "一般的な運用の定石(障害対応)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "in-workaround", "ja": "まず通信を回復させる暫定の対応と、再発を防ぐ恒久の対策を分けて考える", "attrs": { "true": true, "why": "初動では止まった通信を戻すのが先。根本の直しは、落ち着いてから計画して行う。" }, "source": "一般的な運用の定石(障害対応)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "in-recent-change", "ja": "最近の変更(直前に何を変えたか)を確かめるのは、原因の見当を付ける近道である", "attrs": { "true": true, "why": "障害の多くは変更の直後に起きる。変更の記録があれば、まずそこを疑える。" }, "source": "一般的な運用の定石(障害対応)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "in-silent-wrong", "ja": "原因が分かるまでは、だれにも知らせない方がよい", "attrs": { "true": false, "why": "逆。分かっている範囲で早く知らせる。黙っていると問い合わせが増え、信頼も失う。" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "in-reboot-first-wrong", "ja": "まず機器を再起動して、ログはそのあとで見ればよい", "attrs": { "true": false, "why": "再起動で消える情報がある。先にログと状態を取ってから直す。" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "in-change-all-wrong", "ja": "怪しい設定はまとめて全部変えた方が、早く直る", "attrs": { "true": false, "why": "何が効いたか分からず、別の問題を作る。1 つずつ変えて確かめる。" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "in-time-later-wrong", "ja": "時刻の記録は、直ったあとにまとめて思い出して書けばよい", "attrs": { "true": false, "why": "思い出した時刻は不正確で、ログと突き合わせられない。その場で時刻つきに書く。" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "in-no-permanent-wrong", "ja": "暫定の対応で通信が戻れば、恒久の対策は要らない", "attrs": { "true": false, "why": "暫定は急場しのぎ。原因が残っていれば再発する。恒久の対策まで行う。" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-scope", "ja": "影響の範囲", "attrs": { "group": "inc", "desc": "障害でどこの・だれの・どの通信が使えないかの広がり。初動で最初に確かめるもの" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-escalation", "ja": "エスカレーション", "attrs": { "group": "inc", "desc": "自分で直せないと判断したとき、決めてある上位の担当や連絡先へ対応を引き継ぐこと" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-workaround", "ja": "暫定の対応", "attrs": { "group": "inc", "desc": "原因の根本は残したまま、まず通信を回復させるための一時的な手" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-permanent", "ja": "恒久の対策", "attrs": { "group": "inc", "desc": "原因そのものを取り除き、再発を防ぐための直し" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-record", "ja": "初動の記録", "attrs": { "group": "inc", "desc": "気づいた時刻・行った操作・結果を、その場で時刻つきに残したもの" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" }
+  ]
+}

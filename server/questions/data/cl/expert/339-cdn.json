@@ -1,0 +1,23 @@
+{
+  "note": "FactBank(専門 Lv339「CDN」)。利用者の近くの写し(エッジ)・元のサーバー(オリジン)・TTL と無効化・近い所へ導く仕組み(DNS・エニーキャスト)・キャッシュに向く内容。stmt は文と正しいか、group=cdn は用語と説明。checkedBy の無い行は使わない",
+  "rows": [
+    { "id": "cd-define", "ja": "CDN は、利用者に近い場所に置いた写し(キャッシュ)から内容を返して、表示を速くしオリジンの負荷を減らす仕組みである", "attrs": { "true": true, "why": "遠いオリジンまで行かずに近いエッジから返るので、往復の時間が短く、オリジンに来る要求も減る。" }, "source": "一般的な定義(RFC 3568 第 1 章の説明)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "cd-origin", "ja": "オリジンは元の内容を持つサーバーで、エッジに写しが無いときや期限が切れたときに、エッジがオリジンへ取りに行く", "attrs": { "true": true, "why": "エッジは写しを持つだけ。無ければ(キャッシュミス)オリジンから取って写しを作る。" }, "source": "RFC 9111 第 4 章(キャッシュの動き)・一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "cd-ttl", "ja": "エッジの写しは TTL(保つ時間)で古くなり、期限が切れると次の要求でオリジンへ確かめに行く", "attrs": { "true": true, "why": "HTTP の Cache-Control(max-age など)で決まる新しさの期限。切れた写しはそのままでは使わない。" }, "source": "RFC 9111 第 4.2 節(新しさ)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "cd-purge", "ja": "内容を急いで差し替えたいときは、TTL を待たずにエッジの写しを消す(無効化)操作を使う", "attrs": { "true": true, "why": "TTL が長いと古い内容が残る。無効化で写しを消せば、次の要求でオリジンから新しい内容を取る。" }, "source": "一般的な定義(CDN の無効化)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "cd-dns", "ja": "利用者を近いエッジへ導く方法の 1 つは、DNS が問い合わせ元に近いエッジのアドレスを返すことである", "attrs": { "true": true, "why": "同じ名前でも、問い合わせ元の場所によって違うアドレスを返す。利用者は近いエッジにつなぐ。" }, "source": "RFC 3568 第 3 章(要求の振り分け: DNS)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "cd-anycast", "ja": "もう 1 つの導き方はエニーキャストで、複数のエッジが同じアドレスを広告し、経路の上で近いエッジに届く", "attrs": { "true": true, "why": "同じアドレスを複数の場所から BGP で広告すると、ルーターは近い方へ送る。利用者は意識せず近いエッジに着く。" }, "source": "RFC 4786(エニーキャストの運用)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "cd-cacheable", "ja": "画像や動画、スクリプトなど同じ内容を多くの人が取るものはキャッシュに向き、利用者ごとに違う内容(ログイン後のページ)はそのままではキャッシュに向かない", "attrs": { "true": true, "why": "写しは大勢に同じものを返すときに効く。人ごとに違うものを写しから返すと、他人の情報を返してしまう。" }, "source": "RFC 9111 第 3 章(保存してよい応答)・一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "cd-origin-load", "ja": "CDN を使うと、オリジンには写しの更新のための要求だけが来るので、利用者の数ほど負荷が増えない", "attrs": { "true": true, "why": "同じ内容への多くの要求はエッジで返り、オリジンへは期限切れのときなどにまとめて 1 回取りに来る。" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "cd-no-origin", "ja": "CDN のエッジは元の内容を自分で作るので、オリジンのサーバーは要らない", "attrs": { "true": false, "why": "エッジは写しを持つだけ。元の内容はオリジンにあり、そこから取る。" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "cd-forever", "ja": "エッジの写しは一度置けば永久に使われ、古くなることはない", "attrs": { "true": false, "why": "TTL で期限が切れる。切れたらオリジンへ確かめに行く。急ぐなら無効化する。" }, "source": "RFC 9111 第 4.2 節", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "cd-dns-same", "ja": "DNS は利用者の場所によらず常に同じエッジのアドレスを返すので、近さには関係しない", "attrs": { "true": false, "why": "CDN の DNS は問い合わせ元の場所で返すアドレスを変える。これが近いエッジへ導く仕組みの 1 つ。" }, "source": "RFC 3568 第 3 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "cd-private-cache", "ja": "利用者ごとに違うログイン後のページも、ほかの人向けの写しをそのまま返してよい", "attrs": { "true": false, "why": "人ごとに違う内容を写しから返すと、他人の情報が見えてしまう。そのままではキャッシュに向かない。" }, "source": "RFC 9111 第 3 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "cd-load-same", "ja": "CDN を使っても、利用者からの要求は全部オリジンに届くので、オリジンの負荷は変わらない", "attrs": { "true": false, "why": "写しがあればエッジで返り、オリジンには届かない。負荷を減らすのが CDN の目的の 1 つ。" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-edge", "ja": "エッジ", "attrs": { "group": "cdn", "desc": "利用者の近くに置かれ、内容の写しを返す CDN のサーバー" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-origin", "ja": "オリジン", "attrs": { "group": "cdn", "desc": "元の内容を持つサーバー。エッジに写しが無いときの取り寄せ先" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-ttl", "ja": "TTL(写しの期限)", "attrs": { "group": "cdn", "desc": "エッジが写しを新しいものとして使ってよい時間" }, "source": "RFC 9111 第 4.2 節", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-purge", "ja": "無効化", "attrs": { "group": "cdn", "desc": "期限を待たずにエッジの写しを消し、次の要求でオリジンから取り直させる操作" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-anycast", "ja": "エニーキャスト", "attrs": { "group": "cdn", "desc": "複数の場所から同じアドレスを広告し、経路の上で近い所へ届ける仕組み" }, "source": "RFC 4786", "checkedBy": "Claude Fable 5.1 2026-10-25" }
+  ]
+}

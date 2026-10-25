@@ -1,0 +1,22 @@
+{
+  "note": "FactBank(専門 Lv332「SDN」)。制御(コントロールプレーン)と転送(データプレーン)を分け、コントローラーがまとめて管理する考え方。stmt は文と正しいか、group=sdn は用語と説明。製品名は書かない(OpenFlow は規格の名前)。checkedBy の無い行は使わない",
+  "rows": [
+    { "id": "sd-split", "ja": "SDN では、経路を決める制御の働き(コントロールプレーン)と、パケットを運ぶ転送の働き(データプレーン)を分け、制御をコントローラーに集める", "attrs": { "true": true, "why": "SDN の中心の考え方。機器は転送に専念し、何をどこへ送るかはコントローラーが決めて機器に書き込む。" }, "source": "RFC 7426 第 3 章(SDN の層と用語)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "sd-southbound", "ja": "コントローラーと機器の間のやりとり(南向きの API)の例が OpenFlow で、コントローラーが機器の転送表を書き込む", "attrs": { "true": true, "why": "OpenFlow はコントローラーがスイッチのフローテーブルを操作するための規格。南向き = コントローラーから見て下(機器)の側。" }, "source": "RFC 7426 第 3 章・ONF OpenFlow Switch Specification", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "sd-northbound", "ja": "アプリや運用の道具がコントローラーに要求を出す口を、北向きの API と呼ぶ", "attrs": { "true": true, "why": "北向き = コントローラーから見て上(アプリ)の側。網をプログラムから扱う口になる。" }, "source": "RFC 7426 第 3 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "sd-central", "ja": "SDN では網全体の構成をコントローラーが 1 か所で持つので、設定の一括変更や、全体を見た経路の決定がしやすい", "attrs": { "true": true, "why": "機器ごとに設定して回る必要がなく、全体の混み具合や方針を見て経路を決められる。" }, "source": "一般的な定義(RFC 7426 第 1 章の動機)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "sd-ha", "ja": "コントローラーが止まっても転送が続くように、コントローラーを複数台にしたり、機器に最後に受けた転送表を持たせたままにしたりする", "attrs": { "true": true, "why": "制御を集めた分、コントローラーが 1 か所で止まる所になる。冗長化と、切れている間の機器の振る舞いを決めておく。" }, "source": "一般的な定義(SDN の設計の定石)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "sd-legacy", "ja": "従来のルーターやスイッチは、制御と転送を 1 台の中に両方持ち、機器ごとに経路を計算する", "attrs": { "true": true, "why": "OSPF や STP は機器どうしが情報を交換して各自で計算する。これを分けたのが SDN。" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "sd-ctrl-down", "ja": "SDN のコントローラーが止まると新しい経路の指示は出せなくなるが、機器が持っている転送表で既存の通信は運び続けられる", "attrs": { "true": true, "why": "転送は機器が行うので、コントローラーが切れても転送表が残っていれば通信は続く。新しい決定だけができなくなる。" }, "source": "一般的な定義(RFC 7426 第 3 章: 制御と転送の分離)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "sd-ctrl-forwards", "ja": "SDN では転送(データプレーン)もコントローラーが行い、機器はパケットを運ばない", "attrs": { "true": false, "why": "運ぶのは機器(データプレーン)。コントローラーは何をどこへ送るかを決めて書き込むだけ。" }, "source": "RFC 7426 第 3 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "sd-north-wrong", "ja": "北向きの API は、コントローラーとスイッチの間の通信に使う", "attrs": { "true": false, "why": "コントローラーと機器の間は南向き。北向きはアプリや運用の道具との間。" }, "source": "RFC 7426 第 3 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "sd-openflow-rp", "ja": "OpenFlow は、ルーターどうしが経路を交換する手順(ルーティングプロトコル)である", "attrs": { "true": false, "why": "OpenFlow はコントローラーが機器の転送表を書き込むための南向きの規格。機器どうしで経路を交換するものではない。" }, "source": "ONF OpenFlow Switch Specification", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "sd-single-ctrl", "ja": "SDN は制御を 1 か所に集めるので、コントローラーは 1 台で十分で、冗長化は要らない", "attrs": { "true": false, "why": "集めた分だけコントローラーが止まる影響が大きい。複数台にして備えるのがふつう。" }, "source": "一般的な定義(SDN の設計の定石)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "sd-per-device", "ja": "SDN では機器ごとに経路を計算するので、網全体を見た経路の決定はできない", "attrs": { "true": false, "why": "逆で、コントローラーが全体を見て決められるのが SDN の利点。機器ごとに計算するのは従来の形。" }, "source": "RFC 7426 第 1 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-cplane", "ja": "コントロールプレーン", "attrs": { "group": "sdn", "desc": "経路や転送表の中身を決める働き。SDN ではコントローラーが受け持つ" }, "source": "RFC 7426 第 3 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-dplane", "ja": "データプレーン", "attrs": { "group": "sdn", "desc": "転送表に従ってパケットを実際に運ぶ働き。機器が受け持つ" }, "source": "RFC 7426 第 3 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-south", "ja": "南向きの API", "attrs": { "group": "sdn", "desc": "コントローラーが機器に転送の指示を書き込むための口(例: OpenFlow)" }, "source": "RFC 7426 第 3 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-north", "ja": "北向きの API", "attrs": { "group": "sdn", "desc": "アプリや運用の道具がコントローラーに網への要求を出すための口" }, "source": "RFC 7426 第 3 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-controller", "ja": "SDN コントローラー", "attrs": { "group": "sdn", "desc": "網全体の構成を 1 か所で持ち、機器に転送の指示を出す中心のソフトウェア" }, "source": "RFC 7426 第 3 章", "checkedBy": "Claude Fable 5.1 2026-10-25" }
+  ]
+}

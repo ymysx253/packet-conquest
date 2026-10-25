@@ -1,0 +1,23 @@
+{
+  "note": "FactBank(専門 Lv333「重ねる網」)。オーバーレイとアンダーレイ、VXLAN(VNI 24 ビット・UDP 4789・VTEP・包む分の MTU。levels-adv.js 307 と同じ数)、GRE。stmt は文と正しいか、group=ov は用語と説明。checkedBy の無い行は使わない",
+  "rows": [
+    { "id": "ov-define", "ja": "オーバーレイは、既にある網(アンダーレイ)の上にトンネルで作る論理の網である", "attrs": { "true": true, "why": "下の網はそのままに、その上に包んだパケットで別の網を重ねる。下がアンダーレイ、上がオーバーレイ。" }, "source": "RFC 7348 第 1 章・一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ov-vxlan-udp", "ja": "VXLAN は、イーサネットのフレームを UDP で包んで IP の網の上に運び、離れた場所に同じ L2 の網を伸ばす", "attrs": { "true": true, "why": "中身は L2 のフレームのまま、外側に UDP と IP を付けて L3 の網を越える。" }, "source": "RFC 7348 第 4 章・第 5 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ov-vni-24", "ja": "VXLAN の網の番号 VNI は 24 ビットで、VLAN の 12 ビット(4,094)よりはるかに多くの網を区別できる(約 1,677 万)", "attrs": { "true": true, "why": "2 の 24 乗 = 16,777,216。VLAN ID の 4,094 では足りない大きな環境のために広げた。" }, "source": "RFC 7348 第 4 章・第 5 章(VXLAN ヘッダ)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ov-vtep", "ja": "VXLAN の包みを付けたりほどいたりするのは VTEP で、外側の IP アドレスは VTEP どうしのものである", "attrs": { "true": true, "why": "VTEP(トンネルの端)が中のフレームを包んで相手の VTEP へ送り、相手がほどいて中の網に流す。" }, "source": "RFC 7348 第 4 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ov-port-4789", "ja": "VXLAN は宛先 UDP ポート 4789 を使う", "attrs": { "true": true, "why": "IANA が VXLAN に割り当てた UDP ポートが 4789。" }, "source": "RFC 7348 第 5 章・IANA のポート番号の表", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ov-mtu", "ja": "包む分だけパケットが大きくなるので、アンダーレイの MTU は中の網の MTU より大きくする(VXLAN は外側が IPv4 なら 50 バイト増える)", "attrs": { "true": true, "why": "中のイーサネット 14 + VXLAN 8 + UDP 8 + IPv4 20 = 50 バイト。下の網がこれを運べないと中の大きいパケットが通らない。" }, "source": "RFC 7348 第 4.3 節(MTU)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ov-gre", "ja": "GRE は IP の中にほかのパケットを包む汎用のトンネルで、L3 の網の上にトンネルを掘る方法の 1 つである", "attrs": { "true": true, "why": "GRE のヘッダを付けて IP で運ぶ。中身は IP でも L2 でもよい。" }, "source": "RFC 2784", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ov-underlay-blind", "ja": "アンダーレイの機器は、オーバーレイの中のアドレスや網の番号を知らなくてよい(外側のヘッダだけで運ぶ)", "attrs": { "true": true, "why": "途中のルーターは外側の IP(VTEP どうし)を見て転送するだけ。中身は見ない。" }, "source": "RFC 7348 第 4 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ov-vni-12", "ja": "VXLAN の VNI は VLAN と同じ 12 ビットで、区別できる網の数も同じ 4,094 である", "attrs": { "true": false, "why": "VNI は 24 ビット(約 1,677 万)。VLAN の 4,094 では足りないから広げた。" }, "source": "RFC 7348 第 5 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ov-tcp", "ja": "VXLAN はイーサネットのフレームを TCP で包んで運ぶ", "attrs": { "true": false, "why": "VXLAN は UDP(宛先 4789)で包む。TCP ではない。" }, "source": "RFC 7348 第 5 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ov-mtu-ignore", "ja": "オーバーレイでは包む分だけパケットが小さくなるので、MTU は気にしなくてよい", "attrs": { "true": false, "why": "逆で、ヘッダを足す分だけ大きくなる。アンダーレイの MTU を広げるか、中の MTU を下げる。" }, "source": "RFC 7348 第 4.3 節", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ov-all-routers-vni", "ja": "アンダーレイのすべてのルーターが VNI を見て、オーバーレイの中の転送先を決める", "attrs": { "true": false, "why": "VNI を見るのはトンネルの端の VTEP だけ。途中のルーターは外側の IP で運ぶ。" }, "source": "RFC 7348 第 4 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ov-gre-l2only", "ja": "GRE は L2 の線がないと使えず、IP の網の上では動かない", "attrs": { "true": false, "why": "GRE は IP の上で動くトンネル。IP で届く相手となら、間に何台ルーターがあっても掘れる。" }, "source": "RFC 2784", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-overlay", "ja": "オーバーレイ", "attrs": { "group": "ov", "desc": "既にある網の上にトンネルで重ねて作る論理の網" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-underlay", "ja": "アンダーレイ", "attrs": { "group": "ov", "desc": "トンネルを運ぶ下の網。外側のヘッダだけを見て転送する" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-vtep", "ja": "VTEP", "attrs": { "group": "ov", "desc": "VXLAN のトンネルの端。中のフレームを包んで送り、受けた包みをほどく" }, "source": "RFC 7348 第 4 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-vni", "ja": "VNI", "attrs": { "group": "ov", "desc": "VXLAN で網を区別する 24 ビットの番号" }, "source": "RFC 7348 第 5 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-gre", "ja": "GRE", "attrs": { "group": "ov", "desc": "IP の中にほかのパケットを包んで運ぶ汎用のトンネルの手順" }, "source": "RFC 2784", "checkedBy": "Claude Fable 5.1 2026-10-25" }
+  ]
+}

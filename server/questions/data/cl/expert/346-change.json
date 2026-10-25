@@ -1,0 +1,23 @@
+{
+  "note": "FactBank(専門 Lv346「変更の手順」)。変更の前に用意するもの(戻しの手順・設定の控え・影響の範囲・保守の窓・承認・知らせ)、あとの確かめ、1 つずつ、記録。stmt は文と正しいか、group=chg は用語と説明。一般的な運用の定石。checkedBy の無い行は使わない",
+  "rows": [
+    { "id": "ch-rollback", "ja": "変更の前に、うまくいかなかったときに元に戻す手順(戻しの手順)を用意しておく", "attrs": { "true": true, "why": "問題が出てから考えると時間がかかり、焦って別の誤りを重ねる。先に書いておけばすぐ戻せる。" }, "source": "一般的な運用の定石(変更管理)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ch-backup", "ja": "変更の前に今の設定の控え(バックアップ)を取っておき、戻すときに使う", "attrs": { "true": true, "why": "戻しの手順の土台。変更前の設定が無ければ正確に戻せない。" }, "source": "一般的な運用の定石(変更管理)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ch-impact", "ja": "どの機器・どの利用者にどんな影響が出るか(影響の範囲)を先に調べ、関係者に知らせる", "attrs": { "true": true, "why": "影響を知らずに変えると、止まってはいけない通信を止める。知らせておけば利用者も備えられる。" }, "source": "一般的な運用の定石(変更管理)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ch-window", "ja": "影響の大きい変更は、利用が少ない時間帯(保守の窓)に、承認を得て行う", "attrs": { "true": true, "why": "失敗しても影響が小さく、戻す時間も取れる。承認で内容と時期を第三者が見る。" }, "source": "一般的な運用の定石(変更管理)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ch-verify", "ja": "変更のあとは、変えた機能だけでなく、影響を受けそうな通信が今までどおり動くかも確かめる", "attrs": { "true": true, "why": "変更は思わぬ所に効く。変えた所が動いても、ほかが止まっていれば失敗。" }, "source": "一般的な運用の定石(変更管理)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ch-one-at-a-time", "ja": "複数の変更は一度にまとめず、1 つずつ行って確かめる", "attrs": { "true": true, "why": "まとめて変えて問題が出ると、どれが原因か分からない。1 つずつなら切り分けも戻しも簡単。" }, "source": "一般的な運用の定石(変更管理)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ch-record", "ja": "変更の内容・時刻・結果を記録に残し、構成図や台帳も一緒に直す", "attrs": { "true": true, "why": "あとで障害が起きたとき『直前に何を変えたか』が最初の手がかりになる。図や台帳が古いと人を迷わせる。" }, "source": "一般的な運用の定石(変更管理)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ch-rollback-wrong", "ja": "戻す手順は、変更がうまくいかなかったときに考えればよい", "attrs": { "true": false, "why": "先に用意しておくもの。問題が出てから考えると遅く、焦りで誤りを重ねる。" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ch-backup-wrong", "ja": "設定の控えは、変更のあとに取れば十分である", "attrs": { "true": false, "why": "戻すために要るのは変更前の設定。あとに取っても戻しには使えない。" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ch-notify-wrong", "ja": "関係者への知らせは、問題が起きたときにだけ行えばよい", "attrs": { "true": false, "why": "変更の前に知らせる。利用者が備えられ、問題が出たときも変更が原因だとすぐ分かる。" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ch-verify-wrong", "ja": "変更のあとの確かめは変えた機能だけでよく、ほかの通信は見なくてよい", "attrs": { "true": false, "why": "変更はほかの所に効くことがある。影響を受けそうな通信も確かめる。" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ch-batch-wrong", "ja": "複数の変更は一度にまとめて行う方が、確かめる回数が減って安全である", "attrs": { "true": false, "why": "まとめると問題が出たときに原因を絞れず、戻す範囲も大きい。1 つずつが安全。" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "ch-record-wrong", "ja": "変更の記録は、問題が起きたときにだけ書けばよい", "attrs": { "true": false, "why": "全部の変更を記録する。問題は変更からしばらくして出ることもあり、記録が無いとたどれない。" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-rollback", "ja": "戻しの手順", "attrs": { "group": "chg", "desc": "変更がうまくいかなかったときに元の状態へ戻す、先に書いておく手順" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-window", "ja": "保守の窓", "attrs": { "group": "chg", "desc": "影響の大きい作業を行うために決めた、利用の少ない時間帯" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-impact", "ja": "影響の範囲", "attrs": { "group": "chg", "desc": "その変更でどの機器・どの利用者・どの通信に影響が出るかの見積もり" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-backup", "ja": "設定の控え", "attrs": { "group": "chg", "desc": "変更の前に取っておく、今の設定の写し" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-changelog", "ja": "変更の記録", "attrs": { "group": "chg", "desc": "何を・いつ・だれが・どう変えて結果どうだったかを残す記録" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" }
+  ]
+}

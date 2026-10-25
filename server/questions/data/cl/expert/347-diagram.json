@@ -1,0 +1,21 @@
+{
+  "note": "FactBank(専門 Lv347「構成図」)。物理構成図(機器・線・ポート・置き場所)と論理構成図(網・アドレス・VLAN・経路)、L1/L2/L3 の図、図に書くもの、最新に保つ。stmt は文と正しいか、group=dia は図の種類と説明。一般的な定義。checkedBy の無い行は使わない",
+  "rows": [
+    { "id": "dg-physical", "ja": "物理構成図は、機器・線・ポート・置き場所(ラックや部屋)など、実際に手で触れるものを描く", "attrs": { "true": true, "why": "どの機器のどのポートにどの線がささっているかが分かる図。現場で線をたどるときに使う。" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "dg-logical", "ja": "論理構成図は、網(サブネット)・アドレス・VLAN・経路の流れなど、通信の上での関係を描く", "attrs": { "true": true, "why": "どの網がどのルーターでつながり、通信がどう流れるかが分かる図。設計や切り分けで使う。" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "dg-layers", "ja": "L1 の図は線とポート、L2 の図は VLAN とスイッチのつながり、L3 の図はサブネットとルーターの関係を描く", "attrs": { "true": true, "why": "層ごとに見たいものが違う。1 枚に全部描くと読めないので、層で分けて描くことが多い。" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "dg-trunk", "ja": "1 本の線に複数の VLAN が通るとき、物理の図では 1 本の線、論理の図では VLAN ごとに分けて描かれることがある", "attrs": { "true": true, "why": "物理は線の本数、論理は通信の道。同じトランクが図によって違う見え方になる。" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "dg-keep-current", "ja": "構成図は変更と一緒に直し、現物と合っていない図は障害対応で人を迷わせる", "attrs": { "true": true, "why": "古い図を信じて線を抜いたり経路を読んだりすると、違う所を直してしまう。" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "dg-physical-use", "ja": "物理の図を見れば、どの線を抜くとどの機器が切れるかが分かる", "attrs": { "true": true, "why": "線とポートが描いてあるので、作業の影響を目で追える。" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "dg-logical-use", "ja": "論理の図を見れば、ある PC がどの網にいて、どのルーターを通って外へ出るかが分かる", "attrs": { "true": true, "why": "サブネットと経路が描いてあるので、通信の道筋を追える。" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "dg-physical-wrong", "ja": "物理構成図にはサブネットやアドレスを描き、機器の置き場所は描かない", "attrs": { "true": false, "why": "逆。物理の図は機器・線・ポート・置き場所。サブネットやアドレスは論理の図。" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "dg-logical-wrong", "ja": "論理構成図には線とポートの番号を描き、VLAN やアドレスは描かない", "attrs": { "true": false, "why": "逆。論理の図は網・アドレス・VLAN・経路。線とポートは物理の図。" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "dg-same-wrong", "ja": "物理の図と論理の図は同じものなので、どちらか 1 つあればよい", "attrs": { "true": false, "why": "描くものが違う。線を追うなら物理、通信の道を追うなら論理と、使い分ける。" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "dg-stale-wrong", "ja": "構成図は作ったときのままでよく、変更のたびに直す必要はない", "attrs": { "true": false, "why": "現物と合わない図は役に立たないどころか人を迷わせる。変更と一緒に直す。" }, "source": "一般的な運用の定石", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "dg-l3-ports-wrong", "ja": "L3 の図には、スイッチのポートの番号を必ず描く", "attrs": { "true": false, "why": "ポートの番号は L1 の図のもの。L3 の図はサブネットとルーターの関係を描く。" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-physical", "ja": "物理構成図", "attrs": { "group": "dia", "desc": "機器・線・ポート・置き場所など、実際に手で触れるものを描いた図" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-logical", "ja": "論理構成図", "attrs": { "group": "dia", "desc": "網・アドレス・VLAN・経路の流れなど、通信の上での関係を描いた図" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-l2", "ja": "L2 の図", "attrs": { "group": "dia", "desc": "VLAN とスイッチのつながり(トランク・アクセス)を描いた図" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-l3", "ja": "L3 の図", "attrs": { "group": "dia", "desc": "サブネットとルーター(とそのアドレス)の関係を描いた図" }, "source": "一般的な定義", "checkedBy": "Claude Fable 5.1 2026-10-25" }
+  ]
+}
