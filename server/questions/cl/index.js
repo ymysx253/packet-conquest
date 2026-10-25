@@ -12,7 +12,8 @@ const { makeRng, newSeed } = require('../rng');
 
 const FILES = ['./levels-intro', './levels-basic', './levels-mid', './levels-adv', './levels-legacy',
   './levels-fable-route', './levels-fable-diag', './levels-fable-design', // Fable の分(2026-10-25。docs/questions/CL.md 第 1 章)
-  './levels-expert', './levels-expert-facts']; // 専門(320〜361)の O の行(Fable 5.1 が作る。2026-10-25)
+  './levels-expert', './levels-expert-facts', // 専門(320〜361)の O の行(Fable 5.1 が作る。2026-10-25)
+  './levels-sim-basic', './levels-sim-mid', './levels-sim-adv', './levels-sim-expert']; // 構成図・設定・模擬ターミナルの問題(docs/questions/SIM-API.md。2026-10-25)
 const LEVELS = new Map(); // 番号 → { title, kind, make, verify, minDistinct, file }
 for (const f of FILES) {
   let mod;
