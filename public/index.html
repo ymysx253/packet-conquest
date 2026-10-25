@@ -276,6 +276,9 @@
       <p id="qCardText"></p>
     </details>
     <p class="qtext" id="qText"></p>
+    <!-- 構成図とタップの答え(2026-10-25。diagram.js が描く)。問題に diagram が無ければ隠れたまま -->
+    <div class="qdiagram" id="qDiagram" hidden></div>
+    <div class="qtapbar" id="qTapBar" hidden></div>
     <div class="qtable-wrap" id="qTables"><table class="qtable" id="qTable" hidden></table></div>
     <!-- ヒント(初級・中級。2026-10-22): 押すと見せる。ほかの人の拠点を攻めるときはサーバーが送らない -->
     <div class="qhint" id="qHintBox" hidden>
@@ -292,6 +295,9 @@
         <span class="hint">半角で入力。IPv6 の省略形、先頭の 0、大文字小文字は自動でそろえます。Enter でも送れます</span>
       </div>
     </form>
+    <!-- 設定を書く欄と模擬ターミナル(2026-10-25。terminal.js が描く) -->
+    <div class="qconfig" id="qConfig" hidden></div>
+    <div class="qterm" id="qTerm" hidden></div>
     <div class="result" id="qResult" hidden>
       <p class="verdict" id="qVerdict"></p>
       <p class="answers" id="qAnswers" hidden></p>
@@ -314,6 +320,8 @@
 <script src="vendor/maplibre/maplibre-gl-csp.js"></script>
 <script src="map-base.js"></script>
 <script src="shapes.js"></script>
+<script src="diagram.js"></script>
+<script src="terminal.js"></script>
 <script src="qdialog.js"></script>
 <script src="app.js"></script>
 </body>

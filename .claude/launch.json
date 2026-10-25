@@ -35,6 +35,15 @@
         "set PORT=3003&& set STORE=memory&& set SIM_BOTS=tools/scenarios/kanto-3teams.json&& node server/index.js"
       ],
       "port": 3003
+    },
+    {
+      "name": "cl-preview",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": [
+        "/c",
+        "set PORT=3005&& set STORE=memory&& set CL_PREVIEW=1&& node server/index.js"
+      ],
+      "port": 3005
     }
   ]
 }

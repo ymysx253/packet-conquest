@@ -169,3 +169,16 @@ sim.gen.addresses(rng)       // 安全な範囲から /24・/30 を切り出す�
 
 - `test/sim.js`: 文法(受ける・受けない)、経路の最長一致と AD、ARP の重複、ACL の順と NAT の前後、VLAN の範囲、STP の根と止まるポート、LACP、VRRP、DHCP の配り方、OSPF の最短の道。答えは**別の作り方**(素朴な総当たり・BFS)で解き直す
 - 問題のテスト `test/cl-sim-*.js`: 生成した問題ごとに、正解の例(`q.solution`。設定の文字 / id の列。画面には送らない)を `sim.judgeConfig` に通して正解になること、わざと間違えた答え(1 行抜く・逆の経路・別の機器)が不正解になること、原因が 1 つに決まること
+
+## 9. 作ったときに決めた細部(2026-10-25。server/sim の各ファイルの先頭にも書いてある)
+
+- 端点の鍵: ルーター・ホストの IF `R1:Gi0/0`、副 IF `R1:Gi0/0.10`、スイッチの VLAN と SVI `SW1#vlan10`。アクセスポートの VLAN がスイッチに無ければ通さない。トランクのネイティブ VLAN が両端で違えば、その 2 つの VLAN がつながる
+- STP は全 VLAN 共通で 1 本。束(LACP)は 1 本に数える。ブリッジ ID = 優先度 + いちばん小さい MAC、コストは全部 4。LACP は 254 の規則(両方 on も束)
+- OSPF: 同じドメインで同じ網にあり、両方が参加し、エリアが同じなら隣(hello/dead/認証は spec に書いてあるときだけ見る)。網へのメトリック = そこまでのコスト + その IF のコスト。`redistribute static` は外部経路(メトリック 20)。静的経路の via がどの直結の網にも無ければ経路表に載らない
+- ルーターの順: 受信 ACL → NAT(外側 IF で受けたものの宛先)→ 自分宛か → TTL → 経路 → NAT(内 → 外の送信元)→ FW のポリシー(状態で返りを通す)→ 送信 ACL → ARP。ホストは直結 + ゲートウェイの既定経路。外の網(internet)は、ほかの機器が持っていない自分の網のアドレスを全部持つ
+- 設定の塊(interface …)の中でトップの行(ip route・vlan・spanning-tree priority など)を書いたら、塊を出てから当てる(exit 忘れを許す)
+- traceroute は各ホップの返事が送り元へ戻れるかも見て、戻れないホップは `*  *  *`。reach の返りの失敗は `reason: 'back:<理由>'`、stoppedAt は返りの止まった所
+- DHCP: 同じドメインのサーバー、無ければルーター IF の dhcpRelay の先。配る順はホスト名順。配れる数 = 254 − 除外 − ゲートウェイ。VRRP の仮想 MAC は `00:00:5e:00:01:<グループ>`
+- クラウド: `cloud-subnet` は VLAN 1 のスイッチ兼ゲートウェイ(.1)。経路表は local / peer:<名> / igw / natgw。natgw の先からは返りしか入れない。`cloud-gw`(IGW・NATGW)は図に見せるだけの口
+- DNS: サーバー役の機器に `dnsRecords: [{ name, type: 'A'|'CNAME', value }]`(270 用。nslookup が CNAME の連鎖をたどる)。`hidden` の項目は show と running-config に出さない
+- 画面(public/diagram.js・terminal.js・qdialog.js)は第 5 章のとおり。IF のアドレスは機器の note にまとめず `ports[].note` に入れる。ポートの座標は機器の縁(中心から 36〜42)。結果には `failed`(満たさなかった要件 id)と、任意で `correctIds`(tap の正解。中立の拠点と強化のときだけ)

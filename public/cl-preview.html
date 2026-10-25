@@ -44,6 +44,8 @@
       <p id="qCardText"></p>
     </details>
     <p class="qtext" id="qText"></p>
+    <div class="qdiagram" id="qDiagram" hidden></div>
+    <div class="qtapbar" id="qTapBar" hidden></div>
     <div class="qtable-wrap" id="qTables"></div>
     <div class="qhint" id="qHintBox" hidden>
       <button type="button" class="btn small" id="qHintBtn" aria-controls="qHintText" aria-expanded="false">ヒント</button>
@@ -59,6 +61,8 @@
         <span class="hint">半角で入力。IPv6 の省略形、先頭の 0、大文字小文字は自動でそろえます。Enter でも送れます</span>
       </div>
     </form>
+    <div class="qconfig" id="qConfig" hidden></div>
+    <div class="qterm" id="qTerm" hidden></div>
     <div class="result" id="qResult" hidden>
       <p class="verdict" id="qVerdict"></p>
       <p class="answers" id="qAnswers" hidden></p>
@@ -73,6 +77,8 @@
     <button type="button" class="btn primary" id="qClose">閉じる</button>
   </div>
 </dialog>
+<script src="diagram.js"></script>
+<script src="terminal.js"></script>
 <script src="qdialog.js"></script>
 <script src="cl-preview.js"></script>
 </body>

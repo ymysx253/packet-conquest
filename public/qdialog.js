@@ -9,39 +9,60 @@
 (() => {
   const $ = (id) => document.getElementById(id);
 
+  // tap(構成図をタップ)と config(設定を書く)は 2026-10-25(docs/questions/SIM-API.md 第 5 章)。図は diagram.js、設定の欄とターミナルは terminal.js が描く
   const ANSWER_VIEWS = {
     choice: { size: () => 'normal' },
     text: { size: (q) => (q.fields || []).some((f) => f.format === 'prefixplan') || (q.fields || []).length > 4 ? 'wide' : 'normal' },
+    tap: { size: () => 'wide' },
+    config: { size: () => 'wide' },
   };
   const tablesOf = (q) => (Array.isArray(q.tables) && q.tables.length ? q.tables : (q.table ? [q.table] : []));
   function size(q) {
     const v = ANSWER_VIEWS[q.answerKind || 'choice'];
     const wideTable = tablesOf(q).length > 1 || tablesOf(q).some((t) => (t.headers || []).length > 4);
-    return v ? (wideTable && v.size(q) === 'normal' ? 'wide' : v.size(q)) : 'full';
+    let s = v ? (wideTable && v.size(q) === 'normal' ? 'wide' : v.size(q)) : 'full';
+    if (q.diagram && q.terminal) s = 'full'; else if ((q.diagram || q.terminal) && s === 'normal') s = 'wide';
+    return s;
   }
   const isTF = (q) => Array.isArray(q.options) && q.options.length === 2 && q.options[0] === '○' && q.options[1] === '×';
 
-  let cur = { qid: null, opts: {}, widgets: [], hintShown: false };
+  let cur = { qid: null, opts: {}, widgets: [], hintShown: false, diag: null, tapIds: [], cfg: null, term: null };
+
+  // 図・設定・ターミナルの入れ物。index.html / cl-preview.html に無ければ作って差し込む(古い HTML でも落ちない)
+  function slot(id, after) {
+    let e = $(id);
+    if (e) return e;
+    const ref = $(after); if (!ref || !ref.parentNode) return null;
+    e = document.createElement('div'); e.id = id; e.hidden = true;
+    ref.parentNode.insertBefore(e, ref.nextSibling);
+    return e;
+  }
+  const sentOf = (q, r, opts) => !!r || !!(opts.chosen && typeof opts.chosen === 'object' && opts.chosen.qid === q.qid);
 
   function render(q, r, opts = {}) {
-    if (cur.qid !== q.qid) cur = { qid: q.qid, opts, widgets: [], hintShown: false, fresh: true };
+    if (cur.qid !== q.qid) cur = { qid: q.qid, opts, widgets: [], hintShown: false, fresh: true, diag: null, tapIds: [], cfg: null, term: null };
     cur.opts = opts;
     renderCard(q);
     const textNodes = [];
     String(q.text || '').split('\n').forEach((line, i) => { if (i) textNodes.push(document.createElement('br')); textNodes.push(...highlightIps(line)); });
     $('qText').replaceChildren(...textNodes);
+    renderDiagram(q, r, opts);
     $('qTables').replaceChildren(...tablesOf(q).map(makeTable));
     const isText = q.answerKind === 'text' && Array.isArray(q.fields);
+    const isTap = q.answerKind === 'tap', isConfig = q.answerKind === 'config';
     const known = !q.answerKind || !!ANSWER_VIEWS[q.answerKind];
-    $('qOptions').hidden = isText || !known; $('qFields').hidden = !isText;
+    $('qOptions').hidden = isText || isTap || isConfig || !known; $('qFields').hidden = !isText;
     if (!known) { const p = document.createElement('p'); p.className = 'unsupported'; p.textContent = 'この形の問題は、まだ画面が対応していません'; $('qTables').append(p); }
     if (isText) renderFields(q, r, opts);
-    renderOptions(isText || !known ? null : q, r, opts);
+    renderTap(q, r, opts);
+    renderConfig(q, r, opts);
+    renderTerminal(q, r, opts);
+    renderOptions(isText || isTap || isConfig || !known ? null : q, r, opts);
     renderHint(q);
     $('qResult').hidden = !r;
     if (r) {
-      $('qVerdict').textContent = r.correct ? '正解' : '不正解';
-      $('qVerdict').className = `verdict ${r.correct ? 'ok' : 'ng'}`;
+      $('qVerdict').textContent = r.correct === null ? '送る形の見本' : r.correct ? '正解' : '不正解';
+      $('qVerdict').className = `verdict ${r.correct === null ? 'demo' : r.correct ? 'ok' : 'ng'}`;
       $('qExplain').textContent = r.explanation || ''; $('qOutcome').textContent = r.outcome || '';
       const showAnswers = isText && Array.isArray(r.answers) && !r.correct;
       $('qAnswers').hidden = !showAnswers;
@@ -50,6 +71,89 @@
       if (r.defenseNote) $('qDefense').textContent = `守る側なら: ${r.defenseNote}`;
     }
     cur.fresh = false;
+  }
+
+  // ---------- 構成図(diagram)とタップの答え(tap) ----------
+  function renderDiagram(q, r, opts) {
+    const box = slot('qDiagram', 'qText'); if (!box) return;
+    const DG = window.PCDiagram;
+    if (!q.diagram || !DG) { box.hidden = true; box.replaceChildren(); cur.diag = null; return; }
+    box.hidden = false;
+    const mode = q.answerKind === 'tap' && q.tap ? q.tap.mode : 'view';
+    const sent = sentOf(q, r, opts);
+    if (!cur.diag || box.dataset.qid !== q.qid) {
+      box.dataset.qid = q.qid;
+      const initial = opts.chosen && typeof opts.chosen === 'object' && opts.chosen.qid === q.qid && Array.isArray(opts.chosen.ids) ? opts.chosen.ids : [];
+      cur.tapIds = initial.slice();
+      cur.diag = DG.render(box, q.diagram, { mode, selected: initial, tables: q.diagram.tables, disabled: sent, onChange: (ids) => { cur.tapIds = ids; updateTapBar(q); } });
+    }
+    cur.diag.setDisabled(sent);
+    if (r && Array.isArray(r.correctIds)) cur.diag.mark(r.correctIds); // サーバーが正解の id を返したときだけ印を付ける
+  }
+  function renderTap(q, r, opts) {
+    const bar = slot('qTapBar', 'qDiagram'); if (!bar) return;
+    if (q.answerKind !== 'tap') { bar.hidden = true; bar.replaceChildren(); return; }
+    bar.hidden = false;
+    const sent = sentOf(q, r, opts);
+    if (bar.dataset.qid !== q.qid) {
+      bar.dataset.qid = q.qid;
+      const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'btn primary'; btn.id = 'qTapSubmit'; btn.textContent = '答える';
+      btn.onclick = () => { if (!cur.tapIds.length) { if (cur.opts.onIncomplete) cur.opts.onIncomplete(); return; } if (cur.opts.onSubmit) cur.opts.onSubmit({ ids: cur.tapIds.slice() }); };
+      const note = document.createElement('span'); note.className = 'hint'; note.id = 'qTapNote';
+      note.textContent = ({ one: '機器を 1 つ選んで「答える」。選び直せます', many: '当てはまるものを全部選んで「答える」。もう一度押すと外れます', order: '通る順に押して「答える」。もう一度押すと外れて番号が振り直されます', port: 'ポートを 1 つ選んで「答える」', link: '線を 1 つ選んで「答える」' }[(q.tap || {}).mode] || '選んで「答える」');
+      bar.replaceChildren(btn, note);
+    }
+    updateTapBar(q, sent);
+  }
+  function updateTapBar(q, sent) {
+    const btn = $('qTapSubmit'); if (!btn) return;
+    const done = sent !== undefined ? sent : btn.disabled && btn.dataset.sent === '1';
+    btn.dataset.sent = done ? '1' : '';
+    btn.disabled = done || !cur.tapIds.length;
+  }
+
+  // ---------- 設定を書く(config) ----------
+  function renderConfig(q, r, opts) {
+    const box = slot('qConfig', 'qTapBar') || slot('qConfig', 'qTables'); if (!box) return;
+    const T = window.PCTerminal;
+    if (q.answerKind !== 'config' || !T) { box.hidden = true; box.replaceChildren(); cur.cfg = null; return; }
+    box.hidden = false;
+    const sent = sentOf(q, r, opts);
+    if (!cur.cfg || box.dataset.qid !== q.qid) {
+      box.dataset.qid = q.qid;
+      box.replaceChildren();
+      const form = document.createElement('div'); form.className = 'cfg-form';
+      cur.cfg = T.configForm(form, { editable: q.editable || [], configView: q.configView || {}, requirementsText: q.requirementsText || [], disabled: sent, onChange: () => updateCfgBtn() });
+      const foot = document.createElement('div'); foot.className = 'fields-foot';
+      const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'btn primary'; btn.id = 'qCfgSubmit'; btn.textContent = '答える';
+      btn.onclick = () => { if (!cur.cfg.filled()) { if (cur.opts.onIncomplete) cur.opts.onIncomplete(); return; } if (cur.opts.onSubmit) cur.opts.onSubmit({ configs: cur.cfg.values() }); };
+      const note = document.createElement('span'); note.className = 'hint'; note.textContent = '書き方が違っても、設定した結果が要件を満たせば正解です。1 台 40 行まで';
+      foot.append(btn, note);
+      box.append(form, foot);
+    }
+    cur.cfg.setDisabled(sent);
+    updateCfgBtn(sent);
+    if (r && Array.isArray(r.failed)) cur.cfg.markFailed(r.failed);
+  }
+  function updateCfgBtn(sent) {
+    const btn = $('qCfgSubmit'); if (!btn || !cur.cfg) return;
+    const done = sent !== undefined ? sent : btn.dataset.sent === '1';
+    btn.dataset.sent = done ? '1' : '';
+    btn.disabled = done || !cur.cfg.filled();
+  }
+
+  // ---------- 模擬ターミナル(terminal が付いた問題。答え方は answerKind のとおり) ----------
+  function renderTerminal(q, r, opts) {
+    const box = slot('qTerm', 'qConfig') || slot('qTerm', 'qTables'); if (!box) return;
+    const T = window.PCTerminal;
+    if (!q.terminal || !T) { box.hidden = true; box.replaceChildren(); cur.term = null; return; }
+    box.hidden = false;
+    const sent = sentOf(q, r, opts);
+    if (!cur.term || box.dataset.qid !== q.qid) {
+      box.dataset.qid = q.qid;
+      cur.term = T.terminal(box, { devices: q.terminal.devices || [], start: q.terminal.start, completions: q.terminal.completions || [], disabled: sent, onLine: (line) => (cur.opts.onTerm ? cur.opts.onTerm(line) : Promise.resolve('この画面ではターミナルを使えません')) });
+    }
+    cur.term.setDisabled(sent);
   }
 
   // 説明カード(入門。CL.md 第 3 章): 問題文の前に出す。新しい問題では開いて出し、たためる
@@ -97,7 +201,7 @@
     }));
   }
   function keyIndex(e, q) {
-    if (!q || q.answerKind === 'text') return null;
+    if (!q || q.answerKind === 'text' || q.answerKind === 'tap' || q.answerKind === 'config' || q.terminal) return null;
     const t = e.target && e.target.tagName;
     if (t === 'INPUT' || t === 'TEXTAREA') return null;
     const n = Number(e.key);
@@ -238,5 +342,5 @@
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindForm); else bindForm();
-  window.PCQuestion = { size, render, keyIndex, isTF };
+  window.PCQuestion = { size, render, keyIndex, isTF, ANSWER_KINDS: Object.keys(ANSWER_VIEWS) };
 })();

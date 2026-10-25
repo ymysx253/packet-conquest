@@ -154,5 +154,41 @@ const noHint = (q) => q.hint === null && q.firstStep === null && q.hintLocked ==
     { const q = pv.ask({ level: 'demo-3' }); assert.strictEqual(q.options.length, 3); assert.ok(q.hint && !q.hintLocked); const off = pv.ask({ level: 'demo-3', hints: false }); assert.ok(off.hint === null && off.hintLocked); }
   }
 
-  console.log('qdialog: ok(ヒントの出し分け・送る形・見本のページの口)');
+  // ---------- 4. 図・設定・ターミナルの画面の部品(public/diagram.js・terminal.js。2026-10-25。DOM の無い純粋な関数だけ) ----------
+  {
+    const DG = require('../public/diagram');
+    const T = require('../public/terminal');
+    // 選びの決まり: one/port/link は 1 つ(選び直し)、many は反転、order は押した順(もう一度で外れる)、view は選べない
+    assert.deepStrictEqual(DG.toggleSelect('one', [], 'a'), ['a']);
+    assert.deepStrictEqual(DG.toggleSelect('one', ['a'], 'b'), ['b']);
+    assert.deepStrictEqual(DG.toggleSelect('one', ['a'], 'a'), [], '同じものをもう一度押すと外れる');
+    assert.deepStrictEqual(DG.toggleSelect('many', ['a'], 'b'), ['a', 'b']);
+    assert.deepStrictEqual(DG.toggleSelect('many', ['a', 'b'], 'a'), ['b']);
+    assert.deepStrictEqual(DG.toggleSelect('order', ['a', 'b', 'c'], 'b'), ['a', 'c'], '順の途中を外すと詰まる(番号が振り直される)');
+    assert.deepStrictEqual(DG.toggleSelect('port', ['n1:Gi0/0'], 'n1:Gi0/1'), ['n1:Gi0/1']);
+    assert.deepStrictEqual(DG.toggleSelect('view', [], 'a'), []);
+    assert.strictEqual(DG.selectableKind('port'), 'port'); assert.strictEqual(DG.selectableKind('order'), 'node'); assert.strictEqual(DG.selectableKind('view'), null);
+    assert.ok(DG.HIT_R * 2 * (320 / 1000) >= 44, 'スマホ幅(320 px)でも機器の当たりは 44 px 以上');
+    // 設定の文字の上限(SIM-API.md 第 5 章: 1 台 40 行・1 行 120 字)
+    assert.strictEqual(T.LIMITS.lines, 40); assert.strictEqual(T.LIMITS.lineChars, 120); assert.strictEqual(T.LIMITS.cmds, 60);
+    assert.ok(T.checkConfigText('ip route 10.3.3.0/24 10.0.12.2\n').ok);
+    assert.strictEqual(T.checkConfigText('a\nb\n\n\n').lines, 2, '末尾の空行は数えない');
+    assert.ok(!T.checkConfigText(Array(41).fill('x').join('\n')).ok, '41 行は超え');
+    assert.ok(T.checkConfigText(Array(40).fill('x').join('\n')).ok, '40 行はよい');
+    assert.ok(!T.checkConfigText('y'.repeat(121)).ok && T.checkConfigText('y'.repeat(120)).ok, '1 行 120 字まで');
+    assert.strictEqual(T.checkConfigText('   \n').nonEmpty, 0, '空白だけは書いたことにならない');
+    // Tab 補完: 語の頭で補う。1 つなら入れ替え、複数なら共通の頭と候補。値(アドレス)は補わない
+    const words = T.WORDS.concat(['R1', 'R2', 'FW1', 'Gi0/0', 'Gi0/1']);
+    assert.strictEqual(T.complete('show ip nat transl', words).line, 'show ip nat translations ', '1 つに決まれば入れ替えて空白を足す');
+    assert.strictEqual(T.complete('show ip ro', words).line, 'show ip rout', '複数(route・router・routing)なら共通の頭まで');
+    { const c = T.complete('connect R', words).candidates; assert.ok(c.includes('R1') && c.includes('R2'), '機器名も候補に入る(大文字小文字は区別しない)'); }
+    assert.strictEqual(T.complete('connect FW', words).line, 'connect FW1 ');
+    assert.strictEqual(T.complete('connect R', words).line, 'connect R');
+    assert.strictEqual(T.complete('interface Gi0/', words).line, 'interface Gi0/');
+    assert.deepStrictEqual(T.complete('interface Gi0/', words).candidates, ['Gi0/0', 'Gi0/1']);
+    assert.deepStrictEqual(T.complete('ping 10.1.', words).candidates, [], 'アドレスは補わない');
+    assert.ok(!T.WORDS.some((w) => /\d+\.\d+\.\d+\.\d+/.test(w)), '補完の語にアドレスが無い');
+  }
+
+  console.log('qdialog: ok(ヒントの出し分け・送る形・見本のページの口・図と設定の部品)');
 })().catch((e) => { console.error(e); process.exit(1); });
