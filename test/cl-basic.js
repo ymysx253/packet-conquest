@@ -72,9 +72,10 @@ for (const lv of [69, 76, 117]) {
   for (const q of gen(lv, 600)) {
     if (q.answerKind !== 'text') continue;
     n++;
-    const digits = q.fields[0].accept[0];
-    assert.ok(/^\d+$/.test(digits), `Lv${lv}: 並べ替えの正解が数字の列でない ${digits}`);
-    for (const form of [digits.split('').join('-'), digits.split('').join(' '), digits, digits.split('').join(' - ')]) assert.ok(judge(q, [form]), `Lv${lv}: 「${form}」が正解にならない`);
+    const acc = q.fields[0].accept[0];
+    assert.ok(/^\d(-\d)+$/.test(acc), `Lv${lv}: 並べ替えの正解が「3-1-2」の形でない ${acc}`); // order の正規形(2026-10-26)
+    const digits = acc.replace(/-/g, '');
+    for (const form of [acc, digits.split('').join(' '), digits, digits.split('').join(' - '), digits.split('').join(','), digits.split('').join('→')]) assert.ok(judge(q, [form]), `Lv${lv}: 「${form}」が正解にならない`);
     assert.ok(!judge(q, [digits.split('').reverse().join('-')]), `Lv${lv}: 逆の順が正解になった`);
   }
   assert.ok(n >= 100, `Lv${lv}: 並べ替えの問題が少ない`);
