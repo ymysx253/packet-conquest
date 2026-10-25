@@ -5,11 +5,13 @@
 //
 // 段ごとのファイル(担当ごとに 1 つ。同じファイルを 2 人で直さない):
 //   levels-intro.js 入門 1〜67 / levels-basic.js 初級 68〜158 / levels-mid.js 中級 159〜252 / levels-adv.js 上級 253〜319 / levels-legacy.js 前の生成器を新しい番号で出す口
+//   levels-fable-route.js / levels-fable-diag.js / levels-fable-design.js: 一覧の「担当」が F・O→F の行(Fable 5.1 が作る。2026-10-25)
 // 各ファイルは LEVELS = { <番号>: { title, kind, make(rng, ctx), verify?(q), minDistinct? } } を出す。kind: '生' | '表' | '生+固'
 // 問題の形は docs/questions/CL.md。テストは test/cl.js(全レベルをまとめて確かめる)
 const { makeRng, newSeed } = require('../rng');
 
-const FILES = ['./levels-intro', './levels-basic', './levels-mid', './levels-adv', './levels-legacy'];
+const FILES = ['./levels-intro', './levels-basic', './levels-mid', './levels-adv', './levels-legacy',
+  './levels-fable-route', './levels-fable-diag', './levels-fable-design']; // Fable の分(2026-10-25。docs/questions/CL.md 第 1 章)
 const LEVELS = new Map(); // 番号 → { title, kind, make, verify, minDistinct, file }
 for (const f of FILES) {
   let mod;

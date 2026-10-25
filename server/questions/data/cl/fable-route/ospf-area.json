@@ -1,0 +1,23 @@
+{
+  "note": "FactBank(上級 Lv263「エリアの種類」)。OSPF のエリアの種類と、そこに入る経路の違い。stmt は文と正しいか、group=area はエリアの種類の名前と説明。トータリースタブは規格ではなく各社の拡張(名前は一般的な呼び方)。checkedBy の無い行は使わない",
+  "rows": [
+    { "id": "a-stub-no-ext", "ja": "スタブエリアには AS の外の経路(外部経路)を知らせず、代わりに ABR がデフォルト経路を流す", "attrs": { "true": true, "why": "スタブエリアでは外部経路の LSA(タイプ 5)を入れない。外へは ABR からのデフォルト経路で出る。" }, "source": "RFC 2328 第 3.6 節", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "a-stub-no-asbr", "ja": "スタブエリアの中には、外部経路を取り込むルーター(ASBR)を置けない", "attrs": { "true": true, "why": "外部経路の LSA を流せないエリアなので、取り込む役のルーターも置けない。置きたいなら NSSA にする。" }, "source": "RFC 2328 第 3.6 節", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "a-stub-all-agree", "ja": "あるエリアをスタブエリアにするには、そのエリアの全ルーターでスタブの設定をそろえる必要がある", "attrs": { "true": true, "why": "hello のスタブの印(E ビット)が合わないルーターどうしはネイバーにならない。" }, "source": "RFC 2328 第 3.6 節・第 10.5 節", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "a-nssa-asbr", "ja": "NSSA では、そのエリアの中のルーターが外部経路を取り込み、ABR がそれをふつうの外部経路に変えてほかのエリアへ流せる", "attrs": { "true": true, "why": "NSSA の中の外部経路は別の形の LSA(タイプ 7)で運び、ABR でタイプ 5 に変えて外へ出す。" }, "source": "RFC 3101", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "a-backbone-center", "ja": "ほかのエリアどうしの経路は、必ずバックボーンエリア(エリア 0)を通してやりとりする", "attrs": { "true": true, "why": "OSPF の複数エリアは、エリア 0 を中心にほかのエリアがつながる形(2 段)に限られる。" }, "source": "RFC 2328 第 3.1 節・第 3.2 節", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "a-totally-vendor", "ja": "トータリースタブエリアは、スタブエリアからさらにエリア間の経路も省き、デフォルト経路だけにする各社の拡張である", "attrs": { "true": true, "why": "RFC 2328 にあるのはスタブエリアまで。エリア間の経路(タイプ 3)も止めるのは各社が足した機能。" }, "source": "RFC 2328 第 3.6 節・各社の拡張(名前は一般的な呼び方)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "a-no-vlink-stub", "ja": "仮想リンク(エリア 0 に直接つながらないエリアをつなぐ道)は、スタブエリアを通しては作れない", "attrs": { "true": true, "why": "仮想リンクを通せるのは外部経路を運べるふつうのエリアだけ。" }, "source": "RFC 2328 第 3.6 節・第 15 章", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "a-stub-has-ext", "ja": "スタブエリアには、ほかのエリアから外部経路がそのまま入ってくる", "attrs": { "true": false, "why": "スタブエリアは外部経路を入れないエリア。代わりに ABR のデフォルト経路を使う。" }, "source": "RFC 2328 第 3.6 節", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "a-standard-no-ext", "ja": "ふつうのエリア(標準エリア)には、外部経路は入ってこない", "attrs": { "true": false, "why": "ふつうのエリアには、エリア間の経路も外部経路も入る。入らないようにしたものがスタブエリア。" }, "source": "RFC 2328 第 3.6 節", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "a-nssa-same-stub", "ja": "NSSA はスタブエリアと同じで、エリアの中で外部経路を取り込むことはできない", "attrs": { "true": false, "why": "NSSA はまさに「中で外部経路を取り込めるスタブ」。それが NSSA を作った理由。" }, "source": "RFC 3101", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "a-backbone-optional", "ja": "複数のエリアを使うときも、エリア 0 は無くてよく、どのエリアどうしでも直接経路をやりとりできる", "attrs": { "true": false, "why": "エリア間の経路はエリア 0 を通す決まり。エリア 0 に直接つなげないエリアは仮想リンクでつなぐ。" }, "source": "RFC 2328 第 3.1 節・第 3.2 節", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "a-totally-in-rfc", "ja": "トータリースタブエリアは RFC 2328 で決められたエリアの種類である", "attrs": { "true": false, "why": "RFC 2328 にあるのはスタブエリアまで。トータリースタブは各社の拡張。" }, "source": "RFC 2328 第 3.6 節", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "a-stub-one-router", "ja": "スタブエリアは、エリアの中の 1 台だけスタブの設定をすれば、ほかのルーターにも自動で広まる", "attrs": { "true": false, "why": "スタブの印が合わないルーターどうしはネイバーにならない。全ルーターで設定をそろえる。" }, "source": "RFC 2328 第 3.6 節・第 10.5 節", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-backbone", "ja": "バックボーンエリア(エリア 0)", "attrs": { "group": "area", "desc": "すべてのエリアがつながる中心のエリア。エリア間の経路はここを通る" }, "source": "RFC 2328 第 3.1 節", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-standard", "ja": "ふつうのエリア(標準エリア)", "attrs": { "group": "area", "desc": "エリア間の経路も AS の外の経路(外部経路)も入ってくるエリア" }, "source": "RFC 2328 第 3.6 節", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-stub", "ja": "スタブエリア", "attrs": { "group": "area", "desc": "外部経路を入れず、代わりに ABR からのデフォルト経路で外へ出るエリア。エリア間の経路は入る" }, "source": "RFC 2328 第 3.6 節", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-totally", "ja": "トータリースタブエリア", "attrs": { "group": "area", "desc": "外部経路もエリア間の経路も入れず、ABR からのデフォルト経路だけで済ませるエリア(各社の拡張)" }, "source": "各社の拡張(名前は一般的な呼び方)", "checkedBy": "Claude Fable 5.1 2026-10-25" },
+    { "id": "t-nssa", "ja": "NSSA", "attrs": { "group": "area", "desc": "ほかのエリアからの外部経路は入れないが、エリアの中のルーターが外部経路を取り込むことはできるエリア" }, "source": "RFC 3101", "checkedBy": "Claude Fable 5.1 2026-10-25" }
+  ]
+}

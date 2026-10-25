@@ -1,0 +1,199 @@
+{
+  "note": "FactBank(専門 Lv343「接続の失敗」)。短い記録(SYN への返事・ICMP の種類)から分かること。group=obs は記録の見本(capture。{C} 送信元 PC、{S} 相手のサーバー、{P} 宛先ポート、{R} 途中のルーター)と分かること(desc)。true/false は文の正誤。checkedBy の無い行は使わない。作成: Claude Fable 5.1 2026-10-25",
+  "rows": [
+    {
+      "id": "o-synack",
+      "ja": "SYN に SYN/ACK が返る",
+      "attrs": {
+        "group": "obs",
+        "desc": "相手のそのポートは開いていて、接続できる",
+        "capture": [["{C}", "{S}:{P}", "TCP SYN"], ["{S}:{P}", "{C}", "TCP SYN/ACK"], ["{C}", "{S}:{P}", "TCP ACK"]]
+      },
+      "source": "RFC 9293 3.5(接続の確立)",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "o-rst",
+      "ja": "SYN に RST が返る",
+      "attrs": {
+        "group": "obs",
+        "desc": "相手までは届いているが、そのポートでは待ち受けていない(閉じている)",
+        "capture": [["{C}", "{S}:{P}", "TCP SYN"], ["{S}:{P}", "{C}", "TCP RST/ACK"]]
+      },
+      "source": "RFC 9293 3.5.2(閉じたポートへの SYN には RST を返す)",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "o-noreply",
+      "ja": "SYN を何度送っても返事が無い",
+      "attrs": {
+        "group": "obs",
+        "desc": "途中で黙って捨てられている(FW など)か、相手が止まっているか届いていない。どちらかはこの記録だけでは決まらない",
+        "capture": [["{C}", "{S}:{P}", "TCP SYN"], ["{C}", "{S}:{P}", "TCP SYN(再送)"], ["{C}", "{S}:{P}", "TCP SYN(再送)"]]
+      },
+      "source": "RFC 9293 3.8.3(再送)・RFC 1122 4.2.3.5",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "o-udp-unreach",
+      "ja": "UDP の送信に ICMP ポート到達不能が返る",
+      "attrs": {
+        "group": "obs",
+        "desc": "相手までは届いているが、その UDP ポートでは待ち受けていない",
+        "capture": [["{C}", "{S}:{P}", "UDP(長さ 48)"], ["{S}", "{C}", "ICMP 到達不能(ポート到達不能)"]]
+      },
+      "source": "RFC 792(Destination Unreachable、コード 3)・RFC 1122 4.1.3.1",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "o-admin",
+      "ja": "ICMP の「管理的に禁止」が返る",
+      "attrs": {
+        "group": "obs",
+        "desc": "途中の FW かルーターが規則で捨て、それを知らせている",
+        "capture": [["{C}", "{S}:{P}", "TCP SYN"], ["{R}", "{C}", "ICMP 到達不能(管理的に禁止)"]]
+      },
+      "source": "RFC 1812 5.2.7.1(Destination Unreachable、コード 13 Communication Administratively Prohibited)",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "o-host-unreach",
+      "ja": "途中のルーターから ICMP ホスト到達不能が返る",
+      "attrs": {
+        "group": "obs",
+        "desc": "最後のルーターが相手の MAC を解決できない(相手が止まっているか、そのアドレスの機器が無い)",
+        "capture": [["{C}", "{S}:{P}", "TCP SYN"], ["{R}", "{C}", "ICMP 到達不能(ホスト到達不能)"]]
+      },
+      "source": "RFC 1812 4.3.3.1(ARP が解決できないときのホスト到達不能)・RFC 792",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "o-ttl",
+      "ja": "途中のルーターから ICMP 時間超過(TTL)が返る",
+      "attrs": {
+        "group": "obs",
+        "desc": "経路がループしているなどで、TTL が尽きるまで相手に着かない",
+        "capture": [["{C}", "{S}:{P}", "TCP SYN(TTL 64)"], ["{R}", "{C}", "ICMP 時間超過(転送中に TTL が 0)"]]
+      },
+      "source": "RFC 792(Time Exceeded、コード 0)・RFC 1812 5.3.1",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "o-fin-after",
+      "ja": "接続したあとデータを送るとすぐ FIN が返る",
+      "attrs": {
+        "group": "obs",
+        "desc": "接続はできるが、相手のアプリがすぐに閉じている(ポートは開いている)",
+        "capture": [["{C}", "{S}:{P}", "TCP SYN"], ["{S}:{P}", "{C}", "TCP SYN/ACK"], ["{C}", "{S}:{P}", "TCP ACK"], ["{C}", "{S}:{P}", "TCP PSH/ACK(長さ 120)"], ["{S}:{P}", "{C}", "TCP FIN/ACK"]]
+      },
+      "source": "RFC 9293 3.6(接続の終了)",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "o-rst-mid",
+      "ja": "接続してしばらくしてから RST が返る",
+      "attrs": {
+        "group": "obs",
+        "desc": "接続はできたが、相手のアプリか途中の機器が接続を強制的に切った",
+        "capture": [["{C}", "{S}:{P}", "TCP SYN"], ["{S}:{P}", "{C}", "TCP SYN/ACK"], ["{C}", "{S}:{P}", "TCP ACK"], ["{C}", "{S}:{P}", "TCP PSH/ACK(長さ 120)"], ["{S}:{P}", "{C}", "TCP ACK"], ["{S}:{P}", "{C}", "TCP RST"]]
+      },
+      "source": "RFC 9293 3.5.2・3.10.7(RST による強制終了)",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "o-silent-app",
+      "ja": "接続は完了するが、要求への応答が無い",
+      "attrs": {
+        "group": "obs",
+        "desc": "ポートは開いているが、相手のアプリが応答していない(ネットワークの層は通っている)",
+        "capture": [["{C}", "{S}:{P}", "TCP SYN"], ["{S}:{P}", "{C}", "TCP SYN/ACK"], ["{C}", "{S}:{P}", "TCP ACK"], ["{C}", "{S}:{P}", "TCP PSH/ACK(長さ 120)"], ["{S}:{P}", "{C}", "TCP ACK"], ["—", "—", "(以後 30 秒、{S} からのデータは無い)"]]
+      },
+      "source": "RFC 9293 3.5(接続の確立は TCP の層で完了する。アプリの応答は別)",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "s-rst-alive",
+      "ja": "SYN に RST が返ってきたなら(途中の FW が代わりに返す場合を除き)、相手の機器そのものは動いていて、そこまで通信は届いている",
+      "attrs": { "true": true, "why": "RST は相手の TCP が返すので、相手は動いていて届いている。そのポートで待ち受けていないだけ。" },
+      "source": "RFC 9293 3.5.2",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "s-noreply-closed",
+      "ja": "SYN に返事が無ければ、相手のポートが閉じていると断定できる",
+      "attrs": { "true": false, "why": "閉じたポートならふつう RST が返る。返事が無いのは、途中で捨てられているか、相手が止まっているか届いていないとき。" },
+      "source": "RFC 9293 3.5.2・RFC 1122 4.2.3.5",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "s-udp-silent",
+      "ja": "UDP では、ポートが閉じていても何も返ってこないことがある",
+      "attrs": { "true": true, "why": "ICMP ポート到達不能を返さない設定や、途中の FW が ICMP を捨てることがある。UDP そのものには返事の仕組みが無い。" },
+      "source": "RFC 1122 4.1.3.1(ICMP ポート到達不能を送る「べき」で必須ではない)",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "s-udp-unreach",
+      "ja": "ICMP ポート到達不能は、宛先の機器までは届いたが、その UDP ポートで待ち受けていないことを知らせる",
+      "attrs": { "true": true, "why": "ポート到達不能は宛先の機器が返す。届いたうえで、そのポートに受け手がいない。" },
+      "source": "RFC 792・RFC 1122 4.1.3.1",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "s-fw-drop",
+      "ja": "FW が通信を黙って捨てると、送信側からは SYN に返事が無いように見える",
+      "attrs": { "true": true, "why": "黙って捨てる(drop)と何も返らないので、送信側は再送を繰り返して時間切れになる。" },
+      "source": "RFC 9293 3.8.3(再送と時間切れ)",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "s-synack-app",
+      "ja": "SYN に SYN/ACK が返れば、相手のアプリが正しく応答することまで分かる",
+      "attrs": { "true": false, "why": "SYN/ACK は TCP の層が返す。ポートが開いていることは分かるが、アプリが応答するかは別。" },
+      "source": "RFC 9293 3.5",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "s-rst-fin",
+      "ja": "RST は接続を正常に終える合図で、FIN と同じ意味である",
+      "attrs": { "true": false, "why": "正常に終えるのは FIN。RST は接続を強制的に切る(または、そんな接続は無いと知らせる)合図。" },
+      "source": "RFC 9293 3.5.2・3.6",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "s-admin-app",
+      "ja": "ICMP の「管理的に禁止」は、相手のサーバーのアプリが返す",
+      "attrs": { "true": false, "why": "管理的に禁止は、規則で捨てた途中の FW やルーターが返す。アプリは ICMP を返さない。" },
+      "source": "RFC 1812 5.2.7.1",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "s-host-unreach",
+      "ja": "途中のルーターからの ICMP ホスト到達不能は、そのルーターが相手の MAC を解決できないときなどに返る",
+      "attrs": { "true": true, "why": "宛先の網につながる最後のルーターが ARP を解決できないと、送信元にホスト到達不能を返す。" },
+      "source": "RFC 1812 4.3.3.1",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "s-handshake",
+      "ja": "SYN に SYN/ACK が返ったあと、送信側が ACK を返して接続の手順が終わる",
+      "attrs": { "true": true, "why": "SYN → SYN/ACK → ACK の 3 方向の手順。ACK を返した時点で両方が接続中になる。" },
+      "source": "RFC 9293 3.5",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "s-ttl-loop",
+      "ja": "SYN を送るたびに途中のルーターから ICMP 時間超過が返るなら、経路がループしている疑いがある",
+      "attrs": { "true": true, "why": "TTL が尽きるのは、ホップ数が TTL より多いとき。ふつうの経路ではまず起きないので、ループを疑う。" },
+      "source": "RFC 792・RFC 1812 5.3.1",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    },
+    {
+      "id": "s-rst-fw",
+      "ja": "SYN に RST が返ったとき、その RST を返したのが相手ではなく途中の FW である可能性もある",
+      "attrs": { "true": true, "why": "拒否(reject)の設定の FW は、相手の代わりに RST を返すことがある。記録だけでは見分けにくい。" },
+      "source": "一般的な FW の動作(reject と drop の違い)。RFC 9293 3.5.2",
+      "checkedBy": "Claude Fable 5.1 2026-10-25"
+    }
+  ]
+}
