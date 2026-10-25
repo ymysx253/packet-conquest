@@ -90,7 +90,9 @@ function computeStp(net, links) {
     for (const l of links) for (const [me, other] of [[l.a, l.b], [l.b, l.a]]) {
       if (me.sw !== d.name || cost[other.sw] === Infinity) continue;
       const k = [cost[other.sw] + 4, bid[other.sw], minPort(other.ports), minPort(me.ports)];
-      if (!best || k.join('|') < best.k.join('|') || (k[0] < best.k[0])) best = { k, l, me };
+      // 根までのコストは数として比べる(文字で比べると 12 < 4 になる)。同じなら相手のブリッジ ID、相手のポート名、自分のポート名の順
+      const less = (x, y) => x[0] !== y[0] ? x[0] < y[0] : x[1] !== y[1] ? x[1] < y[1] : x[2] !== y[2] ? x[2] < y[2] : x[3] < y[3];
+      if (!best || less(k, best.k)) best = { k, l, me };
     }
     if (best) rootLink[d.name] = best;
   }
@@ -225,6 +227,7 @@ function l2path(net, l2, fromKey, toKey) {
     const [k, path] = queue.shift(); if (seen.has(k)) continue; seen.add(k);
     const [dn, pn] = k.split(':'); const dev = net.devices[dn];
     if (!isBridge(dev)) { if (dn === toKey.split(':')[0] && toKey.split(':')[1] && toKey.split(':')[1].split('.')[0] === pn) return path; continue; }
+    if (l2.blocked.has(k)) continue; // 入る側のポートが止まっている(代替)なら、その線は通らない(walkFromPort と同じ)
     if (toKey === `${dn}#vlan${toKey.split('#vlan')[1]}` && toKey.startsWith(`${dn}#`)) return path.concat(dn);
     const myVlans = [...dev.vlans].filter((v) => l2.domainOf[vkey(dn, v)] === did);
     if (!myVlans.length) continue;

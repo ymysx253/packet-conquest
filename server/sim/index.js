@@ -19,7 +19,11 @@ function deepClone(x) {
   return x;
 }
 const build = (spec) => M.build(spec);
-const clone = (net) => { const c = deepClone(net); c._state = null; return c; };
+const clone = (net) => {
+  const c = deepClone(net); c._state = null;
+  for (const d of Object.values(c.devices)) d.ifByName = Object.fromEntries(d.ifaces.map((i) => [i.name, i])); // 写しの ifaces と ifByName が別の物にならないように張り直す
+  return c;
+};
 
 // 状態の計算(キャッシュ。設定を当てると消える)
 function state(net) {

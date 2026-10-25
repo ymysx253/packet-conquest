@@ -20,7 +20,8 @@ const { distanceKm, tilesAround, tileOf, tileFields, parseTile, tileSize, addrOf
 const { routeOpen, openAt, isAlwaysOpen } = require('./map/routes');
 const { hitsFromLinks } = require('./map/hits'); // 突破に要る正解の回数(2026-10-22) // 季節航路と拠点の開いている時間(2026-10-19。サーバーの時計の UTC)
 const { getQuestion, hasGenerator, QUESTION_RANGES } = require('./questions');
-const { judge } = require('./questions/normalize');
+const { judgeDetail, TAP_MAX, TAP_ID_MAX, CFG_DEVICES_MAX } = require('./questions/normalize');
+const sim = require('./sim'); // 構成図・設定・模擬ターミナルの問題(docs/questions/SIM-API.md)。ターミナルの 1 行と Tab 補完の語に使う
 const { dayOf, noopEvents } = require('./events');
 
 const COOLDOWN_MS = 5000;               // 不正解のあと操作できない時間。いつも 5 秒(2026-10-20 ユーザー決定: 長すぎる。以前は連続不正解で倍増。SECURITY.md F4)
@@ -77,6 +78,8 @@ const newId = () => crypto.randomBytes(6).toString('hex');
 // 入力式(COMMON.md 第 1 章): fields は name / label / format / hint(入力の例示)/ digits / vocab だけ配信し、accept は送らない。
 // card(入門の説明カード)はいつも送る。hint(初級のヒント)・firstStep(中級の最初の 1 手)は hints が真のときだけ送る(docs/questions/CL.md 第 3 章)。
 // hints が偽で問題にヒントがあるときは hintLocked を付ける(画面が「ここではヒントを使えません」と出すため。ヒントの中身は送らない)
+// 構成図・設定・模擬ターミナルの問題(SIM-API.md 第 5 章)は diagram・tap・editable・configView・requirementsText・terminal も送る。
+// 答えを含むもの(accept・sim・solution・meta)は送らない
 function questionPayload(q, { hints = true } = {}) {
   const fields = Array.isArray(q.fields) ? q.fields.map((f) => ({ name: f.name, label: f.label, format: f.format, hint: f.hint || null, digits: f.digits || null, vocab: f.vocab || null })) : null;
   return {
@@ -84,8 +87,17 @@ function questionPayload(q, { hints = true } = {}) {
     options: q.options || null, table: q.table || null, tables: q.tables || null, fields, compare: q.compare || null,
     card: q.card || null,
     hint: hints && q.hint ? q.hint : null, firstStep: hints && q.firstStep ? q.firstStep : null, hintLocked: !hints && !!(q.hint || q.firstStep),
+    diagram: q.diagram || null, tap: q.tap ? { mode: q.tap.mode || 'one' } : null,
+    editable: Array.isArray(q.editable) ? q.editable.slice() : null, configView: q.configView || null, requirementsText: q.requirementsText || null,
+    terminal: q.terminal ? { devices: q.terminal.devices || [], start: q.terminal.start || null, completions: q.terminal.completions || terminalWords(q) } : null,
   };
 }
+// Tab 補完の語(コマンドの語・IF 名・機器名だけ。アドレスは入れない)。問題が持っていなければ模擬から作る
+function terminalWords(q) {
+  try { if (q.sim && q.sim.spec && q.terminal) return sim.completions(sim.session(q.sim.spec, q.terminal.start), ''); } catch { /* 無ければ空 */ }
+  return [];
+}
+const TERM_MAX = 60, TERM_MIN_MS = 300; // 1 問のコマンドは 60 回まで、0.3 秒に 1 回まで(DIAGRAM-CONFIG.md 4.4)
 // ヒントを使えるか(CURRICULUM.md 第 7.5 節。2026-10-22 ユーザー決定): 中立の拠点を攻めるときと、自分の拠点を強化するときだけ。
 // ほかの人の拠点(チームの持ち物・同じチームの仲間の拠点を含む。持ち主がいて自分でない拠点すべて)を攻めるときは使えない(取り合いは実力勝負)。
 // ヒントを使った正解も 1 回に数える(判定と回数は変えない)
@@ -1057,8 +1069,29 @@ class World {
       qid, nodeId, mode, level, hints, askedAt: now(), payload, regionId: n.region, qkind: q.kind, // regionId / qkind は出来事の記録(answer)用
       answerKind: q.answerKind || 'choice', answerIndex: q.answerIndex, fields: q.fields || null, compare: q.compare || null, verifier: q.verifier || null,
       explanation: q.explanation, defenseNote: q.defenseNote || null,
+      // 構成図・設定・模擬ターミナル(SIM-API.md)。accept と sim は答えなので pending にだけ持つ。term は最初の 1 行のときに作る
+      accept: q.accept || null, sim: q.sim || null, tap: q.tap || null, editable: q.editable || null, terminal: q.terminal || null, term: null, termCount: 0, termLast: 0,
     };
     return payload;
+  }
+
+  // 模擬ターミナルの 1 行(SIM-API.md 第 7 章)。打った字は模擬に渡して読むだけで、何も実行しない。
+  // 回数(60 回)と間隔(0.3 秒)を超えたときや、問題が終わっているときは、出力の欄に出す文として返す(通信の失敗にしない)
+  async term(p, qid, line) {
+    if (typeof line !== 'string' || line.length > 120) throw new Error('コマンドは 1 行 120 字までです');
+    const pend = p.pending;
+    const reply = (out, device = null) => ({ t: 'termOut', qid, line, out, device });
+    if (!pend || pend.qid !== qid) return reply('この問題はもう終わっています');
+    if (!pend.terminal || !pend.sim || !pend.sim.spec) return reply('この問題にはターミナルがありません');
+    if (!line.trim()) return reply('', pend.term ? pend.term.device : (pend.terminal.start || null));
+    if (pend.termCount >= TERM_MAX) return reply(`この問題で打てるコマンドは ${TERM_MAX} 回までです`, pend.term ? pend.term.device : null);
+    if (now() - pend.termLast < TERM_MIN_MS) return reply('速すぎます。少し待ってからもう一度打ってください', pend.term ? pend.term.device : null);
+    if (!pend.term) pend.term = sim.session(pend.sim.spec, pend.terminal.start);
+    pend.termCount += 1; pend.termLast = now();
+    if (pend.termCount === 1) this.events.add('term', { playerId: p.id, teamId: p.team || undefined, nodeId: pend.nodeId, regionId: pend.regionId, level: pend.level, ip: p.ws && p.ws.ip, detail: { mode: pend.mode } });
+    let out;
+    try { out = sim.exec(pend.term, line); } catch (e) { out = `コマンドを処理できませんでした(${(e && e.message) || 'エラー'})`; }
+    return reply(String(out == null ? '' : out), pend.term.device);
   }
 
   // 解答。4 択は choice(0〜3)、入力式は inputs(文字列の配列。欄の数だけ)。判定は questions/normalize.js の judge
@@ -1075,10 +1108,17 @@ class World {
         const max = pend.fields[i].format === 'prefixplan' ? 1000 : 200;
         if (typeof answer[i] !== 'string' || answer[i].length > max) throw new Error('入力が長すぎます');
       }
+    } else if (pend.answerKind === 'tap') { // 構成図のタップ: { ids }(SIM-API.md 第 5 章)
+      const ids = answer && typeof answer === 'object' && !Array.isArray(answer) ? answer.ids : null;
+      if (!Array.isArray(ids) || !ids.length || ids.length > TAP_MAX || ids.some((x) => typeof x !== 'string' || !x || x.length > TAP_ID_MAX)) throw new Error('答えの形が違います(図で選んでから答えてください)');
+    } else if (pend.answerKind === 'config') { // 設定を書く: { configs: [{ device, text }] }。1 台 40 行・1 行 120 字の上限は judgeDetail が見る
+      const cfgs = answer && typeof answer === 'object' && !Array.isArray(answer) ? answer.configs : null;
+      if (!Array.isArray(cfgs) || !cfgs.length || cfgs.length > CFG_DEVICES_MAX || cfgs.some((c) => !c || typeof c.device !== 'string' || c.device.length > 16 || typeof c.text !== 'string' || c.text.length > 4800)) throw new Error('答えの形が違います(設定を書いてから答えてください)');
     } else if (!Number.isInteger(answer)) throw new Error('選択肢を選んでください');
     else { const nOpt = ((pend.payload && pend.payload.options) || []).length; if (nOpt && (answer < 0 || answer >= nOpt)) throw new Error('選択肢を選んでください'); } // 選択肢の数を超える番号は受けない(○× で 3 など。2026-10-22)
     p.pending = null; this.touch(p);
-    const correct = judge({ answerKind: pend.answerKind, answerIndex: pend.answerIndex, fields: pend.fields, compare: pend.compare, verifier: pend.verifier }, answer);
+    const det = judgeDetail({ answerKind: pend.answerKind, answerIndex: pend.answerIndex, fields: pend.fields, compare: pend.compare, verifier: pend.verifier, accept: pend.accept, tap: pend.tap, editable: pend.editable, sim: pend.sim }, answer);
+    const correct = det.correct;
     const answeredAt = now(), sec = Math.round((answeredAt - (pend.askedAt || answeredAt)) / 100) / 10; // 出題から解答までの秒(小数 1 桁)
     this.bumpStats(p, pend.level, correct, sec); // 学習記録の集計値。保存は下の persistPlayer(不正解)か apply の中の保存に乗せる
     let outcome, cooldownMs = 0;
@@ -1097,7 +1137,12 @@ class World {
       detail: { mode: pend.mode, qkind: pend.qkind, answerKind: pend.answerKind, wrongStreak: p.wrongStreak, cooldownMs, provisional: !!(pend.payload && pend.payload.provisional) },
     });
     const answers = pend.answerKind === 'text' ? (pend.fields || []).map((f) => (f.accept && f.accept[0]) || '') : null;
-    return { t: 'result', qid, correct, answerIndex: pend.answerKind === 'text' ? null : pend.answerIndex, answers, explanation: pend.explanation, defenseNote: pend.defenseNote, outcome, cooldownUntil: p.cooldownUntil, cooldownMs };
+    // 満たさなかった要件の番号・文法の誤り・タップの正解の id は、ヒントと同じ扱い(中立の拠点と強化のときだけ。ほかの人の拠点を攻めるときは正否だけ。DIAGRAM-CONFIG.md 第 8 章 3)
+    const showWhy = !!pend.hints && !correct;
+    const failed = showWhy && pend.answerKind === 'config' ? det.failed : null;
+    const errors = showWhy && pend.answerKind === 'config' && det.errors.length ? det.errors : null;
+    const correctIds = showWhy && pend.answerKind === 'tap' && pend.accept && Array.isArray(pend.accept.ids) ? pend.accept.ids.slice() : null;
+    return { t: 'result', qid, correct, answerIndex: ['text', 'tap', 'config'].includes(pend.answerKind) ? null : pend.answerIndex, answers, failed, errors, correctIds, explanation: pend.explanation, defenseNote: pend.defenseNote, outcome, cooldownUntil: p.cooldownUntil, cooldownMs };
   }
 
   // 学習記録の集計値(players.stats。LOGS.md 3.2、2026-10-18 決定): 出題レベルごと(byLevel)と 100 ごとの領域(byBand。鍵は 100 の位、0 = Lv1〜99)。

@@ -192,9 +192,55 @@ function judgeText(q, inputs) {
   }
   return fields.every((f, i) => (f.accept || []).includes(norm[i]));
 }
+// ---------- 構成図のタップと設定の判定(docs/questions/SIM-API.md 第 5 章。2026-10-25) ----------
+const TAP_ONE = new Set(['one', 'port', 'link']); // 1 つだけ選ぶ形
+const TAP_MAX = 12, TAP_ID_MAX = 64;
+const CFG_DEVICES_MAX = 8, CFG_LINES_MAX = 40, CFG_LINE_CHARS_MAX = 120;
+// タップ: answer は { ids }。one/port/link は 1 つが同じ、many は集合が同じ(重複なし)、order は列が同じ
+function judgeTap(q, answer) {
+  const ids = answer && Array.isArray(answer.ids) ? answer.ids : null;
+  const want = q.accept && Array.isArray(q.accept.ids) ? q.accept.ids : null;
+  if (!ids || !want || !ids.length || !want.length || ids.length > TAP_MAX || ids.some((x) => typeof x !== 'string' || !x || x.length > TAP_ID_MAX)) return false;
+  const mode = (q.tap && q.tap.mode) || 'one';
+  if (TAP_ONE.has(mode)) return ids.length === 1 && want.length === 1 && ids[0] === want[0];
+  if (mode === 'order') return ids.length === want.length && ids.every((x, i) => x === want[i]);
+  const a = [...new Set(ids)].sort(), b = [...new Set(want)].sort();
+  return a.length === ids.length && a.length === b.length && a.every((x, i) => x === b[i]);
+}
+// 設定: answer は { configs: [{ device, text }] }。形と上限(1 台 40 行・1 行 120 字・editable の機器だけ)を見てから、模擬(server/sim)で要件を判定する。
+// 返すのは { correct, failed(満たさなかった要件 id), errors([{ device, line, message }]) }
+function judgeConfigDetail(q, answer) {
+  const bad = (message) => ({ correct: false, failed: [], errors: [{ device: null, line: 0, message }] });
+  const configs = answer && Array.isArray(answer.configs) ? answer.configs : null;
+  if (!configs || !configs.length || configs.length > CFG_DEVICES_MAX) return bad('答えの形が違います');
+  const spec = q.sim && q.sim.spec;
+  if (!spec) return bad('この問題には構成がありません');
+  const editable = Array.isArray(q.editable) ? q.editable : (spec.editable || []);
+  const errors = [];
+  for (const c of configs) {
+    if (!c || typeof c.device !== 'string' || typeof c.text !== 'string') return bad('答えの形が違います');
+    if (!editable.includes(c.device)) { errors.push({ device: c.device, line: 0, message: `${c.device} は設定できません(設定できるのは ${editable.join('・') || 'なし'})` }); continue; }
+    const lines = c.text.replace(/\r/g, '').split('\n');
+    if (lines.length > CFG_LINES_MAX) errors.push({ device: c.device, line: 0, message: `1 台 ${CFG_LINES_MAX} 行まで` });
+    const long = lines.findIndex((l) => l.length > CFG_LINE_CHARS_MAX);
+    if (long >= 0) errors.push({ device: c.device, line: long + 1, message: `1 行 ${CFG_LINE_CHARS_MAX} 字まで` });
+  }
+  if (errors.length) return { correct: false, failed: [], errors };
+  const sim = require('../sim'); // util.js がこのファイルを読むので、ここで遅く読む(循環を避ける)
+  const withReqs = Array.isArray(spec.requirements) && spec.requirements.length ? spec : { ...spec, requirements: (q.sim.requirements || []) };
+  const r = sim.judgeConfig(withReqs, configs);
+  return { correct: !!r.ok, failed: r.failed || [], errors: (r.errors || []).map((e) => ({ device: e.device || null, line: e.line || 0, message: e.message })) };
+}
 function judge(q, answer) {
   if (q.answerKind === 'text') return judgeText(q, answer);
+  if (q.answerKind === 'tap') return judgeTap(q, answer);
+  if (q.answerKind === 'config') return judgeConfigDetail(q, answer).correct;
   return judgeChoice(q, answer);
 }
+// 判定と、その理由(設定の問題だけ failed・errors が入る。ほかは空)。world.js と cl-preview.js はこちらを使う
+function judgeDetail(q, answer) {
+  if (q.answerKind === 'config') return judgeConfigDetail(q, answer);
+  return { correct: judge(q, answer), failed: [], errors: [] };
+}
 
-module.exports = { normalize, judge, judgeChoice, judgeText, registerVerifier, FORMATS, VOCAB };
+module.exports = { normalize, judge, judgeDetail, judgeTap, judgeChoice, judgeText, registerVerifier, FORMATS, VOCAB, TAP_MAX, TAP_ID_MAX, CFG_DEVICES_MAX, CFG_LINES_MAX, CFG_LINE_CHARS_MAX };

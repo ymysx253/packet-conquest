@@ -120,7 +120,7 @@ const server = http.createServer((req, res) => {
 
 // ---------- WebSocket ----------
 const wss = new WebSocketServer({
-  server, path: '/ws', maxPayload: 16384,
+  server, path: '/ws', maxPayload: 49152, // 設定を書く答え(8 台 × 4,800 字)が入る大きさ(SIM-API.md 第 5 章。2026-10-25 に 16384 から広げた)
   verifyClient: ({ req }, done) => {
     if (originAllowed(req)) return done(true);
     events.add('limit', { ip: clientIp(req), detail: { rule: 'origin', origin: String(req.headers.origin || '').slice(0, 100) } });
@@ -237,8 +237,22 @@ async function handle(ws, msg) {
         if (msg.inputs.length > 12 || msg.inputs.some((x) => typeof x !== 'string' || x.length > 1000)) return;
         send(ws, await world.answer(player, msg.qid, msg.inputs)); break;
       }
+      // 構成図のタップは ids(文字列 12 個まで)、設定は configs(8 台まで、1 台の文字 4,800 まで。SIM-API.md 第 5 章)。形が違えば黙って捨てる
+      if (Array.isArray(msg.ids)) {
+        if (msg.ids.length > 12 || msg.ids.some((x) => typeof x !== 'string' || x.length > 64)) return;
+        send(ws, await world.answer(player, msg.qid, { ids: msg.ids })); break;
+      }
+      if (Array.isArray(msg.configs)) {
+        if (msg.configs.length > 8 || msg.configs.some((c) => !c || typeof c !== 'object' || typeof c.device !== 'string' || c.device.length > 16 || typeof c.text !== 'string' || c.text.length > 4800)) return;
+        send(ws, await world.answer(player, msg.qid, { configs: msg.configs.map((c) => ({ device: c.device, text: c.text })) })); break;
+      }
       if (!Number.isInteger(msg.choice) || msg.choice < 0 || msg.choice > 3) return;
       send(ws, await world.answer(player, msg.qid, msg.choice)); break;
+    }
+    // 模擬ターミナルの 1 行(SIM-API.md 第 7 章)。打った字は模擬に渡して読むだけ。回数と間隔の上限は world.term
+    case 'term': {
+      if (typeof msg.qid !== 'string' || msg.qid.length > 40 || typeof msg.line !== 'string' || msg.line.length > 120) return;
+      send(ws, await world.term(player, msg.qid, msg.line)); break;
     }
     default: break;
   }

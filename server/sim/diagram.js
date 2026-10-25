@@ -47,14 +47,17 @@ function diagram(net, { nodeIds = {}, showIps = true, showPorts = true, hidePort
       const hide = d.hidden || [];
       if (d.kind === 'host' || d.kind === 'server' || d.kind === 'internet') { const f = d.ifaces[0]; note = [f && f.ip ? `${f.ip}/${f.len}` : (d.dhcpClient ? 'DHCP' : ''), d.gateway && !hide.includes('gateway') ? `GW ${d.gateway}` : ''].filter(Boolean).join('\n') || null; }
       else if (d.kind === 'cloud-subnet') note = d.cidr;
-      else if (!hide.includes('ip')) note = d.ifaces.filter((f) => f.ip).map((f) => `${f.name} ${f.ip}/${f.len}`).join('\n') || null;
+      // ルーターなどの IF のアドレスは各ポートの note に置く(SIM-API.md 第 9 章。機器の下にまとめると文字が重なる)。副 IF と SVI は機器の note に残す
+      else if (!hide.includes('ip')) note = d.ifaces.filter((f) => f.ip && (f.parent || f.vlanId)).map((f) => `${f.name} ${f.ip}/${f.len}`).join('\n') || null;
     }
     const ports = [];
     if (showPorts && !(d.kind === 'host' || d.kind === 'server' || d.kind === 'internet' || d.kind === 'cloud-gw')) {
+      const hideIp = !showIps || (d.hidden || []).includes('ip');
       for (const l of net.links) for (const [me, other] of [[l.a, l.b], [l.b, l.a]]) {
         if (me.dev !== d.name || hidePorts.includes(`${d.name}:${me.iface}`)) continue;
         const [ox, oy] = pos[other.dev]; const dx = ox - x, dy = oy - y; const len = Math.hypot(dx, dy) || 1;
-        ports.push({ id: `${idOf(d.name)}:${me.iface}`, name: me.iface, x: Math.round(x + (dx / len) * 34), y: Math.round(y + (dy / len) * 34) });
+        const f = d.ifByName[me.iface];
+        ports.push({ id: `${idOf(d.name)}:${me.iface}`, name: me.iface, x: Math.round(x + (dx / len) * 34), y: Math.round(y + (dy / len) * 34), note: !hideIp && f && f.ip ? `${f.ip}/${f.len}` : null });
       }
     }
     return { id: idOf(d.name), name: d.name, kind: KIND_OF[d.kind] || d.kind, x, y, note, ports };

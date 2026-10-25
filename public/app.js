@@ -167,6 +167,8 @@
       }
       case 'question': S.question = m; S.result = null; S.chosen = null; renderQuestion(); break;
       case 'result': S.result = m; S.cooldownUntil = m.cooldownUntil; if (m.cooldownMs) S.cooldownMs = m.cooldownMs; renderQuestion(); renderSelected(); break;
+      case 'termOut': onTermOut(m); break; // 模擬ターミナルの 1 行の出力
+
       case 'chat': onChat(m.msg); break;
       case 'chatHistory': { const key = chatKey(m.kind, m.to); S.chat.rooms.set(key, m.list || []); S.chat.loaded.add(key); S.chat.notes[key] = m.note || null; S.chat.canWrite[key] = !!m.canWrite; renderChat(true); break; }
       case 'teamMembers': S.chat.members = m.list || []; S.chat.membersAt = Date.now(); renderChat(); break;
@@ -988,16 +990,38 @@
     $('qMode').replaceChildren(tag, document.createTextNode(node ? node.name : ''));
     $('qDiff').textContent = `難易度 Lv${q.level}` + (q.provisional ? '(暫定: この難易度の問題は準備中。いまは Lv10 相当)' : '');
     const r = S.result && S.result.qid === q.qid ? S.result : null;
-    PCQ.render(q, r, { chosen: S.chosen, onChoose: choose, onSubmit: submitInputs, onIncomplete: () => toast('すべての欄を入れてください') });
+    PCQ.render(q, r, { chosen: S.chosen, onChoose: choose, onSubmit: submitInputs, onTerm: termLine, onIncomplete: () => toast('すべての欄を入れてください') });
     $('qNext').hidden = !r; // 答えたあと、同じ拠点の次の問題へ
   }
-  // 入力式: 欄の部品(4 つに分けたアドレス、0/1 のボタンなど)が今までと同じ文字列にしたものを送る。判定はサーバー
+  // 入力式: 欄の部品(4 つに分けたアドレス、0/1 のボタンなど)が今までと同じ文字列にしたものを送る。判定はサーバー。
+  // 構成図のタップは { ids }、設定を書く問題は { configs: [{ device, text }] } が来る(qdialog.js。SIM-API.md 第 5 章)
   function submitInputs(inputs) {
     const q = S.question;
-    if (!q || q.answerKind !== 'text' || (S.result && S.result.qid === q.qid) || (S.chosen && S.chosen.qid === q.qid)) return;
-    S.chosen = { qid: q.qid, inputs };
-    send({ t: 'answer', qid: q.qid, inputs });
+    if (!q || (S.result && S.result.qid === q.qid) || (S.chosen && S.chosen.qid === q.qid)) return;
+    if (q.answerKind === 'tap' && inputs && Array.isArray(inputs.ids)) { S.chosen = { qid: q.qid, ids: inputs.ids }; send({ t: 'answer', qid: q.qid, ids: inputs.ids }); }
+    else if (q.answerKind === 'config' && inputs && Array.isArray(inputs.configs)) { S.chosen = { qid: q.qid, configs: inputs.configs }; send({ t: 'answer', qid: q.qid, configs: inputs.configs }); }
+    else if (q.answerKind === 'text' && Array.isArray(inputs)) { S.chosen = { qid: q.qid, inputs }; send({ t: 'answer', qid: q.qid, inputs }); }
+    else return;
     renderQuestion();
+  }
+  // 模擬ターミナルの 1 行: サーバーへ送り、同じ qid・同じ行の termOut を待つ(10 秒で諦める)。打った字はサーバーの模擬が読むだけ
+  const termWaiters = new Map(); // qid → [{ line, resolve, timer }]
+  function termLine(line) {
+    const q = S.question;
+    if (!q || !q.terminal || (S.result && S.result.qid === q.qid)) return Promise.resolve('この問題のターミナルは終わっています');
+    return new Promise((resolve) => {
+      const list = termWaiters.get(q.qid) || [];
+      const w = { line, resolve, timer: setTimeout(() => { const i = list.indexOf(w); if (i >= 0) list.splice(i, 1); resolve('(サーバーから返事がありません)'); }, 10000) };
+      list.push(w); termWaiters.set(q.qid, list);
+      send({ t: 'term', qid: q.qid, line });
+    });
+  }
+  function onTermOut(m) {
+    const list = termWaiters.get(m.qid) || [];
+    const i = list.findIndex((w) => w.line === m.line);
+    if (i < 0) return;
+    const [w] = list.splice(i, 1); clearTimeout(w.timer);
+    w.resolve({ out: m.out || '', device: m.device || null });
   }
   function choose(i) {
     const q = S.question;

@@ -128,6 +128,8 @@ function build(spec) {
     net.peer[ka] = kb; net.peer[kb] = ka;
     net.links.push({ id: `L${i + 1}`, a, b, up: true });
   });
+  // リンクの端で初めて作られたポートにも MAC を付ける(spec に書いていないポート。STP のブリッジ ID が全部同じにならないように)
+  for (const dev of Object.values(net.devices)) for (const ifc of dev.ifaces) if (!ifc.mac && !ifc.parent && !ifc.vlanId) ifc.mac = U.macFrom(`${seed}|${dev.name}|${ifc.name}`);
   for (const dev of Object.values(net.devices)) for (const ifc of dev.ifaces) if (ifc.parent) { const p = dev.ifByName[ifc.parent]; if (p && p.mac && !ifc.mac) ifc.mac = p.mac; }
   return net;
 }

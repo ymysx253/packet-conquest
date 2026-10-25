@@ -33,9 +33,21 @@ function buildEndpoints(net, l2, leases) {
 const effIp = (st, dev, ifc) => { const e = st.endpoints.find((x) => x.dev === dev.name && x.iface === ifc.name && !x.virtual); return e ? { ip: e.ip, len: e.len } : { ip: ifc.ip, len: ifc.len }; };
 
 // ---------- 経路表 ----------
+// IF の線が生きているか: 線が切れている(cut)・相手の IF が止まっている(down)なら、その IF の直結の経路は消える(現実のリンクダウンと同じ。予備の経路 failover の判定に要る)。
+// 線をつないでいない IF(spec に link が無い)は、その先に小さな網があるとみなして生きている扱い
+function linkOk(net, dev, ifc) {
+  if (!ifc || ifc.vlanId) return true;
+  const phys = ifc.parent ? dev.ifByName[ifc.parent] : ifc;
+  if (!phys || phys.shutdown) return false;
+  const key = U.ifKey(dev.name, phys.name);
+  const peerKey = net.peer[key]; if (!peerKey) return true;
+  if (!M.linkUp(net, dev.name, phys.name)) return false;
+  const [pd, pi] = peerKey.split(':'); const peer = net.devices[pd] && net.devices[pd].ifByName[pi];
+  return !!peer && !peer.shutdown;
+}
 function connectedRoutes(net, st, dev) {
   const out = [];
-  for (const e of st.endpoints) if (e.dev === dev.name && !e.virtual && e.domain) out.push({ prefix: U.cidrOf(e.ip, e.len), via: null, iface: e.iface, proto: 'C', ad: 0, metric: 0 });
+  for (const e of st.endpoints) if (e.dev === dev.name && !e.virtual && e.domain && linkOk(net, dev, dev.ifByName[e.iface])) out.push({ prefix: U.cidrOf(e.ip, e.len), via: null, iface: e.iface, proto: 'C', ad: 0, metric: 0 });
   return out;
 }
 function staticRoutes(net, st, dev, conn) {
@@ -133,7 +145,9 @@ function computeRoutes(net, st) {
       routes[dev.name] = mergeRoutes(conn.concat(staticRoutes(net, st, dev, conn), ospf[dev.name] || []));
     } else {
       const list = conn.slice();
-      if (dev.gateway && conn.length) { const c = bestMatch(conn, dev.gateway); if (c) list.push({ prefix: '0.0.0.0/0', via: dev.gateway, iface: c.iface, proto: 'S', ad: 1, metric: 0 }); }
+      const lease = st.dhcp && st.dhcp.leases ? st.dhcp.leases[dev.name] : null;
+      const gw = (lease && lease.gateway) || dev.gateway; // DHCP でもらったゲートウェイを使う(無ければ手で付けたもの)
+      if (gw && conn.length) { const c = bestMatch(conn, gw); if (c) list.push({ prefix: '0.0.0.0/0', via: gw, iface: c.iface, proto: 'S', ad: 1, metric: 0 }); }
       routes[dev.name] = mergeRoutes(list);
     }
   }

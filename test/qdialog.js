@@ -127,11 +127,11 @@ const noHint = (q) => q.hint === null && q.firstStep === null && q.hintLocked ==
         const off = pv.ask({ level: lv, seed, hints: false });
         assert.ok(off.hint === null && off.firstStep === null, `Lv${lv}: hints: false ならヒントを送らない`);
         assert.strictEqual(off.hintLocked, !!(full.hint || full.firstStep));
-        const right = full.answerKind === 'text' ? { inputs: full.fields.map((f) => f.accept[0]) } : { choice: full.answerIndex };
+        const right = full.answerKind === 'text' ? { inputs: full.fields.map((f) => f.accept[0]) } : full.answerKind === 'tap' ? { ids: full.accept.ids } : full.answerKind === 'config' ? { configs: full.solution } : { choice: full.answerIndex }; // 構成図のタップは accept.ids、設定は正解の例(solution)で答える(2026-10-25)
         const r = pv.answer({ qid: q.qid, ...right });
         assert.ok(r.correct && r.explanation, `Lv${lv}: 正しい答えは正解`);
         assert.throws(() => pv.answer({ qid: q.qid, ...right }), /終わっています/, '同じ問題には 2 回答えられない');
-        if (full.answerKind !== 'text') {
+        if (!['text', 'tap', 'config'].includes(full.answerKind)) {
           assert.throws(() => pv.answer({ qid: off.qid, choice: full.options.length }), /選択肢/, '選択肢の数を超える番号は断る');
           const wrong = (full.answerIndex + 1) % full.options.length;
           assert.ok(!pv.answer({ qid: off.qid, choice: wrong }).correct, '違う選択肢は不正解');
@@ -145,9 +145,9 @@ const noHint = (q) => q.hint === null && q.firstStep === null && q.hintLocked ==
     for (const s of pv.levels().samples) {
       const q = pv.ask({ level: s.level });
       const full = pv.pending.get(q.qid);
-      const right = full.answerKind === 'text' ? { inputs: ui[s.level] } : { choice: full.answerIndex };
+      const right = full.answerKind === 'text' ? { inputs: ui[s.level] || full.fields.map((f) => f.accept[0]) } : full.answerKind === 'tap' ? { ids: full.accept.ids } : full.answerKind === 'config' ? { configs: full.solution } : { choice: full.answerIndex };
       assert.ok(pv.answer({ qid: q.qid, ...right }).correct, `${s.level}: 部品が作る文字列で正解になる`);
-      assert.ok(q.hint || q.firstStep || full.answerKind === 'text', `${s.level}: 形が出る`);
+      assert.ok(q.hint || q.firstStep || full.answerKind === 'text' || q.diagram || q.terminal, `${s.level}: 形が出る`);
     }
     { const q = pv.ask({ level: 'demo-bin8' }); assert.ok(!pv.answer({ qid: q.qid, inputs: ['00000000'] }).correct, '0 のままのボタンは不正解'); }
     { const q = pv.ask({ level: 'demo-ipv4' }); assert.ok(!pv.answer({ qid: q.qid, inputs: ['192.168.10.'] }).correct, '欠けたアドレスは不正解'); }

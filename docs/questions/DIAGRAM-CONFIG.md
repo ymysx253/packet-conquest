@@ -264,7 +264,7 @@ traceroute 10.3.3.20(最大 30 ホップ)
 
 ---
 
-## 7. 作る順番
+## 7. 作る順番(2026-10-25: 1〜9 の全部を作った。部品は `server/sim/`・`public/diagram.js`・`public/terminal.js`、問題は `levels-sim-*.js`。無いものは `SIM-API.md` 第 10 章)
 
 担当の略号は `LEVEL-LIST.md` 第 1 章「表の見方」と第 10 章: **O** = Claude Opus 5.5 が作る、**O→F** = Opus が作り Claude Fable 5.1 が答えと模擬の規則を確かめる、**F** = Fable に頼む。部品(第 6 章の 1〜11)は全部 Opus が作る。Fable が見るのは問題の答えと、模擬の規則が本物の仕組みと合っているか。
 
