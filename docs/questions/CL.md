@@ -14,6 +14,8 @@
 | Fable: 冗長と経路(束 A・B) | 255・256・259・260・262・263・266・268・269・327 | `server/questions/cl/levels-fable-route.js` | `server/questions/data/cl/fable-route/` | `test/cl-fable-route.js` |
 | Fable: 診断と記録(束 C・D・F3 の一部) | 230・285・296・323・342・343・349 | `server/questions/cl/levels-fable-diag.js` | `server/questions/data/cl/fable-diag/` | `test/cl-fable-diag.js` |
 | Fable: 設計の固定問題(束 E・F1・F2・F3 の一部) | 328・329・351・352・353・361 | `server/questions/cl/levels-fable-design.js` | `server/questions/data/cl/fable-design/` | `test/cl-fable-design.js` |
+| 専門の O の行(生成・入力) | 320・321・334・335・337・338・340・348 | `server/questions/cl/levels-expert.js` | `server/questions/data/cl/expert/` | `test/cl-expert.js` |
+| 専門の O の行(表) | 332・333・336・339・341・346・347・350 | `server/questions/cl/levels-expert-facts.js` | `server/questions/data/cl/expert/` | `test/cl-expert-facts.js` |
 
 - 段の担当は、自分の段のうち一覧の「担当」が O(Opus)の行だけを作る。O→F(Fable が確かめる)と F(Fable)の行、構成図・設定・模擬ターミナルの行(仕組みがまだ無い)は作らない
 - F・O→F の行は Fable 5.1 が作る(2026-10-25。上の 3 つのファイル。LEVEL-LIST 第 10 章 (b) の束で分けた)。構成図・設定・模擬ターミナルの行は仕組みができてから。固定(作り方「固」)は `kind: '固'`、1 レベル 15 問(第 11 章の指標)を表(1 行 = 1 問。根拠・正解が 1 つに決まる理由・checkedBy つき)に置き、seed で 1 問を選んで選択肢の順を混ぜる。「生+固」は数値・構成を生成し、状況の文と判断は固定(verify を必ず書く)。表・固定の行の checkedBy は「Claude Fable 5.1 2026-10-25」
