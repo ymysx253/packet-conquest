@@ -120,7 +120,7 @@ const tfWord = (t) => (t ? '正しい' : '誤り');
 function input(name, label, format, accept, fhint, extra = {}) {
   return { answerKind: 'text', fields: [{ name, label, format, hint: fhint, ...extra, accept: accept.map((a) => normalize(format, a, extra)) }], compare: 'ordered' };
 }
-// 並べ替え: 項目に 1 から番号を振って見せ、正しい順の番号を - でつないで入力する(devname の正規化で - と空白を除いて比べる)
+// 並べ替え: 項目に 1 から番号を振って見せ、正しい順の番号を - でつないで入力する(order の正規化。区切りは - ・空白・, ・→ のどれでもよい。2026-10-26)
 const RANK = {}; // 並べ替えの種類 → (項目) → 順位
 function orderQ(rng, rankKey, items, desc) {
   const rankOf = RANK[rankKey];
@@ -132,7 +132,7 @@ function orderQ(rng, rankKey, items, desc) {
   } while (ans === shown.map((_, i) => i + 1).join('-') && guard++ < 20); // 見せた順がそのまま答えになる並びは避ける
   return {
     list: shown.map((x, i) => `${i + 1} ${x}`).join('\n'), answer: ans,
-    ...input('order', '順番', 'devname', [ans], '番号を - でつなぐ'),
+    ...input('order', '順番', 'order', [ans], '番号を - でつなぐ'),
     meta: { type: 'order', rank: rankKey, labels: shown, desc },
   };
 }
@@ -1731,7 +1731,7 @@ function checkMeta(q) {
     const ranks = m.labels.map(RANK[m.rank]);
     must(new Set(ranks).size === ranks.length, `並べ替え ${m.rank}: 同じ順位がある`);
     const idx = m.labels.map((_, i) => i + 1).sort((a, b) => (ranks[a - 1] - ranks[b - 1]) * (m.desc ? -1 : 1));
-    must(q.fields[0].accept[0] === normalize('devname', idx.join(' ')), `並べ替え ${m.rank}: 答えが違う`);
+    must(q.fields[0].accept[0] === normalize('order', idx.join(' ')), `並べ替え ${m.rank}: 答えが違う`);
     must(q.fields[0].accept[0] !== m.labels.map((_, i) => i + 1).join(''), `並べ替え ${m.rank}: 見せた順がそのまま答え`);
   } else throw new Error(`知らない meta: ${m.type}`);
 }

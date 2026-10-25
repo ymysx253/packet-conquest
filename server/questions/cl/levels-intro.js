@@ -42,7 +42,7 @@ function mcLevel(file, { title, n, card, kind }) {
 }
 
 // 入力欄(docs/questions/COMMON.md 第 1 章)。accept は正規形にしておく
-const FIELD_HINT = { number: '半角の数字', hex: '16 進 1 けた(0〜9、a〜f)', devname: '番号を 3 つ、- で区切って' };
+const FIELD_HINT = { number: '半角の数字', hex: '16 進 1 けた(0〜9、a〜f)', devname: '番号を 3 つ、- で区切って', order: '番号を 3 つ、- で区切って' };
 function field(name, label, format, raw, extra = {}) {
   const f = { name, label, format, hint: format === 'bin' ? `0 と 1 を ${extra.digits} けた` : FIELD_HINT[format], ...(extra.digits ? { digits: extra.digits } : {}) };
   const accept = normalize(format, String(raw), f);
@@ -690,7 +690,7 @@ const LEVELS = {
         const items = rng.shuffle(byLayer.map((g) => rng.pick(g)));
         const order = [1, 2, 3].map((l) => items.findIndex((it) => it.attrs.layer === l) + 1);
         return textQ(`ネットワークにつながらないとき、次の 3 つを確かめる。見る順に番号を並べると?\n${items.map((it, i) => `${i + 1}. ${it.ja}`).join('\n')}`,
-          [field('order', '見る順(番号を - で区切る)', 'devname', order.join('-'))],
+          [field('order', '見る順(番号を - で区切る)', 'order', order.join('-'))],
           'つながらないときは下から順に見る。まず線(ケーブルが差さっているか・無線につながっているか)、次にアドレス(IP アドレスが付いているか・ゲートウェイに届くか)、最後に名前(ドメイン名から調べられるか)。',
           `答えは ${order.join('-')}。${order.map((i) => `${LAYER_NAME[items[i - 1].attrs.layer]}(${items[i - 1].ja})`).join(' → ')} の順。下の段がだめなら、上の段も動かないから。`,
           'cl65-trouble-order-v1', { rows: items.map((it) => it.id) });

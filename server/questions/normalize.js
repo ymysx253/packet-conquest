@@ -21,7 +21,7 @@ function pre(s, { keepCase = false } = {}) {
 const stripAlias = (s) => pre(s).replace(/\s+/g, '').replace(/アドレス/g, '').replace(/[・･]/g, '');
 
 // ---------- 個別の形式 ----------
-const UNIT_WORDS = /(番目|個|台|本|行|回|バイト|ビット|秒|ミリ秒|ms|マイクロ秒|µs|us|byte|bytes|bit|bits|kbps|mbps|gbps|ms)$/;
+const UNIT_WORDS = /(番目|個|台|本|行|回|バイト|ビット|秒|ミリ秒|ms|マイクロ秒|µs|us|byte|bytes|bit|bits|kbps|mbps|gbps|ms|%|パーセント)$/; // % は割合の欄で「50%」と打っても数として読む(2026-10-26)
 function number(s, { decimal = false } = {}) {
   let t = pre(s); if (t === null) return null;
   t = t.replace(/,/g, '').replace(/\s+/g, '').replace(UNIT_WORDS, '').replace(/^\+/, '');
@@ -126,6 +126,15 @@ function ifname(s) {
   m = /^(vlan|vl)(\d+)$/.exec(t); if (m) return `vlan${m[2]}`;
   return null;
 }
+// 並べ替えの答え(2026-10-26): 「3-1-2」「3 1 2」「3,1,2」「3→1→2」「３－１－２」「312」をすべて「3-1-2」に。区切りが無いときは 1 けたずつ読む(項目は 9 個まで)
+function order(s) {
+  const t = pre(s); if (t === null) return null;
+  const parts = t.split(/[^0-9]+/).filter(Boolean);
+  if (!parts.length) return null;
+  const nums = parts.length === 1 && parts[0].length > 1 ? parts[0].split('') : parts;
+  if (nums.some((x) => !/^[1-9]d?$/.test(x))) return null;
+  return nums.map(Number).join('-');
+}
 function devname(s) {
   const t = pre(s); if (t === null) return null;
   const d = t.replace(/[\s\-_]/g, '');
@@ -168,7 +177,7 @@ function prefixplan(s) {
   return rows.sort().join('\n');
 }
 
-const FORMATS = { number, ipv4, ipv4cidr, ipv6, ipv6cidr, prefixlen, bin, hex, mac, yesno, token, addrport, ifname, devname, dnsname, aclverdict, prefixplan };
+const FORMATS = { number, order, ipv4, ipv4cidr, ipv6, ipv6cidr, prefixlen, bin, hex, mac, yesno, token, addrport, ifname, devname, dnsname, aclverdict, prefixplan };
 
 function normalize(format, s, opts = {}) {
   const f = FORMATS[format];

@@ -22,6 +22,8 @@ const cases = [
   ['addrport', '２０３.0.113.10：51002', '203.0.113.10:51002'], ['addrport', '203.0.113.10:0', null], ['addrport', '203.0.113.10', null],
   ['ifname', 'GigabitEthernet0/1', 'gi0/1'], ['ifname', 'Gi 0/1', 'gi0/1'], ['ifname', 'g0/1', 'gi0/1'], ['ifname', 'GigabitEthernet 1/0/24', 'gi1/0/24'], ['ifname', 'Null 0', 'null0'], ['ifname', 'Ethernet0', 'eth0'], ['ifname', 'Gi', null],
   ['devname', 'pc-2', 'pc2'], ['devname', 'PC 2', 'pc2'],
+  ['order', '3-1-2', '3-1-2'], ['order', '3 1 2', '3-1-2'], ['order', '3,1,2', '3-1-2'], ['order', '3→1→2', '3-1-2'], ['order', '３－１－２', '3-1-2'], ['order', '312', '3-1-2'], ['order', '3、1、2', '3-1-2'], ['order', 'abc', null], ['order', '3-0-2', null],
+  ['number', '50%', '50'], ['number', '50 %', '50'], ['number', '５０％', '50'], ['number', '12.5%', '12.5', { decimal: true }],
   ['dnsname', '23.7.0.10.IN-ADDR.ARPA.', '23.7.0.10.in-addr.arpa'], ['dnsname', 'www..example', null],
   ['aclverdict', '10 permit', 'permit 10'], ['aclverdict', '許可 10', 'permit 10'], ['aclverdict', '拒否 10', 'deny 10'], ['aclverdict', '暗黙の拒否', 'deny implicit'], ['aclverdict', 'deny implicit', 'deny implicit'], ['aclverdict', 'deny', null],
   ['prefixplan', 'R1 10.0.0.0/24\nR2 10.0.1.0/24', 'r1 10.0.0.0/24\nr2 10.0.1.0/24'], ['prefixplan', 'r2 10.0.1.0/24, r1 10.0.0.0/24', 'r1 10.0.0.0/24\nr2 10.0.1.0/24'], ['prefixplan', 'r1', null],
