@@ -115,7 +115,7 @@ Web ソケット: Linux の App Service にはこの項目が無い(切り替え
 | 項目 | 値 |
 |---|---|
 | スタック / バージョン | Node / 24 LTS(作成時のまま) |
-| スタートアップ コマンド | `npm start` |
+| スタートアップ コマンド | `sh start-azure.sh`(2026-10-26 から。zip に同梱した公式の Node.js で起動する。第 3.1 節) |
 
 「保存」。
 
@@ -125,8 +125,16 @@ Web ソケット: Linux の App Service にはこの項目が無い(切り替え
 
 ## 3. zip を作る(手元)
 
+0. 初回と、Node.js のセキュリティリリースが出たとき: `node tools/fetch-node-runtime.js 24.22.1`(版は最新の 24 系に変える)。公式の Linux 版の Node.js を取り、SHA-256 を公式の一覧と照らして `runtime/node/` に置く(`runtime/` は Git に入れない)
 1. プロジェクトの `make-zip.cmd` をダブルクリック → `packet-conquest-deploy.zip` ができる(`node_modules`、`.env`、`data`、`.git` は入らない)
-2. 入っているもの: `server/`、`public/`、`tools/`、`test/`、`docs/`、`infra/`、`package.json`、`package-lock.json` など
+2. 入っているもの: `server/`、`public/`、`tools/`、`test/`、`docs/`、`infra/`、`package.json`、`package-lock.json`、`start-azure.sh`、`runtime/node/`(Node.js 本体)など。約 75 MB
+
+### 3.1 Node.js の版(2026-10-26)
+
+- App Service の組み込みの「Node 24 LTS」は細かい版を選べず、Azure が更新するまで古いまま(2026-10-26 に Kudu の SSH で `node -v` を打つと v24.7.0。6 月・7 月・10 月のセキュリティ修正が入っていない)
+- そこで公式の Linux 版(今は v24.22.1。2026-10-21 のセキュリティリリース)を zip に同梱し、`start-azure.sh` がそれで `server/index.js` を起動する(無ければ組み込みの node で起動し、ログにそう出す)。`npm install`(ビルド)は組み込みの node のままでよい
+- 確かめ方: ログ ストリームの起動の行に `Node.js v24.22.1` と出る
+- 新しいセキュリティリリースが出たら: 上の 0 を新しい版で流す → zip を作り直す → 第 4 章で置く
 
 ## 4. 配置する(Kudu の Deployments)
 

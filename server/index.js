@@ -287,5 +287,5 @@ world.init().then(async () => {
     const db = process.env.STORE !== 'memory' && process.env.COSMOS_CONNECTION_STRING ? (process.env.COSMOS_DATABASE || 'packet-conquest') : null;
     require('./bots').startBots(world, path.resolve(process.env.SIM_BOTS), { databaseName: db }).catch((e) => console.error('テスト用の敵を動かせません:', e.message));
   }
-  server.listen(PORT, () => console.log(`パケット陣取り / Packet Conquest: http://localhost:${PORT}(保存: ${process.env.STORE !== 'memory' && process.env.COSMOS_CONNECTION_STRING ? 'Cosmos DB ' + (process.env.COSMOS_DATABASE || 'packet-conquest') : 'メモリ'})`));
+  server.listen(PORT, () => console.log(`パケット陣取り / Packet Conquest: http://localhost:${PORT}(Node.js ${process.version}。保存: ${process.env.STORE !== 'memory' && process.env.COSMOS_CONNECTION_STRING ? 'Cosmos DB ' + (process.env.COSMOS_DATABASE || 'packet-conquest') : 'メモリ'})`));
 }).catch((e) => { console.error('起動に失敗:', e); process.exit(1); });
