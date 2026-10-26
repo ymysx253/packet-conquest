@@ -1,6 +1,6 @@
 {
   "schema": "pc.sources/1",
-  "updatedAt": "2026-10-18",
+  "updatedAt": "2026-10-26",
   "note": "出典の台帳(docs/DATA-FORMAT.md 第 2 章)。台帳に無い出典の記録は読み込まない。commercialUse が false、shareAlike が true、status が retired、契約の期限切れのものはゲームに使わない。",
   "sources": [
     {
@@ -73,9 +73,17 @@
       "attribution": true, "attributionText": { "ja": "「位置参照情報ダウンロードサービス」(国土交通省)(https://nlftp.mlit.go.jp/isj/)をもとに作成", "en": "Based on Location Reference Information, MLIT Japan" },
       "retrievedAt": "2026-10-20", "version": "2026-10-20", "status": "active", "notes": "Wikidata に座標が無い都道府県庁舎 7 件(山形・岐阜・静岡・奈良・島根・愛媛・高知)の位置。住所から国土地理院の住所検索(位置参照情報による)で番地の代表点を引いた(docs/landmarks/extra-hand.csv)。サイトの利用規約は 2026-03-23 から公共データ利用規約 第 1.0 版(PDL1.0)"
     },
+    {
+      "id": "src-ksj-p05-2022", "title": "国土数値情報 市町村役場等及び公的集会施設データ(P05)2022 年", "publisher": "国土交通省", "kind": "government",
+      "url": "https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P05-2022.html", "license": "CC-BY-4.0", "commercialUse": true, "shareAlike": false,
+      "attribution": true, "attributionText": { "ja": "「国土数値情報(市町村役場等及び公的集会施設データ)」(国土交通省)を加工して作成。この地図の作成にあたっては、国土地理院長の承認を得て、同院発行の数値地図25000(地図画像)を使用しました。", "en": "Processed from National Land Numerical Information (Municipal Offices and Public Meeting Facilities), MLIT Japan. The original data was prepared using Digital Map 25000 (Map Image) published by the Geospatial Information Authority of Japan, with the approval of its Director-General." },
+      "retrievedAt": "2026-10-26", "version": "2022", "status": "active", "notes": "市区町村役場・政令指定都市の区役所の位置と名前(施設分類 P05_002 = 1 の本庁だけ。支所・出張所・公民館は使わない)。使用許諾はオープンデータ(CC BY 4.0)(2026-10-26 にデータのページで確認)。加工: 本庁だけを選び、行政区域コードで市区町村に結びつけ、区役所に市の名前を付けた。原典表示は attributionText のとおり。tools/import-offices.js"
+    },
     { "id": "src-ksj-c02", "title": "国土数値情報 港湾データ(C02)", "publisher": "国土交通省", "kind": "government", "license": "LicenseRef-ksj-noncommercial", "commercialUse": false, "shareAlike": false, "attribution": true, "retrievedAt": null, "version": null, "status": "retired", "notes": "使用許諾が非商用のため使わない(2026-10-19 確認)" },
     { "id": "src-ksj-c09", "title": "国土数値情報 漁港データ(C09)", "publisher": "国土交通省", "kind": "government", "license": "LicenseRef-ksj-noncommercial", "commercialUse": false, "shareAlike": false, "attribution": true, "retrievedAt": null, "version": null, "status": "retired", "notes": "使用許諾が非商用のため使わない(2026-10-19 確認)" },
     { "id": "src-ksj-n09", "title": "国土数値情報 定期旅客航路(N09)", "publisher": "国土交通省", "kind": "government", "license": "LicenseRef-ksj-noncommercial", "commercialUse": false, "shareAlike": false, "attribution": true, "retrievedAt": null, "version": null, "status": "retired", "notes": "使用許諾が非商用のため使わない(2026-10-19 確認)" },
+    { "id": "src-ksj-p34", "title": "国土数値情報 市区町村役場データ(P34)", "publisher": "国土交通省", "kind": "government", "license": "LicenseRef-ksj-noncommercial", "commercialUse": false, "shareAlike": false, "attribution": true, "retrievedAt": null, "version": null, "status": "retired", "notes": "使用許諾が非商用のため使わない(2026-10-26 ユーザー確認)。役場は P05(src-ksj-p05-2022)を使う" },
+    { "id": "src-ksj-p28", "title": "国土数値情報 国・都道府県の機関データ(P28)", "publisher": "国土交通省", "kind": "government", "license": "LicenseRef-ksj-noncommercial", "commercialUse": false, "shareAlike": false, "attribution": true, "retrievedAt": null, "version": null, "status": "retired", "notes": "使用許諾が非商用のため使わない(2026-10-26 ユーザー確認)。国の機関の庁舎は Wikidata を使う" },
     { "id": "src-ksj-s10b", "title": "国土数値情報 空港間流通量(S10b)", "publisher": "国土交通省", "kind": "government", "license": "LicenseRef-ksj-noncommercial", "commercialUse": false, "shareAlike": false, "attribution": true, "retrievedAt": null, "version": null, "status": "retired", "notes": "使用許諾が非商用のため使わない(2026-10-19 確認)" }
   ]
 }

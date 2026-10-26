@@ -126,7 +126,8 @@ const prefsInData = new Set(feats.map((f) => f.pref));
 const others = []; // 町・字以外の拠点(contains と 25 m の判定に使う)
 for (const [pid, { T }] of nodeFiles) {
   T.nodes = T.nodes.filter((n) => n.genre !== 'town' || !prefsInData.has(n.id.slice(3, 5))); // 今回の都道府県の町・字は入れ直す
-  for (const n of T.nodes) if (n.genre !== 'town') others.push(n);
+  // 仮の港(pp-)は tools/import-links.js が毎回作り直すので数えない(2026-10-26: 入れ直したとき contains に仮の港が入っていた)
+  for (const n of T.nodes) if (n.genre !== 'town' && !n.id.startsWith('pp-')) others.push(n);
 }
 
 // 国勢調査(2020 年)のあとに変わった市区町村(浜松市の区の再編 2024 年 など)は、コードでは引けないので、

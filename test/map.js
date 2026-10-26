@@ -142,6 +142,17 @@ for (const n of LM) {
   assert.strictEqual(n.id, 'lm-' + n.wikidata.toLowerCase());
 }
 for (const n of NODES) if (n.company) assert.strictEqual(n.hackable, false, `${n.name}: 企業名の施設はハック不可`);
+// 市区町村役場・政令指定都市の区役所(2026-10-26。tools/import-offices.js): 国土数値情報 P05 の本庁。id は go-<行政区域コード>-<名前の hash>
+const GO = NODES.filter((n) => n.id.startsWith('go-'));
+for (const n of GO) {
+  assert.match(n.id, /^go-[0-9]{5}-[0-9a-f]{8}$/, `${n.name}: 役場の id`);
+  assert.ok(n.genre === 'government' && n.kind === 'GOV' && n.src === 'src-ksj-p05-2022' && /(役所|役場|役場庁舎)$/.test(n.name), `${n.name}: 役場は government・GOV・出典 P05`);
+}
+if (GO.length) {
+  assert.ok(GO.length >= 1800, '全国の市区町村役場と区役所');
+  assert.ok(GO.some((n) => n.name === '札幌市中央区役所') && GO.some((n) => n.name === '仙台市青葉区役所'), '政令指定都市の区役所は市の名前つき');
+  assert.ok(GO.some((n) => n.name === '千代田区役所'), '東京 23 区は区役所が本庁');
+}
 if (LM.length) {
   const prefsWithLm = new Set(LM.map(prefOf));
   assert.strictEqual(prefsWithLm.size, 47, '47 都道府県すべてに名所がある');

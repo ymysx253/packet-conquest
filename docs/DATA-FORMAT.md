@@ -43,6 +43,7 @@
 | `lm-` | 名所(Wikidata の QID を小文字) | `lm-q193499` |
 | `isl-` | 離島の玄関口(Wikidata の QID を小文字) | `isl-q2512004` |
 | `ap-` / `pt-` | 航路の端点として足した空港・港(Wikidata の QID、無ければ `pt-s` + 出典の港の名前のハッシュ) | `ap-q1322497`、`pt-q11489704` |
+| `go-` | 市区町村役場・政令指定都市の区役所(2026-10-26。国土数値情報 P05 の本庁。`go-` + 行政区域コード 5 桁 + 名称の SHA-1 の先頭 8 桁。`tools/import-offices.js`)。国の機関の庁舎と、足した大学は Wikidata 由来なので `lm-` | `go-13101-xxxxxxxx` |
 | `tw-` | 町・字(市区町村コード 5 桁 + まとめた区画のうち最小の小地域コード 6 桁。国勢調査のコードから決まる) | `tw-13102-002000` |
 | (接頭辞なし) | 手で入れた拠点(東京の名所 64 件) | `haneda`、`kokkai` |
 | `home-` | プレイヤーの拠点(ゲームが作る) | |
@@ -264,6 +265,8 @@ port,unlocode,JPOSM,元町港,Motomachi Port,元町港,34.75114,139.35147,JP,dom
 | `src-ksj-w09-2005` | 国土数値情報 湖沼データ(W09、2005) | 商用可(国土数値情報の規約) | 可 | なし | 湖・貯水池の形(塗るだけ) |
 | `src-estat-boundary-2020` | 国勢調査 2020 年 小地域(町丁・字等)境界データ(e-Stat) | e-Stat の利用規約(CC BY 4.0 と互換) | 可 | なし | 町・字 |
 | `src-mlit-air-stats` | 国土交通省 航空輸送統計調査(路線別) | 政府統計(出典表示) | 可(見込み) | なし | 空路(取り込み予定) |
+| `src-ksj-p05-2022` | 国土数値情報 市町村役場等及び公的集会施設データ(P05、2022)(2026-10-26 追加) | CC BY 4.0 | 可 | なし | 市区町村役場・政令指定都市の区役所(本庁だけ)。原典表示「この地図の作成にあたっては、国土地理院長の承認を得て、同院発行の数値地図25000(地図画像)を使用しました。」 |
+| (使わない)`src-ksj-p34` `src-ksj-p28` | 市区町村役場(P34)・国・都道府県の機関(P28) | 非商用 | 不可 | — | 記録として台帳に残す(`status: retired`。2026-10-26) |
 | (使わない)`src-ksj-c02` `src-ksj-c09` `src-ksj-n09` `src-ksj-s10b` | 港湾・漁港・旅客航路・空港間流通量 | 非商用 | 不可 | — | 記録として台帳に残す(`status: retired`) |
 | (使わない)OpenStreetMap、OpenFlights、GADM | | ODbL / 非商用 | — | あり | 台帳に入れない |
 
@@ -299,7 +302,7 @@ port,unlocode,JPOSM,元町港,Motomachi Port,元町港,34.75114,139.35147,JP,dom
 **取り込みの順番**(前の道具は自分の拠点を入れ直すので、この順に流す):
 
 ```
-import-stations → import-landmarks → import-islands → import-gateways → import-towns → import-water → fetch-codes → import-links → import-routes → db-setup --force
+import-stations → import-landmarks → import-islands → import-gateways → import-tourism → import-offices → import-universities → import-towns → import-water → fetch-codes → import-links → import-routes → db-setup --force
 ```
 
 **今のデータ**
