@@ -2,7 +2,7 @@
   "schema": "pc.nodes/1",
   "region": "ibaraki",
   "name": "茨城県",
-  "version": 93,
+  "version": 99,
   "updatedAt": "2026-10-19",
   "note": "茨城県の拠点マスター。名前は正しい名所の名前(docs/PLACES.md)。粒度は駅ぐらい。Cosmos DB の nodes コンテナーと同じ項目。",
   "kinds": {
@@ -2334,9 +2334,9 @@
     { "id": "tw-08230-045000", "name": "霞ヶ浦(かすみがうら市)", "genre": "town", "kind": "TOWN", "area": "かすみがうら市", "region": "ibaraki-08230", "lat": 36.08398, "lon": 140.39835, "level": 1, "value": 1, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "08230045000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-08230-036000", "tw-08233-062000", "tw-08442-027000"], "contains": ["lm-q1077984"], "adj": ["lm-q1077984", "tw-08230-036000", "tw-08233-062000", "tw-08442-027000"] },
     { "id": "st-002608", "name": "神立駅", "genre": "station", "kind": "HUB", "area": "かすみがうら市", "region": "ibaraki-08230", "lat": 36.12124, "lon": 140.2496, "level": 10, "value": 10, "lines": ["東日本旅客鉄道 常磐線"], "adj": ["st-002569", "st-002660", "tw-08203-027001", "tw-08230-016101", "tw-08230-016201", "tw-08230-016301"] },
 
-    { "id": "ts-q97213036", "name": "桜川市真壁", "genre": "tourism", "kind": "LM", "area": "桜川市", "region": "ibaraki-08231", "lat": 36.27819, "lon": 140.09953, "level": 30, "value": 30, "tags": ["町並み", "重要伝統的建造物群保存地区"], "codes": {"wikidata": "Q97213036"}, "src": "src-wikidata", "adj": ["tw-08231-043000", "tw-08231-044000", "tw-08231-048000"] },
     { "id": "lm-q11398693", "name": "加波山", "genre": "nature", "kind": "LM", "area": "桜川市", "region": "ibaraki-08231", "lat": 36.2974, "lon": 140.143, "level": 25, "value": 25, "codes": {"wikidata": "Q11398693"}, "src": "src-wikidata", "adj": ["tw-08205-063000", "tw-08231-062000", "tw-08231-063000", "tw-08231-064000"] },
     { "id": "lm-q11659729", "name": "雨引山", "genre": "nature", "kind": "LM", "area": "桜川市", "region": "ibaraki-08231", "lat": 36.33625, "lon": 140.12186, "level": 15, "value": 15, "codes": {"wikidata": "Q11659729"}, "src": "src-wikidata", "adj": ["tw-08231-016000", "tw-08231-067001"] },
+    { "id": "ts-q97213036", "name": "桜川市真壁", "genre": "tourism", "kind": "LM", "area": "桜川市", "region": "ibaraki-08231", "lat": 36.27819, "lon": 140.09953, "level": 30, "value": 30, "tags": ["町並み", "重要伝統的建造物群保存地区"], "codes": {"wikidata": "Q97213036"}, "src": "src-wikidata", "adj": ["tw-08231-043000", "tw-08231-044000", "tw-08231-048000"] },
     { "id": "go-08231-0c3e6101", "name": "桜川市役所", "genre": "government", "kind": "GOV", "area": "桜川市", "region": "ibaraki-08231", "lat": 36.32728, "lon": 140.09049, "level": 15, "value": 15, "tags": ["市区町村役場"], "codes": {"ext": [{"scheme": "src-ksj-p05-2022", "value": "08231:桜川市役所"}]}, "src": "src-ksj-p05-2022", "adj": ["st-002357", "tw-08231-070000", "tw-08231-071000", "tw-08231-072001", "tw-08231-076000"] },
     { "id": "tw-08231-001000", "name": "西小塙", "genre": "town", "kind": "TOWN", "area": "桜川市", "region": "ibaraki-08231", "lat": 36.3639, "lon": 140.15286, "level": 4, "value": 4, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "08231001000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-08231-002000", "tw-08231-009000", "tw-08231-013000", "tw-08231-014000", "tw-08231-039000"], "contains": ["st-002342"], "adj": ["st-002342", "tw-08231-002000", "tw-08231-009000", "tw-08231-013000", "tw-08231-014000", "tw-08231-039000"] },
     { "id": "tw-08231-002000", "name": "加茂部", "genre": "town", "kind": "TOWN", "area": "桜川市", "region": "ibaraki-08231", "lat": 36.35264, "lon": 140.15799, "level": 3, "value": 3, "codes": {"ext": [{"scheme": "src-estat-boundary-2020", "value": "08231002000"}]}, "src": "src-estat-boundary-2020", "borders": ["tw-08216-025000", "tw-08231-001000", "tw-08231-003000", "tw-08231-008000", "tw-08231-009000"], "contains": ["st-002342", "st-002348"], "adj": ["st-002342", "st-002348", "tw-08216-025000", "tw-08231-001000", "tw-08231-003000", "tw-08231-008000", "tw-08231-009000"] },

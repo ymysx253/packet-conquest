@@ -15,7 +15,10 @@
 //     廃止・統合されたもの(P576 解散・廃止日、P3999 閉鎖日)、旧制・官立の大学(戦前の学校)
 //   - 分校・キャンパスは入れない(大学の項目の座標 1 つ = 本部のキャンパス)。座標が複数あって離れているものは、本部の所在地(P159)に近い座標
 //   - 今の拠点と重なるもの(同じ Wikidata の項目、同じ都道府県の同じ名前の大学、町・字以外の拠点から 25 m 以内)は入れない
+//   - 名所の候補一覧(docs/landmarks/candidates.csv)で「採否(確認用)」を × にした項目(同じ Wikidata の id)は入れない(2026-10-26 ユーザー決定:
+//     短期大学の秋田公立美術工芸短期大学・華頂短期大学、統合で無くなった大阪市立大学・大阪府立大学。Wikidata に廃止日の無いものがあるため)
 //   - id は lm-q<QID>(今の名所と同じ)。基礎レベルは知名度(言語版の数)で 15〜70(仮。tools/levels.js の fameLevel)。kind は EDU
+const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const U = require('./place-utils');
@@ -33,6 +36,15 @@ const EXCLUDE_TYPES = {
   Q11510986: '旧制大学', Q10211046: '官立大学', Q18701212: '官立医科大学', Q10855485: '官立文理科大学', Q11086909: '官立商業大学',
 };
 const EXCLUDE_NAME = /短期大学|短大|高等専門学校|キャンパス|校舎|学舎$|学部$|研究科$|附属|分校|大学校$|自衛隊|防衛/;
+// 名所の候補一覧で × にした Wikidata の id(引用符つきの CSV を 1 行ずつ読む)
+const REJECTED = (() => {
+  const file = path.join(U.ROOT, 'docs/landmarks/candidates.csv');
+  if (!fs.existsSync(file)) return new Set();
+  const cells = (line) => { const out = []; let cur = '', q = false; for (let i = 0; i < line.length; i++) { const ch = line[i]; if (q) { if (ch === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += ch; } else if (ch === '"') q = true; else if (ch === ',') { out.push(cur); cur = ''; } else cur += ch; } out.push(cur); return out; };
+  const [head, ...lines] = fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, '').split(/\r?\n/);
+  const h = cells(head), qi = h.indexOf('Wikidata'), di = h.indexOf('採否(確認用)');
+  return new Set(lines.map(cells).filter((r) => /^[×xX]$/.test(r[di] || '')).map((r) => r[qi]));
+})();
 
 (async () => {
   const q = `SELECT ?item ?ja ?sl ?c ?t ?dis WHERE {
@@ -50,10 +62,11 @@ const EXCLUDE_NAME = /短期大学|短大|高等専門学校|キャンパス|校
     by.set(r.item, x);
   }
   const items = [...by.values()].sort((a, b) => a.qid.localeCompare(b.qid));
-  const skipped = { dissolved: 0, type: {}, name: [], coord: [], noRegion: [], outOfBounds: [], existing: [] };
+  const skipped = { dissolved: 0, rejected: [], type: {}, name: [], coord: [], noRegion: [], outOfBounds: [], existing: [] };
   let cands = [];
   for (const x of items) {
     if (x.dissolved) { skipped.dissolved++; continue; }
+    if (REJECTED.has(x.qid)) { skipped.rejected.push(x.name); continue; }
     const bad = [...x.types].find((t) => EXCLUDE_TYPES[t]);
     if (bad) { skipped.type[EXCLUDE_TYPES[bad]] = (skipped.type[EXCLUDE_TYPES[bad]] || 0) + 1; continue; }
     if (EXCLUDE_NAME.test(x.name) || !/大学|大學/.test(x.name)) { skipped.name.push(x.name); continue; }
@@ -92,9 +105,9 @@ const EXCLUDE_NAME = /短期大学|短大|高等専門学校|キャンパス|校
 
   const byLv = {}; for (const n of added) byLv[n.level] = (byLv[n.level] || 0) + 1;
   console.log(`Wikidata の大学 ${items.length} 件 → 候補 ${cands.length} 件 → ${added.length} 件を入れた(レベルごと ${JSON.stringify(byLv)})`);
-  console.log(`入れなかった: 廃止 ${skipped.dissolved}、分類 ${JSON.stringify(skipped.type)}、名前 ${skipped.name.length}、座標を決められない ${skipped.coord.length}、境界の外 ${skipped.noRegion.length}、扱わない地域 ${skipped.outOfBounds.length}、今の拠点と重なる ${skipped.existing.length}`);
+  console.log(`入れなかった: 廃止 ${skipped.dissolved}、候補一覧で × ${skipped.rejected.length}、分類 ${JSON.stringify(skipped.type)}、名前 ${skipped.name.length}、座標を決められない ${skipped.coord.length}、境界の外 ${skipped.noRegion.length}、扱わない地域 ${skipped.outOfBounds.length}、今の拠点と重なる ${skipped.existing.length}`);
   const list = (label, a) => { if (a.length) console.log(`  ${label}: ${a.join(' / ')}`); };
-  list('名前', skipped.name); list('座標', skipped.coord); list('境界の外', skipped.noRegion); list('扱わない地域', skipped.outOfBounds); list('重なり', skipped.existing);
+  list('候補一覧で ×', skipped.rejected); list('名前', skipped.name); list('座標', skipped.coord); list('境界の外', skipped.noRegion); list('扱わない地域', skipped.outOfBounds); list('重なり', skipped.existing);
   const perPref = {}; for (const n of added) { const p = U.prefOf(U.regionById.get(n.region)).name; perPref[p] = (perPref[p] || 0) + 1; }
   console.log('  都道府県ごと:', Object.entries(perPref).map(([k, v]) => `${k} ${v}`).join('、'));
   console.log(`書き直したファイル ${written}`);
