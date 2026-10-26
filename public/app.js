@@ -3,6 +3,8 @@
   const $ = (id) => document.getElementById(id);
   const canvas = $('map');
   const ctx = canvas.getContext('2d');
+  // 試作(2026-10-27): ?lv100 で開くと 1〜100 のレベルの見た目(新しい印・大きさはどれも同じ・名札も同じ)。サーバーは LEVEL100_MOCK=1(server/mock-level100.js)
+  const MOCK100 = new URLSearchParams(location.search).has('lv100') && !!window.PCShapes100;
 
   // ---------- 状態 ----------
   const S = {
@@ -258,14 +260,15 @@
   const DECAY_MS = 24 * 3600 * 1000;
   const liveDefense = (n) => { const d = n.defense || 0; if (!d || !n.fortifiedAt) return d; return Math.max(0, d - Math.max(0, Math.floor((now() - n.fortifiedAt) / DECAY_MS))); };
   // 印の形のレベル(2026-10-22 ユーザー決定: 強化したら形も変わる): 元のレベル + 強化。プレイヤーの拠点は変えない
-  const shapeLevel = (n) => (n.isPlayerNode ? n.level : Math.min(999, Math.max(1, n.level) + liveDefense(n)));
+  const shapeLevel = (n) => (n.isPlayerNode ? n.level : Math.min(MOCK100 ? 100 : 999, Math.max(1, n.level) + liveDefense(n)));
   const attackLevelOf = (n) => { const base = Math.max(1, n.level) + (n.defense || 0); return n.owner ? Math.max(4, base) : base; };
   // 濃さ(2026-10-19 ユーザー案): 縮小して重なっているときは低いレベルほど薄く、拡大して重なりが無くなると元の濃さ。
   // レベルの帯ごとに「この拡大率で元の濃さ」を決める(町・字 30、駅・名所 24、乗り換え駅など 14、空港など 6、Lv200 以上はいつも濃い)。いちばん薄くて 12%。
   // 選択中・自分とチームの拠点・攻撃できる拠点は薄くしない
   const fadeOf = (n) => {
     if (n.id === S.selected || n.isPlayerNode || (n.owner && n.owner === S.me) || (relOf(n) === 'team' && ownShown('team')) || (!S.overview && canAttack(n.id) && hasQuestion(attackLevelOf(n)))) return 1;
-    const full = n.level >= 200 ? 0 : n.level >= 100 ? 6 : n.level >= 30 ? 14 : n.level >= 10 ? 24 : 30;
+    const full = MOCK100 ? (n.genre === 'town' ? 30 : n.level >= 87 ? 0 : n.level >= 79 ? 6 : n.level >= 61 ? 14 : 24) // 試作: 町・字はレベルによらず今と同じ
+      : n.level >= 200 ? 0 : n.level >= 100 ? 6 : n.level >= 30 ? 14 : n.level >= 10 ? 24 : 30;
     return full ? Math.max(0.12, Math.min(1, (zoomRatio() / full) ** 2)) : 1;
   };
   const startRefusal = (n) => (n.isPlayerNode || n.hackable === false)
@@ -576,7 +579,7 @@
   const zoomRatio = () => pxPerUnit() / BASE_K;
   // 縮小するほど印を小さく。日本全体が見える倍率(段 3・4)では 0.2 倍まで(大きな印が細い陸地を覆い隠していた。2026-10-19)
   const shrink = () => { const r = zoomRatio(); return Math.min(1, Math.max(r < 0.18 ? 0.2 : 0.35, r / 6)); };
-  const radiusOf = (n) => shrink() * (n.isPlayerNode ? 8
+  const radiusOf = (n) => shrink() * (n.isPlayerNode ? 8 : MOCK100 ? 7.7 * (1 + 0.8 * ((shapeLevel(n) - 1) / 99) ** 1.8) // 試作: レベルとともに大きく、Lv100 は Lv1 の 1.8 倍。中くらいのレベルは小さめで、上のほうで大きくなる(2026-10-27 ユーザー指摘)
     : ((L) => (11 + Math.min(10, L) * 0.6 + Math.min(9, Math.floor((L - 1) / 10)) * 0.4 + Math.min(9, Math.floor((L - 1) / 100)) * 0.8))(shapeLevel(n)) * (n.genre === 'town' ? 0.7 : 1)); // 大きさも強化を含めたレベルで(2026-10-22) // 町・字は小さめ
   // 町・字(2026-10-18)は数が多いので、ある程度拡大したときだけ描く。自分の拠点・選択中・攻撃できるものは縮小していても描く
   const TOWN_MIN_RATIO = 10, TOWN_LABEL_RATIO = 14; // 町・字の印は拡大率 10 から、名前は 14 から(参加直後の 9 では駅と名所が主役)
@@ -1047,7 +1050,7 @@
   });
 
   // ---------- 拠点の形(shapes.js と共有) ----------
-  const SH = window.PCShapes;
+  const SH = MOCK100 ? window.PCShapes100 : window.PCShapes;
   function shape(n, p, r) {
     if (n.isPlayerNode) { ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); return; }
     SH.path(ctx, shapeLevel(n), p, r);
@@ -1370,10 +1373,11 @@
       const showLabel = S.overview ? true : n.isPlayerNode
         ? (ratio >= 7 || n.owner === S.me)
         : n.genre === 'town' ? (ratio >= TOWN_LABEL_RATIO || n.owner === S.me || n.id === S.selected)
+        : MOCK100 ? (ratio >= 14 || (ratio >= 5 && n.level >= 61) || (ratio >= 2 && n.level >= 87) || n.level >= 90 || n.owner === S.me) // 試作: 1〜100 の物差し
         : (ratio >= 14 || (ratio >= 5 && n.level >= 30) || (ratio >= 2 && n.level >= 100) || n.level >= 200 || n.kind === 'IX' || n.owner === S.me); // 2026-10-19 の物差し
       if (showLabel) {
         const isSel = S.selected === n.id, dim = S.selected && !isSel, fl = fadeOf(n);
-        const fs = (n.kind === 'IX' ? 14 : n.isPlayerNode ? 10 : 11.5) + LABEL_PLUS;
+        const fs = (n.kind === 'IX' && !MOCK100 ? 14 : n.isPlayerNode ? 10 : 11.5) + LABEL_PLUS; // 試作は名札の大きさをそろえる
         const font = `${n.isPlayerNode ? 500 : 700} ${snapPx(fs * grow)}px "BIZ UDPGothic", sans-serif`;
         ctx.font = font;
         const tx = snapPx(p.x), ty = snapPx(p.y + top + (12 + LABEL_PLUS) * grow), tw = ctx.measureText(n.name).width, th = snapPx(fs * grow);
@@ -1437,7 +1441,8 @@
       }
     }
     // 名前を重要な順に置く。既に置いた名前と重なるものは出さない(選択中と自分の拠点は必ず出す)
-    const placed = S.overview ? [[8, 8, 520, 20]] : []; // 左上の「広域表示」の説明の場所
+    const hintX = $('ownView').hidden ? 12 : $('ownView').offsetLeft + $('ownView').offsetWidth + 8; // 左上のプルダウンの右に出す(下に隠れていた)
+    const placed = S.overview ? [[hintX - 4, 8, 520, 20]] : []; // 左上の「広域表示」の説明の場所
     const hit = (a, b) => a[0] < b[0] + b[2] && b[0] < a[0] + a[2] && a[1] < b[1] + b[3] && b[1] < a[1] + a[3];
     labels.sort((a, b) => b.prio - a.prio);
     for (const l of labels) {
@@ -1446,7 +1451,7 @@
     }
     if (S.overview) {
       ctx.fillStyle = C.muted; ctx.font = '600 12px "BIZ UDPGothic", sans-serif'; ctx.textAlign = 'left';
-      ctx.fillText(`広域表示: Lv${{ 1: 30, 2: 100, 3: 400, 4: 400 }[S.viewZ] || ''} 以上の拠点と、地域の支配。拡大すると全部出ます`, 12, 22);
+      ctx.fillText(MOCK100 ? `広域表示: ${{ 1: 'Lv87 以上', 2: 'Lv90', 3: '国会・都庁・都道府県庁舎・国際線の拠点の空港', 4: '国会・都庁・都道府県庁舎・国際線の拠点の空港' }[S.viewZ] || ''} の拠点と、地域の支配。拡大すると全部出ます` : `広域表示: Lv${{ 1: 30, 2: 100, 3: 400, 4: 400 }[S.viewZ] || ''} 以上の拠点と、地域の支配。拡大すると全部出ます`, hintX, 22);
     }
   }
   function nodeAt(pt) {

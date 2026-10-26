@@ -31,7 +31,7 @@ out.push('');
 out.push(`作成: ${new Date().toISOString().slice(0, 10)}。**この文書は \`node tools/build-level-table.js\` が \`docs/LEVEL-LIST.md\` と \`server/questions/cl/level100.json\` から作る。直接書き換えない**(直すなら元を直して流し直す)。`);
 out.push('');
 out.push('- レベルは 1〜100(2026-10-23 ユーザー決定)。1 レベルに LEVEL-LIST の項目が話題と難しさでまとめて入り(項目の数はレベルによって違う)、問題は同じレベルの中で項目が入れ替わって出る');
-out.push('- 90〜100 は神レベル(試験の外の上級者向け)。特別な場所に置く(置く場所はあとで決める)');
+out.push('- 91〜100 は神レベル(試験の外の上級者向け)。特別な場所に置く(置く場所はあとで決める)');
 out.push('- 1 行 = 1 レベル。太字はそのレベルの話題(server/questions/cl/level100-map.json の topic)。そのレベルで出る問題の分類を ①②③ と並べる。問題は同じレベルの中で分類が入れ替わって出る。詳しい内容(例・答え方・ヒント・試験・担当)は後ろの「分類ごとの詳しい内容」');
 out.push('- 列: **答え方** = ○×・3 択・4 択・入力・表を読む・並べ替え・構成図・設定・模擬ターミナル / **作り方** = 生(計算・模擬で生成)・表(用語の表から)・固(固定)/ **担当** = O(Opus)・O→F(Opus が作り Fable が確かめる)・F(Fable)/ **状態** = できた・まだ・仕組み待ち(構成図・設定・模擬ターミナルの仕組みが要る)・Fable(Fable に頼む)');
 out.push('');
@@ -47,7 +47,7 @@ for (const st of STAGE_ORDER) {
   for (let lv = lo; lv <= hi; lv++) { const e = L100.levels[lv]; items += e.items.length; const d = e.items.filter((n) => LEVELS.has(n)).length; done += d; if (d) lvReady++; }
   out.push(`| ${st} | ${lo}〜${hi} | ${EXAM[st]} | ${HINT[st]} | ${items} | ${done} | ${lvReady}/${hi - lo + 1} |`);
 }
-out.push('| 神 | 90〜100 | 試験の外 | — | — | — | — |');
+out.push('| 神 | 91〜100 | 試験の外 | — | — | — | — |');
 out.push('');
 
 const NUM = '①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳';
@@ -88,10 +88,10 @@ for (const st of STAGE_ORDER) {
   }
   out.push('');
 }
-out.push('## 神(Lv90〜100)');
+out.push('## 神(Lv91〜100)');
 out.push('');
 out.push('試験の範囲を超える上級者向け。特別な場所に置く(置く場所はあとで決める)。中身の方向(案): 断片的な記録やパケットの一覧からの推理、複数拠点・クラウドにまたがる障害を模擬ターミナルで調べて直す、プロトコルの細かい動きを追う、条件つきで最も良い設計を組む。守る側・調べる側に寄せ、ゲーム内の架空のネットワークだけで動かす(本物に使える攻撃の手順は入れない)。作るのは Fable。');
 out.push('');
 
 fs.writeFileSync(OUT, out.join('\n'));
-console.log(`docs/LEVEL-TABLE.md を書いた(項目 ${rows.size}、レベル 1〜89 + 神)`);
+console.log(`docs/LEVEL-TABLE.md を書いた(項目 ${rows.size}、レベル 1〜90 + 神)`);

@@ -16,6 +16,7 @@ const allMaps = () => (allMapsCache || (allMapsCache = require('./map/all')));
 const TOKYO_MASTER = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, 'map', 'data', 'tokyo.json'), 'utf8'));
 const SPAWN_CENTER = TOKYO_MASTER.spawn ? { lat: TOKYO_MASTER.spawn.lat, lon: TOKYO_MASTER.spawn.lon, radiusKm: TOKYO_MASTER.spawn.radiusKm, name: TOKYO_MASTER.spawn.name } : null;
 const { nodeDocs, regionDocs } = require('./map/load');
+const mock100 = require('./mock-level100'); // 試作: 1〜100 のレベル(LEVEL100_MOCK=1 かつ STORE=memory のときだけ)
 const { distanceKm, tilesAround, tileOf, tileFields, parseTile, tileSize, addrOf, MIN_LEVEL_BY_Z } = require('./map/geo');
 const { routeOpen, openAt, isAlwaysOpen } = require('./map/routes');
 const { hitsFromLinks } = require('./map/hits'); // 突破に要る正解の回数(2026-10-22) // 季節航路と拠点の開いている時間(2026-10-19。サーバーの時計の UTC)
@@ -267,7 +268,7 @@ class World {
   // ---------- 起動 ----------
   async init() {
     if ((await this.store.countNodes()) === 0) {
-      await this.store.seedNodes(nodeDocs(allMaps().NODES));
+      await this.store.seedNodes(mock100.apply(nodeDocs(allMaps().NODES)));
     }
     if ((await this.store.countRegions()) === 0) {
       await this.store.seedRegions(regionDocs(allMaps().NODES));
@@ -544,7 +545,7 @@ class World {
       this.send(p, { t: 'tiles', z: 0, added, dropped, nodes, edges });
     } else {
       // 縮小時: 粗いタイルで、レベルの高い拠点だけ(リンクは送らない)
-      const docs = await this.store.loadTiles(this.country, list, minLevel);
+      const docs = mock100.ENABLED ? (await this.store.loadTiles(this.country, list, 1)).filter((d) => (d.ov || 0) >= zz) : await this.store.loadTiles(this.country, list, minLevel);
       p.view = new Set(); p.viewZ = zz;
       const regions = await this.regionsInView(list, zz);
       // 自分とチームの拠点は、レベルが低くても縮小表示に足す(見ている範囲の中だけ)

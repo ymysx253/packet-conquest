@@ -1,6 +1,6 @@
 'use strict';
 // 市区町村役場・政令指定都市の区役所と、国の機関の庁舎(ジャンル government)を拠点マスターに入れる(2026-10-26 ユーザー決定。
-// 専門の段(79〜89)にふさわしい大きな拠点を足す。docs/DESIGN.md の 2026-10-26 の記録、docs/GENRE.md 第 4 章)。
+// 専門の段(79〜90。2026-10-27 から)にふさわしい大きな拠点を足す。docs/DESIGN.md の 2026-10-26 の記録、docs/GENRE.md 第 4 章)。
 //
 // 使い方:
 //   node tools/import-offices.js <P05 のフォルダ> <N03 の GeoJSON のフォルダ> [Wikidata の作業フォルダ]
