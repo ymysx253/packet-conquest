@@ -218,7 +218,7 @@ assert.doesNotThrow(broken((d) => { d.nodes[0].codes = { iata: 'HND', icao: 'RJT
   assert.ok(ginza[0].adj.some((id) => byIdAll[id].genre === 'town'), '銀座は隣の町とつながる');
   for (const [area, name] of [['千代田区', '千代田'], ['瑞穂町', '横田基地'], ['小笠原村', '硫黄島'], ['朝霞市', '陸上自衛隊朝霞駐屯地']]) { const t = TOWNS.find((n) => n.area === area && n.name === name); assert.ok(t && t.status === 'hidden', `${area} ${name}: 非公開(皇居・基地・立ち入り制限)`); }
   // 湖・湾は公開の町・字(2026-10-19)。大きな川の水面の区画は入れない。領有をめぐる争いがある地域は非公開(disputed)
-  assert.ok(TOWNS.some((n) => n.name.startsWith('琵琶湖') && n.status === 'public' && n.adj.length >= 5), '琵琶湖は周りの町とつながる町・字(2026-10-26 から岸の拠点を飛び越える線は外す)');
+  assert.ok(TOWNS.some((n) => n.name.startsWith('琵琶湖') && n.status === 'public' && n.adj.length >= 3), '琵琶湖は岸の拠点とつながる町・字(2026-10-26 から 90 度の決まりで、間に拠点がある長い線は外す)');
   assert.ok(!TOWNS.some((n) => n.name === '信濃川' && n.area === '長岡市'), '大きな川の水面は入れない');
   assert.ok(TOWNS.some((n) => n.name === '登野城尖閣' && n.status === 'hidden' && n.hiddenReason === 'disputed'), '尖閣諸島は非公開');
   assert.strictEqual(TOWNS.filter((n) => /^tw-0169[5-9]-|^tw-01700-/.test(n.id) && n.status === 'hidden' && n.hiddenReason === 'disputed').length, 6, '北方領土の 6 村は非公開');
