@@ -243,7 +243,7 @@ Invoke-RestMethod -Method Post -Uri https://packet-conquest.com/admin/grant -Hea
 
 コードを変えたら「3. zip を作る」→「4. 配置する」を繰り返す。アプリ設定は残る。データベースはそのまま。
 
-拠点マスター(`tokyo.json`)を変えたときは、手元から `node tools/db-setup.js --force` で本番 DB のマスター項目を更新する(ゲーム状態は保つ。`docs/DB.md` 第 8 章)。これは Claude が行う。
+拠点マスター(`tokyo.json`)を変えたときは、手元から `node tools/db-setup.js --force` で本番 DB のマスター項目を更新する(ゲーム状態は保つ。`docs/DB.md` 第 8 章)。これは Claude が行う。**書き換えたあとは App Service を「再起動」する**(2026-10-27)。サーバーは読んだ地図の区画とつながりを覚えておき、DB を読み直さないので、再起動するまで古いつながりが配られる(2026-10-26 に飛び越える線を直したのに画面が変わらなかった)。再起動はユーザーが行う(この PC に Azure CLI が無い)
 
 ## 8. 費用の目安(月)
 
