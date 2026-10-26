@@ -698,7 +698,7 @@ const LEVELS = {
       verify(q) {
         const lines = q.text.split('\n').slice(1).map((s) => s.replace(/^\d\. /, ''));
         const layers = lines.map((ja) => rows.find((r) => r.ja === ja).attrs.layer);
-        const want = [...layers.keys()].sort((a, b) => layers[a] - layers[b]).map((i) => i + 1).join('');
+        const want = [...layers.keys()].sort((a, b) => layers[a] - layers[b]).map((i) => i + 1).join('-'); // order の正規形「1-2-3」(2026-10-26)
         if (q.fields[0].accept[0] !== want) fail(q, `正解は ${want}`);
       },
     };
