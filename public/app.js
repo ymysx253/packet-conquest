@@ -906,14 +906,15 @@
     if (n.company) $('npCompany').textContent = `${n.company}(命名権など。占領できません)`;
     $('npOwner').textContent = n.ownerIsTeam ? `チーム「${n.ownerTeamName || '?'}」の持ち物${S.team && S.team.id === n.owner ? '(あなたのチーム)' : ''}` // チームを抜けた人が取った拠点はチームの持ち物(2026-10-20)
       : owner ? `${owner.name}${owner.id === S.me ? '(あなた)' : ''}` : (n.owner ? '他のプレイヤー' : '中立');
-    // 突破に必要な回数 = つながりの本数。自分(チーム)の進捗と、他の攻め手の最大進捗
+    // 突破に必要な回数 = つながりの本数の平方根の切り上げ(2026-10-22)。自分(チーム)の進捗と、他の攻め手の最大進捗
     // 囲み(2026-10-21 ユーザー決定): つながりの本数 −(自分かチームが押さえている隣の数 − 1)。最低 1。数はサーバーが選んだときに返す
     const sg = S.selNb && S.selNb.id === n.id && S.selNb.siege ? S.selNb.siege : null;
     const base = n.hits || 1, hits = n.owner === S.me || !sg ? base : sg.need, prog = n.progress || {};
     const myKey = S.team ? S.team.id : S.me;
     const mine = prog[myKey] || 0;
     const others = Object.entries(prog).filter(([k]) => k !== myKey).map(([, v]) => v);
-    const parts = [`正解 ${hits} 回(つながり ${base} 本${hits < base ? `、囲み ${sg.held} 本で −${base - hits}` : ''})`];
+    // 回数だけを出す(2026-10-26 ユーザー指摘: 回数を「つながり ◯ 本」と出していて本数と合わなかった。平方根などの計算の中身はプレイヤーに要らない)
+    const parts = [`正解 ${hits} 回${hits < base ? `(囲み ${sg.held} 本で −${base - hits})` : ''}`];
     if (n.hackable === false) parts.length = 0, parts.push('占領できない場所');
     else if (n.owner === S.me) { if (others.length) parts.push(`侵入されています: 最大 ${Math.max(...others)}/${hits}`); }
     else { if (mine) parts.push(`${S.team ? 'チーム' : 'あなた'} ${mine}/${hits}`); if (others.length) parts.push(`他の攻め手 最大 ${Math.max(...others)} 回正解`); } // ほかの攻め手の必要な回数は囲みで人ごとに違う

@@ -169,6 +169,36 @@ for (const n of nodes) {
   for (const m of [...(n.borders || []), ...(n.contains || [])]) if (usableNode(byId.get(m)) && !adj.get(n.id).has(m)) { link(n.id, m); townEdges++; }
 }
 
+// ---------- 隣の拠点を飛び越える線を外す(2026-10-26 ユーザー決定) ----------
+// 町・字の線は「間にほかの町の区域が無い」で決めるので、丁目をまとめた細長い町(港区の海岸など)では、町の中の駅から町の遠い端の代表点へ、
+// 間の駅を飛び越えて線が引かれていた。A–B の線のすぐそば(線の長さの 15% 以内)に、A とも B ともつながっていて、A・B のどちらからも
+// A–B より近い拠点 C があれば、A–B を外す(C を通って行ける)。外すかどうかは外す前のつながりで決める。外す線の代わりの道(A–C–B)は
+// どれも A–B より短い線なので、つながりが切れる拠点は出ない。同じ路線の前後の駅は外さない(路線は別の決まり)
+let skipDropped = 0;
+{
+  const K = Math.cos(36 * Math.PI / 180);
+  const xy = (n) => [n.lon * K * 111, n.lat * 111];
+  const segDist = (p, a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1]; const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy))); return Math.hypot(a[0] + t * dx - p[0], a[1] + t * dy - p[1]); };
+  const sameLine = (a, b) => (a.lines || []).some((l) => (b.lines || []).includes(l));
+  const drop = [];
+  for (const [aId, set] of adj) {
+    const A = byId.get(aId);
+    for (const bId of set) {
+      if (bId < aId) continue; // 組ごとに 1 回
+      const B = byId.get(bId);
+      if (sameLine(A, B)) continue;
+      const pa = xy(A), pb = xy(B), len = Math.hypot(pa[0] - pb[0], pa[1] - pb[1]);
+      for (const cId of adj.get(bId)) {
+        if (cId === aId || !set.has(cId)) continue;
+        const pc = xy(byId.get(cId));
+        if (Math.hypot(pc[0] - pa[0], pc[1] - pa[1]) < len && Math.hypot(pc[0] - pb[0], pc[1] - pb[1]) < len && segDist(pc, pa, pb) < 0.15 * len) { drop.push([aId, bId]); break; }
+      }
+    }
+  }
+  for (const [a, b] of drop) { adj.get(a).delete(b); adj.get(b).delete(a); }
+  skipDropped = drop.length;
+}
+
 // ---------- 分断の橋渡し ----------
 // 離島(2026-10-20 ユーザー決定): 海の上で町どうしはつながらない。陸からも航路からも行けない島に町があれば、島の港から、
 // 港が無ければ島に仮の港(pp-。名前は「<町>港(仮)」)を作って、いちばん近い港へ「幻の航路」を引く。幻の航路は 1 日に 20 分だけ使える(航路ごとに時間をずらす)
@@ -422,7 +452,7 @@ for (const { file, T } of FILES) {
 
 const deg = {}; for (const n of hackable) { const d = adj.get(n.id).size; deg[d] = (deg[d] || 0) + 1; }
 const top = hackable.map((n) => ({ name: n.name, d: adj.get(n.id).size })).sort((a, b) => b.d - a.d).slice(0, 8);
-console.log(`対象 ${FILES.length} ファイル ${nodes.length} 拠点。路線のつながり ${lineEdges / 2} 本、名所のつながり ${landmarkEdges} 本(5 km 以内に見通せる駅が無い名所 ${landmarkAlone}。間に町があって外した駅 ${landmarkBlocked})、町・字のつながり ${townEdges} 本、航路でつながったまとまり ${routeJoins}、橋 ${bridges.length} 本。拠点に結びつかなかった N02 の駅 ${unmapped} 件(対象外の都道府県など)`);
+console.log(`対象 ${FILES.length} ファイル ${nodes.length} 拠点。路線のつながり ${lineEdges / 2} 本、名所のつながり ${landmarkEdges} 本(5 km 以内に見通せる駅が無い名所 ${landmarkAlone}。間に町があって外した駅 ${landmarkBlocked})、町・字のつながり ${townEdges} 本(隣を飛び越えるため外した線 ${skipDropped} 本)、航路でつながったまとまり ${routeJoins}、橋 ${bridges.length} 本。拠点に結びつかなかった N02 の駅 ${unmapped} 件(対象外の都道府県など)`);
 console.log('つながりの本数 → 拠点数', JSON.stringify(deg));
 console.log('多い順', top.map((t) => `${t.name} ${t.d}`).join(' / '));
 if (bridges.length) console.log('橋:', bridges.join(' / '));
