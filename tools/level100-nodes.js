@@ -11,8 +11,9 @@
 //   - 段と割合(公開の全拠点に対して): 入門 1〜15 が 35%、初級 16〜35 が 30%、中級 36〜60 が 20%、上級 61〜78 が 10%、専門 79〜89 が 5%(90〜100 は神レベルで使わない)
 //   - 種類ごとに手元の数で並べ、上からの順位を出し、種類ごとに入れてよい段の範囲の中で、全体が割合どおりになるよう境目を計算で決める
 //       町・字 = 人口(入門〜上級) / 駅 = 乗り入れる路線の数 → まわりの町・字の人口(入門〜専門)
-//       名所・観光地 = 知名度(Wikidata の言語版の数)と指定(初級〜専門) / 空港・港 = 1 年間の旅客数・便数、無ければつながりの本数(中級〜専門)
-//       庁舎・国際線の拠点の空港・国会議事堂 = 専門(国会議事堂は 89)
+//       名所・観光地 = 知名度(Wikidata の言語版の数)と指定(初級〜専門) / 空港・港 = 1 年間の旅客数・便数、無ければつながりの本数(上級〜専門。10-26 に変更)
+//       専門に決め打ち: 国会議事堂(89)・東京都庁・国際線の拠点の空港・都道府県庁舎・市区町村役場・区役所・国の機関の庁舎(genre government 全部)・大学(university 全部)・幻の航路でしかつながらない港(仮の港 pp- など)
+//       (10-26 ユーザー決定: 町・字は専門に入れない。空港・港は上級から上。幻の航路の港は専門。専門の不足はふつうの駅で埋めず、役場・区役所・大学・国の機関を足して埋める)
 //   - 段の中のレベルは、その段の中の順位で均等に割り振る(同じ数の拠点は同じレベル)
 //
 // 境目の決め方(この道具で決めた計算のしかた): 種類 × 段 の件数の表を、目標の割合(入れない段は 0)から出発して、
@@ -137,11 +138,12 @@ const SL = sitelinksByQid();
 
 // ---------- 種類 ----------
 const HUB_AIRPORT_LEVEL = 500; // tools/levels.js の L.HUB_AIRPORT(国際線の拠点の空港 7 つ)
-const isGovOffice = (n) => n.genre === 'government' && n.level >= 400; // 都道府県庁舎・東京都庁・国会議事堂(市役所 2 件は名所として扱う)
+const isGovOffice = (n) => n.genre === 'government'; // 国会議事堂・都庁・都道府県庁舎・市区町村役場・区役所・国の機関の庁舎(2026-10-26: 全部専門)
+const isPhantomPort = (n) => n.genre === 'port' && (n.id.startsWith('pp-') || ((n.routes || []).length > 0 && (n.routes || []).every((r) => r.phantom))); // 幻の航路でしかつながらない港(2026-10-26: 専門)
 const catOf = (n) => {
   if (n.genre === 'town') return 'town';
   if (n.genre === 'station') return 'station';
-  if (isGovOffice(n) || (n.genre === 'airport' && n.level >= HUB_AIRPORT_LEVEL)) return 'fixed';
+  if (isGovOffice(n) || n.genre === 'university' || isPhantomPort(n) || (n.genre === 'airport' && n.level >= HUB_AIRPORT_LEVEL)) return 'fixed';
   if (n.genre === 'airport' || n.genre === 'port') return 'gw';
   return 'lm';
 };
@@ -149,8 +151,8 @@ const CATS = {
   town: { name: '町・字', min: 1, max: 4 },
   station: { name: '駅', min: 1, max: 5 },
   lm: { name: '名所・観光地', min: 2, max: 5 },
-  gw: { name: '空港・港', min: 3, max: 5 },
-  fixed: { name: '庁舎・国際線の拠点の空港・国会', min: 5, max: 5 },
+  gw: { name: '空港・港', min: 4, max: 5 },
+  fixed: { name: '専門に決め打ち(庁舎・役場・国の機関・大学・国際線の拠点の空港・幻の航路の港・国会)', min: 5, max: 5 },
 };
 const CAT_KEYS = Object.keys(CATS);
 
@@ -190,9 +192,12 @@ for (const n of PUB) {
     if (n.genre === 'airport') { const v = sumRoutes(n, 'passengers'); n._sub = 'airport'; n._key = [v > 0 ? 1 : 0, v, n.links]; n._label = v > 0 ? `旅客 ${v.toLocaleString('ja-JP')} 人/年` : `旅客の記録なし・つながり ${n.links}`; }
     else { const v = sumRoutes(n, 'flights'); n._sub = 'port'; n._key = [v > 0 ? 1 : 0, v, n.links]; n._label = v > 0 ? `${v.toLocaleString('ja-JP')} 便/年` : `便数の記録なし・つながり ${n.links}`; }
   } else if (n._cat === 'fixed') {
-    const rank = n.id === 'kokkai' || n.name === '国会議事堂' ? 4 : n.level >= 600 ? 3 : n.genre === 'airport' ? 2 : 1; // 国会 → 都庁 → 国際線の拠点の空港(旅客数) → 都道府県庁舎
-    n._key = [rank, n.genre === 'airport' ? sumRoutes(n, 'passengers') : 0];
-    n._label = n.genre === 'airport' ? `国際線の拠点の空港・旅客 ${sumRoutes(n, 'passengers').toLocaleString('ja-JP')} 人/年` : rank === 4 ? '国会議事堂' : rank === 3 ? '首都の庁舎' : '都道府県庁舎';
+    // 国会 → 都庁 → 国際線の拠点の空港(旅客数) → 都道府県庁舎 → 大学(知名度) → 役場・区役所・国の機関 → 幻の航路の港
+    const isPref = n.genre === 'government' && n.level >= 400;
+    const rank = n.name === '国会議事堂' && n.level >= 777 ? 7 : n.genre === 'government' && n.level >= 600 ? 6 : n.genre === 'airport' ? 5 : isPref ? 4 : n.genre === 'university' ? 3 : n.genre === 'government' ? 2 : 1;
+    const qid = (n.codes && n.codes.wikidata) || null; const fame = qid && SL.has(qid) ? SL.get(qid) : 0;
+    n._key = [rank, n.genre === 'airport' ? sumRoutes(n, 'passengers') : fame, n.links];
+    n._label = n.genre === 'airport' ? `国際線の拠点の空港・旅客 ${sumRoutes(n, 'passengers').toLocaleString('ja-JP')} 人/年` : rank === 7 ? '国会議事堂' : rank === 6 ? '首都の庁舎' : rank === 4 ? '都道府県庁舎' : rank === 3 ? `大学・知名度 ${fame}` : rank === 2 ? '役場・区役所・国の機関' : '幻の航路の港';
   }
 }
 const cmpKey = (a, b) => { for (let i = 0; i < Math.max(a.length, b.length); i++) { const d = (b[i] || 0) - (a[i] || 0); if (d) return d; } return 0; };
