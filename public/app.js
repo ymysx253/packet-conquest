@@ -616,9 +616,17 @@
   }
   // 持ち主の表示の切り替え(端末ごとに覚える)
   try { const v = localStorage.getItem('pc.ownView'); S.ownView = OWN_VIEWS.includes(v) ? v : 'all'; } catch (e) { S.ownView = 'all'; }
-  const renderOwnView = () => { for (const b of document.querySelectorAll('#ownView button')) b.setAttribute('aria-pressed', String(b.dataset.v === S.ownView)); };
-  for (const b of document.querySelectorAll('#ownView button')) b.onclick = () => { S.ownView = b.dataset.v; try { localStorage.setItem('pc.ownView', S.ownView); } catch (e) { /* 覚えられなくても動く */ } renderOwnView(); };
-  renderOwnView();
+  $('ownView').value = S.ownView;
+  $('ownView').onchange = () => { S.ownView = $('ownView').value; try { localStorage.setItem('pc.ownView', S.ownView); } catch (e) { /* 覚えられなくても動く */ } };
+  // スマホの欄のタブ(拠点の情報・通信ログ・チャット)。広い画面ではタブは出ず、全部並ぶ
+  const narrow = window.matchMedia('(max-width: 880px)');
+  function sidePane(p) {
+    $('side').dataset.pane = p;
+    for (const b of document.querySelectorAll('.side-tabs button')) b.setAttribute('aria-selected', String(b.dataset.pane === p));
+    if (p === 'chat') $('sideChatUnread').hidden = true;
+    if (p === 'log') $('log').scrollTop = $('log').scrollHeight;
+  }
+  for (const b of document.querySelectorAll('.side-tabs button')) b.onclick = () => sidePane(b.dataset.pane);
   $('zoomIn').onclick = () => { if (mb) mb.zoomBy(ZOOM_STEP); };
   $('zoomOut').onclick = () => { if (mb) mb.zoomBy(-ZOOM_STEP); };
   $('zoomHome').onclick = centerOnMine;
@@ -706,6 +714,7 @@
     if (!n) { S.selected = null; S.selNb = null; S.question = null; S.result = null; renderQuestion(); renderSelected(); return; }
     if (S.selected !== n.id) { S.selNb = null; send({ t: 'neighbors', nodeId: n.id }); } // 縮小していても、つながる線を全部出すため
     S.selected = n.id;
+    if (narrow.matches) sidePane('info'); // スマホは拠点の情報のタブへ
     renderSelected();
     const actionable = !S.overview && (canAttack(n.id) || n.owner === S.me);
     if (!actionable) return;
@@ -769,6 +778,7 @@
     const list = S.chat.rooms.get(key) || []; list.push(msg); if (list.length > 200) list.shift(); S.chat.rooms.set(key, list);
     if (msg.kind === 'dm' && !S.chat.partners.some((p) => p.id === other)) { S.chat.partners.push({ id: other, name: msg.from === S.me ? ((S.players.find((x) => x.id === other) || {}).name || other) : msg.fromName, blocked: false }); renderChatTo(); }
     if (key !== curKey() && msg.from !== S.me) S.chat.unread[msg.kind] = true;
+    if (msg.from !== S.me && narrow.matches && $('side').dataset.pane !== 'chat') $('sideChatUnread').hidden = false; // スマホでチャットのタブを見ていないとき
     renderChat(key === curKey());
   }
   function renderChatTo() {
@@ -820,7 +830,7 @@
     $('chatInput').value = '';
   };
   // 順位の表の名前を押すと、その人と個別に話す
-  $('scores').addEventListener('click', (e) => { const li = e.target.closest('li[data-pid]'); if (!li || li.dataset.pid === S.me) return; const p = S.players.find((x) => x.id === li.dataset.pid) || {}; if (!S.chat.partners.some((x) => x.id === li.dataset.pid)) S.chat.partners.push({ id: li.dataset.pid, name: p.name || li.dataset.pid, blocked: false }); const rd = $('rankDialog'); if (rd.open) rd.close(); chatOpen('dm', li.dataset.pid); });
+  $('scores').addEventListener('click', (e) => { const li = e.target.closest('li[data-pid]'); if (!li || li.dataset.pid === S.me) return; const p = S.players.find((x) => x.id === li.dataset.pid) || {}; if (!S.chat.partners.some((x) => x.id === li.dataset.pid)) S.chat.partners.push({ id: li.dataset.pid, name: p.name || li.dataset.pid, blocked: false }); const rd = $('rankDialog'); if (rd.open) rd.close(); sidePane('chat'); chatOpen('dm', li.dataset.pid); });
 
   let siegeTimer = null;
   function refreshSiege() { // まとめて 1 回だけ聞き直す
@@ -890,7 +900,7 @@
   }
   function renderSelected() {
     const n = selectedNode();
-    $('nodePanel').hidden = !n;
+    $('nodePanel').hidden = !n; $('npEmpty').hidden = !!n;
     if (!n) return;
     const owner = n.owner ? playerById(n.owner) : null;
     $('npName').textContent = n.name;
