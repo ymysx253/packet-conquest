@@ -170,33 +170,57 @@ for (const n of nodes) {
 }
 
 // ---------- 隣の拠点を飛び越える線を外す(2026-10-26 ユーザー決定) ----------
-// 町・字の線は「間にほかの町の区域が無い」で決めるので、丁目をまとめた細長い町(港区の海岸など)では、町の中の駅から町の遠い端の代表点へ、
-// 間の駅を飛び越えて線が引かれていた。A–B の線のすぐそば(線の長さの 15% 以内)に、A とも B ともつながっていて、A・B のどちらからも
-// A–B より近い拠点 C があれば、A–B を外す(C を通って行ける)。外すかどうかは外す前のつながりで決める。外す線の代わりの道(A–C–B)は
-// どれも A–B より短い線なので、つながりが切れる拠点は出ない。同じ路線の前後の駅は外さない(路線は別の決まり)
+// 町・字の線は「間にほかの町の区域が無い」で決めるので、丁目をまとめた細長い町(港区の海岸、中央区の築地など)では、町の中の駅から町の遠い端の代表点へ、
+// 間の駅や名所を飛び越えて線が引かれていた。A–B の線のすぐそば(線の長さの 15% 以内。A・B のどちらからも A–B より近い所)に、ほかの拠点 C があれば、
+// A–B を外す。ただし A から B へ、A–B より短い線だけを 8 本までたどって行けるときだけ(つながりが切れる拠点を出さない)。長い線から順に決める。
+// はじめは「C が A とも B ともつながっているとき」だけ外していたが、C がどちらかとしかつながっていない線(築地 → 新富町駅。間に築地駅)が残った(ユーザー指摘)。
+// 同じ路線の前後の駅は外さない(路線は別の決まり)
 let skipDropped = 0;
 {
+  const FRAC = 0.15, HOPS = 8, G = 0.5; // G: ます目(km)
   const K = Math.cos(36 * Math.PI / 180);
-  const xy = (n) => [n.lon * K * 111, n.lat * 111];
-  const segDist = (p, a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1]; const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy))); return Math.hypot(a[0] + t * dx - p[0], a[1] + t * dy - p[1]); };
+  const usable = nodes.filter(usableNode);
+  const P = new Map(usable.map((n) => [n.id, [n.lon * K * 111, n.lat * 111]]));
+  const grid = new Map();
+  for (const n of usable) { const p = P.get(n.id); const k = `${Math.floor(p[0] / G)}:${Math.floor(p[1] / G)}`; if (!grid.has(k)) grid.set(k, []); grid.get(k).push(n.id); }
+  const dist = (p, q) => Math.hypot(p[0] - q[0], p[1] - q[1]);
   const sameLine = (a, b) => (a.lines || []).some((l) => (b.lines || []).includes(l));
-  const drop = [];
-  for (const [aId, set] of adj) {
-    const A = byId.get(aId);
-    for (const bId of set) {
-      if (bId < aId) continue; // 組ごとに 1 回
-      const B = byId.get(bId);
-      if (sameLine(A, B)) continue;
-      const pa = xy(A), pb = xy(B), len = Math.hypot(pa[0] - pb[0], pa[1] - pb[1]);
-      for (const cId of adj.get(bId)) {
-        if (cId === aId || !set.has(cId)) continue;
-        const pc = xy(byId.get(cId));
-        if (Math.hypot(pc[0] - pa[0], pc[1] - pa[1]) < len && Math.hypot(pc[0] - pb[0], pc[1] - pb[1]) < len && segDist(pc, pa, pb) < 0.15 * len) { drop.push([aId, bId]); break; }
+  // 線のすぐそばにある拠点(無ければ null)
+  const between = (x, y, len) => {
+    const pa = P.get(x), pb = P.get(y), dx = pb[0] - pa[0], dy = pb[1] - pa[1];
+    for (let gx = Math.floor(Math.min(pa[0], pb[0]) / G) - 1; gx <= Math.floor(Math.max(pa[0], pb[0]) / G) + 1; gx++)
+      for (let gy = Math.floor(Math.min(pa[1], pb[1]) / G) - 1; gy <= Math.floor(Math.max(pa[1], pb[1]) / G) + 1; gy++)
+        for (const c of grid.get(`${gx}:${gy}`) || []) {
+          if (c === x || c === y) continue;
+          const pc = P.get(c);
+          if (dist(pc, pa) >= len || dist(pc, pb) >= len) continue;
+          const t = ((pc[0] - pa[0]) * dx + (pc[1] - pa[1]) * dy) / (dx * dx + dy * dy);
+          if (t > 0.05 && t < 0.95 && Math.hypot(pa[0] + t * dx - pc[0], pa[1] + t * dy - pc[1]) < FRAC * len) return c;
+        }
+    return null;
+  };
+  // A から B へ、A–B より短い線だけを HOPS 本までたどって行けるか(A–B そのものは使わない)
+  const detour = (x, y, len) => {
+    let front = [x]; const seen = new Set([x]);
+    for (let h = 0; h < HOPS && front.length; h++) {
+      const next = [];
+      for (const u of front) for (const v of adj.get(u)) {
+        if (seen.has(v) || (u === x && v === y) || dist(P.get(u), P.get(v)) >= len) continue;
+        if (v === y) return true;
+        seen.add(v); next.push(v);
       }
+      front = next;
     }
+    return false;
+  };
+  const edges = [];
+  for (const [x, set] of adj) for (const y of set) if (x < y && P.has(x) && P.has(y)) edges.push([x, y, dist(P.get(x), P.get(y))]);
+  edges.sort((e, f) => f[2] - e[2]);
+  for (const [x, y, len] of edges) {
+    if (sameLine(byId.get(x), byId.get(y))) continue;
+    if (!between(x, y, len) || !detour(x, y, len)) continue;
+    adj.get(x).delete(y); adj.get(y).delete(x); skipDropped++;
   }
-  for (const [a, b] of drop) { adj.get(a).delete(b); adj.get(b).delete(a); }
-  skipDropped = drop.length;
 }
 
 // ---------- 分断の橋渡し ----------
