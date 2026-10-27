@@ -53,7 +53,7 @@
       </select>
       <p class="map-hint">ホイールやピンチで拡大縮小、ドラッグで移動</p>
       <div class="pick-bar" id="pickBar" hidden>
-        <span id="pickBarText">開始地点にする町・字か、ふつうの駅をタップしてください(町・字は拡大すると出ます)</span>
+        <span id="pickBarText">開始地点にする入門(Lv1〜15)の町・字か駅をタップしてください(町・字は拡大すると出ます)</span>
         <button type="button" class="btn small" id="pickCancelBtn">やめる</button>
       </div>
     </div>
@@ -150,9 +150,9 @@
       <input id="codeInput" class="mono" maxlength="24" placeholder="空欄なら新しく始めます">
       <label for="countrySelect">登録国</label>
       <select id="countrySelect"><option value="japan">日本</option></select>
-      <label for="startInput">開始地点(町・字か、ふつうの駅の名前で検索。空欄なら丸の内)</label>
+      <label for="startInput">開始地点(入門 Lv1〜15 の町・字か駅の名前で検索。空欄なら丸の内)</label>
       <div class="row2">
-        <input id="startInput" maxlength="20" placeholder="例: 丸の内、銀座、高尾山口駅">
+        <input id="startInput" maxlength="20" placeholder="例: 丸の内、竹芝駅">
         <button type="button" class="btn" id="pickMapBtn">地図から選ぶ</button>
       </div>
       <ul class="start-results" id="startResults" hidden></ul>
@@ -180,7 +180,7 @@
     <li><i class="ln sea"></i>海路</li>
     <li><i class="ln sel"></i>選んだ拠点のつながり</li>
   </ul>
-  <p class="hint"><a href="shapes.html" target="_blank" rel="noopener">形の一覧(Lv1〜999)を別の画面で開く</a></p>
+  <p class="hint"><a href="shapes100.html" target="_blank" rel="noopener">形の一覧(Lv1〜100)を別の画面で開く</a></p>
   <h3 class="label">出典</h3>
   <p class="credit">地図は「国土数値情報(鉄道・行政区域・湖沼・港湾間流通量)」(国土交通省)、政府統計の総合窓口(e-Stat)「国勢調査 小地域境界」「航空輸送統計調査」(総務省統計局・国土交通省)、「地理院タイル(道路中心線)」(国土地理院。島が道でつながっているかの判定)、「国土地理院最適化ベクトルタイル」(国土地理院。川と水面)を加工して作成。名所の一部は Wikidata による。都道府県庁舎の一部の位置は「位置参照情報ダウンロードサービス」(国土交通省)をもとに作成。町・字の読みは日本郵便「郵便番号データ」による。地図の表示には MapLibre GL JS(BSD-3-Clause ライセンス。Copyright MapLibre contributors)を使っています。記載の製品名・プロトコル名は各社の商標または登録商標です</p>
   <form method="dialog" class="dlg-actions"><button class="btn primary">閉じる</button></form>
@@ -222,7 +222,7 @@
   <h3 class="label">アイテム</h3>
   <div class="code-row">
     <span class="hint" id="itemHomeText">本拠地を増やす: 0 個</span>
-    <button type="button" class="btn small" id="itemHomeBtn" disabled title="町・字か、ふつうの駅のそばに本拠地をもう 1 つ作ります(引っ越しはできません)">使う</button>
+    <button type="button" class="btn small" id="itemHomeBtn" disabled title="入門(Lv1〜15)の町・字か駅のそばに本拠地をもう 1 つ作ります(引っ越しはできません)">使う</button>
   </div>
   <div class="code-row">
     <span class="hint" id="itemGuardText">空港・港の守りを延ばす: 0 個</span>
@@ -327,7 +327,6 @@
 <div class="toast" id="toast" role="status" hidden></div>
 <script src="vendor/maplibre/maplibre-gl-csp.js"></script>
 <script src="map-base.js"></script>
-<script src="shapes.js"></script>
 <script src="shapes100.js"></script>
 <script src="diagram.js"></script>
 <script src="terminal.js"></script>

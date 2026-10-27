@@ -251,4 +251,20 @@ const byLevel = [[1, 9], [10, 29], [30, 99], [100, 299], [300, 999]].map(([a, b]
   assert.strictEqual(NODES.find((n) => n.name === '東京駅' && n.region.startsWith('tokyo-')).level, 200, '主要駅は Lv200');
   assert.strictEqual(NODES.find((n) => n.name === '東京タワー').level, 300, '塔は Lv300');
 }
+// ゲームのレベル 1〜90 と点数(2026-10-27。server/map/level100.js)。マスターの level は前の格のまま、DB に入れる形で置き換える
+{
+  const { levels, toGame, pointsOf, LEVEL_MAX } = require('../server/map/level100');
+  const table = levels();
+  const pub = NODES.filter((n) => n.status !== 'hidden');
+  const missing = pub.filter((n) => !Number.isInteger(table[n.id]) || table[n.id] < 1 || table[n.id] > LEVEL_MAX);
+  assert.strictEqual(missing.length, 0, `公開の拠点はすべて 1〜90 のレベルを持つ(無い: ${missing.slice(0, 5).map((n) => n.id).join(', ')})`);
+  const kokkai = NODES.find((n) => n.name === '国会議事堂');
+  assert.strictEqual(table[kokkai.id], 90, '国会議事堂は Lv90');
+  assert.ok(pointsOf(1) === 1 && pointsOf(90) === 69, '点数 = 0.849 × 1.05^レベル(最低 1)');
+  const total = pub.reduce((t, n) => t + toGame(n).value, 0);
+  assert.ok(total > 900000 && total < 1100000, `公開の拠点を全部取るとおよそ 100 万点(${total})`);
+  const docs100 = require('../server/map/load').nodeDocs(NODES.slice(0, 50));
+  assert.ok(docs100.every((d) => d.level >= 1 && d.level <= 90 && Number.isInteger(d.grade) && typeof d.top === 'boolean'), 'DB に入れる形は 1〜90 のレベルと前の格(grade)・top を持つ');
+  assert.ok(NODES.filter((n) => toGame(n).top).length >= 47, '日本全体で見える拠点(top)は都道府県庁舎を含む');
+}
 console.log(`map ok: ${NODES.length} nodes in ${new Set(NODES.map(prefOf)).size} prefs, ${EDGES.length} links, ${AREAS.length} areas, ${docs.length} regions (${byLevel})`);

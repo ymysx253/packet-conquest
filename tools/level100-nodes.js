@@ -1,6 +1,7 @@
 'use strict';
-// 拠点のレベルを 1〜90 で付け直す「下書き」を計算する(2026-10-26 ユーザー決定。docs/DESIGN.md 第 9 章の 2026-10-26)。
-// 拠点マスター・DB・ゲームのプログラムは変えない。書くのは下書き(docs/level100-nodes-draft.json)とまとめ(docs/LEVEL-NODES-DRAFT.md)だけ。
+// 拠点のレベル(1〜90)を計算する(2026-10-26 ユーザー決定。docs/DESIGN.md 第 9 章の 2026-10-26。2026-10-27 からゲームが使う)。
+// 書くのは id → レベル の表(server/map/data/level100.json)とまとめ(docs/LEVEL-NODES-DRAFT.md)だけ。拠点マスターの level は前の格のまま(取り込みの道具とこの計算が使う)で、
+// DB に入れるときに server/map/level100.js がこの表のレベルに置き換える。拠点を足したり、つながりを作り直したりしたら流し直す(表に無い公開の拠点があると npm test が落ちる)
 //
 // 使い方:
 //   node tools/level100-nodes.js <e-Stat 小地域境界データ(GML)のフォルダ>
@@ -26,7 +27,7 @@ const [, , gmlDir] = process.argv;
 if (!gmlDir) { console.error('使い方: node tools/level100-nodes.js <e-Stat 小地域境界データ(GML)のフォルダ>'); process.exit(1); }
 
 const ROOT = path.join(__dirname, '..');
-const OUT_JSON = path.join(ROOT, 'docs', 'level100-nodes-draft.json');
+const OUT_JSON = path.join(ROOT, 'server', 'map', 'data', 'level100.json'); // ゲームが使う(server/map/level100.js。2026-10-27 から下書きではなく本物)
 const OUT_MD = path.join(ROOT, 'docs', 'LEVEL-NODES-DRAFT.md');
 const { townLevel, terminalOf } = require('./levels');
 
@@ -303,10 +304,10 @@ const examples = (c, k) => { const L = lists[c].filter((n) => n._tier === k); if
 
 const lines = [];
 const out = (s = '') => lines.push(s);
-out('# 拠点のレベルの付け直し(1〜90)の下書き');
+out('# 拠点のレベル(1〜90)');
 out();
-out('`node tools/level100-nodes.js <GML のフォルダ>` が作る(2026-10-26 ユーザー決定に沿った計算の下書き。拠点マスター・DB・ゲームはまだ変えていない)。');
-out('id → 新しいレベル の一覧は `docs/level100-nodes-draft.json`。何度流しても同じ結果になる。');
+out('`node tools/level100-nodes.js <GML のフォルダ>` が作る(2026-10-26 ユーザー決定に沿った計算。2026-10-27 からゲームが使う)。');
+out('id → レベル の表は `server/map/data/level100.json`(DB に入れるときに `server/map/level100.js` が拠点マスターの前の格をこのレベルに置き換える)。何度流しても同じ結果になる。');
 out();
 out('## 1. 計算のしかた');
 out();

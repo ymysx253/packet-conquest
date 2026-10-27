@@ -16,7 +16,7 @@ const allMaps = () => (allMapsCache || (allMapsCache = require('./map/all')));
 const TOKYO_MASTER = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, 'map', 'data', 'tokyo.json'), 'utf8'));
 const SPAWN_CENTER = TOKYO_MASTER.spawn ? { lat: TOKYO_MASTER.spawn.lat, lon: TOKYO_MASTER.spawn.lon, radiusKm: TOKYO_MASTER.spawn.radiusKm, name: TOKYO_MASTER.spawn.name } : null;
 const { nodeDocs, regionDocs } = require('./map/load');
-const mock100 = require('./mock-level100'); // 試作: 1〜100 のレベル(LEVEL100_MOCK=1 かつ STORE=memory のときだけ)
+const { LEVEL_MAX: NODE_LEVEL_MAX } = require('./map/level100');
 const { distanceKm, tilesAround, tileOf, tileFields, parseTile, tileSize, addrOf, MIN_LEVEL_BY_Z } = require('./map/geo');
 const { routeOpen, openAt, isAlwaysOpen } = require('./map/routes');
 const { hitsFromLinks } = require('./map/hits'); // 突破に要る正解の回数(2026-10-22) // 季節航路と拠点の開いている時間(2026-10-19。サーバーの時計の UTC)
@@ -35,7 +35,7 @@ const TEAM_MAX_MEMBERS = 20;            // チームの人数上限の上限(作
 const TEAM_ICONS = ['★', '●', '■', '▲', '◆', '♠', '♣', '♥', '♦', '☀', '☾', '☁', '⚡', '❄', '✿', '⚑', '⚙', '☕', '♪', '✈', '⚓', '☯', '✦', '✪'];
 const DEFAULT_TEAM_STYLE = { frame: '#1F2937', fill: '#FDE68A', text: '#1F2937' };
 const isHex = (s) => typeof s === 'string' && /^#[0-9a-fA-F]{6}$/.test(s);
-const MAX_LEVEL = 999;                  // 出題レベルの上限(強化はここまで)
+const MAX_LEVEL = NODE_LEVEL_MAX;        // 出題レベルの上限(強化はここまで)。1〜100 のうちふつうの拠点は 90 まで(2026-10-27 ユーザー決定。91〜100 は神レベル)
 const PROTECT_MS = 24 * 60 * 60 * 1000; // 初心者保護: 生まれた拠点は 24 時間攻撃されない
 const PROTECT_MAX_NODES = 3;            // 初心者保護: 所持拠点がこの数以下の人は攻撃されない(作成から NEWBIE_MS の間だけ)
 const GATEWAY_GUARD_MS = 5 * 60 * 1000; // 空港・港は占領されてから 5 分間は奪えない(2026-10-19 ユーザー決定。すぐ奪い返す待ち伏せを防ぎ、航路の先が制圧される前に奪い返す余地を残す)
@@ -55,10 +55,10 @@ const TICK_CAP_MS = 5 * 60 * 1000;          // 稼働時計: 1 回の刻みで�
 const HOME_LINKS = 2;                   // プレイヤーの拠点がつながる近隣拠点の数(開始地点 + 近い 1 つ)
 const SPAWN_RINGS_KM = [0.3, 0.6, 1.0];  // 開始地点のまわりに置く半径。空きがなければ広げ、1 km でも無ければ満員(第 3.1 節)
 const SPAWN_TRIES = 80;                 // 半径ごとの試行回数
-// 開始地点にできるもの(2026-10-19 決定): 町・字(Lv1〜9)と、ふつうの駅(Lv10)だけ。大きな駅・空港・名所からは始めない(誰でも同じ条件で始める)。
-// レベルの物差しを変えたとき(docs/LEVEL-PLAN.md)に「Lv1 の駅と町・字」から言い換えた(指す範囲は同じ)
-const startable = (n) => !!n && !n.isPlayerNode && n.hackable !== false && (n.status || 'public') === 'public' && ((n.genre === 'town') || (n.genre === 'station' && n.level <= 10));
-// 指定が無いときの開始地点: 東京駅の隣の町・字「丸の内」(東京駅は Lv4 なので開始地点にできない)
+// 開始地点にできるもの: 入門(Lv1〜15)の町・字と駅だけ(2026-10-26 ユーザー決定。1〜100 のレベル)。大きな駅・空港・名所・人の多い町からは始めない(誰でも同じ条件で始める)
+const START_LEVEL_MAX = 15;
+const startable = (n) => !!n && !n.isPlayerNode && n.hackable !== false && (n.status || 'public') === 'public' && (n.genre === 'town' || n.genre === 'station') && n.level <= START_LEVEL_MAX;
+// 指定が無いときの開始地点: 東京駅の隣の町・字「丸の内」(入門の町。東京駅は開始地点にできない)
 const DEFAULT_START_ID = (TOKYO_MASTER.nodes.find((n) => n.name === '丸の内' && n.genre === 'town') || TOKYO_MASTER.nodes.find((n) => startable(n)) || TOKYO_MASTER.nodes[0]).id;
 const MIN_GAP_KM = 0.15;                // 拠点どうしの最小距離
 const LOG_MAX = 60;
@@ -268,7 +268,7 @@ class World {
   // ---------- 起動 ----------
   async init() {
     if ((await this.store.countNodes()) === 0) {
-      await this.store.seedNodes(mock100.apply(nodeDocs(allMaps().NODES)));
+      await this.store.seedNodes(nodeDocs(allMaps().NODES));
     }
     if ((await this.store.countRegions()) === 0) {
       await this.store.seedRegions(regionDocs(allMaps().NODES));
@@ -545,7 +545,7 @@ class World {
       this.send(p, { t: 'tiles', z: 0, added, dropped, nodes, edges });
     } else {
       // 縮小時: 粗いタイルで、レベルの高い拠点だけ(リンクは送らない)
-      const docs = mock100.ENABLED ? (await this.store.loadTiles(this.country, list, 1)).filter((d) => (d.ov || 0) >= zz) : await this.store.loadTiles(this.country, list, minLevel);
+      const docs = await this.store.loadTiles(this.country, list, minLevel);
       p.view = new Set(); p.viewZ = zz;
       const regions = await this.regionsInView(list, zz);
       // 自分とチームの拠点は、レベルが低くても縮小表示に足す(見ている範囲の中だけ)
@@ -642,17 +642,17 @@ class World {
       .map(({ n }) => ({ id: n.id, name: n.name, area: n.area || null, level: n.level, genre: n.genre }));
   }
   // 開始地点の拠点を確かめて返す(読み込まれていなければ 1 件読む)。
-  // strict(参加と引っ越しで選ぶとき)は「Lv1 の駅か町・字」だけ(2026-10-19 決定)。前から使っている開始地点(再生成・表示)はそのまま認める
+  // strict(参加と引っ越しで選ぶとき)は入門の町・字か駅だけ。前から使っている開始地点(再生成・表示)はそのまま認める
   async startNode(p, strict = false) {
     const id = p.startNodeId || DEFAULT_START_ID;
     let n = this.nodes.get(id);
     if (!n) { const d = await this.store.loadNode(id); if (d) n = this.adopt(d); }
     if (!n || n.isPlayerNode || n.hackable === false || n.status !== 'public' || n.country !== (p.country || this.country)) {
-      throw new Error('その開始地点は選べません。町・字か、ふつうの駅を選んでください');
+      throw new Error('その開始地点は選べません。入門(Lv1〜15)の町・字か駅を選んでください');
     }
     if (strict && !startable(n)) {
       const near = await this.nearStartable(n, 3);
-      throw new Error(`${n.name}(Lv${n.level})からは始められません。開始地点にできるのは町・字か、ふつうの駅(Lv10)です${near.length ? `(近くなら ${near.map((x) => x.name).join('、')})` : ''}`);
+      throw new Error(`${n.name}(Lv${n.level})からは始められません。開始地点にできるのは入門(Lv1〜15)の町・字か駅です${near.length ? `(近くなら ${near.map((x) => x.name).join('、')})` : ''}`);
     }
     return n;
   }
@@ -764,13 +764,13 @@ class World {
     if (p.online) this.send(p, this.itemsOf(p));
     return this.itemsOf(p);
   }
-  // 本拠地を増やす: 選んだ開始地点(町・字か Lv10 以下のふつうの駅。最初の本拠地と同じ決まり)のそばに本拠地をもう 1 つ生む。足した本拠地は引っ越しできない
+  // 本拠地を増やす: 選んだ開始地点(入門の町・字か駅。最初の本拠地と同じ決まり)のそばに本拠地をもう 1 つ生む。足した本拠地は引っ越しできない
   async useHomeItem(p, startNodeId) {
     if (!((p.items || {}).home > 0)) throw new Error('本拠地を増やすアイテムを持っていません');
     let start = this.nodes.get(startNodeId);
     if (!start) { const d = await this.store.loadNode(startNodeId); if (d) start = this.adopt(d); }
     if (!start || start.isPlayerNode || start.hackable === false || start.status !== 'public' || start.country !== (p.country || this.country) || !startable(start)) {
-      throw new Error('本拠地を置けるのは、町・字か、ふつうの駅(Lv10 以下)のそばだけです');
+      throw new Error('本拠地を置けるのは、入門(Lv1〜15)の町・字か駅のそばだけです');
     }
     const home = await this.spawnHome(p, start, true);
     p.items = { ...p.items, home: p.items.home - 1 };
@@ -1339,4 +1339,4 @@ class World {
   }
 }
 
-module.exports = { startable, DEFAULT_START_ID, World, questionPayload, hintsAllowed, PROTECT_MS, GATEWAY_GUARD_MS, GUARD_EXT_MS, GUARD_MAX_MS, GUARD_DAILY, HOME_ITEM_MONTHLY, HOME_ITEM_TOTAL, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, TEAM_MAX_MEMBERS, TEAM_ICONS, weekKeyOf };
+module.exports = { startable, START_LEVEL_MAX, DEFAULT_START_ID, World, questionPayload, hintsAllowed, PROTECT_MS, GATEWAY_GUARD_MS, GUARD_EXT_MS, GUARD_MAX_MS, GUARD_DAILY, HOME_ITEM_MONTHLY, HOME_ITEM_TOTAL, PROTECT_MAX_NODES, MAX_LEVEL, DECAY_MS, NEWBIE_MS, IDLE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, TEAM_MAX_MEMBERS, TEAM_ICONS, weekKeyOf };

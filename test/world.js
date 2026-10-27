@@ -2,12 +2,15 @@
 // 永続ワールドの検証(タイル方式): シード、範囲の読み込み、参加で拠点が生まれる、隣だけ攻撃できる、初心者保護、
 // 回数制の奪取(回数 = つながりの本数)、強化とその減衰、地域の支配(3/4)、集計値、復帰コード、再起動後の復元、配信に答えが含まれないこと
 const assert = require('assert');
+const { questionOf, rightAnswer, wrongAnswer } = require('./answers'); // server/world より先に読む
 const { World, DEFAULT_START_ID, PROTECT_MS, GATEWAY_GUARD_MS, DECAY_MS, NEWBIE_MS, MOVE_INTERVAL_MS, COOLDOWN_MS, COOLDOWN_MAX_MS, weekKeyOf } = require('../server/world');
 const { MemoryStore } = require('../server/store');
 const { hasGenerator } = require('../server/questions');
 const { EventLog, dayOf } = require('../server/events');
 const { tilesAround, tileOf, distanceKm } = require('../server/map/geo');
 const { NODES } = require('../server/map/all');
+const { toGame } = require('../server/map/level100');
+const gameLv = (n) => toGame(n).level; // マスターの level は前の格。ゲームの 1〜90 はこちら
 
 const fakeWs = () => { const ws = { readyState: 1, sent: [], send(s) { this.sent.push(JSON.parse(s)); }, close() { this.readyState = 3; } }; return ws; };
 const last = (ws, t) => [...ws.sent].reverse().find((m) => m.t === t);
@@ -15,9 +18,7 @@ const last = (ws, t) => [...ws.sent].reverse().find((m) => m.t === t);
 // 正解がわからないので、サーバーの pending を読んで答える(テスト専用)
 async function solve(world, p, nodeId) {
   const q = await world.ask(p, nodeId);
-  const pend = p.pending;
-  const ans = pend && pend.answerKind === 'text' ? (pend.fields || []).map((f) => (f.accept && f.accept[0]) || '') : pend ? pend.answerIndex : -1; // 書き込み式は受け付ける答えの 1 つ目
-  const r = await world.answer(p, q.qid, ans);
+  const r = await world.answer(p, q.qid, rightAnswer(p));
   assert.ok(r.correct, 'テストは正解を選ぶ');
   return r;
 }
@@ -58,7 +59,7 @@ async function solve(world, p, nodeId) {
   // 広域表示: 粗いタイルで高いレベルだけ
   await w.setView(a, [tileOf(home.lat, home.lon, 2)], 2);
   const ov = last(wsA, 'tiles');
-  assert.ok(ov.overview && ov.minLevel === 100 && ov.nodes.every((n) => n.level >= 100 || n.owner === a.id), '広域(段 2)は Lv100 以上だけ(2026-10-19 の物差し)。自分の拠点は低くても届く');
+  assert.ok(ov.overview && ov.minLevel === 90 && ov.nodes.every((n) => n.level >= 90 || n.owner === a.id), '広域(段 2)は Lv90 だけ(2026-10-27)。自分の拠点は低くても届く');
   assert.ok(ov.nodes.some((n) => n.id === home.id), '縮小表示にも自分の拠点が届く');
   assert.ok(Array.isArray(ov.regions) && ov.regions.length > 0 && ov.regions.every((g) => g.tier === 6 && typeof g.lat === 'number'), '広域には区・市の支配状況が付く');
   assert.ok(ov.regions.some((g) => g.name === '千代田区') && ov.regions.every((g) => g.controller === null), 'まだ誰も支配していない');
@@ -93,22 +94,22 @@ async function solve(world, p, nodeId) {
   // 問題: 中立は拠点の Lv、答えはクライアントに送らない。同じ拠点では引き直せない
   const q = await w.ask(a, nb);
   assert.strictEqual(q.level, w.nodes.get(nb).level);
-  assert.ok(!('answerIndex' in q) && q.options.length === 4);
+  assert.ok(!('answerIndex' in q) && !('accept' in q) && !('solution' in q) && questionOf(a));
   assert.strictEqual((await w.ask(a, nb)).qid, q.qid, '同じ拠点では問題が変わらない');
   // F6 最短解答時間: 出題から 1 秒未満は拒み、問題は残る
   w.minAnswerMs = 1000;
-  await assert.rejects(() => w.answer(a, q.qid, a.pending.answerIndex), /速すぎ/);
+  await assert.rejects(() => w.answer(a, q.qid, rightAnswer(a)), /速すぎ/);
   assert.ok(a.pending && a.pending.qid === q.qid, '拒んでも問題は残る');
   w.minAnswerMs = 0;
-  const wrong = await w.answer(a, q.qid, (a.pending.answerIndex + 1) % 4);
+  const wrong = await w.answer(a, q.qid, wrongAnswer(a));
   assert.ok(!wrong.correct && a.cooldownUntil > Date.now() && wrong.cooldownMs === COOLDOWN_MS, '不正解で待ち時間 5 秒');
   assert.strictEqual((await store.loadPlayer(a.id)).cooldownUntil, a.cooldownUntil, '待ち時間は保存される(再接続で消せない)');
   // 連続不正解で倍増(4 → 8 → 16 …、上限 60 秒)。正解で戻る
   a.cooldownUntil = 0;
-  const q2 = await w.ask(a, nb); const wrong2 = await w.answer(a, q2.qid, (a.pending.answerIndex + 1) % 4);
+  const q2 = await w.ask(a, nb); const wrong2 = await w.answer(a, q2.qid, wrongAnswer(a));
   assert.strictEqual(wrong2.cooldownMs, COOLDOWN_MS, '続けて間違えても 5 秒(2026-10-20 から延ばさない)');
   a.cooldownUntil = 0; a.wrongStreak = 10;
-  const q3 = await w.ask(a, nb); const wrong3 = await w.answer(a, q3.qid, (a.pending.answerIndex + 1) % 4);
+  const q3 = await w.ask(a, nb); const wrong3 = await w.answer(a, q3.qid, wrongAnswer(a));
   assert.strictEqual(wrong3.cooldownMs, COOLDOWN_MAX_MS, '何回続けても 5 秒');
   a.cooldownUntil = 0;
   await assert.rejects(async () => { a.cooldownUntil = Date.now() + 5000; await w.ask(a, nb); }, /待って/, '待ち時間中は出題しない');
@@ -117,7 +118,7 @@ async function solve(world, p, nodeId) {
   // 回数制: つながりの本数(hits)だけ正解すると奪取。途中は侵入の進捗が配信される。集計値が増え、見ている人に差分が届く
   const target = w.nodes.get(nb);
   assert.strictEqual(target.hits, Math.ceil(Math.sqrt(target.adj.length)), '必要回数 = √つながりの本数(切り上げ。2026-10-22)');
-  assert.ok(q.options && target.hits >= 1);
+  assert.ok(target.hits >= 1);
   const before = wsA.sent.length;
   for (let i = 1; i < target.hits; i++) {
     const r = await solve(w, a, nb);
@@ -372,27 +373,28 @@ async function solve(world, p, nodeId) {
   const found = await w.search('japan', '高尾山口'); // 町・字が入って「高尾」だけでは同じ名前の町が多い
   assert.ok(found.some((r) => r.name === '高尾山口駅') && found.every((r) => typeof r.starters === 'number'), '名前の一部で検索できる');
   assert.strictEqual((await w.search('japan', '浅草寺')).length, 0, 'ハック不可の寺社は開始地点にできない');
-  const takao = NODES.find((n) => n.name === '高尾山口駅' && n.region.startsWith('tokyo-')); // Lv1 の駅(開始地点にできる)
+  const takao = NODES.find((n) => n.name === '竹芝駅' && n.region.startsWith('tokyo-')); // 入門(Lv1〜15)の駅(開始地点にできる)
+  assert.ok(gameLv(takao) <= 15);
   const t1 = await w.join(fakeWs(), 'たかお', null, takao.id);
   const tHome = w.nodes.get(t1.homeNodeId);
   assert.ok(distanceKm(tHome, takao) <= 1.05, '選んだ駅のまわりに生まれる');
   assert.ok(w.adj.get(tHome.id).has(takao.id), '選んだ駅とつながる');
-  assert.strictEqual((await w.search('japan', '高尾山口駅')).find((r) => r.id === takao.id).starters, 1, 'ここから始めた人数が付く(全国に同名の駅があるので id で引く)');
+  assert.strictEqual((await w.search('japan', takao.name)).find((r) => r.id === takao.id).starters, 1, 'ここから始めた人数が付く(全国に同名の駅があるので id で引く)');
   const temple = NODES.find((n) => n.hackable === false);
   await assert.rejects(() => w.join(fakeWs(), 'だめ', null, temple.id), /選べません/);
   await assert.rejects(() => w.join(fakeWs(), 'だめ', null, 'st-nope'), /選べません/);
-  // 開始地点にできるのは Lv1 の駅と町・字だけ(2026-10-19)。大きな駅(東京駅 Lv4)からは始められず、検索では近くの候補が付く
+  // 開始地点にできるのは入門(Lv1〜15)の駅と町・字だけ(2026-10-27)。大きな駅(東京駅 Lv90)からは始められず、検索では近くの候補が付く
   const bigSt = NODES.find((n) => n.name === '東京駅');
-  assert.ok(bigSt.level > 1);
-  await assert.rejects(() => w.join(fakeWs(), 'おおきい', null, bigSt.id), /始められません/, 'Lv1 でない駅からは始められない');
+  assert.ok(gameLv(bigSt) > 15);
+  await assert.rejects(() => w.join(fakeWs(), 'おおきい', null, bigSt.id), /始められません/, '入門でない駅からは始められない');
   const sr = (await w.search('japan', '東京駅')).find((r) => r.id === bigSt.id);
-  assert.ok(sr && sr.startable === false && sr.near.length >= 1 && sr.near.every((x) => x.genre === 'town' || (x.genre === 'station' && x.level <= 10)), '検索では選べない理由と近くの候補');
+  assert.ok(sr && sr.startable === false && sr.near.length >= 1 && sr.near.every((x) => x.genre === 'town' || (x.genre === 'station' && x.level <= 15)), '検索では選べない理由と近くの候補');
   assert.ok((await w.search('japan', '丸の内')).some((r) => r.id === DEFAULT_START_ID && r.startable), '丸の内は選べる');
   const before2 = w.players.size;
   await assert.rejects(() => w.join(fakeWs(), 'だめ', null, tHome.id), /選べません/, 'プレイヤーの拠点からは始められない');
   assert.strictEqual(w.players.size, before2, '失敗した参加はプレイヤーを残さない');
   // 自然に広がる: 同じ駅から大勢が始めても、間隔を守って半径が広がる(1 km まで)
-  const okutama = NODES.find((n) => n.name === '白丸駅' && n.region.startsWith('tokyo-')); // 奥多摩の Lv1 の駅
+  const okutama = NODES.find((n) => n.name === '白丸駅' && n.region.startsWith('tokyo-')); // 奥多摩の入門の駅
   const homes = [];
   for (let i = 0; i < 25; i++) homes.push(w.nodes.get((await w.join(fakeWs(), `人${i}`, null, okutama.id)).homeNodeId));
   assert.ok(homes.every((h) => distanceKm(h, okutama) <= 1.05), '全員 1 km 以内');
@@ -448,7 +450,7 @@ async function solve(world, p, nodeId) {
   const beyond = [...w.adj.get(mTarget.id)].map((id) => w.nodes.get(id)).find((n) => n && !n.isPlayerNode && !n.owner && n.hackable !== false);
   assert.ok(await w.canAttack(mover.id, beyond.id), '線がつながっている所有拠点からは広げられる');
   await assert.rejects(() => w.move(mover, tokyoSt.id), /違う開始地点/);
-  await assert.rejects(() => w.move(mover, bigSt.id), /始められません/, '引っ越し先も Lv1 の駅か町・字だけ');
+  await assert.rejects(() => w.move(mover, bigSt.id), /始められません/, '引っ越し先も入門の駅か町・字だけ');
   await w.setView(mover, tilesAround(takao.t0, 1), 0); // 画面で行き先の駅を選んだ(そのタイルは送り済み)
   const newHome = await w.move(mover, takao.id);
   // 画面は引っ越しで拠点を全部消して取り直す。選んだ駅と新しい拠点がもう一度届くこと(2026-10-19 の不具合)
@@ -499,7 +501,7 @@ async function solve(world, p, nodeId) {
   const rp = await w.join(fakeWs(), 'こうろ', null, tokyoSt.id);
   await w.ensureTiles(tilesAround(hnd.t0, 1)); await w.ensureTiles(tilesAround(cts.t0, 1));
   const H = w.nodes.get(hnd.id), C2 = w.nodes.get(cts.id);
-  assert.ok(H && C2 && H.level === 500, '羽田空港は国際線の拠点 Lv500');
+  assert.ok(H && C2 && H.grade === 500 && H.top && H.level >= 87, '羽田空港は国際線の拠点(前の格 500、日本全体でも見える)');
   // 実際の航路(国土交通省 航空輸送統計 2025 年。server/map/data/routes/)に羽田–新千歳がある
   assert.ok(H.routes.some((r) => r.to === C2.id && r.mode === 'air' && r.metrics && r.metrics.passengers > 1000000), '羽田–新千歳の空路(年間の旅客数つき)');
   assert.ok(C2.routes.some((r) => r.to === H.id), '航路は接続なので両向き');
@@ -550,7 +552,7 @@ async function solve(world, p, nodeId) {
     }
   }
 
-  // 空港・港は占領されてから 5 分間は奪えない(2026-10-19 ユーザー決定)。問題のある Lv30 の港で確かめる
+  // 空港・港は占領されてから 5 分間は奪えない(2026-10-19 ユーザー決定)。港(前の格 30)で確かめる
   {
     const portM = NODES.find((n) => n.genre === 'port' && n.level === 30 && n.hackable && n.status === 'public');
     await w.ensureTiles(tilesAround(portM.t0, 1));
@@ -567,23 +569,20 @@ async function solve(world, p, nodeId) {
     P.owner = null; P.progress = {}; P.protectedUntil = 0; gp.reach = null; gq.reach = null;
   }
 
-  // 問題の無いレベルの拠点は、線がつながっていても占領できない(2026-10-19)。羽田(Lv500)を航路で攻められる状態にして確かめる
+  // 1〜100 のレベル(2026-10-27): ふつうの拠点は 1〜90 で、どのレベルにも問題がある。91〜100(神レベル)はまだ無い。強化は 90 で止まる
   {
     const { hasGenerator } = require('../server/questions');
-    assert.ok(!hasGenerator(500) && hasGenerator(10) && hasGenerator(30) && !hasGenerator(31));
+    for (let lv = 1; lv <= 90; lv++) assert.ok(hasGenerator(lv), 'Lv' + lv + ' の問題がある');
+    assert.ok(!hasGenerator(91) && !hasGenerator(500), '91 以上はまだ無い');
+    assert.ok([...w.nodes.values()].every((n) => n.isPlayerNode || (n.level >= 1 && n.level <= 90)), '拠点のレベルは 1〜90');
     const qp = await w.join(fakeWs(), 'もんだい', null, tokyoSt.id);
-    const Hn = w.nodes.get(hnd.id), Cn = w.nodes.get(cts.id);
-    Hn.owner = qp.id; w.addEdge(qp.homeNodeId, Hn.id, w.nodes.get(qp.homeNodeId).t0); qp.reach = null;
-    assert.ok(await w.canAttack(qp.id, Cn.id), '線(航路)はつながっている');
-    await assert.rejects(() => w.ask(qp, Cn.id), /問題はまだありません/, 'Lv250 以上の問題は無いので占領できない');
-    // 強化は、上げた先のレベルに問題があるときだけ(Lv30 → 31 は問題が無い)
-    const lv30 = [...w.nodes.values()].find((n) => !n.isPlayerNode && n.hackable !== false && n.status === 'public' && n.level === 30);
-    if (lv30) {
-      const prevOwner = lv30.owner, prevDef = lv30.defense; lv30.owner = qp.id; lv30.defense = 0;
-      await assert.rejects(() => w.ask(qp, lv30.id), /これ以上強化できません/, 'Lv31 の問題が無いので Lv30 からは強化できない');
-      lv30.owner = prevOwner; lv30.defense = prevDef;
+    const top = [...w.nodes.values()].find((n) => !n.isPlayerNode && n.hackable !== false && n.status === 'public' && n.level >= 85);
+    if (top) {
+      const prevOwner = top.owner, prevDef = top.defense; top.owner = qp.id; top.defense = 90;
+      assert.strictEqual(w.levelFor(top, 'attack'), 90, '出題レベルは 90 で止まる');
+      await assert.rejects(() => w.ask(qp, top.id), /強化はすでに最大/, 'Lv90 からは強化できない');
+      top.owner = prevOwner; top.defense = prevDef;
     }
-    Hn.owner = null; qp.reach = null;
   }
 
   // 参加前の人も地図を読める(開始地点を地図から選ぶため)。配信先にはならない
@@ -650,10 +649,10 @@ async function solve(world, p, nodeId) {
     ip.homeItemMonth = '2000-01'; await w.grantItem(ip, 'home', 10);
     ip.homeItemMonth = '2000-02'; await assert.rejects(() => w.grantItem(ip, 'home', 1), /合計 20 個/, '合計 20 個まで');
     assert.strictEqual(w.itemsOf(ip).items.home, 20);
-    // 置き場所は町・字か Lv10 以下のふつうの駅のそば(最初の本拠地と同じ決まり)
-    const big = NODES.find((n) => n.genre === 'station' && n.level > 10 && n.region && n.region.startsWith('tokyo-'));
+    // 置き場所は入門(Lv1〜15)の町・字か駅のそば(最初の本拠地と同じ決まり)
+    const big = NODES.find((n) => n.genre === 'station' && gameLv(n) > 15 && n.region && n.region.startsWith('tokyo-'));
     await w.ensureTiles(tilesAround(big.t0, 1));
-    await assert.rejects(() => w.useHomeItem(ip, big.id), /町・字か、ふつうの駅/, 'Lv10 を超える駅のそばには置けない');
+    await assert.rejects(() => w.useHomeItem(ip, big.id), /入門.Lv1〜15.の町・字か駅/, '入門でない駅のそばには置けない');
     const town = NODES.find((n) => n.genre === 'town' && n.region === 'tokyo-chuo' && n.status === 'public');
     await w.ensureTiles(tilesAround(town.t0, 1));
     const h2 = await w.useHomeItem(ip, town.id);

@@ -84,8 +84,8 @@ class CosmosStore {
       const chunk = tiles.slice(i, i + CHUNK);
       const rows = await this.query('nodes', {
         // 階層パーティションキーの前半(country)だけを options.partitionKey に渡すと 400 になるので、WHERE 句の c.country で絞る
-        query: `SELECT * FROM c WHERE c.country = @country AND ARRAY_CONTAINS(@tiles, c.${field}) AND c.level >= @min`,
-        parameters: [{ name: '@country', value: country }, { name: '@tiles', value: chunk }, { name: '@min', value: minLevel }],
+        query: `SELECT * FROM c WHERE c.country = @country AND ARRAY_CONTAINS(@tiles, c.${field}) AND ${minLevel === 'top' ? 'c.top = true' : 'c.level >= @min'}`, // top: 日本全体が見える段の拠点(geo.js の MIN_LEVEL_BY_Z)
+        parameters: [{ name: '@country', value: country }, { name: '@tiles', value: chunk }, ...(minLevel === 'top' ? [] : [{ name: '@min', value: minLevel }])],
       });
       out.push(...rows.map((r) => this.strip(r)));
     }

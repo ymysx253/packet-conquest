@@ -3,8 +3,6 @@
   const $ = (id) => document.getElementById(id);
   const canvas = $('map');
   const ctx = canvas.getContext('2d');
-  // 試作(2026-10-27): ?lv100 で開くと 1〜100 のレベルの見た目(新しい印・大きさはどれも同じ・名札も同じ)。サーバーは LEVEL100_MOCK=1(server/mock-level100.js)
-  const MOCK100 = new URLSearchParams(location.search).has('lv100') && !!window.PCShapes100;
 
   // ---------- 状態 ----------
   const S = {
@@ -229,10 +227,10 @@
       const li = document.createElement('li');
       const name = document.createElement('span'); name.textContent = `${r.name}(${r.area || ''} Lv${r.level})`;
       if (r.startable === false) {
-        // 開始地点にできない(Lv1 でない駅・名所)。理由と、近くの開始地点にできるものを出す(2026-10-19)
+        // 開始地点にできない(入門でない町・駅、名所など)。理由と、近くの開始地点にできるものを出す(2026-10-19)
         li.className = 'disabled';
         const sm = document.createElement('small');
-        sm.textContent = `Lv${r.level} の${r.genre === 'station' ? '駅' : '場所'}からは始められません。` + (r.near && r.near.length ? '近くなら:' : '町・字か、ふつうの駅(Lv10)を選んでください');
+        sm.textContent = `Lv${r.level} の${r.genre === 'station' ? '駅' : '場所'}からは始められません。` + (r.near && r.near.length ? '近くなら:' : '入門(Lv1〜15)の町・字か駅を選んでください');
         li.append(name, sm);
         for (const x of r.near || []) {
           const b = document.createElement('button'); b.type = 'button'; b.className = 'near';
@@ -252,28 +250,27 @@
     if (!m.results.length) { const li = document.createElement('li'); li.textContent = '見つかりません(駅名は「駅」なしでも探せます)'; ul.replaceChildren(li); }
     ul.hidden = false;
   }
-  // 開始地点にできるもの(2026-10-19 決定): 町・字(Lv1〜9)と、ふつうの駅(Lv10)だけ。サーバーの startable と同じ
-  const startableNode = (n) => !!n && !n.isPlayerNode && n.hackable !== false && (n.genre === 'town' || (n.genre === 'station' && n.level <= 10));
+  // 開始地点にできるもの(2026-10-26 決定): 入門(Lv1〜15)の町・字と駅だけ。サーバーの startable と同じ
+  const startableNode = (n) => !!n && !n.isPlayerNode && n.hackable !== false && (n.genre === 'town' || n.genre === 'station') && n.level <= 15;
   // 問題のあるレベル(サーバーが welcome で送る範囲)。問題の無いレベルの拠点は、線がつながっていても占領・強化できない(2026-10-19)
-  const hasQuestion = (lv) => (S.questionRanges || [[1, 999]]).some(([a, b]) => lv >= a && lv <= b);
+  const hasQuestion = (lv) => (S.questionRanges || [[1, 90]]).some(([a, b]) => lv >= a && lv <= b);
   // 今の強化の値(2026-10-22): 強化は 24 時間ごとに 1 下がる(サーバーの settle と同じ)。届いた値と強化した時刻から画面でも数え、下がった瞬間にアニメーションを出す
   const DECAY_MS = 24 * 3600 * 1000;
   const liveDefense = (n) => { const d = n.defense || 0; if (!d || !n.fortifiedAt) return d; return Math.max(0, d - Math.max(0, Math.floor((now() - n.fortifiedAt) / DECAY_MS))); };
   // 印の形のレベル(2026-10-22 ユーザー決定: 強化したら形も変わる): 元のレベル + 強化。プレイヤーの拠点は変えない
-  const shapeLevel = (n) => (n.isPlayerNode ? n.level : Math.min(MOCK100 ? 100 : 999, Math.max(1, n.level) + liveDefense(n)));
-  const attackLevelOf = (n) => { const base = Math.max(1, n.level) + (n.defense || 0); return n.owner ? Math.max(4, base) : base; };
+  const shapeLevel = (n) => (n.isPlayerNode ? n.level : Math.min(90, Math.max(1, n.level) + liveDefense(n)));
+  const attackLevelOf = (n) => { const base = Math.min(90, Math.max(1, n.level) + (n.defense || 0)); return n.owner ? Math.max(4, base) : base; }; // サーバーの levelFor と同じ(90 で止まる)
   // 濃さ(2026-10-19 ユーザー案): 縮小して重なっているときは低いレベルほど薄く、拡大して重なりが無くなると元の濃さ。
-  // レベルの帯ごとに「この拡大率で元の濃さ」を決める(町・字 30、駅・名所 24、乗り換え駅など 14、空港など 6、Lv200 以上はいつも濃い)。いちばん薄くて 12%。
+  // レベルの帯ごとに「この拡大率で元の濃さ」を決める(2026-10-27: 町・字 30、Lv60 以下 24、Lv61〜78 14、Lv79〜86 6、Lv87 以上はいつも濃い)。いちばん薄くて 12%。
   // 選択中・自分とチームの拠点・攻撃できる拠点は薄くしない
   const fadeOf = (n) => {
     if (n.id === S.selected || n.isPlayerNode || (n.owner && n.owner === S.me) || (relOf(n) === 'team' && ownShown('team')) || (!S.overview && canAttack(n.id) && hasQuestion(attackLevelOf(n)))) return 1;
-    const full = MOCK100 ? (n.genre === 'town' ? 30 : n.level >= 87 ? 0 : n.level >= 79 ? 6 : n.level >= 61 ? 14 : 24) // 試作: 町・字はレベルによらず今と同じ
-      : n.level >= 200 ? 0 : n.level >= 100 ? 6 : n.level >= 30 ? 14 : n.level >= 10 ? 24 : 30;
+    const full = n.genre === 'town' ? 30 : n.level >= 87 ? 0 : n.level >= 79 ? 6 : n.level >= 61 ? 14 : 24; // 町・字はレベルによらず 30
     return full ? Math.max(0.12, Math.min(1, (zoomRatio() / full) ** 2)) : 1;
   };
   const startRefusal = (n) => (n.isPlayerNode || n.hackable === false)
-    ? 'そこは開始地点にできません。町・字か、ふつうの駅(Lv10)を選んでください'
-    : `${n.name}(Lv${n.level})からは始められません。町・字か、ふつうの駅(Lv10)を選んでください(町・字は地図を拡大すると出ます)`;
+    ? 'そこは開始地点にできません。入門(Lv1〜15)の町・字か駅を選んでください'
+    : `${n.name}(Lv${n.level})からは始められません。入門(Lv1〜15)の町・字か駅を選んでください(町・字は地図を拡大すると出ます)`;
   function setStart(r) {
     S.start = { id: r.id, name: r.name };
     $('startInput').value = r.name;
@@ -299,7 +296,7 @@
     if (!S.joined || !(S.itemInfo && S.itemInfo.items.home > 0)) return;
     if ($('meDialog').open) $('meDialog').close();
     S.placing = true; S.moving = false;
-    $('pickBarText').textContent = '本拠地を増やす場所の町・字か、ふつうの駅をタップしてください(町・字は拡大すると出ます)';
+    $('pickBarText').textContent = '本拠地を増やす場所の入門(Lv1〜15)の町・字か駅をタップしてください(町・字は拡大すると出ます)';
     $('pickBar').hidden = false;
   };
   $('npGuardBtn').onclick = () => { if (S.selected) send({ t: 'item', action: 'useGuard', nodeId: S.selected }); };
@@ -310,7 +307,7 @@
     if (!S.joined) return;
     if ($('meDialog').open) $('meDialog').close(); // 地図で選ぶのでダイアログは閉じる
     if (S.movedAt && now() - S.movedAt < 24 * 3600 * 1000) { toast(`引っ越しは 1 日に 1 回までです(あと ${Math.ceil((24 * 3600 * 1000 - (now() - S.movedAt)) / 3600000)} 時間)`); return; }
-    S.moving = true; $('pickBarText').textContent = '引っ越し先の町・字か、ふつうの駅をタップしてください(町・字は拡大すると出ます。所有拠点は残りますが、線がつながるまで広げられません)'; $('pickBar').hidden = false;
+    S.moving = true; $('pickBarText').textContent = '引っ越し先の入門(Lv1〜15)の町・字か駅をタップしてください(町・字は拡大すると出ます。所有拠点は残りますが、線がつながるまで広げられません)'; $('pickBar').hidden = false;
   };
 
   // ---------- 参加 ----------
@@ -579,8 +576,8 @@
   const zoomRatio = () => pxPerUnit() / BASE_K;
   // 縮小するほど印を小さく。日本全体が見える倍率(段 3・4)では 0.2 倍まで(大きな印が細い陸地を覆い隠していた。2026-10-19)
   const shrink = () => { const r = zoomRatio(); return Math.min(1, Math.max(r < 0.18 ? 0.2 : 0.35, r / 6)); };
-  const radiusOf = (n) => shrink() * (n.isPlayerNode ? 8 : MOCK100 ? 7.7 * (1 + 0.8 * ((shapeLevel(n) - 1) / 99) ** 1.8) // 試作: レベルとともに大きく、Lv100 は Lv1 の 1.8 倍。中くらいのレベルは小さめで、上のほうで大きくなる(2026-10-27 ユーザー指摘)
-    : ((L) => (11 + Math.min(10, L) * 0.6 + Math.min(9, Math.floor((L - 1) / 10)) * 0.4 + Math.min(9, Math.floor((L - 1) / 100)) * 0.8))(shapeLevel(n)) * (n.genre === 'town' ? 0.7 : 1)); // 大きさも強化を含めたレベルで(2026-10-22) // 町・字は小さめ
+  // 印の大きさ(2026-10-27 ユーザー決定): レベルとともに大きく、Lv100 で Lv1 の 1.8 倍。中くらいのレベルは小さめで、上のほうで大きくなる。強化を含めたレベルで(2026-10-22)
+  const radiusOf = (n) => shrink() * (n.isPlayerNode ? 8 : 7.7 * (1 + 0.8 * ((shapeLevel(n) - 1) / 99) ** 1.8));
   // 町・字(2026-10-18)は数が多いので、ある程度拡大したときだけ描く。自分の拠点・選択中・攻撃できるものは縮小していても描く
   const TOWN_MIN_RATIO = 10, TOWN_LABEL_RATIO = 14; // 町・字の印は拡大率 10 から、名前は 14 から(参加直後の 9 では駅と名所が主役)
   const visibleNode = (n) => n.genre !== 'town' || zoomRatio() >= TOWN_MIN_RATIO || n.id === S.selected || (n.owner && n.owner === S.me) || (relOf(n) === 'team' && ownShown('team')) || canAttack(n.id);
@@ -706,7 +703,7 @@
       return;
     }
     if (S.picking) {
-      // 開始地点を地図から選ぶ: 町・字とふつうの駅だけ(2026-10-19。判定はサーバーでもする)
+      // 開始地点を地図から選ぶ: 入門の町・字と駅だけ(判定はサーバーでもする)
       if (!n) return;
       if (!startableNode(n)) { toast(startRefusal(n)); return; }
       setStart({ id: n.id, name: n.name, area: n.area }); endPick();
@@ -1002,7 +999,7 @@
     tag.className = q.mode === 'attack' ? 'tag' : 'tag def';
     tag.textContent = q.mode === 'attack' ? '攻撃' : '強化';
     $('qMode').replaceChildren(tag, document.createTextNode(node ? node.name : ''));
-    $('qDiff').textContent = `難易度 Lv${q.level}` + (q.provisional ? '(暫定: この難易度の問題は準備中。いまは Lv10 相当)' : '');
+    $('qDiff').textContent = `難易度 Lv${q.level}` + (q.provisional ? '(暫定: この難易度の問題は準備中)' : '');
     const r = S.result && S.result.qid === q.qid ? S.result : null;
     PCQ.render(q, r, { chosen: S.chosen, onChoose: choose, onSubmit: submitInputs, onTerm: termLine, onIncomplete: () => toast('すべての欄を入れてください') });
     $('qNext').hidden = !r; // 答えたあと、同じ拠点の次の問題へ
@@ -1050,7 +1047,7 @@
   });
 
   // ---------- 拠点の形(shapes.js と共有) ----------
-  const SH = MOCK100 ? window.PCShapes100 : window.PCShapes;
+  const SH = window.PCShapes100; // 1〜100 のレベルの形(2026-10-27 から。前の 1〜999 の形 shapes.js は形の一覧 shapes.html だけが使う)
   function shape(n, p, r) {
     if (n.isPlayerNode) { ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); return; }
     SH.path(ctx, shapeLevel(n), p, r);
@@ -1373,11 +1370,10 @@
       const showLabel = S.overview ? true : n.isPlayerNode
         ? (ratio >= 7 || n.owner === S.me)
         : n.genre === 'town' ? (ratio >= TOWN_LABEL_RATIO || n.owner === S.me || n.id === S.selected)
-        : MOCK100 ? (ratio >= 14 || (ratio >= 5 && n.level >= 61) || (ratio >= 2 && n.level >= 87) || n.level >= 90 || n.owner === S.me) // 試作: 1〜100 の物差し
-        : (ratio >= 14 || (ratio >= 5 && n.level >= 30) || (ratio >= 2 && n.level >= 100) || n.level >= 200 || n.kind === 'IX' || n.owner === S.me); // 2026-10-19 の物差し
+        : (ratio >= 14 || (ratio >= 5 && n.level >= 61) || (ratio >= 2 && n.level >= 87) || n.level >= 90 || n.owner === S.me); // 1〜100 の物差し(2026-10-27)
       if (showLabel) {
         const isSel = S.selected === n.id, dim = S.selected && !isSel, fl = fadeOf(n);
-        const fs = (n.kind === 'IX' && !MOCK100 ? 14 : n.isPlayerNode ? 10 : 11.5) + LABEL_PLUS; // 試作は名札の大きさをそろえる
+        const fs = (n.isPlayerNode ? 10 : 11.5) + LABEL_PLUS; // 名札の大きさはそろえる(2026-10-27 ユーザー決定)
         const font = `${n.isPlayerNode ? 500 : 700} ${snapPx(fs * grow)}px "BIZ UDPGothic", sans-serif`;
         ctx.font = font;
         const tx = snapPx(p.x), ty = snapPx(p.y + top + (12 + LABEL_PLUS) * grow), tw = ctx.measureText(n.name).width, th = snapPx(fs * grow);
@@ -1451,7 +1447,7 @@
     }
     if (S.overview) {
       ctx.fillStyle = C.muted; ctx.font = '600 12px "BIZ UDPGothic", sans-serif'; ctx.textAlign = 'left';
-      ctx.fillText(MOCK100 ? `広域表示: ${{ 1: 'Lv87 以上', 2: 'Lv90', 3: '国会・都庁・都道府県庁舎・国際線の拠点の空港', 4: '国会・都庁・都道府県庁舎・国際線の拠点の空港' }[S.viewZ] || ''} の拠点と、地域の支配。拡大すると全部出ます` : `広域表示: Lv${{ 1: 30, 2: 100, 3: 400, 4: 400 }[S.viewZ] || ''} 以上の拠点と、地域の支配。拡大すると全部出ます`, hintX, 22);
+      ctx.fillText(`広域表示: ${{ 1: 'Lv87 以上', 2: 'Lv90', 3: '国会・都庁・都道府県庁舎・国際線の拠点の空港', 4: '国会・都庁・都道府県庁舎・国際線の拠点の空港' }[S.viewZ] || ''} の拠点と、地域の支配。拡大すると全部出ます`, hintX, 22);
     }
   }
   function nodeAt(pt) {

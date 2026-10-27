@@ -12,6 +12,7 @@ if (!process.env.COSMOS_CONNECTION_STRING) {
 }
 
 const { CosmosStore } = require('../server/store-cosmos');
+const { rightAnswer } = require('./answers'); // server/world より先に読む
 const { World } = require('../server/world');
 const { nodeDocs, regionDocs } = require('../server/map/load');
 const tokyo = require('../server/map/all');
@@ -49,7 +50,7 @@ const SEED = tokyo.NODES.filter((n) => n.region.startsWith('tokyo-'));
     assert.ok((await store.findPlayerByToken(a.token)).id === a.id, '復帰コードで引ける');
     const [nb] = [...w.adj.get(a.homeNodeId)];
     const hits = w.nodes.get(nb).hits;
-    for (let i = 0; i < hits; i++) { const q = await w.ask(a, nb); await w.answer(a, q.qid, a.pending.answerIndex); }
+    for (let i = 0; i < hits; i++) { const q = await w.ask(a, nb); await w.answer(a, q.qid, rightAnswer(a)); }
     const saved = await store.loadNode(nb);
     assert.strictEqual(saved.owner, a.id, `奪取が保存される(${hits} 回)`);
     const reg = await store.loadRegion(saved.region);

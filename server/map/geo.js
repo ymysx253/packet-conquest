@@ -76,7 +76,9 @@ const TILE_LON = 0.03;
 const ZOOMS = [0, 1, 2, 3, 4];
 // 段ごとに表示・読み込みする最小レベル(DESIGN.md 第 13 章の表)
 // 縮小の段ごとに出す拠点のレベルの下限(2026-10-19 に新しい物差しへ。docs/LEVEL-PLAN.md): 段 1 は乗り換え駅・港・有名な名所、段 2 は空港・主要駅、段 3 は各県一の空港・城・庁舎、段 4 は庁舎と国の象徴
-const MIN_LEVEL_BY_Z = { 0: 1, 1: 30, 2: 100, 3: 400, 4: 400 }; // 日本全体が見える段(3・4)は都道府県庁舎・都庁・国会議事堂と国際線の拠点の空港だけ(2026-10-19 ユーザー指摘。3 は 250 から上げた)
+// 引いた表示(タイルの段 1〜4)で描く拠点(2026-10-27 ユーザー決定。1〜100 のレベル): 段 1(東京都くらい)は Lv87 以上、段 2(関東くらい)は Lv90、
+// 段 3・4(日本全体)は 'top'(前の格 400 以上: 国会議事堂・都庁・都道府県庁舎・国際線の拠点の空港。server/map/level100.js)
+const MIN_LEVEL_BY_Z = { 0: 1, 1: 87, 2: 90, 3: 'top', 4: 'top' };
 const tileSize = (z) => ({ lat: TILE_LAT * 4 ** z, lon: TILE_LON * 4 ** z });
 const tileKey = (z, y, x) => `t${z}:${y}:${x}`;
 const tileOf = (lat, lon, z = 0) => { const s = tileSize(z); return tileKey(z, Math.floor(lat / s.lat), Math.floor(lon / s.lon)); };

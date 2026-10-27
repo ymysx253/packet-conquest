@@ -89,7 +89,7 @@ class Bots {
     if (Date.now() < (p.cooldownUntil || 0)) return;
     let nodeId = null;
     if (Math.random() < sc.fortifyRate) {
-      const mine = [...w.nodes.values()].filter((n) => n.owner === p.id && !n.isPlayerNode && hasGenerator(Math.min(999, w.levelFor(n, 'fortify') + 1)));
+      const mine = [...w.nodes.values()].filter((n) => n.owner === p.id && !n.isPlayerNode && hasGenerator(w.levelFor(n, 'fortify') + 1));
       if (mine.length) nodeId = pick(mine).id;
     }
     if (!nodeId) {

@@ -4,6 +4,7 @@
 const assert = require('assert');
 const { dayOf, hashSrc, makeEvent, EventLog, noopEvents, TTL_BY_KIND } = require('../server/events');
 const { MemoryStore } = require('../server/store');
+const { rightAnswer } = require('./answers'); // server/world より先に読む
 const { World } = require('../server/world');
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -122,7 +123,7 @@ const fakeWs = (ip) => ({ readyState: 1, ip, sent: [], send(s) { this.sent.push(
     const p = await w.join(fakeWs('203.0.113.9'), 'テスト', null);
     const [nb] = [...w.adj.get(p.homeNodeId)];
     const q = await w.ask(p, nb);
-    const r = await w.answer(p, q.qid, p.pending.answerIndex);
+    const r = await w.answer(p, q.qid, rightAnswer(p));
     assert.ok(p.homeNodeId && r.correct, '記録に失敗しても遊べる');
     await w.events.flush();
     assert.ok(errors2.length >= 1 && errors2.every((e) => e.includes('ログの保存に失敗')), '失敗は console.error だけ');

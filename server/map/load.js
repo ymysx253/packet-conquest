@@ -299,13 +299,15 @@ function loadAll() {
 }
 
 // Cosmos DB の nodes に入れる形(docs/DB.md 3.2)。ゲーム状態の初期値つき
+// DB に入れる形。レベルと点数は 1〜90 に置き換える(server/map/level100.js。マスターの level は前の格で、grade に残す)
 function nodeDocs(nodes, now = Date.now()) {
+  const { toGame } = require('./level100');
   return nodes.map((m) => ({
     id: m.id, type: 'node', name: m.name, genre: m.genre, alias: m.alias || null, kind: m.kind, kindLabel: m.kindLabel,
     area: m.area, country: m.country, region: m.region, lat: m.lat, lon: m.lon,
     location: { type: 'Point', coordinates: [m.lon, m.lat] },
     t0: m.t0, t1: m.t1, t2: m.t2, t3: m.t3, t4: m.t4,
-    level: m.level, value: m.value, hackable: m.hackable !== false, lines: m.lines || [], tags: m.tags || [],
+    ...toGame(m), hackable: m.hackable !== false, lines: m.lines || [], tags: m.tags || [],
     company: m.company || null, codes: m.codes || {}, src: m.src || null, gateway: m.gateway || null, names: m.names || null, kana: m.kana || null,
     adj: m.adj || [], links: m.links || Math.max(1, (m.adj || []).length), hits: m.hits || hitsFromLinks(m.links || (m.adj || []).length), // つながりと、その本数、突破に必要な正解の回数(第 14 章。2026-10-22 から √本数の切り上げ)
     routes: m.routes || [], // 航路(空路・海路)。行き先 { to, mode, name, lat, lon }。占領した空港・港から行き先を攻撃できる

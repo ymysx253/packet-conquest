@@ -1,7 +1,7 @@
 'use strict';
 // 保存口。World はここを通してだけ保存・読み込みを行う(設計書 第 13 章、docs/DB.md)。
 // 全件をまとめて読まず、画面に見えているタイルの拠点だけを読む。メモリ版と Cosmos 版が同じメソッドを持つ。
-//   loadTiles(country, tiles, minLevel)  タイル id の一覧(同じ段)に含まれる拠点。レベルが minLevel 以上のもの
+//   loadTiles(country, tiles, minLevel)  タイル id の一覧(同じ段)に含まれる拠点。レベルが minLevel 以上のもの(minLevel が 'top' なら top の拠点だけ)
 //   loadNode(id) / saveNode(doc)          拠点 1 件
 //   nearestMasters(country, lat, lon, k)  周辺の固定拠点(プレイヤーの拠点の接続先)
 //   countNodes() / seedNodes(docs)        初回のシード
@@ -59,7 +59,7 @@ class MemoryStore {
     for (const t of tiles) {
       for (const id of this.byTile.get(t) || []) {
         const n = this.nodes.get(id);
-        if (n && n.country === country && n.level >= minLevel) out.push({ ...n });
+        if (n && n.country === country && (minLevel === 'top' ? n.top : n.level >= minLevel)) out.push({ ...n });
       }
     }
     return out;
